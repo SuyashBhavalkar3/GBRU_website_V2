@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { Phone, MessageCircle, MapPin } from 'lucide-react';
 
 export default function NeedHelpBanner() {
@@ -41,13 +42,13 @@ export default function NeedHelpBanner() {
           </button>
 
           {/* Find Dealer Button */}
-          <button
-            type="button"
+          <Link
+            href="/find-dealer"
             className="h-12 px-6 rounded-full bg-transparent hover:bg-white/10 border-2 border-white text-white font-semibold text-[14px] flex items-center justify-center gap-2 transition-colors"
           >
             <MapPin className="w-4 h-4" />
             Find Dealer
-          </button>
+          </Link>
 
         </div>
 

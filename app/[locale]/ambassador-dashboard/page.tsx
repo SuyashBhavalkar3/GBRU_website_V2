@@ -1,5 +1,5 @@
 import React from 'react';
-import AmbassadorDashboardPage from '@/app/components/ambassador-dashboard/page';
+import AmbassadorDashboardPage from '@/app/components/ambassador-dashboard/AmbassadorDashboardView';
 
 export const metadata = {
   title: 'Ambassador Dashboard - GBRU Brand Ambassador',

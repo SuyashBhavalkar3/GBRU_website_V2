@@ -1,6 +1,9 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import { ChevronRight, Gift, TrendingUp } from 'lucide-react';
 
 const HelpFarmersIcon = ({ className }: { className?: string }) => (
@@ -31,8 +34,11 @@ const CommunityBadgeIcon = ({ className }: { className?: string }) => (
 );
 
 export default function BrandAmbassadorSection() {
+  const tHome = useTranslations('home');
+  const tCommon = useTranslations('common');
+
   return (
-    <section className="pt-[80px] pb-[80px] bg-white" style={{ fontFamily: 'Roboto, sans-serif' }}>
+    <section className="pt-[80px] pb-[80px] bg-white">
       <div className="w-full max-w-[1440px] mx-auto px-4 md:px-8 xl:px-12">
         <div className="relative w-full h-auto bg-[#012B0C] rounded-[28px] overflow-hidden flex flex-col md:flex-row">
           
@@ -42,6 +48,7 @@ export default function BrandAmbassadorSection() {
               src="/home/brand-ambassador-banner.png" 
               alt="GBRU Brand Ambassador" 
               fill 
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover object-center md:object-right brightness-110"
             />
           </div>
@@ -64,26 +71,26 @@ export default function BrandAmbassadorSection() {
             <div className="inline-flex items-center gap-[6px] bg-[rgba(120,253,137,0.12)] text-[#78FD89] px-[14px] h-[34px] rounded-full w-fit">
               <CommunityBadgeIcon className="w-[22px] h-[22px]" />
               <span className="font-light text-[14px]">
-                Join Our Community
+                {tHome('ambassadorBannerTag')}
               </span>
             </div>
 
             {/* Heading */}
             <h2 className="font-medium text-[40px] md:text-[52px] leading-[48px] md:leading-[60px] text-white max-w-[520px] mt-[32px]">
-              Become a GBRU<br />Brand Ambassador
+              {tHome('ambassadorBannerTitle')}
             </h2>
 
             {/* Description */}
             <p className="font-light text-[16px] md:text-[18px] leading-[28px] md:leading-[34px] text-[#78FD89] max-w-[430px] mt-[28px] mb-[48px]">
-              Refer farmers, help them choose the right products, and earn exciting rewards as you grow the community.
+              {tHome('ambassadorBannerDesc')}
             </p>
 
             {/* CTA Button */}
             <Link 
-              href="/ambassador-application" 
+              href="/ambassador" 
               className="flex items-center justify-center gap-[4px] bg-white text-[#154212] font-medium text-[16px] h-[52px] w-[160px] rounded-[12px] hover:opacity-90 transition-opacity"
             >
-              Apply Now
+              {tCommon('applyNow')}
               <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
             </Link>
 
@@ -94,15 +101,15 @@ export default function BrandAmbassadorSection() {
             <div className="flex gap-[48px] md:gap-[80px] mt-[40px]">
               <div className="flex flex-col items-center gap-[12px]">
                 <Gift className="w-[28px] h-[28px] text-[#78FD89]" strokeWidth={1.5} />
-                <span className="font-light text-[15px] text-white">Earn Rewards</span>
+                <span className="font-light text-[15px] text-white">{tHome('earnRewards')}</span>
               </div>
               <div className="flex flex-col items-center gap-[12px]">
                 <HelpFarmersIcon className="w-[28px] h-[28px] text-[#78FD89]" />
-                <span className="font-light text-[15px] text-white">Help Farmers</span>
+                <span className="font-light text-[15px] text-white">{tHome('helpFarmers')}</span>
               </div>
               <div className="flex flex-col items-center gap-[12px]">
                 <TrendingUp className="w-[28px] h-[28px] text-[#78FD89]" strokeWidth={1.5} />
-                <span className="font-light text-[15px] text-white">Grow Together</span>
+                <span className="font-light text-[15px] text-white">{tHome('growTogether')}</span>
               </div>
             </div>
 

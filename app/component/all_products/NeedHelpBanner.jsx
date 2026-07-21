@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PhoneCall, MessageSquare, MapPin } from "lucide-react";
 
 export default function NeedHelpBanner({ variant = "grid" }) {
@@ -29,13 +30,13 @@ export default function NeedHelpBanner({ variant = "grid" }) {
               <MessageSquare className="w-4 h-4 text-emerald-200" />
               WhatsApp
             </a>
-            <a
-              href="#dealer"
+            <Link
+              href="/find-dealer"
               className="inline-flex items-center gap-2 bg-transparent hover:bg-white/10 text-white border border-white/60 px-5 py-2.5 rounded-full font-bold text-xs transition-colors"
             >
               <MapPin className="w-4 h-4 text-emerald-200" />
               Find Dealer
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -90,12 +91,12 @@ export default function NeedHelpBanner({ variant = "grid" }) {
             </div>
             <h3 className="font-extrabold text-slate-900 text-sm mb-1">Find Dealer</h3>
             <p className="text-xs text-slate-500 mb-4">Locate authorized local service</p>
-            <a
-              href="#dealers"
+            <Link
+              href="/find-dealer"
               className="text-xs font-semibold text-slate-600 hover:text-[#00a859] transition-colors"
             >
               Search Map
-            </a>
+            </Link>
           </div>
         </div>
       </div>

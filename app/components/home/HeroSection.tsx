@@ -1,20 +1,26 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import { CheckCircle2, Network } from 'lucide-react';
 import SearchSection from './SearchSection';
 import FeatureBadges from './FeatureBadges';
 
 export default function HeroSection() {
+  const tHome = useTranslations('home');
+  const tCommon = useTranslations('common');
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 pt-10 pb-16 items-start">
       {/* Left Content */}
       <div className="flex flex-col max-w-[520px]">
         <h1 className="text-[32px] leading-[40px] md:text-[40px] md:leading-[48px] lg:text-[48px] lg:leading-[56px] font-bold text-[#154212] mb-6">
-          Welcome to the Product Experience Portal
+          {tHome('heroTitle')}
         </h1>
         <p className="text-[18px] leading-[32px] text-[#42493E] mb-7 max-w-[520px]">
-          Find your product to access installation videos, troubleshooting guides, warranty registration and expert support.
+          {tHome('heroDesc')}
         </p>
         
         <SearchSection />
@@ -26,8 +32,9 @@ export default function HeroSection() {
         <div className="relative w-full h-full rounded-[24px] overflow-hidden">
           <Image
             src="/home/farmer_img.png"
-            alt="Happy farmer using mobile app"
+            alt="Farmer using mobile app"
             fill
+            sizes="(max-width: 1024px) 100vw, 560px"
             className="object-cover"
             priority
           />
@@ -42,9 +49,9 @@ export default function HeroSection() {
           <ul className="space-y-3">
             {[
               { name: "Installation Videos" },
-              { name: "Warranty Registration", link: "/warranty/register" },
-              { name: "GBRU Brand Ambassador", link: "/ambassador-application" },
-              { name: "Expert Support" }
+              { name: tHome('regWarrantyTitle'), link: "/warranty/register" },
+              { name: tHome('ambassadorTitle'), link: "/ambassador" },
+              { name: tCommon('needHelp'), link: "/support" }
             ].map((item, index) => (
               <li key={index} className="flex items-center gap-2 text-[13px] font-medium text-[#42493E]">
                 <CheckCircle2 className="w-4 h-4 text-[#006B2C] shrink-0" />

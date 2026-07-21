@@ -26,22 +26,24 @@ export default function NeedHelpBanner() {
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 shrink-0">
           
           {/* Call Support Button */}
-          <button
-            type="button"
+          <a
+            href="tel:18002474776"
             className="h-11 px-5 rounded-full bg-white hover:bg-gray-100 text-[#009933] font-semibold text-[13px] flex items-center justify-center gap-2 transition-colors shadow-sm"
           >
             <Phone className="w-3.5 h-3.5 fill-current" />
             Call Support
-          </button>
+          </a>
 
           {/* WhatsApp Button */}
-          <button
-            type="button"
+          <a
+            href="https://wa.me/18002474776"
+            target="_blank"
+            rel="noreferrer"
             className="h-11 px-5 rounded-full bg-[#00852B] hover:bg-[#007325] border border-white/20 text-white font-semibold text-[13px] flex items-center justify-center gap-2 transition-colors"
           >
             <MessageCircle className="w-3.5 h-3.5" />
             WhatsApp
-          </button>
+          </a>
 
           {/* Find Dealer Link/Button */}
           <Link

@@ -1,5 +1,5 @@
 import React from 'react';
-import AmbassadorApplicationPage from '@/app/components/ambassador-application/page';
+import AmbassadorApplicationPage from '@/app/components/ambassador-application/AmbassadorApplicationView';
 
 export const metadata = {
   title: 'Application Under Review - GBRU Brand Ambassador',

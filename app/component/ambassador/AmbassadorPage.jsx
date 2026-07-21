@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Navbar from "@/app/component/all_products/Navbar";
 import Footer from "@/app/component/all_products/Footer";
@@ -27,6 +28,8 @@ import {
 
 export default function AmbassadorPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const tAmb = useTranslations('ambassadorPage');
+  const tCommon = useTranslations('common');
 
   const journeySteps = [
     {
@@ -53,16 +56,16 @@ export default function AmbassadorPage() {
 
   const ambassadorFaqs = [
     {
-      question: "Who can apply to be an ambassador?",
-      answer: "Any existing customer who has purchased technology through AgriPortal and wishes to help their local community modernize is welcome to apply.",
+      question: tAmb('faq1Q'),
+      answer: tAmb('faq1A'),
     },
     {
-      question: "How are rewards paid out?",
-      answer: "Referral bonuses and cashbacks are credited directly to your verified bank account or UPI within 14 business days of transaction confirmation.",
+      question: tAmb('faq2Q'),
+      answer: tAmb('faq2A'),
     },
     {
-      question: "Are there any membership fees?",
-      answer: "No, joining the GORU Brand Ambassador program is completely free with no hidden charges or mandatory minimum sales.",
+      question: tAmb('faq3Q'),
+      answer: tAmb('faq3A'),
     },
   ];
 
@@ -76,13 +79,13 @@ export default function AmbassadorPage() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Column Text (6 Cols) */}
           <div className="lg:col-span-6 space-y-5">
-            <h1 className="text-4xl sm:text-[46px] font-extrabold text-[#1c3a27] tracking-tight leading-tight">
-              Empower Your Community as an{" "}
-              <span className="text-[#00a859]">Agri-Premium Ambassador</span>
+            <h1 className="text-[32px] leading-[40px] md:text-[40px] md:leading-[48px] lg:text-[48px] lg:leading-[56px] font-bold text-[#154212] mb-4">
+              {tAmb('headingPrefix')}{" "}
+              <span className="text-[#00a859]">{tAmb('headingHighlight')}</span>
             </h1>
 
             <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-[480px]">
-              Share your success with fellow farmers and earn exclusive rewards as you help modernize the land. Join a community of forward-thinking agricultural leaders.
+              {tAmb('heroDesc')}
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -90,19 +93,19 @@ export default function AmbassadorPage() {
                 onClick={() => setIsModalOpen(true)}
                 className="bg-[#00a859] hover:bg-[#00924d] text-white px-7 py-3.5 rounded-full font-bold text-sm shadow-md transition-all cursor-pointer"
               >
-                Check Eligibility
+                {tCommon('checkEligibility')}
               </button>
 
               <a
                 href="#journey"
                 className="border-2 border-[#00a859] text-[#00a859] hover:bg-[#e6f4ea] px-7 py-3.5 rounded-full font-bold text-sm bg-white transition-all cursor-pointer inline-block"
               >
-                Learn How It Works
+                {tCommon('learnHowItWorks')}
               </a>
             </div>
 
             <p className="text-[11px] text-slate-400 font-medium italic mt-3">
-              * Eligibility will be verified after mobile number verification.
+              {tAmb('eligibilityNote')}
             </p>
           </div>
 

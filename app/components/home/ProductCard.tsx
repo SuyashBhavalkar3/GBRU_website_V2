@@ -1,5 +1,9 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import { ArrowRight } from 'lucide-react';
 
 export interface Product {
@@ -16,6 +20,8 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const tCommon = useTranslations('common');
+
   return (
     <div className="w-[380px] shrink-0 bg-white rounded-[24px] overflow-hidden shadow-[0_12px_32px_rgba(0,0,0,0.06)] flex flex-col h-full">
       {/* Image Section */}
@@ -24,12 +30,13 @@ export default function ProductCard({ product }: ProductCardProps) {
           src={product.image}
           alt={product.title}
           fill
+          sizes="380px"
           className="object-cover"
         />
         {/* Best Seller Badge */}
         {product.isBestSeller && (
-          <div className="absolute top-[20px] left-[20px] bg-[#215A2A] text-white font-bold text-[12px] px-[14px] py-[8px] rounded-full">
-            BEST SELLER
+          <div className="absolute top-[20px] left-[20px] bg-[#215A2A] text-white font-bold text-[12px] px-[14px] py-[8px] rounded-full uppercase tracking-wider">
+            {tCommon('bestSeller')}
           </div>
         )}
       </div>
@@ -50,10 +57,13 @@ export default function ProductCard({ product }: ProductCardProps) {
           <span className="font-medium text-[15px] text-[#7A7A7A]">
             {product.sku}
           </span>
-          <button className="flex items-center gap-[6px] font-medium text-[16px] text-[#006B2C] hover:underline">
-            View Details
+          <Link 
+            href="/products" 
+            className="flex items-center gap-[6px] font-medium text-[16px] text-[#006B2C] hover:underline cursor-pointer"
+          >
+            {tCommon('viewDetails')}
             <ArrowRight className="w-5 h-5" />
-          </button>
+          </Link>
         </div>
       </div>
     </div>

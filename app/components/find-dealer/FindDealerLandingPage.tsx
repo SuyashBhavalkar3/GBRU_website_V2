@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import Header from './Header';
 import Breadcrumb from './Breadcrumb';
 import DealerFilters from './DealerFilters';
@@ -8,6 +11,8 @@ import NeedHelpBanner from './NeedHelpBanner';
 import Footer from './Footer';
 
 export default function FindDealerLandingPage() {
+  const tDealer = useTranslations('findDealer');
+
   return (
     <div className="bg-[#FAF9F5] min-h-screen flex flex-col font-sans">
       
@@ -23,13 +28,10 @@ export default function FindDealerLandingPage() {
         {/* 3. Page Heading Section */}
         <div className="mb-8 max-w-[800px]">
           <h1 className="font-bold text-[36px] sm:text-[42px] lg:text-[48px] text-[#154212] leading-tight font-sans mb-3">
-            Locate Your Nearest Dealer
+            {tDealer('heading')}
           </h1>
-          <p 
-            className="text-[16px] sm:text-[18px] text-gray-600 leading-relaxed font-normal"
-            style={{ fontFamily: 'Geist, sans-serif' }}
-          >
-            Get specialized support and professional agricultural advice from our network of certified regional partners and service centers.
+          <p className="text-[16px] sm:text-[18px] text-gray-600 leading-relaxed font-normal">
+            {tDealer('subheading')}
           </p>
         </div>
 
@@ -58,7 +60,6 @@ export default function FindDealerLandingPage() {
 
       {/* 7. Footer */}
       <Footer />
-
     </div>
   );
 }

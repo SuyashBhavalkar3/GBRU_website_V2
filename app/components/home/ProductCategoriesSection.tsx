@@ -1,5 +1,9 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import { ArrowRight } from 'lucide-react';
 
 const categories = [
@@ -31,16 +35,22 @@ const categories = [
 ];
 
 export default function ProductCategoriesSection() {
+  const tHome = useTranslations('home');
+  const tCommon = useTranslations('common');
+
   return (
     <section className="pt-[80px] pb-[80px] bg-white">
       {/* Header */}
       <div className="flex items-center justify-between mb-[48px]">
         <h2 className="font-bold text-[40px] leading-[48px] text-[#154212]">
-          Browse by Product Category
+          {tHome('browseCategories')}
         </h2>
-        <button className="flex items-center gap-[6px] font-medium text-[16px] text-[#006B2C] hover:underline">
-          View All Categories <ArrowRight className="w-5 h-5" />
-        </button>
+        <Link 
+          href="/products"
+          className="flex items-center gap-[6px] font-medium text-[16px] text-[#006B2C] hover:underline cursor-pointer"
+        >
+          {tCommon('viewAllCategories')} <ArrowRight className="w-5 h-5" />
+        </Link>
       </div>
 
       {/* Grid */}
@@ -56,6 +66,7 @@ export default function ProductCategoriesSection() {
                 src={category.image}
                 alt={category.title}
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 20vw"
                 className="object-cover"
               />
             </div>
@@ -73,10 +84,13 @@ export default function ProductCategoriesSection() {
               <div className="flex-grow"></div>
               
               {/* Bottom Button */}
-              <button className="w-full h-[44px] mt-[16px] bg-white border border-[#DCE5DC] rounded-full flex items-center justify-center gap-[8px] font-medium text-[15px] text-[#006B2C] hover:bg-gray-50 transition-colors">
-                View Products
+              <Link 
+                href="/products"
+                className="w-full h-[44px] mt-[16px] bg-white border border-[#DCE5DC] rounded-full flex items-center justify-center gap-[8px] font-medium text-[15px] text-[#006B2C] hover:bg-gray-50 transition-colors"
+              >
+                {tCommon('viewProducts')}
                 <ArrowRight className="w-4 h-4" />
-              </button>
+              </Link>
             </div>
           </div>
         ))}

@@ -1,32 +1,38 @@
+'use client';
+
 import React from 'react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import { BadgeCheck, BriefcaseMedical, NotebookPen, Headset } from 'lucide-react';
 
-const services = [
-  {
-    title: 'Installation Guides',
-    description: 'Step-by-step PDF and video instructions for easy setup.',
-    icon: NotebookPen,
-  },
-  {
-    title: 'Register Warranty',
-    description: 'Activate your product protection in seconds online.',
-    icon: BadgeCheck,
-    link: '/warranty/register',
-  },
-  {
-    title: 'Troubleshooting',
-    description: 'Quick solutions for common hardware and software issues.',
-    icon: BriefcaseMedical,
-  },
-  {
-    title: 'Expert Support',
-    description: 'Direct access to agronomists and technical specialists.',
-    icon: Headset,
-  },
-];
-
 export default function SupportServicesSection() {
+  const tHome = useTranslations('home');
+
+  const services = [
+    {
+      title: tHome('installGuidesTitle'),
+      description: tHome('installGuidesDesc'),
+      icon: NotebookPen,
+    },
+    {
+      title: tHome('regWarrantyTitle'),
+      description: tHome('regWarrantyDesc'),
+      icon: BadgeCheck,
+      link: '/warranty/register',
+    },
+    {
+      title: tHome('troubleshootingTitle'),
+      description: tHome('troubleshootingDesc'),
+      icon: BriefcaseMedical,
+    },
+    {
+      title: tHome('expertSupportTitle'),
+      description: tHome('expertSupportDesc'),
+      icon: Headset,
+      link: '/support',
+    },
+  ];
+
   return (
     <section className="py-[64px] bg-[#4A4A4A]">
       <div className="w-full max-w-[1440px] mx-auto px-4 md:px-8 xl:px-12">
@@ -52,7 +58,6 @@ export default function SupportServicesSection() {
                 {/* Description */}
                 <p 
                   className="font-semibold text-[16px] leading-[34px] text-[#42493E] max-w-[220px] text-center mx-auto"
-                  style={{ fontFamily: 'Geist, sans-serif' }}
                 >
                   {service.description}
                 </p>

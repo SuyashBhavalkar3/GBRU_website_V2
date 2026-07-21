@@ -1,4 +1,8 @@
+'use client';
+
 import React from 'react';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import Header from '../home/Header';
 import Footer from '../home/Footer';
 import WarrantyHero from './WarrantyHero';
@@ -8,9 +12,11 @@ import WhyRegisterSection from './WhyRegisterSection';
 import WarrantyFAQSection from './WarrantyFAQSection';
 import Container from '../common/Container';
 import { ChevronRight } from 'lucide-react';
-import Link from 'next/link';
 
 export default function WarrantyLandingPage() {
+  const tNav = useTranslations('nav');
+  const tWar = useTranslations('warranty');
+
   return (
     <div className="bg-white min-h-screen flex flex-col">
       <Header />
@@ -21,15 +27,15 @@ export default function WarrantyLandingPage() {
           <Container>
             <div className="flex items-center gap-2 font-sans font-normal text-[16px]">
               <Link href="/" className="text-[#42493E] hover:text-[#154212] transition-colors">
-                Home
+                {tNav('home')}
               </Link>
               <ChevronRight className="w-4 h-4 text-[#8A9484]" />
               <Link href="/products" className="text-[#42493E] hover:text-[#154212] transition-colors">
-                Product
+                {tNav('allProducts')}
               </Link>
               <ChevronRight className="w-4 h-4 text-[#8A9484]" />
               <span className="text-[#154212]">
-                Warranty Registration
+                {tWar('heroTitle')}
               </span>
             </div>
           </Container>

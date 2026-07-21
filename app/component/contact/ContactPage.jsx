@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import Navbar from "@/app/component/all_products/Navbar";
 import Footer from "@/app/component/all_products/Footer";
@@ -28,6 +30,8 @@ export default function ContactPage() {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const tCon = useTranslations('contactPage');
+  const tCommon = useTranslations('common');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -59,18 +63,18 @@ export default function ContactPage() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Column Text (6 Cols) */}
           <div className="lg:col-span-6 space-y-5">
-            <h1 className="text-4xl sm:text-[46px] font-extrabold text-[#1c3a27] tracking-tight leading-tight">
-              Get in Touch
+            <h1 className="text-[32px] leading-[40px] md:text-[40px] md:leading-[48px] lg:text-[48px] lg:leading-[56px] font-bold text-[#154212] mb-4">
+              {tCon('heading')}
             </h1>
             <p className="text-slate-600 text-base leading-relaxed max-w-[460px]">
-              We're here to answer your questions, discuss partnerships, and help you connect with the right team. Our global network is ready to support your agricultural growth.
+              {tCon('subheading')}
             </p>
             <div className="pt-2">
               <a
                 href="#message-form"
                 className="inline-flex items-center gap-2 bg-[#008a46] hover:bg-[#00753b] text-white px-6 py-3 rounded-full font-extrabold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer"
               >
-                <span>Contact Us</span>
+                <span>{tCon('heading')}</span>
                 <ArrowDown className="w-4 h-4" />
               </a>
             </div>
@@ -101,16 +105,16 @@ export default function ContactPage() {
               <Phone className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-extrabold text-[#1c2e22] text-xl mb-2">Call Us</h3>
+              <h3 className="font-extrabold text-[#1c2e22] text-xl mb-2">{tCon('callUs')}</h3>
               <p className="text-slate-500 text-xs sm:text-sm max-w-[200px] leading-relaxed mb-6">
-                Talk to our experts for immediate assistance.
+                {tCon('callUsDesc')}
               </p>
             </div>
             <a
               href="tel:18002474776"
               className="w-full border-2 border-[#1c4e26] text-[#1c4e26] bg-white text-xs font-extrabold py-2.5 px-6 rounded-full hover:bg-[#1c4e26] hover:text-white transition-all duration-200 text-center"
             >
-              Call Now
+              {tCommon('callNow')}
             </a>
           </div>
 
@@ -120,16 +124,16 @@ export default function ContactPage() {
               <Mail className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-extrabold text-[#1c2e22] text-xl mb-2">Email Us</h3>
+              <h3 className="font-extrabold text-[#1c2e22] text-xl mb-2">{tCon('emailUs')}</h3>
               <p className="text-slate-500 text-xs sm:text-sm max-w-[200px] leading-relaxed mb-6">
-                Send us a detailed inquiry and we'll get back to you.
+                {tCon('emailUsDesc')}
               </p>
             </div>
             <a
               href="mailto:support@goru-agri.com"
               className="w-full border-2 border-[#1c4e26] text-[#1c4e26] bg-white text-xs font-extrabold py-2.5 px-6 rounded-full hover:bg-[#1c4e26] hover:text-white transition-all duration-200 text-center"
             >
-              Send Email
+              {tCon('sendEmail')}
             </a>
           </div>
 
@@ -139,9 +143,9 @@ export default function ContactPage() {
               <MessageSquare className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-extrabold text-[#1c2e22] text-xl mb-2">WhatsApp</h3>
+              <h3 className="font-extrabold text-[#1c2e22] text-xl mb-2">{tCon('whatsAppTitle')}</h3>
               <p className="text-slate-500 text-xs sm:text-sm max-w-[200px] leading-relaxed mb-6">
-                Quick chat for field queries and support.
+                {tCon('whatsAppDesc')}
               </p>
             </div>
             <a
@@ -150,7 +154,7 @@ export default function ContactPage() {
               rel="noreferrer"
               className="w-full border-2 border-[#1c4e26] text-[#1c4e26] bg-white text-xs font-extrabold py-2.5 px-6 rounded-full hover:bg-[#1c4e26] hover:text-white transition-all duration-200 text-center"
             >
-              Chat Now
+              {tCommon('chatNow')}
             </a>
           </div>
 
@@ -160,17 +164,17 @@ export default function ContactPage() {
               <MapPin className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-extrabold text-[#1c2e22] text-xl mb-2">Visit Office</h3>
+              <h3 className="font-extrabold text-[#1c2e22] text-xl mb-2">{tCon('visitOffice')}</h3>
               <p className="text-slate-500 text-xs sm:text-sm max-w-[200px] leading-relaxed mb-6">
-                Find our physical locations for in-person support.
+                {tCon('visitOfficeDesc')}
               </p>
             </div>
-            <a
-              href="#global-presence"
-              className="w-full border-2 border-[#1c4e26] text-[#1c4e26] bg-white text-xs font-extrabold py-2.5 px-6 rounded-full hover:bg-[#1c4e26] hover:text-white transition-all duration-200 text-center"
+            <Link
+              href="/find-dealer"
+              className="w-full border-2 border-[#1c4e26] text-[#1c4e26] bg-white text-xs font-extrabold py-2.5 px-6 rounded-full hover:bg-[#1c4e26] hover:text-white transition-all duration-200 text-center block"
             >
-              Find Dealer
-            </a>
+              {tCommon('findDealer')}
+            </Link>
           </div>
         </div>
       </section>
@@ -182,7 +186,7 @@ export default function ContactPage() {
           {/* Left Column: Form Card */}
           <div className="lg:col-span-8 bg-white rounded-[24px] border border-slate-200/80 p-6 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
             <h2 className="text-xl sm:text-2xl font-extrabold text-[#1c3a27] mb-6">
-              Send us a Message
+              {tCon('sendMessageHeading')}
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -190,20 +194,20 @@ export default function ContactPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Full Name
+                    {tCon('fullName')}
                   </label>
                   <input
                     type="text"
                     required
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    placeholder="Enter your name"
+                    placeholder={tCon('enterNamePlaceholder')}
                     className="w-full px-4 py-2.5 rounded-xl bg-[#f4f4f2] border border-transparent text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#00a859] transition-all"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Mobile Number
+                    {tCon('mobileNumber')}
                   </label>
                   <input
                     type="tel"
@@ -219,7 +223,7 @@ export default function ContactPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Email Address
+                    {tCon('emailAddress')}
                   </label>
                   <input
                     type="email"
@@ -231,17 +235,17 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Reason for Contact
+                    {tCon('reasonForContact')}
                   </label>
                   <select
                     value={formData.reasonForContact}
                     onChange={(e) => setFormData({ ...formData, reasonForContact: e.target.value })}
                     className="w-full px-4 py-2.5 rounded-xl bg-[#f4f4f2] border border-transparent text-xs text-slate-800 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#00a859] transition-all"
                   >
-                    <option value="General Inquiry">General Inquiry</option>
-                    <option value="Sales & Purchasing">Sales & Purchasing</option>
-                    <option value="Partnership & Dealer">Partnership & Dealer</option>
-                    <option value="Technical Support">Technical Support</option>
+                    <option value="General Inquiry">{tCon('reasonGeneral')}</option>
+                    <option value="Sales & Purchasing">{tCon('reasonSales')}</option>
+                    <option value="Partnership & Dealer">{tCon('reasonPartnership')}</option>
+                    <option value="Technical Support">{tCon('reasonTechSupport')}</option>
                   </select>
                 </div>
               </div>
@@ -249,14 +253,14 @@ export default function ContactPage() {
               {/* Message */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Message
+                  {tCon('message')}
                 </label>
                 <textarea
                   rows={4}
                   required
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  placeholder="How can we help you?"
+                  placeholder={tCon('messagePlaceholder')}
                   className="w-full px-4 py-2.5 rounded-xl bg-[#f4f4f2] border border-transparent text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#00a859] transition-all"
                 />
               </div>
@@ -267,7 +271,7 @@ export default function ContactPage() {
                 disabled={submitted}
                 className="w-full bg-[#008a46] hover:bg-[#00753b] text-white py-3 rounded-full font-bold text-xs shadow-xs transition-colors cursor-pointer disabled:opacity-50 mt-2"
               >
-                {submitted ? "Sending Message..." : "Submit Message"}
+                {submitted ? tCon('sendingMessage') : tCon('sendMessage')}
               </button>
             </form>
           </div>
@@ -276,19 +280,19 @@ export default function ContactPage() {
           <div className="lg:col-span-4 space-y-6">
             {/* Business Hours Card (Solid Green) */}
             <div className="bg-[#008a46] text-white rounded-[24px] p-6 sm:p-7 shadow-md">
-              <h3 className="font-extrabold text-lg mb-5 text-white">Business Hours</h3>
+              <h3 className="font-extrabold text-lg mb-5 text-white">{tCon('businessHours')}</h3>
               <div className="space-y-3 text-xs sm:text-sm text-emerald-50">
                 <div className="flex items-center justify-between pb-2 border-b border-white/20">
-                  <span className="font-medium">Monday - Friday:</span>
+                  <span className="font-medium">{tCon('monFri')}</span>
                   <span className="font-bold text-white">8:00 AM - 6:00 PM</span>
                 </div>
                 <div className="flex items-center justify-between pb-2 border-b border-white/20">
-                  <span className="font-medium">Saturday:</span>
+                  <span className="font-medium">{tCon('saturday')}</span>
                   <span className="font-bold text-white">9:00 AM - 1:00 PM</span>
                 </div>
                 <div className="flex items-center justify-between pb-2">
-                  <span className="font-medium">Sunday:</span>
-                  <span className="font-bold text-emerald-200">Closed</span>
+                  <span className="font-medium">{tCon('sunday')}</span>
+                  <span className="font-bold text-emerald-200">{tCon('closed')}</span>
                 </div>
               </div>
             </div>
@@ -302,10 +306,10 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h4 className="font-extrabold text-slate-900 text-xs mb-0.5">
-                    Fast Response Guarantee
+                    {tCon('fastResponseTitle')}
                   </h4>
                   <p className="text-slate-500 text-[11px] leading-relaxed">
-                    We typically respond to all digital inquiries within 24 business hours.
+                    {tCon('fastResponseDesc')}
                   </p>
                 </div>
               </div>
@@ -317,10 +321,10 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h4 className="font-extrabold text-slate-900 text-xs mb-0.5">
-                    Global Support
+                    {tCon('globalSupportTitle')}
                   </h4>
                   <p className="text-slate-500 text-[11px] leading-relaxed">
-                    Multilingual support available in English, Hindi, Spanish, and French.
+                    {tCon('globalSupportDesc')}
                   </p>
                 </div>
               </div>
@@ -331,7 +335,7 @@ export default function ContactPage() {
         {/* Our Global Presence Section with real map1.png and map2.png images */}
         <section className="mb-16" id="global-presence">
           <h2 className="text-xl sm:text-2xl font-extrabold text-[#1c3a27] text-center mb-8">
-            Our Global Presence
+            {tCon('globalPresence')}
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -347,14 +351,14 @@ export default function ContactPage() {
                 />
               </div>
               <div className="space-y-1.5 text-center sm:text-left">
-                <h3 className="font-extrabold text-slate-900 text-base">Corporate Office</h3>
+                <h3 className="font-extrabold text-slate-900 text-base">{tCon('corporateOffice')}</h3>
                 <p className="text-xs text-slate-500">Chinchwad, Pune, MH 411019, India</p>
                 <p className="text-xs font-bold text-[#008a46]">+91 911 1216 1814</p>
                 <a
                   href="#map-corporate"
                   className="inline-flex items-center gap-1 text-xs font-bold text-slate-700 hover:text-[#008a46] transition-colors pt-1"
                 >
-                  <span>View on Map</span>
+                  <span>{tCon('viewOnMap')}</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
@@ -372,14 +376,14 @@ export default function ContactPage() {
                 />
               </div>
               <div className="space-y-1.5 text-center sm:text-left">
-                <h3 className="font-extrabold text-slate-900 text-base">Wadki Office</h3>
+                <h3 className="font-extrabold text-slate-900 text-base">{tCon('wadkiOffice')}</h3>
                 <p className="text-xs text-slate-500">Akurdi Flyover Round 35, Pune, MH 411019, India</p>
                 <p className="text-xs font-bold text-[#008a46]">+91 911 1216 1814</p>
                 <a
                   href="#map-wadki"
                   className="inline-flex items-center gap-1 text-xs font-bold text-slate-700 hover:text-[#008a46] transition-colors pt-1"
                 >
-                  <span>View on Map</span>
+                  <span>{tCon('viewOnMap')}</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
@@ -390,7 +394,7 @@ export default function ContactPage() {
         {/* Connect with the Community Section */}
         <section className="my-16">
           <h2 className="text-xl sm:text-2xl font-extrabold text-[#1c3a27] text-center mb-8">
-            Connect with the Community
+            {tCon('communityConnect')}
           </h2>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
@@ -400,7 +404,7 @@ export default function ContactPage() {
                 <Share2 className="w-5 h-5" />
               </div>
               <h4 className="font-extrabold text-slate-900 text-sm mb-0.5">Facebook</h4>
-              <p className="text-[11px] text-slate-500">125k+ Followers</p>
+              <p className="text-[11px] text-slate-500">125k+ {tCon('followers')}</p>
             </div>
 
             {/* Social 2 */}
@@ -409,7 +413,7 @@ export default function ContactPage() {
                 <Camera className="w-5 h-5" />
               </div>
               <h4 className="font-extrabold text-slate-900 text-sm mb-0.5">Instagram</h4>
-              <p className="text-[11px] text-slate-500">85k+ Followers</p>
+              <p className="text-[11px] text-slate-500">85k+ {tCon('followers')}</p>
             </div>
 
             {/* Social 3 */}
@@ -418,7 +422,7 @@ export default function ContactPage() {
                 <Tv className="w-5 h-5" />
               </div>
               <h4 className="font-extrabold text-slate-900 text-sm mb-0.5">YouTube</h4>
-              <p className="text-[11px] text-slate-500">250k+ Subscribers</p>
+              <p className="text-[11px] text-slate-500">250k+ {tCon('subscribers')}</p>
             </div>
 
             {/* Social 4 */}
@@ -427,7 +431,7 @@ export default function ContactPage() {
                 <Briefcase className="w-5 h-5" />
               </div>
               <h4 className="font-extrabold text-slate-900 text-sm mb-0.5">LinkedIn</h4>
-              <p className="text-[11px] text-slate-500">45k+ Professionals</p>
+              <p className="text-[11px] text-slate-500">45k+ {tCon('professionals')}</p>
             </div>
           </div>
         </section>

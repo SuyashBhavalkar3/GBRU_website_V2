@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
@@ -19,22 +21,44 @@ import {
 } from "lucide-react";
 
 export default function ProductDetailPage({ categorySlug, productId }) {
+  const tDetail = useTranslations('productDetailPage');
+  const tCatDict = useTranslations('categories');
+  const tProdDict = useTranslations('productItems');
+  const tNav = useTranslations('nav');
+  const tCommon = useTranslations('common');
+
   // Retrieve detailed product data
   const product = getProductDetail(categorySlug, productId);
 
-  // Accordion state for FAQs (stores active opened index)
-  const [openFaq, setOpenFaq] = useState(0); // 0 open by default
+  // Accordion state for FAQs
+  const [openFaq, setOpenFaq] = useState(0);
   const [activeVideoModal, setActiveVideoModal] = useState(null);
+
+  const keyMap = {
+    "seeder": "seeder",
+    "irrigation": "irrigation",
+    "controllers": "controllers",
+    "farm-equipment": "farmEquipment",
+    "accessories": "accessories",
+    "solar-systems": "solarSystems",
+    "sensors-monitoring": "sensorsMonitoring",
+    "maintenance-kits": "maintenanceKits",
+  };
+
+  const prefix = keyMap[categorySlug];
+  const displayCatName = prefix ? tCatDict(`${prefix}Name`) : (product.categoryName || categorySlug);
+  const displayProdName = tProdDict.has(`${product.id}Name`) ? tProdDict(`${product.id}Name`) : product.name;
+  const displayProdDesc = tProdDict.has(`${product.id}Desc`) ? tProdDict(`${product.id}Desc`) : (product.description || product.shortDescription);
 
   const toggleFaq = (index) => {
     setOpenFaq(openFaq === index ? null : index);
   };
 
   const breadcrumbs = [
-    { label: "Home", href: "/" },
-    { label: "Products", href: "/products" },
-    { label: product.categoryName || categorySlug, href: `/products/${categorySlug}` },
-    { label: product.name, href: `/products/${categorySlug}/${productId}` },
+    { label: tNav('home'), href: "/" },
+    { label: tNav('allProducts'), href: "/products" },
+    { label: displayCatName, href: `/products/${categorySlug}` },
+    { label: displayProdName, href: `/products/${categorySlug}/${productId}` },
   ];
 
   return (
@@ -46,21 +70,21 @@ export default function ProductDetailPage({ categorySlug, productId }) {
         {/* Breadcrumb Trail */}
         <Breadcrumb items={breadcrumbs} />
 
-        {/* Hero / Title Section matching Screenshot 2 */}
+        {/* Hero / Title Section */}
         <section className="mb-14">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Title & CTAs (Left 7 Cols) */}
             <div className="lg:col-span-7 space-y-4">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e8f5e9] text-[#00a859] text-xs font-extrabold uppercase tracking-wider">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Official Knowledge Resource
+                <CheckCircle2 className="w-3.5 h-3.5" /> {tDetail('officialResource')}
               </div>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#1c3a27] tracking-tight">
-                {product.name}
+                {displayProdName}
               </h1>
 
               <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-2xl">
-                {product.description || product.shortDescription}
+                {displayProdDesc}
               </p>
 
               {/* Action Buttons */}
@@ -70,15 +94,15 @@ export default function ProductDetailPage({ categorySlug, productId }) {
                   className="inline-flex items-center gap-2 bg-[#00a859] hover:bg-[#00924d] text-white px-6 py-3 rounded-xl font-bold text-xs shadow-xs transition-all"
                 >
                   <Download className="w-4 h-4" />
-                  Download Manual
+                  {tDetail('downloadManual')}
                 </a>
-                <button
-                  onClick={() => alert("Warranty registration requested!")}
+                <Link
+                  href="/warranty/register"
                   className="inline-flex items-center gap-2 border border-[#00a859] text-[#00a859] hover:bg-emerald-50 px-6 py-3 rounded-xl font-bold text-xs transition-all"
                 >
                   <FileCheck className="w-4 h-4" />
-                  Register Warranty
-                </button>
+                  {tDetail('registerWarrantyNow')}
+                </Link>
               </div>
             </div>
 
@@ -98,18 +122,18 @@ export default function ProductDetailPage({ categorySlug, productId }) {
           </div>
         </section>
 
-        {/* Featured Video Installation Guide matching Screenshot 2 */}
+        {/* Featured Video Installation Guide */}
         <section className="mb-14">
           <div className="bg-white rounded-[24px] border border-slate-200/80 p-6 md:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)] grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left Video Thumbnail (6 Cols) */}
             <div
               className="lg:col-span-6 relative group cursor-pointer"
-              onClick={() => setActiveVideoModal(product.featuredGuide?.title || "Complete Installation Walkthrough")}
+              onClick={() => setActiveVideoModal(tDetail('featuredTitle'))}
             >
               <div className="relative w-full h-56 sm:h-64 rounded-2xl overflow-hidden border border-slate-100 bg-slate-900">
                 <Image
                   src={product.featuredGuide?.image || product.heroImage}
-                  alt="Featured Installation Walkthrough"
+                  alt={tDetail('featuredTitle')}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
@@ -124,31 +148,31 @@ export default function ProductDetailPage({ categorySlug, productId }) {
             {/* Right Video Info (6 Cols) */}
             <div className="lg:col-span-6 space-y-3">
               <span className="text-xs font-extrabold uppercase tracking-wider text-[#00a859]">
-                FEATURED GUIDE
+                {tDetail('featuredTag')}
               </span>
               <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900">
-                {product.featuredGuide?.title || "Complete Installation Walkthrough"}
+                {tDetail('featuredTitle')}
               </h3>
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                {product.featuredGuide?.description || "From unboxing to field execution, this video demonstrates full assembly, depth calibration, and initial test operation."}
+                {tDetail('featuredDesc')}
               </p>
               <button
                 type="button"
-                onClick={() => setActiveVideoModal(product.featuredGuide?.title || "Complete Installation Walkthrough")}
-                className="inline-flex items-center gap-2 bg-[#00a859] hover:bg-[#00924d] text-white px-5 py-2.5 rounded-xl font-bold text-xs transition-colors shadow-xs"
+                onClick={() => setActiveVideoModal(tDetail('featuredTitle'))}
+                className="inline-flex items-center gap-2 bg-[#00a859] hover:bg-[#00924d] text-white px-5 py-2.5 rounded-xl font-bold text-xs transition-colors shadow-xs cursor-pointer"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
-                Watch Guide
+                {tDetail('watchGuide')}
               </button>
             </div>
           </div>
         </section>
 
-        {/* Video Tutorials & Guides (Row of 4 Thumbnail Cards) */}
+        {/* Video Tutorials & Guides */}
         <section className="mb-14">
           <div className="mb-6">
-            <h2 className="text-xl font-extrabold text-slate-900 mb-1">Video Tutorials & Guides</h2>
-            <p className="text-xs text-slate-500">Master your equipment with step-by-step video guides.</p>
+            <h2 className="text-xl font-extrabold text-slate-900 mb-1">{tDetail('videoTutorials')}</h2>
+            <p className="text-xs text-slate-500">{tDetail('videoTutorialsSub')}</p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -185,9 +209,9 @@ export default function ProductDetailPage({ categorySlug, productId }) {
           </div>
         </section>
 
-        {/* Technical Documentation Section (2x2 Grid matching Screenshot 2) */}
+        {/* Technical Documentation Section */}
         <section className="mb-14" id="technical-docs">
-          <h2 className="text-xl font-extrabold text-slate-900 mb-6">Technical Documentation</h2>
+          <h2 className="text-xl font-extrabold text-slate-900 mb-6">{tDetail('techDocs')}</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {product.technicalDocs.map((doc, idx) => (
@@ -221,34 +245,34 @@ export default function ProductDetailPage({ categorySlug, productId }) {
           </div>
         </section>
 
-        {/* Protect Your Investment Banner matching Screenshot 2 */}
+        {/* Protect Your Investment Banner */}
         <section className="mb-14">
           <div className="bg-[#00a859] rounded-[24px] p-8 md:p-10 text-white shadow-md">
             <h2 className="text-2xl font-extrabold text-white mb-2">
-              Protect Your Investment
+              {tDetail('protectInvestment')}
             </h2>
             <p className="text-emerald-100 text-xs sm:text-sm max-w-2xl mb-6 leading-relaxed">
-              Register your product serial number within 30 days of purchase to activate your extended 2-year mechanical warranty and gain access to priority technical support and seasonal maintenance alerts.
+              {tDetail('protectInvestmentDesc')}
             </p>
-            <button
-              onClick={() => alert("Warranty registration form opened!")}
-              className="bg-white hover:bg-slate-100 text-slate-900 px-6 py-3 rounded-full font-bold text-xs shadow-xs transition-colors"
+            <Link
+              href="/warranty/register"
+              className="inline-block bg-white hover:bg-slate-100 text-slate-900 px-6 py-3 rounded-full font-bold text-xs shadow-xs transition-colors"
             >
-              Register Warranty Now
-            </button>
+              {tDetail('registerWarrantyNow')}
+            </Link>
           </div>
         </section>
 
         {/* Reusable Need Help Banner */}
         <NeedHelpBanner variant="banner" />
 
-        {/* FAQ Accordion Section matching Screenshot 2 */}
+        {/* FAQ Accordion Section */}
         <section className="my-16 max-w-3xl mx-auto">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-extrabold text-[#1c3a27] mb-1">
               Frequently Asked Questions
             </h2>
-            <p className="text-xs text-slate-500">Quick answers to common queries.</p>
+            <p className="text-xs text-slate-500">{tDetail('quickAnswers')}</p>
           </div>
 
           <div className="space-y-3">
@@ -287,7 +311,7 @@ export default function ProductDetailPage({ categorySlug, productId }) {
         </section>
       </main>
 
-      {/* Video Modal Player (if video clicked) */}
+      {/* Video Modal Player */}
       {activeVideoModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
           <div className="bg-slate-900 rounded-2xl max-w-2xl w-full p-6 text-white space-y-4 border border-slate-700 shadow-2xl relative">
@@ -295,7 +319,7 @@ export default function ProductDetailPage({ categorySlug, productId }) {
               <h3 className="font-bold text-sm sm:text-base">{activeVideoModal}</h3>
               <button
                 onClick={() => setActiveVideoModal(null)}
-                className="text-slate-400 hover:text-white text-xs font-semibold bg-slate-800 px-3 py-1 rounded-lg"
+                className="text-slate-400 hover:text-white text-xs font-semibold bg-slate-800 px-3 py-1 rounded-lg cursor-pointer"
               >
                 Close
               </button>

@@ -30,7 +30,7 @@ export default function AmbassadorHero() {
           </div>
 
           {/* Main Heading */}
-          <h1 className="font-bold text-[32px] sm:text-[40px] lg:text-[46px] text-gray-900 leading-tight font-sans mb-4">
+          <h1 className="text-[32px] leading-[40px] md:text-[40px] md:leading-[48px] lg:text-[48px] lg:leading-[56px] font-bold text-[#154212] mb-4">
             Application Under Review
           </h1>
 

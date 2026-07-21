@@ -1,9 +1,23 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import { Phone, MessageSquare, MapPin } from 'lucide-react';
-import Link from 'next/link';
 
 export default function Footer() {
+  const tCommon = useTranslations('common');
+  const tFooter = useTranslations('footer');
+
+  const footerLinks = [
+    { label: tFooter('legal'), href: '#' },
+    { label: tFooter('privacyPolicy'), href: '#' },
+    { label: tFooter('termsOfService'), href: '#' },
+    { label: tFooter('support'), href: '/support' },
+    { label: tFooter('contactUs'), href: '/contact' },
+  ];
+
   return (
     <footer className="pt-[40px] pb-[40px] bg-white">
       <div className="w-full max-w-[1440px] mx-auto px-4 md:px-8 xl:px-12">
@@ -14,35 +28,43 @@ export default function Footer() {
           {/* Left Side */}
           <div className="flex flex-col justify-center xl:h-full max-w-[520px]">
             <h2 className="font-bold text-[40px] leading-[48px] text-white font-sans m-0">
-              Need Help?
+              {tCommon('needHelp')}
             </h2>
-            <p 
-              className="font-normal text-[16px] leading-[28px] text-white mt-[8px] max-w-[500px]"
-              style={{ fontFamily: 'Geist, sans-serif' }}
-            >
-              Our dedicated team is ready to assist you with installation, troubleshooting, or finding your local specialist.
+            <p className="font-normal text-[16px] leading-[28px] text-white mt-[8px] max-w-[500px]">
+              {tCommon('needHelpDesc')}
             </p>
           </div>
 
           {/* Right Side - Buttons */}
           <div className="flex flex-col sm:flex-row items-center gap-[16px] w-full xl:w-auto xl:h-full">
             {/* Button 1: Call Support */}
-            <button className="flex items-center justify-center gap-[8px] bg-white text-[#154212] h-[52px] w-full sm:w-[155px] rounded-[12px] font-medium text-[16px] font-sans hover:bg-gray-50 transition-colors">
+            <a 
+              href="tel:18002474776"
+              className="flex items-center justify-center gap-[8px] bg-white text-[#154212] h-[52px] w-full sm:w-[155px] rounded-[12px] font-medium text-[16px] font-sans hover:bg-gray-50 transition-colors"
+            >
               <Phone className="w-[18px] h-[18px]" strokeWidth={2} />
-              Call Support
-            </button>
+              {tCommon('callSupport')}
+            </a>
             
             {/* Button 2: WhatsApp */}
-            <button className="flex items-center justify-center gap-[8px] bg-[#008E34] text-white h-[52px] w-full sm:w-[140px] rounded-[12px] font-medium text-[16px] font-sans hover:opacity-90 transition-opacity">
+            <a 
+              href="https://wa.me/18002474776"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center justify-center gap-[8px] bg-[#008E34] text-white h-[52px] w-full sm:w-[140px] rounded-[12px] font-medium text-[16px] font-sans hover:opacity-90 transition-opacity"
+            >
               <MessageSquare className="w-[18px] h-[18px]" strokeWidth={2} />
-              WhatsApp
-            </button>
+              {tCommon('whatsApp')}
+            </a>
 
             {/* Button 3: Find Dealer */}
-            <button className="flex items-center justify-center gap-[8px] bg-transparent border border-white/80 text-white h-[52px] w-full sm:w-[150px] rounded-[12px] font-medium text-[16px] font-sans hover:bg-white/10 transition-colors">
+            <Link 
+              href="/find-dealer"
+              className="flex items-center justify-center gap-[8px] bg-transparent border border-white/80 text-white h-[52px] w-full sm:w-[150px] rounded-[12px] font-medium text-[16px] font-sans hover:bg-white/10 transition-colors"
+            >
               <MapPin className="w-[18px] h-[18px]" strokeWidth={2} />
-              Find Dealer
-            </button>
+              {tCommon('findDealer')}
+            </Link>
           </div>
 
         </div>
@@ -60,26 +82,20 @@ export default function Footer() {
                 className="object-contain object-left"
               />
             </div>
-            <p 
-              className="font-normal text-[14px] text-[#666666] mt-[12px]"
-              style={{ fontFamily: 'Geist, sans-serif' }}
-            >
-              © 2024 GBRU. All rights reserved.
+            <p className="font-normal text-[14px] text-[#666666] mt-[12px]">
+              {tFooter('copyright')}
             </p>
           </div>
 
           {/* Right Side: Links */}
-          <div 
-            className="flex flex-wrap items-center gap-[24px] md:gap-[36px]"
-            style={{ fontFamily: 'Geist, sans-serif' }}
-          >
-            {['Legal', 'Privacy Policy', 'Terms of Service', 'Support', 'Contact Us'].map((link) => (
+          <div className="flex flex-wrap items-center gap-[24px] md:gap-[36px]">
+            {footerLinks.map((link) => (
               <Link 
-                key={link} 
-                href="#"
+                key={link.label} 
+                href={link.href}
                 className="font-normal text-[15px] text-[#42493E] hover:text-[#00A63E] transition-colors"
               >
-                {link}
+                {link.label}
               </Link>
             ))}
           </div>

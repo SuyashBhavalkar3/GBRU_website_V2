@@ -1,34 +1,39 @@
+'use client';
+
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import Container from '../common/Container';
 
-const steps = [
-  {
-    number: '1',
-    title: 'Purchase Product',
-    subtitle: 'Buy from authorized dealers',
-    active: true,
-  },
-  {
-    number: '2',
-    title: 'Register Warranty',
-    subtitle: 'Fill the online form',
-    active: true,
-  },
-  {
-    number: '3',
-    title: 'Verification',
-    subtitle: 'Our team validates details',
-    active: false,
-  },
-  {
-    number: '4',
-    title: 'Warranty Activated',
-    subtitle: 'Enjoy peace of mind',
-    active: false,
-  },
-];
-
 export default function WarrantyStepper() {
+  const tWar = useTranslations('warranty');
+
+  const steps = [
+    {
+      number: '1',
+      title: tWar('step1Title'),
+      subtitle: tWar('step1Sub'),
+      active: true,
+    },
+    {
+      number: '2',
+      title: tWar('step2Title'),
+      subtitle: tWar('step2Sub'),
+      active: true,
+    },
+    {
+      number: '3',
+      title: tWar('step3Title'),
+      subtitle: tWar('step3Sub'),
+      active: false,
+    },
+    {
+      number: '4',
+      title: tWar('step4Title'),
+      subtitle: tWar('step4Sub'),
+      active: false,
+    },
+  ];
+
   return (
     <section className="w-full bg-[#F7F7F7] min-h-[160px] border-t border-[#ECECEC] flex items-center py-8 lg:py-0">
       <Container>
@@ -61,7 +66,6 @@ export default function WarrantyStepper() {
                 </h4>
                 <p 
                   className="font-normal text-[13px] md:text-[14px] text-[#42493E] mt-1 md:mt-0"
-                  style={{ fontFamily: 'Geist, sans-serif' }}
                 >
                   {step.subtitle}
                 </p>

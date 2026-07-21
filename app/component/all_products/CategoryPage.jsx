@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import NeedHelpBanner from "./NeedHelpBanner";
@@ -11,6 +12,7 @@ import { Search } from "lucide-react";
 export default function CategoryPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeChip, setActiveChip] = useState("popular");
+  const tCat = useTranslations('categoryPage');
 
   // Filter categories based on search input and filter chip
   const filteredCategories = CATEGORIES.filter((category) => {
@@ -40,11 +42,11 @@ export default function CategoryPage() {
         <div className="max-w-7xl mx-auto">
           {/* Main Hero Header Left Aligned */}
           <div className="max-w-3xl mb-8">
-            <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold text-[#1c3a27] tracking-tight leading-tight mb-4">
-              Explore Our Product Categories
+            <h1 className="text-[32px] leading-[40px] md:text-[40px] md:leading-[48px] lg:text-[48px] lg:leading-[56px] font-bold text-[#154212] mb-4">
+              {tCat('heading')}
             </h1>
             <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-              Find your specific product category to access installation guides, technical documentation, and expert support tailored for your modern farming operations.
+              {tCat('subheading')}
             </p>
           </div>
 
@@ -57,7 +59,7 @@ export default function CategoryPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for categories or products (e.g. 'smart irrigation')"
+                placeholder={tCat('searchPlaceholder')}
                 className="w-full pl-11 pr-4 py-3 rounded-2xl sm:rounded-full bg-white border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#00a859] focus:border-transparent shadow-[0_2px_10px_rgba(0,0,0,0.03)]"
               />
             </div>
@@ -66,33 +68,33 @@ export default function CategoryPage() {
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => setActiveChip("popular")}
-                className={`px-5 py-3 rounded-full text-xs sm:text-sm font-semibold transition-all shadow-xs ${
+                className={`px-5 py-3 rounded-full text-xs sm:text-sm font-semibold transition-all shadow-xs cursor-pointer ${
                   activeChip === "popular"
                     ? "bg-[#00a859] text-white"
                     : "bg-[#eaeaea] text-slate-700 hover:bg-slate-200"
                 }`}
               >
-                Popular
+                {tCat('chipPopular')}
               </button>
               <button
                 onClick={() => setActiveChip("new")}
-                className={`px-5 py-3 rounded-full text-xs sm:text-sm font-semibold transition-all shadow-xs ${
+                className={`px-5 py-3 rounded-full text-xs sm:text-sm font-semibold transition-all shadow-xs cursor-pointer ${
                   activeChip === "new"
                     ? "bg-[#00a859] text-white"
                     : "bg-[#eaeaea] text-slate-700 hover:bg-slate-200"
                 }`}
               >
-                New
+                {tCat('chipNew')}
               </button>
               <button
                 onClick={() => setActiveChip("essentials")}
-                className={`px-5 py-3 rounded-full text-xs sm:text-sm font-semibold transition-all shadow-xs ${
+                className={`px-5 py-3 rounded-full text-xs sm:text-sm font-semibold transition-all shadow-xs cursor-pointer ${
                   activeChip === "essentials"
                     ? "bg-[#00a859] text-white"
                     : "bg-[#eaeaea] text-slate-700 hover:bg-slate-200"
                 }`}
               >
-                Essentials
+                {tCat('chipEssentials')}
               </button>
             </div>
           </div>
@@ -109,15 +111,17 @@ export default function CategoryPage() {
           </div>
         ) : (
           <div className="text-center py-16 bg-slate-50 rounded-2xl border border-dashed border-slate-300">
-            <p className="text-slate-500 text-base mb-4">No categories found matching "{searchQuery}"</p>
+            <p className="text-slate-500 text-base mb-4">
+              {tCat('noCategoriesFound', { query: searchQuery })}
+            </p>
             <button
               onClick={() => {
                 setSearchQuery("");
                 setActiveChip("popular");
               }}
-              className="px-5 py-2.5 bg-[#00a859] text-white rounded-full text-xs font-semibold hover:bg-[#00924d] transition-colors"
+              className="px-5 py-2.5 bg-[#00a859] text-white rounded-full text-xs font-semibold hover:bg-[#00924d] transition-colors cursor-pointer"
             >
-              Reset Filters
+              {tCat('resetFilters')}
             </button>
           </div>
         )}
