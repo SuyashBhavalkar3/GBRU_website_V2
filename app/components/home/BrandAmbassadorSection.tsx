@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { ChevronRight, Gift, TrendingUp } from 'lucide-react';
 
 const HelpFarmersIcon = ({ className }: { className?: string }) => (
@@ -78,10 +79,13 @@ export default function BrandAmbassadorSection() {
             </p>
 
             {/* CTA Button */}
-            <button className="flex items-center justify-center gap-[4px] bg-white text-[#154212] font-medium text-[16px] h-[52px] w-[160px] rounded-[12px] hover:opacity-90 transition-opacity">
+            <Link 
+              href="/ambassador-application" 
+              className="flex items-center justify-center gap-[4px] bg-white text-[#154212] font-medium text-[16px] h-[52px] w-[160px] rounded-[12px] hover:opacity-90 transition-opacity"
+            >
               Apply Now
               <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
-            </button>
+            </Link>
 
             {/* Divider */}
             <div className="w-full max-w-[400px] h-[1px] bg-[rgba(255,255,255,0.12)] mt-[48px]"></div>

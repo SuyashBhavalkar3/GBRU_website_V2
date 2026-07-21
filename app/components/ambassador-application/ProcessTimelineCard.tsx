@@ -1,6 +1,6 @@
 import React from 'react';
 import { Check, RefreshCw, Clock } from 'lucide-react';
-import { TimelineStep } from '../data';
+import { TimelineStep } from './data';
 
 interface ProcessTimelineCardProps {
   steps: TimelineStep[];

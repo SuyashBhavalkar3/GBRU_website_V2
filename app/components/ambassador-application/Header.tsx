@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Globe, User } from 'lucide-react';
-import { MOCK_USER } from '../data';
+import { MOCK_USER } from './data';
 
 export default function Header() {
   return (

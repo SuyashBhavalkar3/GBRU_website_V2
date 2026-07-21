@@ -43,7 +43,7 @@ export default function HeroSection() {
             {[
               { name: "Installation Videos" },
               { name: "Warranty Registration", link: "/warranty/register" },
-              { name: "GBRU Brand Ambassador" },
+              { name: "GBRU Brand Ambassador", link: "/ambassador-application" },
               { name: "Expert Support" }
             ].map((item, index) => (
               <li key={index} className="flex items-center gap-2 text-[13px] font-medium text-[#42493E]">

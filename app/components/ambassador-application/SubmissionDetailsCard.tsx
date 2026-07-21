@@ -1,6 +1,6 @@
 import React from 'react';
 import { Info } from 'lucide-react';
-import { SubmissionDetails } from '../data';
+import { SubmissionDetails } from './data';
 
 interface SubmissionDetailsCardProps {
   details: SubmissionDetails;
