@@ -21,7 +21,7 @@ const notoDevanagari = Noto_Sans_Devanagari({
 });
 
 export const metadata: Metadata = {
-  title: "GORU Agri-Product Knowledge & Support Hub",
+  title: "GBRU Agri-Product Knowledge & Support Hub",
   description: "Precision farming equipment discovery, support, warranty registration, and contact services.",
 };
 

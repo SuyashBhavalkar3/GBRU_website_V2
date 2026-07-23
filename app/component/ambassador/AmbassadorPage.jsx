@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
@@ -114,7 +114,7 @@ export default function AmbassadorPage() {
             <div className="relative w-full max-w-[560px] aspect-[16/9] rounded-[28px] overflow-hidden shadow-xl border border-slate-100 bg-[#083b16]">
               <Image
                 src="/all_products/ambassador.png"
-                alt="GORU Brand Ambassador Graphic"
+                alt="GBRU Brand Ambassador Graphic"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 560px"
@@ -422,3 +422,4 @@ export default function AmbassadorPage() {
     </div>
   );
 }
+

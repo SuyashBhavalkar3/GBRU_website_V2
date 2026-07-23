@@ -1,7 +1,7 @@
 import MyWarrantyPage from "@/app/component/profile/MyWarrantyPage";
 
 export const metadata = {
-  title: "My Warranty | GORU Agri-Portal",
+  title: "My Warranty | GBRU Agri-Portal",
   description: "Manage all your registered product warranties in one place. Ensure your agricultural investments are protected.",
 };
 

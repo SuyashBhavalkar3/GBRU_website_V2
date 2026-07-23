@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Image from "next/image";
@@ -47,7 +47,7 @@ export default function MyProductsPage() {
               My Products
             </h1>
             <p className="text-slate-600 text-xs sm:text-sm max-w-2xl leading-relaxed">
-              Manage all your registered GORU products, warranties, manuals and support in one place.
+              Manage all your registered GBRU products, warranties, manuals and support in one place.
             </p>
           </div>
 
@@ -220,3 +220,4 @@ export default function MyProductsPage() {
     </div>
   );
 }
+

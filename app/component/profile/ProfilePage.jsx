@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/app/component/all_products/Navbar";
@@ -23,18 +24,85 @@ import {
 } from "lucide-react";
 
 export default function ProfilePage() {
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [phoneNo, setPhoneNo] = useState("9049111890");
+
+  useEffect(() => {
+    // Get the phone number from local storage
+    const storedPhone = localStorage.getItem("user_phone") || "9049111890";
+    setPhoneNo(storedPhone);
+
+    async function fetchUserDetails() {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL;
+      const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+      const apiSecret = process.env.NEXT_PUBLIC_API_SECRET;
+
+      if (!apiBase || !apiKey || !apiSecret) {
+        setError("ERP API credentials are not configured in .env file.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${apiBase}/api/method/shoption_api.erp_api.utility.get_user_details`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-API-KEY": apiKey,
+            "X-API-SECRET": apiSecret
+          },
+          body: JSON.stringify({
+            mobile_no: Number(storedPhone.replace(/\s/g, ""))
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || (data.message && data.message.status === false)) {
+          throw new Error(data.message?.message || "Failed to fetch user details from ERP.");
+        }
+
+        if (data.message && data.message.data) {
+          setUserData(data.message.data);
+        }
+      } catch (err) {
+        console.error("API error in ProfilePage:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUserDetails();
+  }, []);
+
+  // Fallback display names/avatars if API isn't populated yet
+  const displayName = userData ? userData.Customer_name : (loading ? "Loading..." : "Rajesh Kumar");
+  const displayPhone = userData ? userData.customer_id : phoneNo;
+  const displayRole = userData ? `${userData.role} • ${userData.status}` : "Verified Profile";
+  const displayAvatar = userData && userData.profile_image ? userData.profile_image : "/rajesh-avatar.jpg";
+
   return (
     <div className="min-h-screen flex flex-col bg-[#f8faf8] text-slate-800 antialiased font-sans">
       {/* Shared Navbar */}
       <Navbar />
 
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+        {/* Error display if configuration fails */}
+        {error && (
+          <div className="max-w-4xl mx-auto mb-6 bg-red-50 border border-red-200 rounded-[16px] p-4 text-sm text-red-600 text-center font-medium shadow-sm">
+            ⚠️ {error}
+          </div>
+        )}
+
         {/* Profile Header Card */}
         <div className="bg-white rounded-[28px] p-8 sm:p-10 border border-slate-200/80 shadow-[0_2px_16px_rgba(0,0,0,0.03)] text-center max-w-4xl mx-auto mb-8 relative">
           <div className="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-4">
             <Image
-              src={userProfile.avatar}
-              alt={userProfile.name}
+              src={displayAvatar}
+              alt={displayName}
               fill
               priority
               sizes="112px"
@@ -46,20 +114,26 @@ export default function ProfilePage() {
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1c3a27] mb-2">
-            {userProfile.name}
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1c3a27] mb-2 capitalize">
+            {displayName}
           </h1>
 
           <div className="flex flex-col items-center justify-center gap-2 mb-4">
-            <StatusBadge status="verified" textOverride="Verified Customer" />
+            <StatusBadge status="verified" textOverride={displayRole} />
             <p className="text-xs sm:text-sm text-slate-500 font-medium">
-              {userProfile.phone} • Member Since {userProfile.memberSince}
+              {displayPhone} {userData ? `• ${userData.user_id}` : ""}
             </p>
+            {userData && userData.address && (
+              <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto mt-2 flex items-center gap-1.5 justify-center leading-relaxed">
+                <MapPin className="w-4 h-4 text-[#00a859] shrink-0" />
+                <span className="text-slate-600">{userData.address}</span>
+              </p>
+            )}
           </div>
 
           <div>
             <button
-              onClick={() => alert("Edit profile modal opened.")}
+              onClick={() => alert("Edit profile details modal")}
               className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full border border-slate-300 hover:border-[#00a859] text-slate-700 hover:text-[#00a859] text-xs font-bold transition-all cursor-pointer bg-white"
             >
               <Pencil className="w-3.5 h-3.5" />
@@ -153,12 +227,17 @@ export default function ProfilePage() {
             <SettingsListItem icon={Bell} label="Notifications" />
             <SettingsListItem icon={MapPin} label="Manage Address" />
             <SettingsListItem icon={HelpCircle} label="Help & Support" href="/support" />
-            <SettingsListItem icon={Info} label="About GORU" />
+            <SettingsListItem icon={Info} label="About GBRU" />
             <SettingsListItem
               icon={LogOut}
               label="Logout"
               isLogout={true}
-              onClick={() => alert("Logged out successfully.")}
+              onClick={() => {
+                localStorage.removeItem("user_phone");
+                localStorage.removeItem("is_authenticated");
+                alert("Logged out successfully.");
+                window.location.href = "/";
+              }}
             />
           </div>
         </div>
@@ -169,3 +248,4 @@ export default function ProfilePage() {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
@@ -49,7 +49,7 @@ export default function ContactPage() {
         reasonForContact: "General Inquiry",
         message: "",
       });
-      alert("Thank you for reaching out! A GORU specialist will respond within 24 hours.");
+      alert("Thank you for reaching out! A GBRU specialist will respond within 24 hours.");
     }, 400);
   };
 
@@ -85,7 +85,7 @@ export default function ContactPage() {
             <div className="relative w-full max-w-[500px] h-[320px] sm:h-[380px]">
               <Image
                 src="/all_products/get in touch.png"
-                alt="GORU Get in Touch 3D Illustration"
+                alt="GBRU Get in Touch 3D Illustration"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 500px"
@@ -130,7 +130,7 @@ export default function ContactPage() {
               </p>
             </div>
             <a
-              href="mailto:support@goru-agri.com"
+              href="mailto:support@GBRU-agri.com"
               className="w-full border-2 border-[#1c4e26] text-[#1c4e26] bg-white text-xs font-extrabold py-2.5 px-6 rounded-full hover:bg-[#1c4e26] hover:text-white transition-all duration-200 text-center"
             >
               {tCon('sendEmail')}
@@ -442,3 +442,4 @@ export default function ContactPage() {
     </div>
   );
 }
+

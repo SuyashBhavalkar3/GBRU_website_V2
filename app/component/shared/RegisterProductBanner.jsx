@@ -1,11 +1,11 @@
-import { Plus } from "lucide-react";
+﻿import { Plus } from "lucide-react";
 
 export default function RegisterProductBanner() {
   return (
     <div className="bg-[#008a46] rounded-[28px] p-8 sm:p-10 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 my-10">
       <div className="space-y-2 text-center md:text-left">
         <h3 className="text-xl sm:text-2xl font-extrabold text-white">
-          Bought another GORU product?
+          Bought another GBRU product?
         </h3>
         <p className="text-emerald-100 text-xs sm:text-sm max-w-xl leading-relaxed">
           Register your equipment today to unlock extended warranty options, access manual downloads, and receive personalized maintenance alerts.
@@ -22,3 +22,4 @@ export default function RegisterProductBanner() {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
@@ -51,7 +51,7 @@ export default function EligibilityCheckModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   const handleContinue = () => {
-    alert("Application submitted! A GORU ambassador lead will contact you shortly.");
+    alert("Application submitted! A GBRU ambassador lead will contact you shortly.");
     onClose();
   };
 
@@ -105,7 +105,7 @@ export default function EligibilityCheckModal({ isOpen, onClose }) {
             <Lock className="w-3.5 h-3.5 text-[#00a859]" />
             <span>Secure encrypted session</span>
           </div>
-          <span className="font-extrabold text-[#1c3a27] tracking-wider">GORU</span>
+          <span className="font-extrabold text-[#1c3a27] tracking-wider">GBRU</span>
         </div>
       </div>
     );
@@ -126,7 +126,7 @@ export default function EligibilityCheckModal({ isOpen, onClose }) {
             Congratulations!
           </h2>
           <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-xs mx-auto">
-            You're eligible to become a <strong className="text-slate-900 font-extrabold">GORU Brand Ambassador</strong>. Start inspiring farmers and earn exciting rewards.
+            You're eligible to become a <strong className="text-slate-900 font-extrabold">GBRU Brand Ambassador</strong>. Start inspiring farmers and earn exciting rewards.
           </p>
         </div>
 
@@ -192,3 +192,4 @@ export default function EligibilityCheckModal({ isOpen, onClose }) {
     </div>
   );
 }
+

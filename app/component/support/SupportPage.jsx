@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
@@ -51,7 +51,7 @@ export default function SupportPage() {
         issueType: "",
         description: "",
       });
-      alert("Support request submitted successfully! Ticket ID #GORU-" + Math.floor(100000 + Math.random() * 900000));
+      alert("Support request submitted successfully! Ticket ID #GBRU-" + Math.floor(100000 + Math.random() * 900000));
     }, 400);
   };
 
@@ -348,7 +348,7 @@ export default function SupportPage() {
                     <Mail className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <p className="font-bold text-white">support@goru-agri.com</p>
+                    <p className="font-bold text-white">support@GBRU-agri.com</p>
                     <p className="text-emerald-100 text-[11px]">{tSup('emailResponse')}</p>
                   </div>
                 </div>
@@ -407,3 +407,4 @@ export default function SupportPage() {
     </div>
   );
 }
+

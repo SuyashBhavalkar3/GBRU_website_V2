@@ -1,10 +1,10 @@
-export const warrantiesData = [
+﻿export const warrantiesData = [
   {
     id: "seeder-pro-x",
     name: "Seeder Pro X",
     model: "SPR-2024",
-    fullModelId: "GORU-2024-SPX-062",
-    warrantyId: "W-GORU-77213",
+    fullModelId: "GBRU-2024-SPX-062",
+    warrantyId: "W-GBRU-77213",
     status: "active", // active | expiring | expired | pending
     image: "/all_products/Seeder pro X.jpg",
     verified: true,
@@ -47,8 +47,8 @@ export const warrantiesData = [
     id: "solar-irrigation-hub",
     name: "Solar Irrigation Hub",
     model: "SIH-5502",
-    fullModelId: "GORU-2024-SIH-5502",
-    warrantyId: "W-GORU-55073",
+    fullModelId: "GBRU-2024-SIH-5502",
+    warrantyId: "W-GBRU-55073",
     status: "active",
     image: "/all_products/Solar Installation.jpg",
     verified: true,
@@ -84,8 +84,8 @@ export const warrantiesData = [
     id: "smart-tractor-g3",
     name: "Smart Tractor G3",
     model: "STG-4410",
-    fullModelId: "GORU-2022-[#4410]",
-    warrantyId: "W-GORU-44191",
+    fullModelId: "GBRU-2022-[#4410]",
+    warrantyId: "W-GBRU-44191",
     status: "expired",
     image: "/all_products/TerraMaster.jpg",
     verified: true,
@@ -124,3 +124,4 @@ export const userProfile = {
     savedVideos: 12,
   },
 };
+

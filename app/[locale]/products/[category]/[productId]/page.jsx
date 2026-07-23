@@ -6,7 +6,7 @@ export async function generateMetadata({ params }) {
   const formattedProduct = productId.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
 
   return {
-    title: `${formattedProduct} Details & Manuals | GORU`,
+    title: `${formattedProduct} Details & Manuals | GBRU`,
     description: `Full specs, video installation guides, user manuals, and warranty details for ${formattedProduct}.`,
   };
 }

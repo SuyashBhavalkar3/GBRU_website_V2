@@ -197,7 +197,7 @@
     "faq1Q": "How do I register my product for warranty?",
     "faq1A": "You can register your product by logging into your portal account, navigating to 'My Products', and clicking on 'Register New Device'. You will need your serial number and invoice date.",
     "faq2Q": "Can I update the firmware on my own?",
-    "faq2A": "Yes, all smart controllers and connected seeders support wireless over-the-air (OTA) updates via the GORU Mobile App.",
+    "faq2A": "Yes, all smart controllers and connected seeders support wireless over-the-air (OTA) updates via the GBRU Mobile App.",
     "faq3Q": "Where can I find my nearest service center?",
     "faq3A": "Use our interactive Find Dealer search tool by entering your zip code or region to find authorized service centers near you."
   },
@@ -271,7 +271,7 @@
     "faq2Q": "How are rewards paid out?",
     "faq2A": "Referral bonuses and cashbacks are credited directly to your verified bank account or UPI within 14 business days of transaction confirmation.",
     "faq3Q": "Are there any membership fees?",
-    "faq3A": "No, joining the GORU Brand Ambassador program is completely free with no hidden charges or mandatory minimum sales."
+    "faq3A": "No, joining the GBRU Brand Ambassador program is completely free with no hidden charges or mandatory minimum sales."
   },
   "findDealer": {
     "heading": "Locate Your Nearest Dealer",
@@ -349,3 +349,4 @@
     "faq3A": "To process a service claim, you will need a valid purchase invoice from an authorized dealer, the product serial number, and a completed warranty registration."
   }
 }
+

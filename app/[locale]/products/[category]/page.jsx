@@ -6,7 +6,7 @@ export async function generateMetadata({ params }) {
   const formattedCategory = category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, " ");
 
   return {
-    title: `${formattedCategory} Knowledge Hub | GORU`,
+    title: `${formattedCategory} Knowledge Hub | GBRU`,
     description: `Access technical documentation, installation videos, and product specs for ${formattedCategory} models.`,
   };
 }

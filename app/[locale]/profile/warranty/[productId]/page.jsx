@@ -1,8 +1,8 @@
 import WarrantyDetailPage from "@/app/component/profile/WarrantyDetailPage";
 
 export const metadata = {
-  title: "Warranty Details | GORU Agri-Portal",
-  description: "Detailed warranty coverage, timeline, documents, and maintenance logs for your GORU equipment.",
+  title: "Warranty Details | GBRU Agri-Portal",
+  description: "Detailed warranty coverage, timeline, documents, and maintenance logs for your GBRU equipment.",
 };
 
 export default async function WarrantyDetailRoute({ params }) {

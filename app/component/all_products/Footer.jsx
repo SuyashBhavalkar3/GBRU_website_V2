@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 
 export default function Footer() {
@@ -12,7 +12,7 @@ export default function Footer() {
               <div className="relative h-8 w-32">
                 <Image
                   src="/all_products/logo.png"
-                  alt="GORU Logo"
+                  alt="GBRU Logo"
                   fill
                   sizes="128px"
                   className="object-contain object-left"
@@ -20,7 +20,7 @@ export default function Footer() {
               </div>
             </Link>
             <p className="text-xs text-slate-500 font-medium">
-              © {new Date().getFullYear()} GORU. All rights reserved.
+              © {new Date().getFullYear()} GBRU. All rights reserved.
             </p>
           </div>
 
@@ -47,3 +47,4 @@ export default function Footer() {
     </footer>
   );
 }
+

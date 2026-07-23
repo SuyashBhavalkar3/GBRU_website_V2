@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -89,7 +89,7 @@ export default function WarrantyDetailPage({ productId }) {
             <div className="w-full sm:w-72 h-56 sm:h-auto bg-[#e9eae8] relative flex items-center justify-center p-4 shrink-0">
               <Image
                 src="/all_products/registration.jpg"
-                alt="GORU Warranty Registration"
+                alt="GBRU Warranty Registration"
                 fill
                 priority
                 sizes="288px"
@@ -281,3 +281,4 @@ export default function WarrantyDetailPage({ productId }) {
     </div>
   );
 }
+

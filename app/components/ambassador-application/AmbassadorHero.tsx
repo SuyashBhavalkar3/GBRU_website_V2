@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import Image from 'next/image';
 import { BadgeCheck, Clock } from 'lucide-react';
 
@@ -12,7 +12,7 @@ export default function AmbassadorHero() {
           <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-gray-200 shadow-md bg-gray-100">
             <Image
               src="/home/ambassador-review.png"
-              alt="Farmer being recognized as a GORU brand ambassador with team members reviewing documents"
+              alt="Farmer being recognized as a GBRU brand ambassador with team members reviewing documents"
               fill
               className="object-cover rounded-2xl"
               priority
@@ -64,3 +64,4 @@ export default function AmbassadorHero() {
     </section>
   );
 }
+
