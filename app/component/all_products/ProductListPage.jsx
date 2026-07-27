@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
@@ -11,10 +12,119 @@ import { CATEGORIES, PRODUCTS } from "@/data/products";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function ProductListPage({ categorySlug }) {
+  const searchParams = useSearchParams();
+  const subcategoryId = searchParams.get('subcategoryId');
+
   const [currentPage, setCurrentPage] = useState(1);
+  const [subcategories, setSubcategories] = useState([]);
+  const [loadingSubs, setLoadingSubs] = useState(false);
+
+  const [fetchedProducts, setFetchedProducts] = useState(null);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+
   const tList = useTranslations('productListPage');
   const tCatDict = useTranslations('categories');
   const tNav = useTranslations('nav');
+
+  useEffect(() => {
+    if (subcategoryId) return; // if looking at a subcategory, skip fetching subcategories
+
+    async function fetchSubcategories() {
+      setLoadingSubs(true);
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL;
+        const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+        const apiSecret = process.env.NEXT_PUBLIC_API_SECRET;
+
+        const res = await fetch(`${apiBase}/api/method/shoption_api.erp_api.subcategory_api.get_subcategories`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-API-KEY": apiKey,
+            "X-API-SECRET": apiSecret
+          },
+          body: JSON.stringify({
+            page: 1,
+            page_size: 50,
+            category: categorySlug
+          })
+        });
+
+        const data = await res.json();
+        if (data.message && data.message.data && data.message.data.data) {
+          const mapped = data.message.data.data.map(sub => ({
+            slug: sub.subcategory_id,
+            parentCategorySlug: categorySlug,
+            name: sub.subcategory_name,
+            description: "",
+            image: sub.image_path || "/home/seeder.jpg",
+          }));
+          setSubcategories(mapped);
+        } else {
+          setSubcategories([]);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoadingSubs(false);
+      }
+    }
+    fetchSubcategories();
+  }, [categorySlug, subcategoryId]);
+
+  useEffect(() => {
+    if (!subcategoryId) return; // only fetch products if looking at a subcategory
+
+    async function fetchProducts() {
+      setLoadingProducts(true);
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL;
+        const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+        const apiSecret = process.env.NEXT_PUBLIC_API_SECRET;
+        const storedPhone = localStorage.getItem("user_phone") || "8308020899";
+
+        const res = await fetch(`${apiBase}/api/method/shoption_api.erp_api.item_api.get_items`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-API-KEY": apiKey,
+            "X-API-SECRET": apiSecret
+          },
+          body: JSON.stringify({
+            search: "",
+            category: null,
+            subcategory: subcategoryId,
+            brand: null,
+            page: 1,
+            page_size: 50,
+            mobile_no: storedPhone
+          })
+        });
+
+        const data = await res.json();
+        if (data.message && data.message.data && data.message.data.data) {
+          const mapped = data.message.data.data.map(item => ({
+            id: item.item_code,
+            category: categorySlug,
+            name: item.item_name,
+            shortDescription: `${item.brand || "GBRU"} • Price: ₹${item.price} (MRP: ₹${item.mrp})`,
+            badge: item.discount > 0 ? `${Math.round(item.discount)}% OFF` : null,
+            favorite: false,
+            image: item.custom_image_1 || item.custom_image_path || "/all_products/seeder.jpg",
+          }));
+          setFetchedProducts(mapped);
+        } else {
+          setFetchedProducts([]);
+        }
+      } catch (err) {
+        console.error(err);
+        setFetchedProducts([]);
+      } finally {
+        setLoadingProducts(false);
+      }
+    }
+    fetchProducts();
+  }, [categorySlug, subcategoryId]);
 
   const keyMap = {
     "seeder": "seeder",
@@ -97,6 +207,8 @@ export default function ProductListPage({ categorySlug }) {
     },
   ];
 
+  const displayProducts = fetchedProducts || productList;
+
   const breadcrumbs = [
     { label: tNav('home'), href: "/" },
     { label: tNav('allProducts'), href: "/products" },
@@ -122,16 +234,40 @@ export default function ProductListPage({ categorySlug }) {
             {tList('hubDesc')}
           </p>
           <p className="text-xs text-slate-500 font-medium">
-            {tList('showingModels', { count: productList.length })}
+            {subcategoryId ? tList('showingModels', { count: displayProducts.length }) : `Showing Subcategories`}
           </p>
         </div>
 
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12">
-          {productList.map((product) => (
-            <ProductCard key={product.id} item={product} type="product" />
-          ))}
-        </div>
+        {/* Grid Container */}
+        {loadingSubs || loadingProducts ? (
+          <div className="flex justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#00a859]/30 border-t-[#00a859]"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12">
+            {!subcategoryId ? (
+              subcategories.length > 0 ? (
+                subcategories.map((sub) => (
+                  <ProductCard key={sub.slug} item={sub} type="subcategory" />
+                ))
+              ) : (
+                <div className="col-span-full text-center py-12 text-slate-500">
+                  No subcategories found.
+                </div>
+              )
+            ) : (
+              displayProducts.length > 0 ? (
+                displayProducts.map((product) => (
+                  <ProductCard key={product.id} item={product} type="product" />
+                ))
+              ) : (
+                <div className="col-span-full text-center py-12 text-slate-500">
+                  No products found for this subcategory.
+                </div>
+              )
+            )}
+          </div>
+        )}
 
         {/* Pagination Control */}
         <div className="flex items-center justify-center gap-2 my-12">

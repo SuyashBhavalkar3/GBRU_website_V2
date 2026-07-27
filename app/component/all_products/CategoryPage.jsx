@@ -21,7 +21,69 @@ export default function CategoryPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const [categoriesData, setCategoriesData] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const [categoriesError, setCategoriesError] = useState(null);
+
   const tCat = useTranslations('categoryPage');
+
+  // Fetch categories from API
+  useEffect(() => {
+    async function fetchCategories() {
+      setLoadingCategories(true);
+      setCategoriesError(null);
+
+      const apiBase = process.env.NEXT_PUBLIC_API_URL;
+      const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+      const apiSecret = process.env.NEXT_PUBLIC_API_SECRET;
+
+      if (!apiBase || !apiKey || !apiSecret) {
+        setCategoriesError("ERP API configurations are missing in .env.");
+        setLoadingCategories(false);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${apiBase}/api/method/shoption_api.erp_api.category_api.get_categories`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-API-KEY": apiKey,
+            "X-API-SECRET": apiSecret
+          },
+          body: JSON.stringify({
+            page: 1,
+            page_size: 100,
+            search: null
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || (data.message && data.message.status === false)) {
+          throw new Error(data.message?.message || "Failed to fetch categories.");
+        }
+
+        if (data.message && data.message.data && data.message.data.data) {
+          const mappedCats = data.message.data.data.map(c => ({
+            slug: c.category_id,
+            name: c.category_name,
+            description: "",
+            image: c.custom_image_path || "/home/seeder.jpg",
+          }));
+          setCategoriesData(mappedCats);
+        } else {
+          setCategoriesData([]);
+        }
+      } catch (err) {
+        console.error("Categories API error:", err);
+        setCategoriesError(err.message);
+      } finally {
+        setLoadingCategories(false);
+      }
+    }
+    fetchCategories();
+  }, []);
 
   // Update searchQuery if URL search param updates
   useEffect(() => {
@@ -96,19 +158,19 @@ export default function CategoryPage() {
   }, [searchQuery]);
 
   // Filter categories based on search input and filter chip (fallback / non-search mode)
-  const filteredCategories = CATEGORIES.filter((category) => {
+  const filteredCategories = categoriesData.filter((category) => {
     const matchesSearch =
-      category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      category.description.toLowerCase().includes(searchQuery.toLowerCase());
+      category.name.toLowerCase().includes(searchQuery.toLowerCase());
 
     if (activeChip === "popular") {
       return matchesSearch;
     }
     if (activeChip === "new") {
-      return matchesSearch && ["seeder", "solar-systems", "sensors-monitoring"].includes(category.slug);
+      // Just return matchesSearch as we don't have static slugs anymore
+      return matchesSearch;
     }
     if (activeChip === "essentials") {
-      return matchesSearch && ["irrigation", "accessories", "maintenance-kits"].includes(category.slug);
+      return matchesSearch;
     }
     return matchesSearch;
   });
@@ -230,7 +292,12 @@ export default function CategoryPage() {
           )
         ) : (
           /* Categories Directory Mode (Default) */
-          filteredCategories.length > 0 ? (
+          loadingCategories ? (
+            <div className="text-center py-20 w-full">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#00a859]/30 border-t-[#00a859] mb-3"></div>
+              <p className="text-slate-500 text-sm font-semibold">Loading categories...</p>
+            </div>
+          ) : filteredCategories.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredCategories.map((cat) => (
                 <ProductCard key={cat.slug} item={cat} type="category" />

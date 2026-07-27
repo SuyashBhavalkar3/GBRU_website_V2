@@ -12,9 +12,11 @@ export default function ProductCard({ item, type = "category" }) {
 
   if (!item) return null;
 
-  if (type === "category") {
-    const { slug, name, description, image } = item;
-    const categoryHref = `/products/${slug}`;
+  if (type === "category" || type === "subcategory") {
+    const { slug, name, description, image, parentCategorySlug } = item;
+    const categoryHref = type === "subcategory" 
+      ? `/products/${parentCategorySlug || "category"}?subcategoryId=${slug}`
+      : `/products/${slug}`;
 
     // Helper to get camelCase key prefix for categories
     const keyMap = {

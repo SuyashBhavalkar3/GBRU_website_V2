@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
@@ -28,7 +28,9 @@ export default function ProductDetailPage({ categorySlug, productId }) {
   const tCommon = useTranslations('common');
 
   // Retrieve detailed product data
-  const product = getProductDetail(categorySlug, productId);
+  const initialProduct = getProductDetail(categorySlug, productId);
+  const [product, setProduct] = useState(initialProduct);
+  const [loading, setLoading] = useState(true);
 
   // Accordion state for FAQs
   const [openFaq, setOpenFaq] = useState(0);
@@ -48,7 +50,55 @@ export default function ProductDetailPage({ categorySlug, productId }) {
   const prefix = keyMap[categorySlug];
   const displayCatName = prefix ? tCatDict(`${prefix}Name`) : (product.categoryName || categorySlug);
   const displayProdName = tProdDict.has(`${product.id}Name`) ? tProdDict(`${product.id}Name`) : product.name;
-  const displayProdDesc = tProdDict.has(`${product.id}Desc`) ? tProdDict(`${product.id}Desc`) : (product.description || product.shortDescription);
+  const displayProdDesc = product.description || product.shortDescription || (tProdDict.has(`${product.id}Desc`) ? tProdDict(`${product.id}Desc`) : "");
+
+  useEffect(() => {
+    async function fetchItemDetails() {
+      setLoading(true);
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL;
+        const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+        const apiSecret = process.env.NEXT_PUBLIC_API_SECRET;
+        const storedPhone = localStorage.getItem("user_phone") || "8308020899";
+
+        if (!apiBase || !apiKey || !apiSecret) return;
+
+        const res = await fetch(`${apiBase}/api/method/shoption_api.erp_api.Item_details.get_item_details`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-API-KEY": apiKey,
+            "X-API-SECRET": apiSecret
+          },
+          body: JSON.stringify({
+            page: 1,
+            page_size: 10,
+            item_code: productId,
+            mobile_no: storedPhone
+          })
+        });
+
+        const data = await res.json();
+        if (data.message && data.message.data) {
+          const item = data.message.data;
+          setProduct(prev => ({
+            ...prev,
+            name: item.item_name || prev.name,
+            description: item.description || prev.description,
+            heroImage: (item.images && item.images.image_1) ? item.images.image_1 : prev.heroImage,
+            price: item.price,
+            mrp: item.mrp,
+            discount: item.discount,
+          }));
+        }
+      } catch (err) {
+        console.error("Item details API error:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchItemDetails();
+  }, [productId]);
 
   const toggleFaq = (index) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -83,9 +133,24 @@ export default function ProductDetailPage({ categorySlug, productId }) {
                 {displayProdName}
               </h1>
 
-              <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-2xl">
-                {displayProdDesc}
-              </p>
+              {product.price && (
+                <div className="flex items-center gap-3 py-2">
+                  <span className="text-3xl font-bold text-[#00a859]">₹{product.price}</span>
+                  {product.mrp && product.mrp > product.price && (
+                    <span className="text-lg text-slate-400 line-through">₹{product.mrp}</span>
+                  )}
+                  {product.discount > 0 && (
+                    <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded">
+                      {Math.round(product.discount)}% OFF
+                    </span>
+                  )}
+                </div>
+              )}
+
+              <div 
+                className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-2xl prose prose-sm prose-emerald"
+                dangerouslySetInnerHTML={{ __html: displayProdDesc }}
+              />
 
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -108,15 +173,19 @@ export default function ProductDetailPage({ categorySlug, productId }) {
 
             {/* Hero Image Block (Right 5 Cols) */}
             <div className="lg:col-span-5">
-              <div className="relative w-full h-72 sm:h-88 rounded-[28px] overflow-hidden shadow-sm border border-slate-200/80 bg-slate-100">
-                <Image
-                  src={product.heroImage}
-                  alt={product.name}
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 40vw"
-                  className="object-cover"
-                />
+              <div className="relative w-full h-72 sm:h-88 rounded-[28px] overflow-hidden shadow-sm border border-slate-200/80 bg-slate-100 flex items-center justify-center">
+                {loading ? (
+                  <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#00a859]/30 border-t-[#00a859]"></div>
+                ) : (
+                  <Image
+                    src={product.heroImage}
+                    alt={product.name}
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 40vw"
+                    className="object-contain p-4"
+                  />
+                )}
               </div>
             </div>
           </div>

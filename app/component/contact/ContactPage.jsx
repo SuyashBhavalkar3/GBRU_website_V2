@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
@@ -33,24 +33,60 @@ export default function ContactPage() {
   const tCon = useTranslations('contactPage');
   const tCommon = useTranslations('common');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.fullName || !formData.message) {
       alert("Please fill in required fields (Full Name & Message).");
       return;
     }
     setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        fullName: "",
-        mobileNumber: "",
-        emailAddress: "",
-        reasonForContact: "General Inquiry",
-        message: "",
+
+    try {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://uaterp.gbru.in";
+      const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+      const apiSecret = process.env.NEXT_PUBLIC_API_SECRET;
+
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiKey && apiSecret) {
+        headers["X-API-KEY"] = apiKey;
+        headers["X-API-SECRET"] = apiSecret;
+      }
+
+      const response = await fetch(`${apiBase}/api/method/shoption_products_multiutility.apis.get_in_touch.get_in_touch`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          fullname: formData.fullName,
+          email: formData.emailAddress,
+          mobile_number: formData.mobileNumber,
+          reason: formData.reasonForContact,
+          message: formData.message,
+        }),
       });
-      alert("Thank you for reaching out! A GBRU specialist will respond within 24 hours.");
-    }, 400);
+
+      const data = await response.json();
+
+      if (data.message?.status === true || data.success) {
+        setFormData({
+          fullName: "",
+          mobileNumber: "",
+          emailAddress: "",
+          reasonForContact: "General Inquiry",
+          message: "",
+        });
+        alert(data.message?.message || "Thank you for reaching out! We will get in touch with you shortly.");
+      } else {
+        alert(data.message?.error || data.error || "Failed to send message. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      alert("An unexpected error occurred. Please try again later.");
+    } finally {
+      setSubmitted(false);
+    }
   };
 
   return (

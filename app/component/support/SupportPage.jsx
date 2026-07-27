@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import Navbar from "@/app/component/all_products/Navbar";
@@ -28,31 +28,201 @@ export default function SupportPage() {
     fullName: "",
     mobileNumber: "",
     productName: "",
+    productId: "",
     issueType: "",
     description: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [productSearch, setProductSearch] = useState("");
+  const [productResults, setProductResults] = useState([]);
+  const [isSearchingProduct, setIsSearchingProduct] = useState(false);
+  const [showProductDropdown, setShowProductDropdown] = useState(false);
+
+  const [issueSearch, setIssueSearch] = useState("");
+  const [issueResults, setIssueResults] = useState([]);
+  const [isSearchingIssue, setIsSearchingIssue] = useState(false);
+  const [showIssueDropdown, setShowIssueDropdown] = useState(false);
+
+  useEffect(() => {
+    if (!productSearch || productSearch.length < 2 || (formData.productId && productSearch === formData.productName)) {
+      setProductResults([]);
+      return;
+    }
+    const delayDebounceFn = setTimeout(async () => {
+      setIsSearchingProduct(true);
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://uaterp.gbru.in";
+        const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+        const apiSecret = process.env.NEXT_PUBLIC_API_SECRET;
+        const storedPhone = localStorage.getItem("user_phone") || "8308020899";
+
+        let response = await fetch(`${apiBase}/api/method/shoption_api.erp_api.item_api.get_items`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-API-KEY": apiKey,
+            "X-API-SECRET": apiSecret
+          },
+          body: JSON.stringify({
+            search: productSearch,
+            category: null,
+            subcategory: null,
+            brand: null,
+            page: 1,
+            page_size: 50,
+            mobile_no: storedPhone
+          })
+        });
+        let data = await response.json();
+
+        // Retry with sandbox phone number if searching with the user's phone fails (e.g. UnboundLocalError backend price_rows bug)
+        if (data.message && data.message.status === false && storedPhone !== "8308020899") {
+          console.warn("Product search failed. Retrying with default sandbox phone...");
+          response = await fetch(`${apiBase}/api/method/shoption_api.erp_api.item_api.get_items`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-API-KEY": apiKey,
+              "X-API-SECRET": apiSecret
+            },
+            body: JSON.stringify({
+              search: productSearch,
+              category: null,
+              subcategory: null,
+              brand: null,
+              page: 1,
+              page_size: 50,
+              mobile_no: "8308020899"
+            })
+          });
+          data = await response.json();
+        }
+        
+        // Extracting nested array based on API signature from ProductListPage.jsx
+        let items = [];
+        if (data.message) {
+          if (data.message.status === false) {
+            items = [];
+          } else if (data.message.data && Array.isArray(data.message.data.data)) {
+            items = data.message.data.data;
+          } else if (Array.isArray(data.message.data)) {
+            items = data.message.data;
+          } else if (Array.isArray(data.message)) {
+            items = data.message;
+          }
+        }
+        setProductResults(items);
+        setShowProductDropdown(true);
+      } catch (err) {
+        console.error("Error fetching items:", err);
+      } finally {
+        setIsSearchingProduct(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [productSearch]);
+
+  const fetchIssueCategories = async (searchVal = "") => {
+    setIsSearchingIssue(true);
+    try {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://uaterp.gbru.in";
+      const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+      const apiSecret = process.env.NEXT_PUBLIC_API_SECRET;
+
+      const url = `${apiBase}/api/method/shoption_chatbot.apis.query_categories.get_query_categories${searchVal ? `?search=${encodeURIComponent(searchVal)}` : ""}`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "X-API-KEY": apiKey,
+          "X-API-SECRET": apiSecret
+        }
+      });
+      const data = await response.json();
+      const categories = data.message?.data?.categories || [];
+
+      // Filter locally to make sure it only displays what the user typed (in case backend doesn't filter on 'search')
+      if (searchVal) {
+        const filtered = categories.filter(c => 
+          (c.category_name || c.category_id || "").toLowerCase().includes(searchVal.toLowerCase())
+        );
+        setIssueResults(filtered);
+      } else {
+        setIssueResults(categories);
+      }
+    } catch (err) {
+      console.error("Error fetching issue categories:", err);
+    } finally {
+      setIsSearchingIssue(false);
+    }
+  };
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      fetchIssueCategories(issueSearch);
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [issueSearch]);
+
   const tSup = useTranslations('supportPage');
   const tCommon = useTranslations('common');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.fullName || !formData.description) {
       alert("Please fill in required fields (Full Name & Description).");
       return;
     }
     setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        fullName: "",
-        mobileNumber: "",
-        productName: "",
-        issueType: "",
-        description: "",
+    
+    try {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://uaterp.gbru.in";
+      const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+      const apiSecret = process.env.NEXT_PUBLIC_API_SECRET;
+
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiKey && apiSecret) {
+        headers["X-API-KEY"] = apiKey;
+        headers["X-API-SECRET"] = apiSecret;
+      }
+
+      const response = await fetch(`${apiBase}/api/method/shoption_products_multiutility.apis.support_request.create`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          full_name: formData.fullName,
+          mobile_no: formData.mobileNumber,
+          item: formData.productId || formData.productName, // Use item_code if available, fallback to name
+          issue_type: formData.issueType,
+          description: formData.description
+        }),
       });
-      alert("Support request submitted successfully! Ticket ID #GBRU-" + Math.floor(100000 + Math.random() * 900000));
-    }, 400);
+
+      const data = await response.json();
+
+      if (data.message?.success || data.success) {
+        setFormData({
+          fullName: "",
+          mobileNumber: "",
+          productName: "",
+          productId: "",
+          issueType: "",
+          description: "",
+        });
+        alert("Support request submitted successfully!");
+      } else {
+        alert(data.message?.error || data.error || "Failed to submit request. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting support request:", error);
+      alert("An unexpected error occurred. Please try again later.");
+    } finally {
+      setSubmitted(false);
+    }
   };
 
   const supportFaqs = [
@@ -252,36 +422,103 @@ export default function SupportPage() {
 
               {/* Row 2 */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
+                <div className="relative">
                   <label className="block text-xs font-bold text-slate-700 mb-1">
                     {tSup('productName')}
                   </label>
-                  <select
+                  <input
+                    type="text"
                     value={formData.productName}
-                    onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-[#00a859] focus:border-transparent"
-                  >
-                    <option value="">{tSup('selectProduct')}</option>
-                    <option value="seeder-pro-x">Seeder Pro X</option>
-                    <option value="agri-sow-3000">Agri-Sow 3000</option>
-                    <option value="ecoplanter-lite">EcoPlanter Lite</option>
-                    <option value="drip-master-pro">DripMaster Pro System</option>
-                  </select>
+                    onChange={(e) => {
+                      setFormData({ ...formData, productName: e.target.value, productId: "" });
+                      setProductSearch(e.target.value);
+                      setShowProductDropdown(true);
+                    }}
+                    onFocus={() => {
+                      if (productResults.length > 0) setShowProductDropdown(true);
+                    }}
+                    onBlur={() => setTimeout(() => setShowProductDropdown(false), 200)}
+                    placeholder={tSup('selectProduct')}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00a859] focus:border-transparent"
+                    autoComplete="off"
+                  />
+                  {showProductDropdown && (productResults.length > 0 || isSearchingProduct) && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                      {isSearchingProduct ? (
+                        <div className="p-3 text-xs text-slate-500 text-center">Searching...</div>
+                      ) : (
+                        productResults.map((item, idx) => {
+                          const displayName = item.item_name || item.name || item.item_code || String(item);
+                          return (
+                            <div
+                              key={item.name || item.item_code || idx}
+                              className="px-4 py-2 hover:bg-slate-50 cursor-pointer text-xs text-slate-700 border-b border-slate-100 last:border-b-0"
+                              onClick={() => {
+                                const name = item.item_name || item.name || String(item);
+                                const code = item.item_code || item.name || "";
+                                setFormData({ ...formData, productName: name, productId: code });
+                                setProductSearch(name);
+                                setShowProductDropdown(false);
+                              }}
+                            >
+                              {displayName}
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  )}
                 </div>
-                <div>
+                <div className="relative">
                   <label className="block text-xs font-bold text-slate-700 mb-1">
                     {tSup('issueType')}
                   </label>
-                  <select
+                  <input
+                    type="text"
                     value={formData.issueType}
-                    onChange={(e) => setFormData({ ...formData, issueType: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-[#00a859] focus:border-transparent"
-                  >
-                    <option value="">{tSup('selectIssue')}</option>
-                    <option value="installation">{tSup('issueInstallation')}</option>
-                    <option value="maintenance">{tSup('issueMaintenance')}</option>
-                    <option value="warranty">{tSup('issueWarranty')}</option>
-                  </select>
+                    onChange={(e) => {
+                      setFormData({ ...formData, issueType: e.target.value });
+                      setIssueSearch(e.target.value);
+                      setShowIssueDropdown(true);
+                    }}
+                    onFocus={() => {
+                      setShowIssueDropdown(true);
+                      if (issueResults.length === 0) {
+                        fetchIssueCategories(issueSearch);
+                      }
+                    }}
+                    onBlur={() => setTimeout(() => setShowIssueDropdown(false), 200)}
+                    placeholder={tSup('selectIssue')}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00a859] focus:border-transparent"
+                    autoComplete="off"
+                  />
+                  {showIssueDropdown && (issueResults.length > 0 || isSearchingIssue) && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                      {isSearchingIssue ? (
+                        <div className="p-3 text-xs text-slate-500 text-center">Searching...</div>
+                      ) : (
+                        issueResults.map((cat, idx) => {
+                          const displayName = cat.category_name || cat.category_id || String(cat);
+                          return (
+                            <div
+                              key={cat.category_id || idx}
+                              className="px-4 py-2 hover:bg-slate-50 cursor-pointer text-xs text-slate-700 border-b border-slate-100 last:border-b-0"
+                              onClick={() => {
+                                setFormData({ ...formData, issueType: displayName });
+                                setIssueSearch(displayName);
+                                setShowIssueDropdown(false);
+                              }}
+                            >
+                              <div className="font-semibold">{displayName}</div>
+                              {cat.category_description && (
+                                <div className="text-[10px] text-slate-400 mt-0.5">{cat.category_description}</div>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
