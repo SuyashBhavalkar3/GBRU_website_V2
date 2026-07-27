@@ -4,9 +4,11 @@ import React, { useState } from "react";
 import { ChevronDown, ArrowRight, Mail, Phone, Loader2 } from "lucide-react";
 import { Link, useRouter } from "@/i18n/routing";
 import { ROUTES } from "@/app/constants/routes";
+import { useTranslations } from "next-intl";
 
 export default function LoginForm() {
   const router = useRouter();
+  const t = useTranslations("login");
   const [loginMode, setLoginMode] = useState<"mobile" | "email">("mobile");
   const [mobileNumber, setMobileNumber] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -19,11 +21,11 @@ export default function LoginForm() {
     
     // Simple validation
     if (loginMode === "mobile" && mobileNumber.replace(/\s/g, "").length < 10) {
-      setError("Please enter a valid 10-digit mobile number.");
+      setError(t("errorMobile"));
       return;
     }
     if (loginMode === "email" && !email.includes("@")) {
-      setError("Please enter a valid email address.");
+      setError(t("errorEmail"));
       return;
     }
 
@@ -55,7 +57,7 @@ export default function LoginForm() {
 
         // Check for error responses from server
         if (!res.ok || (data.message && data.message.status === false)) {
-          throw new Error(data.message?.message || "Failed to send OTP. Please try again.");
+          throw new Error(data.message?.message || t("errorApiFailed"));
         }
 
         console.log("Send OTP API Success:", data);
@@ -64,7 +66,7 @@ export default function LoginForm() {
         router.push(`/login/verify?phone=${encodeURIComponent(cleanedPhone)}`);
       } catch (err: any) {
         console.error("Login API Error:", err);
-        setError(err.message || "Failed to send OTP. Please check your network connection.");
+        setError(err.message || t("errorNetwork"));
       } finally {
         setIsLoading(false);
       }
@@ -89,10 +91,10 @@ export default function LoginForm() {
         {/* Header */}
         <div className="mb-8">
           <h2 className="text-2xl md:text-3xl font-extrabold text-[#1B6E33] tracking-tight mb-2">
-            Welcome Back
+            {t("welcomeBack")}
           </h2>
           <p className="text-sm text-gray-500 leading-relaxed">
-            Log in to access your product, warranty details, and ambassador rewards.
+            {t("welcomeDesc")}
           </p>
         </div>
 
@@ -110,7 +112,7 @@ export default function LoginForm() {
               htmlFor={loginMode === "mobile" ? "mobile-input" : "email-input"} 
               className="block text-xs md:text-sm font-bold text-gray-700 uppercase tracking-wider"
             >
-              {loginMode === "mobile" ? "Mobile Number" : "Email Address"}
+              {loginMode === "mobile" ? t("mobileNumber") : t("emailAddress")}
             </label>
             
             {loginMode === "mobile" ? (
@@ -119,7 +121,7 @@ export default function LoginForm() {
                 {/* Country Code Selector Box */}
                 <button
                   type="button"
-                  aria-label="Select Country Code"
+                  aria-label={t("countryCode")}
                   className="flex items-center space-x-1 px-3 md:px-4 bg-gray-50 border-r border-gray-200 text-gray-700 hover:bg-gray-100 transition-colors select-none"
                 >
                   <span className="text-base" role="img" aria-label="India flag">🇮🇳</span>
@@ -133,7 +135,7 @@ export default function LoginForm() {
                   type="tel"
                   value={mobileNumber}
                   onChange={handleMobileChange}
-                  placeholder="98765 43210"
+                  placeholder={t("phonePlaceholder")}
                   maxLength={12}
                   className="flex-grow px-4 py-3.5 text-sm md:text-base outline-none text-gray-900 bg-white placeholder-gray-400"
                   disabled={isLoading}
@@ -151,7 +153,7 @@ export default function LoginForm() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@example.com"
+                  placeholder={t("emailPlaceholder")}
                   className="flex-grow px-4 py-3.5 text-sm md:text-base outline-none text-gray-900 bg-white placeholder-gray-400"
                   disabled={isLoading}
                   required
@@ -169,11 +171,11 @@ export default function LoginForm() {
             {isLoading ? (
               <>
                 <Loader2 size={18} className="animate-spin" />
-                <span>Logging in...</span>
+                <span>{t("loggingIn")}</span>
               </>
             ) : (
               <>
-                <span>Login</span>
+                <span>{t("loginButton")}</span>
                 <ArrowRight size={18} className="transition-transform duration-200 group-hover:translate-x-1" />
               </>
             )}
@@ -186,7 +188,7 @@ export default function LoginForm() {
             <div className="w-full border-t border-gray-200"></div>
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-3 text-gray-400 font-medium">Or</span>
+            <span className="bg-white px-3 text-gray-400 font-medium">{t("or")}</span>
           </div>
         </div>
 
@@ -202,26 +204,26 @@ export default function LoginForm() {
             {loginMode === "mobile" ? (
               <>
                 <Mail size={16} />
-                <span>Login with Email</span>
+                <span>{t("loginWithEmail")}</span>
               </>
             ) : (
               <>
                 <Phone size={16} />
-                <span>Login with Mobile</span>
+                <span>{t("loginWithMobile")}</span>
               </>
             )}
           </button>
 
           {/* Register Footer */}
           <p className="text-xs md:text-sm text-gray-500 leading-normal pt-2">
-            Don't have an account?{" "}
+            {t("noAccount")}{" "}
             <Link 
               href={ROUTES.WARRANTY_REGISTER} 
               className="font-bold text-[#1E7A38] hover:text-[#155A27] hover:underline"
             >
-              Register Product
+              {t("registerProduct")}
             </Link>{" "}
-            to get started.
+            {t("toGetStarted")}
           </p>
       </div>
     </div>

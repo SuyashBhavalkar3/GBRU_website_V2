@@ -6,6 +6,7 @@ import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import Navbar from "@/app/component/all_products/Navbar";
 import Footer from "@/app/component/all_products/Footer";
+import SuccessModal from "@/app/component/shared/SuccessModal";
 import {
   Phone,
   Mail,
@@ -30,6 +31,8 @@ export default function ContactPage() {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const tCon = useTranslations('contactPage');
   const tCommon = useTranslations('common');
 
@@ -77,7 +80,8 @@ export default function ContactPage() {
           reasonForContact: "General Inquiry",
           message: "",
         });
-        alert(data.message?.message || "Thank you for reaching out! We will get in touch with you shortly.");
+        setSuccessMessage(data.message?.message || "Thank you for reaching out! We will get in touch with you shortly.");
+        setShowSuccessModal(true);
       } else {
         alert(data.message?.error || data.error || "Failed to send message. Please try again.");
       }
@@ -388,10 +392,12 @@ export default function ContactPage() {
               </div>
               <div className="space-y-1.5 text-center sm:text-left">
                 <h3 className="font-extrabold text-slate-900 text-base">{tCon('corporateOffice')}</h3>
-                <p className="text-xs text-slate-500">Chinchwad, Pune, MH 411019, India</p>
+                <p className="text-xs text-slate-500">City Vista, 7th Floor, Kharadi, Pune, MH 411014</p>
                 <p className="text-xs font-bold text-[#008a46]">+91 911 1216 1814</p>
                 <a
-                  href="#map-corporate"
+                  href="https://www.google.com/maps/place/Shoption+(%E0%A4%B6%E0%A5%89%E0%A4%AA%E0%A4%B6%E0%A4%A8)/@18.5502682,73.9479617,17z/data=!3m1!4b1!4m6!3m5!1s0x3bc2b918d80ab7e1:0xaf98ea259be67541!8m2!3d18.5502682!4d73.9479617!16s%2Fg%2F11h_7n1dh7?entry=ttu&g_ep=EgoyMDI2MDcyMi4wIKXMDSoASAFQAw%3D%3D"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-xs font-bold text-slate-700 hover:text-[#008a46] transition-colors pt-1"
                 >
                   <span>{tCon('viewOnMap')}</span>
@@ -413,10 +419,12 @@ export default function ContactPage() {
               </div>
               <div className="space-y-1.5 text-center sm:text-left">
                 <h3 className="font-extrabold text-slate-900 text-base">{tCon('wadkiOffice')}</h3>
-                <p className="text-xs text-slate-500">Akurdi Flyover Round 35, Pune, MH 411019, India</p>
+                <p className="text-xs text-slate-500">Shoption Warehouse No. 3, Saswad Road, Uruli Devachi, Pune, MH 412308</p>
                 <p className="text-xs font-bold text-[#008a46]">+91 911 1216 1814</p>
                 <a
-                  href="#map-wadki"
+                  href="https://www.google.com/maps/place/Shoption+Warehouse+No.+3+-+Pune/@18.4539708,73.9674581,17z/data=!3m1!4b1!4m6!3m5!1s0x3bc2e985d03fd669:0x97001ca572ce2f63!8m2!3d18.4539708!4d73.970033!16s%2Fg%2F11y214320r?entry=ttu&g_ep=EgoyMDI2MDcyMi4wIKXMDSoASAFQAw%3D%3D"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-xs font-bold text-slate-700 hover:text-[#008a46] transition-colors pt-1"
                 >
                   <span>{tCon('viewOnMap')}</span>
@@ -435,46 +443,73 @@ export default function ContactPage() {
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
             {/* Social 1 */}
-            <div className="bg-[#f4f4f2] rounded-[24px] p-6 text-center hover:bg-emerald-50 border border-slate-200/50 transition-colors cursor-pointer flex flex-col items-center justify-center">
+            <a
+              href="https://www.facebook.com/profile.php?id=100094068407263"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[#f4f4f2] rounded-[24px] p-6 text-center hover:bg-emerald-50 border border-slate-200/50 transition-colors cursor-pointer flex flex-col items-center justify-center block"
+            >
               <div className="w-10 h-10 rounded-full bg-white text-[#008a46] flex items-center justify-center mb-3 shadow-2xs">
                 <Share2 className="w-5 h-5" />
               </div>
               <h4 className="font-extrabold text-slate-900 text-sm mb-0.5">Facebook</h4>
               <p className="text-[11px] text-slate-500">125k+ {tCon('followers')}</p>
-            </div>
+            </a>
 
             {/* Social 2 */}
-            <div className="bg-[#f4f4f2] rounded-[24px] p-6 text-center hover:bg-emerald-50 border border-slate-200/50 transition-colors cursor-pointer flex flex-col items-center justify-center">
+            <a
+              href="https://www.instagram.com/gbru.in?igsh=dGFlZGxlcWRoYm9y"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[#f4f4f2] rounded-[24px] p-6 text-center hover:bg-emerald-50 border border-slate-200/50 transition-colors cursor-pointer flex flex-col items-center justify-center block"
+            >
               <div className="w-10 h-10 rounded-full bg-white text-[#008a46] flex items-center justify-center mb-3 shadow-2xs">
                 <Camera className="w-5 h-5" />
               </div>
               <h4 className="font-extrabold text-slate-900 text-sm mb-0.5">Instagram</h4>
               <p className="text-[11px] text-slate-500">85k+ {tCon('followers')}</p>
-            </div>
+            </a>
 
             {/* Social 3 */}
-            <div className="bg-[#f4f4f2] rounded-[24px] p-6 text-center hover:bg-emerald-50 border border-slate-200/50 transition-colors cursor-pointer flex flex-col items-center justify-center">
+            <a
+              href="https://www.youtube.com/@GBRUIndustries"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[#f4f4f2] rounded-[24px] p-6 text-center hover:bg-emerald-50 border border-slate-200/50 transition-colors cursor-pointer flex flex-col items-center justify-center block"
+            >
               <div className="w-10 h-10 rounded-full bg-white text-[#008a46] flex items-center justify-center mb-3 shadow-2xs">
                 <Tv className="w-5 h-5" />
               </div>
               <h4 className="font-extrabold text-slate-900 text-sm mb-0.5">YouTube</h4>
               <p className="text-[11px] text-slate-500">250k+ {tCon('subscribers')}</p>
-            </div>
+            </a>
 
             {/* Social 4 */}
-            <div className="bg-[#f4f4f2] rounded-[24px] p-6 text-center hover:bg-emerald-50 border border-slate-200/50 transition-colors cursor-pointer flex flex-col items-center justify-center">
+            <a
+              href="https://www.linkedin.com/company/gbru/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[#f4f4f2] rounded-[24px] p-6 text-center hover:bg-emerald-50 border border-slate-200/50 transition-colors cursor-pointer flex flex-col items-center justify-center block"
+            >
               <div className="w-10 h-10 rounded-full bg-white text-[#008a46] flex items-center justify-center mb-3 shadow-2xs">
                 <Briefcase className="w-5 h-5" />
               </div>
               <h4 className="font-extrabold text-slate-900 text-sm mb-0.5">LinkedIn</h4>
               <p className="text-[11px] text-slate-500">45k+ {tCon('professionals')}</p>
-            </div>
+            </a>
           </div>
         </section>
       </main>
 
       {/* Footer */}
       <Footer />
+
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title={"Message Sent!"}
+        message={successMessage}
+      />
     </div>
   );
 }

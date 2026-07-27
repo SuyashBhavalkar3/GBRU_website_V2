@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import Navbar from "@/app/component/all_products/Navbar";
 import Footer from "@/app/component/all_products/Footer";
+import SuccessModal from "@/app/component/shared/SuccessModal";
 import FaqAccordion from "@/app/component/shared/FaqAccordion";
 import {
   Search,
@@ -33,6 +34,7 @@ export default function SupportPage() {
     description: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [productSearch, setProductSearch] = useState("");
   const [productResults, setProductResults] = useState([]);
   const [isSearchingProduct, setIsSearchingProduct] = useState(false);
@@ -213,7 +215,7 @@ export default function SupportPage() {
           issueType: "",
           description: "",
         });
-        alert("Support request submitted successfully!");
+        setShowSuccessModal(true);
       } else {
         alert(data.message?.error || data.error || "Failed to submit request. Please try again.");
       }
@@ -641,6 +643,13 @@ export default function SupportPage() {
 
       {/* Footer */}
       <Footer />
+
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title={"Request Submitted!"}
+        message={"Your support request has been submitted successfully. We will get back to you soon."}
+      />
     </div>
   );
 }

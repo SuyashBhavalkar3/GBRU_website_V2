@@ -347,6 +347,43 @@
     "faq2A": "Warranties are generally non-transferable and apply only to the original purchaser.",
     "faq3Q": "What documents are needed for service claims?",
     "faq3A": "To process a service claim, you will need a valid purchase invoice from an authorized dealer, the product serial number, and a completed warranty registration."
+  },
+  "login": {
+    "welcomeBack": "Welcome Back",
+    "welcomeDesc": "Log in to access your product, warranty details, and ambassador rewards.",
+    "mobileNumber": "Mobile Number",
+    "emailAddress": "Email Address",
+    "countryCode": "Select Country Code",
+    "phonePlaceholder": "98765 43210",
+    "emailPlaceholder": "name@example.com",
+    "loginButton": "Login",
+    "loggingIn": "Logging in...",
+    "or": "Or",
+    "loginWithEmail": "Login with Email",
+    "loginWithMobile": "Login with Mobile",
+    "noAccount": "Don't have an account?",
+    "registerProduct": "Register Product",
+    "toGetStarted": "to get started.",
+    "errorMobile": "Please enter a valid 10-digit mobile number.",
+    "errorEmail": "Please enter a valid email address.",
+    "errorApiFailed": "Failed to send OTP. Please try again.",
+    "errorNetwork": "Failed to send OTP. Please check your network connection."
+  },
+  "otp": {
+    "verifyTitle": "Verify Your OTP",
+    "sentCodeTo": "We've sent a 6-digit code to",
+    "changeNumber": "Change Number",
+    "verifyButton": "Verify & Continue",
+    "verifying": "Verifying...",
+    "resendTimer": "Resend code in ",
+    "resendButton": "Resend Code",
+    "otpSentAlert": "A new OTP code has been sent to your mobile number.",
+    "securityMessage": "Multi-factor authentication protects your AgriPro account. If you didn't request this code, please contact our Support Team immediately.",
+    "errorCompleteOtp": "Please enter the complete 6-digit verification code.",
+    "errorInvalidOtp": "Invalid OTP code. Please try again.",
+    "errorVerifyFailed": "Failed to verify OTP. Please try again.",
+    "errorResendFailed": "Failed to resend OTP. Please try again.",
+    "errorResendVerificationFailed": "Failed to resend verification code. Please try again."
   }
 }
 

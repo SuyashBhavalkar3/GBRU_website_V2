@@ -12,7 +12,7 @@ export default function ProductCategoriesSection() {
   const tHome = useTranslations('home');
   const tCommon = useTranslations('common');
 
-  const [categories, setCategories] = React.useState([]);
+  const [categories, setCategories] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -44,7 +44,7 @@ export default function ProductCategoriesSection() {
 
         const data = await res.json();
         if (data.message && data.message.data && data.message.data.data) {
-          const mappedCats = data.message.data.data.map((c) => ({
+          const mappedCats = data.message.data.data.map((c: any) => ({
             slug: c.category_id,
             title: c.category_name,
             description: "",

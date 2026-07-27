@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { ArrowRight, Clock, RotateCw, ShieldCheck, Loader2 } from "lucide-react";
 import { Link, useRouter } from "@/i18n/routing";
 import { ROUTES } from "@/app/constants/routes";
+import { useTranslations } from "next-intl";
 
 interface OtpFormProps {
   phoneNumber?: string;
@@ -11,6 +12,7 @@ interface OtpFormProps {
 
 export default function OtpForm({ phoneNumber = "98765 43210" }: OtpFormProps) {
   const router = useRouter();
+  const t = useTranslations("otp");
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
   const [timer, setTimer] = useState<number>(29);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -70,7 +72,7 @@ export default function OtpForm({ phoneNumber = "98765 43210" }: OtpFormProps) {
     const code = otp.join("");
 
     if (code.length < 6) {
-      setError("Please enter the complete 6-digit verification code.");
+      setError(t("errorCompleteOtp"));
       return;
     }
 
@@ -103,7 +105,7 @@ export default function OtpForm({ phoneNumber = "98765 43210" }: OtpFormProps) {
 
       // Check if code was incorrect or failed validation
       if (!res.ok || (data.message && data.message.status === false)) {
-        throw new Error(data.message?.message || "Invalid OTP code. Please try again.");
+        throw new Error(data.message?.message || t("errorInvalidOtp"));
       }
 
       console.log("Verify OTP API Success:", data);
@@ -116,7 +118,7 @@ export default function OtpForm({ phoneNumber = "98765 43210" }: OtpFormProps) {
       router.push(ROUTES.HOME);
     } catch (err: any) {
       console.error("Verification error:", err);
-      setError(err.message || "Failed to verify OTP. Please try again.");
+      setError(err.message || t("errorVerifyFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -154,7 +156,7 @@ export default function OtpForm({ phoneNumber = "98765 43210" }: OtpFormProps) {
       const data = await res.json();
 
       if (!res.ok || (data.message && data.message.status === false)) {
-        throw new Error(data.message?.message || "Failed to resend OTP. Please try again.");
+        throw new Error(data.message?.message || t("errorResendFailed"));
       }
 
       console.log("Resend OTP Success:", data);
@@ -164,10 +166,10 @@ export default function OtpForm({ phoneNumber = "98765 43210" }: OtpFormProps) {
       setOtp(new Array(6).fill(""));
       setError(null);
       inputRefs.current[0]?.focus();
-      alert("A new OTP code has been sent to your mobile number.");
+      alert(t("otpSentAlert"));
     } catch (err: any) {
       console.error("Resend error:", err);
-      setError(err.message || "Failed to resend verification code. Please try again.");
+      setError(err.message || t("errorResendVerificationFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -185,17 +187,17 @@ export default function OtpForm({ phoneNumber = "98765 43210" }: OtpFormProps) {
       {/* Header */}
       <div className="mb-6">
         <h2 className="text-2xl md:text-3xl font-extrabold text-[#1B6E33] tracking-tight mb-2">
-          Verify Your OTP
+          {t("verifyTitle")}
         </h2>
         <div className="text-sm text-gray-500 leading-normal">
-          <span>We've sent a 6-digit code to </span>
+          <span>{t("sentCodeTo")} </span>
           <span className="font-bold text-gray-700">+{phoneNumber.startsWith("91") ? "" : "91 "}{phoneNumber}</span>.
           <div className="mt-1">
             <Link 
               href="/login" 
               className="text-sm font-bold text-[#1E7A38] hover:text-[#155A27] hover:underline"
             >
-              Change Number
+              {t("changeNumber")}
             </Link>
           </div>
         </div>
@@ -245,11 +247,11 @@ export default function OtpForm({ phoneNumber = "98765 43210" }: OtpFormProps) {
           {isLoading ? (
             <>
               <Loader2 size={18} className="animate-spin" />
-              <span>Verifying...</span>
+              <span>{t("verifying")}</span>
             </>
           ) : (
             <>
-              <span>Verify & Continue</span>
+              <span>{t("verifyButton")}</span>
               <ArrowRight size={18} />
             </>
           )}
@@ -261,7 +263,7 @@ export default function OtpForm({ phoneNumber = "98765 43210" }: OtpFormProps) {
         {/* Resend code timer */}
         <div className="flex items-center space-x-1.5 text-sm text-gray-500 font-medium">
           <Clock size={16} className="text-gray-400" />
-          <span>Resend code in </span>
+          <span>{t("resendTimer")}</span>
           <span className="font-bold text-gray-700">{formatTime(timer)}</span>
         </div>
 
@@ -277,7 +279,7 @@ export default function OtpForm({ phoneNumber = "98765 43210" }: OtpFormProps) {
           }`}
         >
           <RotateCw size={14} className={timer === 0 ? "animate-pulse" : ""} />
-          <span>Resend Code</span>
+          <span>{t("resendButton")}</span>
         </button>
       </div>
 
@@ -287,7 +289,7 @@ export default function OtpForm({ phoneNumber = "98765 43210" }: OtpFormProps) {
           <ShieldCheck size={20} className="fill-emerald-100" />
         </div>
         <p className="text-[11px] leading-relaxed text-gray-550">
-          Multi-factor authentication protects your AgriPro account. If you didn't request this code, please contact our Support Team immediately.
+          {t("securityMessage")}
         </p>
       </div>
     </div>
