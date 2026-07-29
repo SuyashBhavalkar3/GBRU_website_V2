@@ -384,6 +384,10 @@
     "errorVerifyFailed": "Failed to verify OTP. Please try again.",
     "errorResendFailed": "Failed to resend OTP. Please try again.",
     "errorResendVerificationFailed": "Failed to resend verification code. Please try again."
+  },
+  "findDealer": {
+    "heading": "Find Authorized Dealers",
+    "subheading": "Locate your nearest GBRU authorized dealer and regional service center."
   }
 }
 

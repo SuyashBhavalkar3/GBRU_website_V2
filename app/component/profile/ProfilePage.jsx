@@ -235,6 +235,8 @@ export default function ProfilePage() {
               onClick={() => {
                 localStorage.removeItem("user_phone");
                 localStorage.removeItem("is_authenticated");
+                localStorage.removeItem("user_api_key");
+                localStorage.removeItem("user_api_secret");
                 alert("Logged out successfully.");
                 window.location.href = "/";
               }}

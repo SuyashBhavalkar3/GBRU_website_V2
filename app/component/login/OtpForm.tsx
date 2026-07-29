@@ -113,6 +113,8 @@ export default function OtpForm({ phoneNumber = "98765 43210" }: OtpFormProps) {
       // Save user session in localStorage
       localStorage.setItem("user_phone", cleanedPhone);
       localStorage.setItem("is_authenticated", "true");
+      localStorage.removeItem("user_api_key");
+      localStorage.removeItem("user_api_secret");
 
       // Redirect to the home page
       router.push(ROUTES.HOME);

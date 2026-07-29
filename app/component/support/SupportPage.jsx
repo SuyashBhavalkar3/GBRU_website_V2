@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import Navbar from "@/app/component/all_products/Navbar";
@@ -35,6 +35,68 @@ export default function SupportPage() {
   });
   const [submitted, setSubmitted] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [uploadFile, setUploadFile] = useState(null);
+  const uploadInputRef = useRef(null);
+
+  const handleUploadClick = () => {
+    uploadInputRef.current?.click();
+  };
+
+  const handleUploadChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setUploadFile(e.target.files[0]);
+    }
+  };
+
+  // Pre-fill user profile details if authenticated
+  useEffect(() => {
+    const auth = localStorage.getItem("is_authenticated") === "true";
+    if (auth) {
+      const storedPhone = localStorage.getItem("user_phone");
+      if (storedPhone) {
+        const fetchUserData = async () => {
+          try {
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://uaterp.gbru.in";
+            const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+            const apiSecret = process.env.NEXT_PUBLIC_API_SECRET;
+            if (apiBase && apiKey && apiSecret) {
+              // Ensure storedPhone has '91' prefix correctly
+              let cleaned = storedPhone.replace(/[^\d]/g, "");
+              if (cleaned.length === 12 && cleaned.startsWith("91")) {
+                cleaned = cleaned.slice(2);
+              }
+              
+              const res = await fetch(`${apiBase}/api/method/shoption_api.erp_api.utility.get_user_details`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-API-KEY": apiKey,
+                  "X-API-SECRET": apiSecret
+                },
+                body: JSON.stringify({
+                  mobile_no: Number(cleaned)
+                })
+              });
+              const data = await res.json();
+              if (res.ok && data.message?.status !== false) {
+                const userData = data.message?.data;
+                if (userData) {
+                  setFormData(prev => ({
+                    ...prev,
+                    fullName: userData.Customer_name || prev.fullName,
+                    mobileNumber: storedPhone || prev.mobileNumber
+                  }));
+                }
+              }
+            }
+          } catch (e) {
+            console.error("Failed to fetch user data for support form pre-fill:", e);
+          }
+        };
+        fetchUserData();
+      }
+    }
+  }, []);
   const [productSearch, setProductSearch] = useState("");
   const [productResults, setProductResults] = useState([]);
   const [isSearchingProduct, setIsSearchingProduct] = useState(false);
@@ -99,7 +161,7 @@ export default function SupportPage() {
           });
           data = await response.json();
         }
-        
+
         // Extracting nested array based on API signature from ProductListPage.jsx
         let items = [];
         if (data.message) {
@@ -145,7 +207,7 @@ export default function SupportPage() {
 
       // Filter locally to make sure it only displays what the user typed (in case backend doesn't filter on 'search')
       if (searchVal) {
-        const filtered = categories.filter(c => 
+        const filtered = categories.filter(c =>
           (c.category_name || c.category_id || "").toLowerCase().includes(searchVal.toLowerCase())
         );
         setIssueResults(filtered);
@@ -176,37 +238,51 @@ export default function SupportPage() {
       alert("Please fill in required fields (Full Name & Description).");
       return;
     }
+    if (!uploadFile) {
+      alert("Please upload the required file.");
+      return;
+    }
     setSubmitted(true);
     
     try {
       const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://uaterp.gbru.in";
-      const apiKey = process.env.NEXT_PUBLIC_API_KEY;
-      const apiSecret = process.env.NEXT_PUBLIC_API_SECRET;
+      const userApiKey = localStorage.getItem("user_api_key");
+      const userApiSecret = localStorage.getItem("user_api_secret");
 
-      const headers = {
-        "Content-Type": "application/json",
-      };
-
-      if (apiKey && apiSecret) {
-        headers["X-API-KEY"] = apiKey;
-        headers["X-API-SECRET"] = apiSecret;
+      const headers = {};
+      if (userApiKey && userApiSecret) {
+        headers["Authorization"] = `token ${userApiKey}:${userApiSecret}`;
+      } else {
+        const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+        const apiSecret = process.env.NEXT_PUBLIC_API_SECRET;
+        if (apiKey && apiSecret) {
+          headers["X-API-KEY"] = apiKey;
+          headers["X-API-SECRET"] = apiSecret;
+        }
       }
 
-      const response = await fetch(`${apiBase}/api/method/shoption_products_multiutility.apis.support_request.create`, {
+      // Format mobile number to match user requirements (removing spaces, formatting)
+      const rawMobile = formData.mobileNumber || "";
+      const cleanedMobile = rawMobile.replace(/[^\d+]/g, "");
+
+      // Construct Multipart Form Data
+      const submitData = new FormData();
+      submitData.append("full_name", formData.fullName);
+      submitData.append("mobile_number", cleanedMobile);
+      submitData.append("product_name", formData.productId || formData.productName);
+      submitData.append("issue_type", formData.issueType);
+      submitData.append("description", formData.description);
+      submitData.append("upload", uploadFile);
+
+      const response = await fetch(`${apiBase}/api/method/shoption_products_multiutility.apis.support_request.submit_support_request`, {
         method: "POST",
-        headers,
-        body: JSON.stringify({
-          full_name: formData.fullName,
-          mobile_no: formData.mobileNumber,
-          item: formData.productId || formData.productName, // Use item_code if available, fallback to name
-          issue_type: formData.issueType,
-          description: formData.description
-        }),
+        headers, // Content-Type header must be omitted for multipart
+        body: submitData,
       });
 
       const data = await response.json();
 
-      if (data.message?.success || data.success) {
+      if (data.message?.status === true || data.message?.success || data.success) {
         setFormData({
           fullName: "",
           mobileNumber: "",
@@ -215,9 +291,10 @@ export default function SupportPage() {
           issueType: "",
           description: "",
         });
+        setUploadFile(null);
         setShowSuccessModal(true);
       } else {
-        alert(data.message?.error || data.error || "Failed to submit request. Please try again.");
+        alert(data.message?.message || data.message?.error || data.error || "Failed to submit request. Please try again.");
       }
     } catch (error) {
       console.error("Error submitting support request:", error);
@@ -544,10 +621,24 @@ export default function SupportPage() {
                 <label className="block text-xs font-bold text-slate-700 mb-1">
                   {tSup('uploadMedia')}
                 </label>
-                <div className="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-[#00a859] transition-colors cursor-pointer bg-slate-50/50">
+                <input 
+                  type="file"
+                  ref={uploadInputRef}
+                  onChange={handleUploadChange}
+                  className="hidden"
+                  accept="image/*,video/*,.pdf,.doc,.docx"
+                />
+                <div 
+                  onClick={handleUploadClick}
+                  className="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-[#00a859] transition-colors cursor-pointer bg-slate-50/50"
+                >
                   <UploadCloud className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                  <p className="text-xs font-bold text-slate-700">
-                    {tSup('uploadInstructions')}
+                  <p className="text-xs font-bold text-slate-700 truncate max-w-full">
+                    {uploadFile ? (
+                      <span className="text-[#00a859] font-extrabold">{uploadFile.name}</span>
+                    ) : (
+                      tSup('uploadInstructions')
+                    )}
                   </p>
                   <p className="text-[11px] text-slate-400 mt-1">
                     {tSup('uploadLimit')}
