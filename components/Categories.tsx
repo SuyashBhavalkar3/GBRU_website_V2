@@ -21,16 +21,16 @@ export default function Categories() {
     },
     {
       name: "Accessories",
-      image: null, // Blank card as per Figma design
+      image: "/assets/cat_accessories.png",
     },
   ];
 
   return (
-    <section className="w-full bg-[#EAF5EE] lg:h-[480px] py-[40px] lg:py-[30px] px-4 lg:px-[64px] flex flex-col items-center justify-between mt-[30px] text-center">
+    <section className="w-full bg-[#EAF5EE] lg:h-[480px] py-[40px] lg:py-[30px] px-4 lg:px-[64px] flex flex-col items-center justify-between text-center">
       
       {/* Title */}
       <h2 className="font-roboto font-bold text-[32px] md:text-[40px] lg:text-[48px] leading-[40px] lg:leading-[56px] tracking-[-0.96px] text-[#0F291B]">
-        Shop by Category
+        Shop By Category
       </h2>
 
       {/* Categories Row */}
@@ -66,7 +66,7 @@ export default function Categories() {
       </div>
 
       {/* View All Categories Button */}
-      <button className="bg-[#0D9740] hover:bg-[#0b8036] text-white font-roboto font-bold text-[12px] uppercase tracking-wider w-[173px] h-[32px] rounded-full pt-[8px] pr-[24px] pb-[8px] pl-[24px] flex items-center justify-center transition-all duration-200 hover:scale-[1.02] cursor-pointer shadow-md">
+      <button className="bg-[#0D9740] hover:bg-[#0b8036] text-white font-roboto font-bold text-[12px] tracking-wider w-[173px] h-[32px] rounded-full pt-[8px] pr-[24px] pb-[8px] pl-[24px] flex items-center justify-center transition-all duration-200 hover:scale-[1.02] cursor-pointer shadow-md">
         View All categories
       </button>
 
