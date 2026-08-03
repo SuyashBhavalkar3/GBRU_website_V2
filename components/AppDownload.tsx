@@ -8,7 +8,7 @@ export default function AppDownload() {
     <section className="relative w-full lg:h-[667px] pt-[13px] pb-[13px] px-[37px] flex items-center justify-center overflow-hidden bg-white">
       {/* Inner Box (Container) */}
       <div
-        className="relative w-[1206px] h-[641px] rounded-[47px] overflow-hidden shadow-2xl border border-[#CDE5D2] flex justify-between p-12 bg-no-repeat"
+        className="relative w-[1206px] h-[641px] rounded-[47px] overflow-hidden border border-[#CDE5D2] flex justify-between p-12 bg-no-repeat"
         style={{
           background: "linear-gradient(135deg, #F0FAF2 0%, #DCEFE0 100%)"
         }}
