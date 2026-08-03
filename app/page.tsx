@@ -8,10 +8,11 @@ import AppDownload from "@/components/AppDownload";
 import GbRUOnField from "@/components/GbRUOnField";
 import WhyGBRU from "@/components/WhyGBRU";
 import Testimonials from "@/components/Testimonials";
+import Login from '@/components/Login';
 
 export default function Home() {
   return (
-    <div 
+    <div
       className="flex flex-col min-h-screen bg-[#0F291B] dark:bg-[#07140D]"
       style={{ zoom: "1.1" }}
     >
@@ -25,7 +26,7 @@ export default function Home() {
       <GbRUOnField />
       <WhyGBRU />
       <Testimonials />
-      
+
       {/* Additional sections can be placed here as we build them */}
     </div>
   );

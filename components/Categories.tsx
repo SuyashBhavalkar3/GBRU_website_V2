@@ -27,7 +27,7 @@ export default function Categories() {
 
   return (
     <section className="w-full bg-[#EAF5EE] lg:h-[480px] py-[40px] lg:py-[30px] px-4 lg:px-[64px] flex flex-col items-center justify-between text-center">
-      
+
       {/* Title */}
       <h2 className="font-roboto font-bold text-[32px] md:text-[40px] lg:text-[48px] leading-[40px] lg:leading-[56px] tracking-[-0.96px] text-[#0F291B]">
         Shop By Category
@@ -36,7 +36,7 @@ export default function Categories() {
       {/* Categories Row */}
       <div className="max-w-[1152px] w-full flex flex-wrap lg:flex-nowrap justify-center gap-[24px] my-6 lg:my-0">
         {categoriesList.map((cat, idx) => (
-          <div 
+          <div
             key={idx}
             className="w-[211.2px] h-[251.2px] flex flex-col items-center justify-between group"
           >
@@ -73,3 +73,5 @@ export default function Categories() {
     </section>
   );
 }
+
+
