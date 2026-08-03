@@ -7,6 +7,7 @@ import BestSellingTools from "@/components/BestSellingTools";
 import AppDownload from "@/components/AppDownload";
 import GbRUOnField from "@/components/GbRUOnField";
 import WhyGBRU from "@/components/WhyGBRU";
+import Testimonials from "@/components/Testimonials";
 
 export default function Home() {
   return (
@@ -23,6 +24,7 @@ export default function Home() {
       <AppDownload />
       <GbRUOnField />
       <WhyGBRU />
+      <Testimonials />
       
       {/* Additional sections can be placed here as we build them */}
     </div>
