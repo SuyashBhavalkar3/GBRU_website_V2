@@ -1,0 +1,193 @@
+'use client';
+import Image from 'next/image';
+import React from 'react';
+
+const Login = () => {
+  return (
+    <>
+      <style dangerouslySetInnerHTML={{__html: `
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&family=Manrope:wght@600&family=Roboto:wght@400;600&display=swap');
+      `}} />
+      <div 
+        className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center"
+        style={{ backgroundImage: "url('/assets/caroussel-2.jpg')" }}
+      >
+        <div className="flex flex-col md:flex-row w-full max-w-[1100px] bg-white rounded-xl shadow-2xl overflow-hidden min-h-[650px]">
+          
+          {/* Left Side (Green Gradient) */}
+          <div className="w-full md:w-[45%] relative p-10 flex flex-col bg-gradient-to-b from-[#2E6F18] via-[#4F8D14] to-[#C99C15] overflow-hidden">
+            {/* Logo */}
+            <div className="mb-10 relative z-10">
+              <Image 
+                src="/assets/gbru_header_logo.png" 
+                alt="GBRU Logo" 
+                width={120} 
+                height={50} 
+                className="object-contain"
+              />
+            </div>
+
+            {/* Welcome Text */}
+            <h1 
+              className="text-white mb-8 relative z-10"
+              style={{
+                fontFamily: 'Manrope, sans-serif',
+                fontWeight: 600,
+                fontSize: '24px',
+                lineHeight: '30px',
+                letterSpacing: '0px'
+              }}
+            >
+              Welcome to GBRU - Your<br />Partner in Smarter Farming.
+            </h1>
+
+            {/* Feature List */}
+            <ul className="space-y-4 mb-10 relative z-10">
+              {[
+                { text: '10k+ Farmers Trust Us', icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
+                { text: 'Secure Payments', icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg> },
+                { text: '24/7 Technical Support', icon: <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg> }
+              ].map((item, idx) => (
+                <li key={idx} className="flex items-center space-x-3 text-white">
+                  {item.icon}
+                  <span 
+                    style={{
+                      fontFamily: 'Inter, sans-serif',
+                      fontWeight: 600,
+                      fontSize: '12px',
+                      lineHeight: '12px',
+                      letterSpacing: '0.6px'
+                    }}
+                  >
+                    {item.text}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            {/* Farmer Image */}
+            <div className="mt-auto relative z-10 flex-1 flex items-end justify-center rounded-xl overflow-hidden">
+              <Image 
+                src="/assets/farmer.png" 
+                alt="Farmer" 
+                width={300} 
+                height={250} 
+                className="object-cover rounded-xl shadow-lg border border-white/20 w-full h-auto max-h-[260px]"
+              />
+            </div>
+            
+            {/* Subtle glow overlay for styling */}
+            <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/20 to-transparent z-0"></div>
+          </div>
+
+          {/* Right Side (Form) */}
+          <div className="w-full md:w-[55%] p-10 md:p-16 flex flex-col justify-center bg-white">
+            <h2 
+              className="text-[#1A1A1A] mb-3"
+              style={{
+                fontFamily: 'Roboto, sans-serif',
+                fontWeight: 600,
+                fontSize: '24px',
+                lineHeight: '33.6px'
+              }}
+            >
+              Login to your account
+            </h2>
+            
+            <p 
+              className="text-[#666666] mb-10"
+              style={{
+                fontFamily: 'Roboto, sans-serif',
+                fontWeight: 400,
+                fontSize: '14px',
+                lineHeight: '21px'
+              }}
+            >
+              Access your dashboard, machinery status, and irrigation tools.
+            </p>
+
+            <form className="flex flex-col space-y-6">
+              <div className="flex flex-col space-y-2">
+                <label 
+                  className="text-[#666666] uppercase"
+                  style={{
+                    fontFamily: 'Inter, sans-serif',
+                    fontWeight: 600,
+                    fontSize: '10px',
+                    letterSpacing: '0.5px'
+                  }}
+                >
+                  MOBILE NUMBER
+                </label>
+                
+                <div className="flex items-center border border-[#E5E5E5] rounded-lg overflow-hidden h-12 focus-within:border-[#006B21] transition-colors">
+                  <div className="flex items-center justify-center px-4 bg-[#F9F9F9] border-r border-[#E5E5E5] h-full">
+                    <span className="text-[#333333] font-medium text-sm">+91</span>
+                    <svg className="w-4 h-4 ml-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                  </div>
+                  <input 
+                    type="tel" 
+                    placeholder="Enter 10 digit number" 
+                    className="flex-1 px-4 py-2 outline-none text-sm text-[#333333] placeholder-gray-400"
+                    maxLength={10}
+                  />
+                </div>
+              </div>
+
+              <button 
+                type="button"
+                className="w-full text-white rounded-lg shadow-[0_4px_12px_rgba(0,107,33,0.25)] transition-opacity hover:opacity-90 flex items-center justify-center"
+                style={{
+                  height: '56px',
+                  background: '#006B21',
+                  fontFamily: 'Roboto, sans-serif',
+                  fontWeight: 600,
+                  fontSize: '20px',
+                  lineHeight: '24px'
+                }}
+              >
+                Get OTP
+              </button>
+
+              <div className="text-center w-full pt-1">
+                <p 
+                  className="text-[#4A4A4A]"
+                  style={{
+                    fontFamily: 'Roboto, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '15px',
+                    lineHeight: '21px'
+                  }}
+                >
+                  We'll send a 6-digit code to verify your number.
+                </p>
+              </div>
+            </form>
+
+            <div className="mt-8 pt-8 border-t border-[#D9D9D9] w-full flex flex-col space-y-4">
+              <a 
+                href="#" 
+                className="text-[#4A4A4A] text-left hover:text-[#006B21] transition-colors" 
+                style={{ fontSize: '15px', fontFamily: 'Roboto, sans-serif', fontWeight: 400 }}
+              >
+                Help Center
+              </a>
+              <div className="flex justify-center w-full">
+                <a 
+                  href="#" 
+                  className="text-[#6B7280] hover:text-[#006B21] transition-colors border-b border-[#6B7280] hover:border-[#006B21]" 
+                  style={{ fontSize: '14px', fontFamily: 'Roboto, sans-serif', fontWeight: 500, paddingBottom: '1px' }}
+                >
+                  Privacy Policy & Terms
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Login;
