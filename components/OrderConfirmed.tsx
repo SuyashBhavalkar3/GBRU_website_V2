@@ -1,0 +1,187 @@
+"use client";
+
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import Navbar from "@/components/Navbar";
+
+export default function OrderConfirmed() {
+  return (
+    <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col pb-16">
+      <Navbar />
+
+      <main className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 pt-8 flex flex-col items-center gap-8">
+        
+        {/* Success Icon, Heading, and Order ID */}
+        <div className="flex flex-col items-center text-center gap-3">
+          <div className="w-20 h-20 bg-[#0FA84D] rounded-full flex items-center justify-center text-white text-[44px] shadow-md border-4 border-white">
+            ✓
+          </div>
+          <h1 className="text-[36px] font-extrabold text-[#0F291B] tracking-tight">
+            Order Confirmed!
+          </h1>
+          <p className="text-zinc-500 text-sm">
+            Thank you for choosing GBRU
+          </p>
+          <span className="text-xs text-zinc-500 font-bold bg-zinc-100 py-1.5 px-4 rounded-[8px] mt-2">
+            Order ID: <span className="text-[#0F291B]">#GBRU2026052901</span>
+          </span>
+        </div>
+
+        {/* Product Details Card */}
+        <div className="max-w-[800px] w-full bg-white border border-zinc-200/85 rounded-[24px] p-6 shadow-sm flex flex-col md:flex-row items-stretch gap-6 relative mt-2">
+          {/* Image */}
+          <div className="relative w-full md:w-[120px] h-[120px] rounded-[16px] overflow-hidden bg-zinc-50 border border-zinc-100 flex-shrink-0">
+            <Image
+              src="/assets/gbru_tractor_main.png"
+              alt="GBRU Pro-Series 5000"
+              fill
+              className="object-cover"
+            />
+          </div>
+
+          {/* Info */}
+          <div className="flex flex-col justify-between flex-1 py-1">
+            <div className="flex flex-col gap-1.5">
+              <h3 className="font-bold text-[#0F291B] text-[18px]">
+                GBRU Pro-Series 5000
+              </h3>
+              <p className="text-xs text-zinc-500">
+                Premium Multi-Purpose Agricultural Tractor
+              </p>
+              
+              <div className="flex items-center gap-3 mt-3">
+                <span className="bg-[#EBF5EE] text-[#0D9740] text-[10px] font-bold py-1 px-3 rounded-[6px]">
+                  Confirmed
+                </span>
+                <span className="text-xs text-zinc-500">
+                  Delivery: <span className="font-semibold text-[#0F291B]">June 2-5, 2026</span>
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between border-t border-zinc-100 pt-4 mt-6">
+              <span className="text-xs font-bold text-zinc-500 uppercase">Total Paid</span>
+              <span className="font-extrabold text-[#0F291B] text-[20px]">
+                ₹10,32,500
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Actions Button Row */}
+        <div className="max-w-[800px] w-full grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+          <Link
+            href="/products"
+            className="h-12 border-2 border-zinc-200 hover:border-zinc-300 rounded-[14px] text-[#0F291B] font-bold text-sm flex items-center justify-center transition-all shadow-sm"
+          >
+            Continue Shopping
+          </Link>
+          <button className="h-12 bg-[#0FA84D] hover:bg-[#0b8a3d] text-white font-bold text-sm rounded-[14px] flex items-center justify-center gap-2 shadow-sm transition-all">
+            📞 Contact Support
+          </button>
+          <button className="h-12 bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-sm rounded-[14px] flex items-center justify-center gap-2 shadow-sm transition-all">
+            📍 Track Order
+          </button>
+        </div>
+
+        {/* "What Happens Next?" Section */}
+        <div className="max-w-[800px] w-full bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-6 mt-4">
+          <h3 className="font-bold text-[#0F291B] text-lg">
+            What Happens Next?
+          </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Step 1 */}
+            <div className="flex flex-col gap-3">
+              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg">📦</div>
+              <div className="flex flex-col gap-0.5">
+                <span className="font-bold text-xs text-[#0F291B]">Order Processing</span>
+                <span className="text-[10px] text-zinc-500 leading-normal">
+                  Your order is being prepared for dispatch. Expected dispatch: Tomorrow.
+                </span>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="flex flex-col gap-3">
+              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg">📞</div>
+              <div className="flex flex-col gap-0.5">
+                <span className="font-bold text-xs text-[#0F291B]">Expert Call</span>
+                <span className="text-[10px] text-zinc-500 leading-normal">
+                  Our expert will call you within 2 hours to confirm delivery details.
+                </span>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="flex flex-col gap-3">
+              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg">🔧</div>
+              <div className="flex flex-col gap-0.5">
+                <span className="font-bold text-xs text-[#0F291B]">Free Installation</span>
+                <span className="text-[10px] text-zinc-500 leading-normal">
+                  Our technician will install and provide training at your farm.
+                </span>
+              </div>
+            </div>
+
+            {/* Step 4 */}
+            <div className="flex flex-col gap-3">
+              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg">🛡️</div>
+              <div className="flex flex-col gap-0.5">
+                <span className="font-bold text-xs text-[#0F291B]">Warranty Activation</span>
+                <span className="text-[10px] text-zinc-500 leading-normal">
+                  5-year warranty will be activated upon installation.
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Manage with Shoption App Card */}
+        <div className="max-w-[800px] w-full bg-[#0F2F20] text-white rounded-[24px] overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 p-8 shadow-sm relative mt-4">
+          <div className="flex flex-col gap-5 flex-1 z-10">
+            <h3 className="font-bold text-[22px] leading-tight max-w-sm">
+              Manage with Shoption App
+            </h3>
+            <p className="text-[11px] text-[#A1B8AD] leading-relaxed max-w-md">
+              Download the Shoption app to track your order, request service, and access expert support.
+            </p>
+
+            <ul className="text-xs flex flex-col gap-2 mt-1">
+              <li className="flex items-center gap-2">
+                <span className="text-[#0D9740]">●</span> Real-time Order Tracking
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-[#0D9740]">●</span> Service Request Management
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-[#0D9740]">●</span> Warranty & Spare Parts Support
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-[#0D9740]">●</span> 24/7 Expert Help
+              </li>
+            </ul>
+
+            <div className="mt-3">
+              <button className="bg-white text-[#0F2F20] font-bold text-xs py-3 px-6 rounded-full flex items-center gap-2 shadow-sm transition-all hover:bg-zinc-100">
+                Download Shoption App <span>→</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Smartphone graphics */}
+          <div className="relative w-44 h-52 flex-shrink-0 z-10 self-end md:self-auto translate-y-6 md:translate-y-8">
+            <Image
+              src="/assets/holding_phone.png"
+              alt="Shoption App Mockup"
+              fill
+              className="object-contain -scale-x-100"
+            />
+          </div>
+        </div>
+
+      </main>
+    </div>
+  );
+}
