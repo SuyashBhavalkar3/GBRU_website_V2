@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import Stats from "@/components/Stats";
 import Categories from "@/components/Categories";
 import FieldExperiences from "@/components/FieldExperiences";
+import BestSellingTools from "@/components/BestSellingTools";
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
       <Stats />
       <Categories />
       <FieldExperiences />
+      <BestSellingTools />
       
       {/* Additional sections can be placed here as we build them */}
     </div>
