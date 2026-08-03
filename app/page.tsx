@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Stats from "@/components/Stats";
 import Categories from "@/components/Categories";
+import FieldExperiences from "@/components/FieldExperiences";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
       <Hero />
       <Stats />
       <Categories />
+      <FieldExperiences />
       
       {/* Additional sections can be placed here as we build them */}
     </div>
