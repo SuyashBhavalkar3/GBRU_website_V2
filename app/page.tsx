@@ -5,6 +5,7 @@ import Categories from "@/components/Categories";
 import FieldExperiences from "@/components/FieldExperiences";
 import BestSellingTools from "@/components/BestSellingTools";
 import AppDownload from "@/components/AppDownload";
+import GbRUOnField from "@/components/GbRUOnField";
 
 export default function Home() {
   return (
@@ -19,6 +20,7 @@ export default function Home() {
       <FieldExperiences />
       <BestSellingTools />
       <AppDownload />
+      <GbRUOnField />
       
       {/* Additional sections can be placed here as we build them */}
     </div>
