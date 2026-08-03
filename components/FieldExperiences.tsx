@@ -11,7 +11,7 @@ export default function FieldExperiences() {
       desc: "See what our GBRU user are saying",
       duration: "03:19",
       category: "Exclusive Video",
-      thumbnail: "/assets/thumb_farmers_review.png",
+      thumbnail: "/assets/thumb_farmers_review2.png",
     },
     {
       title: "GBRU Mobile Auto",
