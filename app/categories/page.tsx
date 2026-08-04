@@ -1,20 +1,17 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 
-const categories = [
-  { id: 1, title: 'Irrigation Systems', image: '/assets/cat_irrigation.png' },
-  { id: 2, title: 'Power Machinery', image: '/assets/cat_seeders.png' },
-  { id: 3, title: 'Machinery', image: '/assets/cat_seeders.png' },
-  { id: 4, title: 'Solar and Security', image: '/assets/cat_solar_security.png' },
-  { id: 5, title: 'Smart Sensors', image: '/assets/cat_accessories.png' },
-  { id: 6, title: 'Crop Protection', image: '/assets/cat_sprayers.png' },
-  { id: 7, title: 'Accessories', image: '/assets/cat_accessories.png' },
-  { id: 8, title: 'Tools', image: '/assets/cat_accessories.png' }
-];
+interface CategoryItem {
+  category_id: string;
+  category_name: string;
+  custom_category_id: number;
+  custom_image_path: string;
+  product_count: number;
+}
 
 const advantages = [
   {
@@ -38,6 +35,35 @@ const advantages = [
 ];
 
 export default function CategoriesPage() {
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const res = await fetch("/api/categories");
+        if (!res.ok) {
+          throw new Error("Failed to load categories.");
+        }
+        const json = await res.json();
+        
+        // Parse category list from ERP response wrapper
+        if (json.message?.status && Array.isArray(json.message?.data?.data)) {
+          setCategories(json.message.data.data);
+        } else {
+          throw new Error("Invalid response format.");
+        }
+      } catch (err: any) {
+        setError(err.message || "Something went wrong.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchCategories();
+  }, []);
+
   return (
     <div className="min-h-screen bg-white font-roboto flex flex-col">
       <Navbar />
@@ -63,34 +89,74 @@ export default function CategoriesPage() {
         </div>
       </div>
 
-      <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-12 flex flex-col">
-        {/* Categories Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {categories.map((cat) => (
-            <div key={cat.id} className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow flex flex-col group cursor-pointer">
-              {/* Image Container */}
-              <div className="relative h-48 w-full bg-gray-100 overflow-hidden">
-                <Image
-                  src={cat.image}
-                  alt={cat.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-
-              {/* Content */}
-              <div className="p-5 flex flex-col flex-1 bg-white">
-                <h3 className="text-[#1A1A1A] font-bold text-lg mb-2">
-                  {cat.title}
-                </h3>
-                <div className="mt-auto flex items-center text-[#006B21] font-semibold text-sm hover:underline">
-                  Browse Collection
-                  <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+      <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-12 flex flex-col justify-center min-h-[300px]">
+        
+        {loading ? (
+          /* Loading State */
+          <div className="flex flex-col items-center justify-center py-16 gap-3">
+            <div className="w-10 h-10 border-4 border-[#006B21] border-t-transparent rounded-full animate-spin"></div>
+            <span className="text-sm text-zinc-500 font-medium">Fetching GBRU Category list...</span>
+          </div>
+        ) : error ? (
+          /* Error State */
+          <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
+            <span className="text-red-500 text-3xl">⚠️</span>
+            <h3 className="font-bold text-[#0F291B] text-lg">Failed to load categories</h3>
+            <p className="text-zinc-500 text-xs max-w-xs">{error}</p>
+            <button
+              onClick={() => {
+                setLoading(true);
+                setError("");
+                // Re-fetch logic
+                window.location.reload();
+              }}
+              className="mt-2 bg-[#006B21] text-white font-bold text-xs py-2 px-4 rounded-full"
+            >
+              Retry
+            </button>
+          </div>
+        ) : (
+          /* Categories Grid */
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {categories.map((cat) => (
+              <Link
+                key={cat.category_id}
+                href={`/products?category_id=${cat.category_id}&category_name=${encodeURIComponent(cat.category_name)}`}
+                className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow flex flex-col group cursor-pointer"
+              >
+                {/* Image Container */}
+                <div className="relative h-48 w-full bg-gray-50 overflow-hidden flex items-center justify-center p-4">
+                  {cat.custom_image_path ? (
+                    <img
+                      src={cat.custom_image_path}
+                      alt={cat.category_name}
+                      className="object-contain max-h-full max-w-full group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-zinc-100 flex items-center justify-center text-zinc-400">
+                      No Image
+                    </div>
+                  )}
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
+
+                {/* Content */}
+                <div className="p-5 flex flex-col flex-1 bg-white">
+                  <h3 className="text-[#1A1A1A] font-bold text-lg mb-1 leading-snug">
+                    {cat.category_name}
+                  </h3>
+                  <span className="text-[11px] text-zinc-500 font-semibold mb-4">
+                    {cat.product_count} Products
+                  </span>
+                  
+                  <div className="mt-auto flex items-center text-[#006B21] font-semibold text-sm hover:underline">
+                    Browse Collection
+                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </main>
 
       {/* GBRU Advantage Section */}
