@@ -171,9 +171,9 @@ export default function OrderConfirmed() {
           </div>
 
           {/* Smartphone graphics */}
-          <div className="relative w-44 h-52 flex-shrink-0 z-10 self-end md:self-auto translate-y-6 md:translate-y-8">
+          <div className="relative w-64 h-72 md:w-[280px] md:h-[280px] flex-shrink-0 z-10 self-end md:self-auto translate-y-6 md:translate-y-8">
             <Image
-              src="/assets/holding_phone.png"
+              src="/assets/mobile-screen-mockup.png"
               alt="Shoption App Mockup"
               fill
               className="object-contain -scale-x-100"
