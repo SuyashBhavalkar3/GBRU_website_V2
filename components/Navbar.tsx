@@ -4,9 +4,11 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import ProfilePop from "./profile_pop";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState<any>(null);
   const pathname = usePathname() || "/";
 
@@ -120,8 +122,8 @@ export default function Navbar() {
 
             {/* Sign Up / User Profile Button */}
             {loggedInUser ? (
-              <Link
-                href="/user-profile"
+              <button
+                onClick={() => setIsProfileOpen(true)}
                 className="flex items-center justify-center gap-1.5 px-3 py-1.5 border border-white/20 hover:bg-white/10 text-white font-roboto font-semibold text-[11px] leading-none rounded-[4px] transition-all duration-200 mr-[25px] hover:scale-[1.02]"
               >
                 <span>{loggedInUser.Customer_name?.split(" ")[0] || "Profile"}</span>
@@ -139,7 +141,7 @@ export default function Navbar() {
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                   />
                 </svg>
-              </Link>
+              </button>
             ) : (
               <Link
                 href="/signup"
@@ -336,6 +338,9 @@ export default function Navbar() {
           </div>
         </div>
       )}
+
+      {/* Profile Slider */}
+      <ProfilePop isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
     </nav>
   );
 }

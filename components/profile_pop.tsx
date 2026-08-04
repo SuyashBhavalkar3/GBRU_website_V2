@@ -1,0 +1,281 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+
+interface UserDetails {
+  Customer_name: string;
+  address: string;
+  status: string;
+  role: string;
+}
+
+interface ProfilePopProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function ProfilePop({ isOpen, onClose }: ProfilePopProps) {
+  const [user, setUser] = useState<UserDetails | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && !user) {
+      const stored = localStorage.getItem("gbru_user");
+      let mobile_no = "";
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id;
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      setLoading(true);
+      fetch('/api/user-details', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobile_no })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data?.message?.status && data?.message?.data) {
+            setUser(data.message.data);
+          }
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error("Error fetching user details:", err);
+          setLoading(false);
+        });
+    }
+  }, [isOpen, user]);
+
+  if (!isOpen) return null;
+
+  // Extract initials from Customer_name (e.g. "Soham Pawar" -> "SP")
+  const getInitials = (name: string) => {
+    if (!name) return "NA";
+    const parts = name.trim().split(" ");
+    if (parts.length > 1) {
+      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
+  
+  const initials = user ? getInitials(user.Customer_name) : "NA";
+  const isVerified = user?.status === "ACTIVE";
+
+  return (
+    <>
+      {/* Background Overlay */}
+      <div 
+        className="fixed inset-0 bg-black/40 z-[999] transition-opacity"
+        onClick={onClose}
+      />
+
+      {/* Slider Panel */}
+      <div 
+        className={`fixed top-0 right-0 h-full w-full max-w-[340px] bg-white z-[1000] shadow-2xl flex flex-col transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'} rounded-l-3xl overflow-hidden`}
+        style={{ fontFamily: 'Manrope, sans-serif' }}
+      >
+        {/* Header Section (Dark Green) */}
+        <div className="bg-[#194028] pt-12 pb-8 flex flex-col items-center justify-center relative">
+          
+          {/* Close Button */}
+          <button onClick={onClose} className="absolute top-6 left-6 text-white/70 hover:text-white">
+             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+
+          {loading ? (
+            <div className="animate-pulse flex flex-col items-center">
+              <div className="w-[84px] h-[84px] rounded-full bg-white/20 mb-4" />
+              <div className="w-32 h-6 bg-white/20 rounded mb-2" />
+              <div className="w-24 h-4 bg-white/20 rounded" />
+            </div>
+          ) : user ? (
+            <>
+              {/* Avatar with Initials */}
+              <div className="relative mb-4">
+                <div className="w-[88px] h-[88px] rounded-full bg-[#112d1b] border-4 border-white flex items-center justify-center text-white text-3xl font-bold uppercase shadow-sm">
+                  {initials}
+                </div>
+                {/* Checkmark Badge */}
+                {isVerified && (
+                  <div className="absolute bottom-0 right-0 w-7 h-7 bg-[#20C063] rounded-full border-2 border-[#194028] flex items-center justify-center">
+                    <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                  </div>
+                )}
+              </div>
+
+              {/* User Info */}
+              <h2 className="text-white text-[22px] font-bold mb-1 leading-tight capitalize">
+                {user.Customer_name}
+              </h2>
+              <p className="text-white/70 text-[13px] font-medium mb-3 text-center px-4 max-w-[280px] truncate">
+                {user.address}
+              </p>
+
+              {/* Verified Badge */}
+              {isVerified && (
+                <div className="flex items-center gap-1.5 text-[#20C063]">
+                  <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-[12px] font-bold tracking-wide">Verified {user.role || 'Farmer'}</span>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-white">Failed to load user.</div>
+          )}
+        </div>
+
+        {/* Menu Links */}
+        <div className="flex-1 overflow-y-auto py-4 px-6 bg-white">
+          <ul className="flex flex-col space-y-1">
+            
+            <MenuItem 
+              icon={<svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>}
+              label="My Profile" 
+              href="/user-profile" 
+              onClick={onClose}
+            />
+            
+            <MenuItem 
+              icon={<svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>}
+              label="Saved Products" 
+              href="/saved" 
+              onClick={onClose}
+            />
+            
+            <MenuItem 
+              icon={<svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+              label="Rewards & Benefits" 
+              href="/rewards" 
+              showChevron
+              onClick={onClose}
+            />
+            
+            <MenuItem 
+              icon={<svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>}
+              label="Order" 
+              href="/orders" 
+              showChevron
+              onClick={onClose}
+            />
+            
+            <MenuItem 
+              icon={<svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>}
+              label="Events & Invites" 
+              href="/events" 
+              badge="NEW"
+              onClick={onClose}
+            />
+            
+            <MenuItem 
+              icon={<svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+              label="Support & Help" 
+              href="/support" 
+              onClick={onClose}
+            />
+
+            {/* Action Cards (WhatsApp, Call, Ambassador) */}
+            <div className="flex flex-col gap-3 mt-8 mb-2">
+              {/* WhatsApp Card */}
+              <a href="#" className="flex items-center justify-between bg-[#1f9b54] p-4 rounded-2xl hover:bg-[#1a8548] transition-colors group shadow-sm">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-white shrink-0">
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.487-1.761-1.659-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-white font-bold text-[18px] leading-tight">WhatsApp</span>
+                    <span className="text-white/80 font-medium text-[13px]">Support</span>
+                  </div>
+                </div>
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+              </a>
+
+              {/* Call Card */}
+              <a href="#" className="flex items-center justify-between bg-white p-4 rounded-2xl hover:bg-gray-50 transition-colors group shadow-[0_2px_12px_rgb(0,0,0,0.06)] border border-gray-100">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 flex items-center justify-center shrink-0">
+                    <svg className="w-[26px] h-[26px] text-[#194028]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[#194028] font-bold text-[18px] leading-tight">Call</span>
+                    <span className="text-gray-400 font-medium text-[13px]">Expert</span>
+                  </div>
+                </div>
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+              </a>
+
+              {/* Ambassador Card */}
+              <a href="#" className="flex items-center justify-between bg-white p-4 rounded-2xl hover:bg-gray-50 transition-colors group shadow-[0_2px_12px_rgb(0,0,0,0.06)] border border-gray-100">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 flex items-center justify-center shrink-0">
+                    <svg className="w-[26px] h-[26px] text-[#194028]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[#194028] font-bold text-[18px] leading-tight">Ambassador</span>
+                    <span className="text-gray-400 font-medium text-[13px]">Help</span>
+                  </div>
+                </div>
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+              </a>
+            </div>
+
+            <div className="w-full border-t border-gray-100 my-2"></div>
+            
+            {/* Logout Button */}
+            <li>
+              <button 
+                onClick={() => {
+                  // Add logout logic here (e.g. clearing localStorage, tokens)
+                  console.log("Logout clicked");
+                  onClose();
+                }}
+                className="w-full flex items-center gap-4 py-4 px-2 text-[#EF4444] hover:bg-gray-50 rounded-lg transition-colors group"
+              >
+                <span className="text-[#EF4444] group-hover:scale-110 transition-transform">
+                  <svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                </span>
+                <span className="text-[16px] font-semibold text-[#EF4444]">Logout</span>
+              </button>
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function MenuItem({ icon, label, href, badge, showChevron, onClick }: { icon: React.ReactNode, label: string, href: string, badge?: string, showChevron?: boolean, onClick: () => void }) {
+  return (
+    <li>
+      <Link 
+        href={href} 
+        onClick={onClick}
+        className="flex items-center justify-between py-4 px-2 hover:bg-gray-50 rounded-lg transition-colors group"
+      >
+        <div className="flex items-center gap-4">
+          <span className="text-[#768294] group-hover:text-[#194028] transition-colors">{icon}</span>
+          <span className="text-[16px] font-semibold text-[#1a1a1a] group-hover:text-[#194028] transition-colors">{label}</span>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          {badge && (
+            <span className="bg-[#20C063] text-white text-[10px] font-bold px-2 py-0.5 rounded-sm tracking-wide">
+              {badge}
+            </span>
+          )}
+          {showChevron && (
+            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+          )}
+        </div>
+      </Link>
+    </li>
+  );
+}
