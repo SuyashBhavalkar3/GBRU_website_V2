@@ -1,10 +1,25 @@
 'use client';
 import Image from 'next/image';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 
-const Otp = () => {
+const OtpContent = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [loading, setLoading] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(24);
+  const [toastMessage, setToastMessage] = useState('');
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const mobileNo = searchParams.get('mobile_no');
+  const txnId = searchParams.get('txn_id');
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [timeLeft]);
 
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) value = value.slice(-1);
@@ -26,11 +41,95 @@ const Otp = () => {
     }
   };
 
+  const handleVerify = async () => {
+    const otpValue = otp.join('');
+    if (otpValue.length !== 6 || !mobileNo) {
+      alert('Please enter a valid 6-digit OTP.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch('/api/verify-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ mobile_no: mobileNo, otp: otpValue }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Save user details securely in localStorage
+        localStorage.setItem('gbru_user', JSON.stringify(data.user));
+
+        // Redirect based on role
+        if (data.user?.role?.toLowerCase() === 'farmer') {
+          router.push('/dashboard');
+        } else {
+          router.push('/profile');
+        }
+      } else {
+        alert(data.message || data.error || 'Invalid OTP. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      alert('An error occurred during verification. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (!mobileNo) return;
+    try {
+      const response = await fetch('/api/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobile_no: mobileNo }),
+      });
+      const data = await response.json();
+      if (data.message?.status || data.success) { // checking both depending on route return structure
+        setToastMessage(`OTP sent successfully check ${mobileNo}`);
+        setTimeLeft(24); // Reset countdown
+        setTimeout(() => setToastMessage(''), 2500); // Clear toast message
+      } else {
+        alert(data.message?.message || data.error || 'Failed to resend OTP.');
+      }
+    } catch (error) {
+      console.error('Error resending OTP:', error);
+      alert('An error occurred. Please try again.');
+    }
+  };
+
   return (
     <>
       <style dangerouslySetInnerHTML={{__html: `
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600&family=Manrope:wght@600&family=Roboto:wght@400;500;600&display=swap');
+        
+        @keyframes fadeOut {
+          0% { opacity: 1; transform: translateY(0); }
+          80% { opacity: 1; transform: translateY(0); }
+          100% { opacity: 0; transform: translateY(-20px); }
+        }
+        .toast-animate {
+          animation: fadeOut 2.5s forwards;
+        }
       `}} />
+      
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 bg-[#006B21] text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 toast-animate"
+          style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
+        >
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {toastMessage}
+        </div>
+      )}
+
       <div 
         className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center"
         style={{ backgroundImage: "url('/assets/caroussel-2.jpg')" }}
@@ -126,7 +225,7 @@ const Otp = () => {
                 lineHeight: '21px'
               }}
             >
-              Enter the 6-digit code sent to <span className="font-semibold text-black">+91 98765 43210</span>
+              Enter the 6-digit code sent to <span className="font-semibold text-black">{mobileNo ? `+91 ${mobileNo}` : '+91 98765 43210'}</span>
             </p>
 
             <button 
@@ -164,7 +263,9 @@ const Otp = () => {
 
               <button 
                 type="button"
-                className="w-full text-white rounded-lg shadow-[0_4px_12px_rgba(0,107,33,0.25)] transition-opacity hover:opacity-90 flex items-center justify-center mb-4"
+                onClick={handleVerify}
+                disabled={loading}
+                className={`w-full text-white rounded-lg shadow-[0_4px_12px_rgba(0,107,33,0.25)] transition-opacity hover:opacity-90 flex items-center justify-center mb-4 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                 style={{
                   height: '56px',
                   background: '#006B21',
@@ -174,7 +275,7 @@ const Otp = () => {
                   lineHeight: '24px'
                 }}
               >
-                Verify & Login
+                {loading ? 'Verifying...' : 'Verify & Login'}
               </button>
 
               <div className="text-center w-full mb-8">
@@ -200,7 +301,20 @@ const Otp = () => {
                     fontSize: '15px'
                   }}
                 >
-                  Didn't receive the code? <span className="text-[#9CA3AF]">Resend OTP in 00:24</span>
+                  Didn't receive the code?{' '}
+                  {timeLeft > 0 ? (
+                    <span className="text-[#9CA3AF]">
+                      Resend OTP in 00:{timeLeft.toString().padStart(2, '0')}
+                    </span>
+                  ) : (
+                    <button 
+                      type="button" 
+                      onClick={handleResendOtp}
+                      className="text-[#006B21] font-medium hover:underline"
+                    >
+                      Resend OTP
+                    </button>
+                  )}
                 </p>
               </div>
             </form>
@@ -222,6 +336,14 @@ const Otp = () => {
         </div>
       </div>
     </>
+  );
+};
+
+const Otp = () => {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <OtpContent />
+    </Suspense>
   );
 };
 

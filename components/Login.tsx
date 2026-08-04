@@ -1,15 +1,79 @@
 'use client';
 import Image from 'next/image';
-import React from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const Login = () => {
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const router = useRouter();
+
+  const handleGetOtp = async () => {
+    if (mobileNumber.length !== 10) {
+      alert('Please enter a valid 10-digit mobile number.');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const response = await fetch('/api/send-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ mobile_no: mobileNumber }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.message?.status) {
+        // Successfully sent OTP
+        setToastMessage(`OTP sent successfully check ${mobileNumber}`);
+        setTimeout(() => {
+          // Redirect to OTP page and pass data via query params
+          router.push(`/otp?mobile_no=${mobileNumber}&txn_id=${data.message.txn_id}`);
+        }, 2000);
+      } else {
+        alert(data.message?.message || data.error || 'Failed to send OTP. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <style dangerouslySetInnerHTML={{__html: `
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&family=Manrope:wght@600&family=Roboto:wght@400;600&display=swap');
+        
+        @keyframes fadeOut {
+          0% { opacity: 1; transform: translateY(0); }
+          80% { opacity: 1; transform: translateY(0); }
+          100% { opacity: 0; transform: translateY(-20px); }
+        }
+        .toast-animate {
+          animation: fadeOut 2.5s forwards;
+        }
       `}} />
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 bg-[#006B21] text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 toast-animate"
+          style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
+        >
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {toastMessage}
+        </div>
+      )}
+
       <div 
-        className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center"
+        className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center relative"
         style={{ backgroundImage: "url('/assets/caroussel-2.jpg')" }}
       >
         <div className="flex flex-col md:flex-row w-full max-w-[1100px] bg-white rounded-xl shadow-2xl overflow-hidden min-h-[650px]">
@@ -130,13 +194,17 @@ const Login = () => {
                     placeholder="Enter 10 digit number" 
                     className="flex-1 px-4 py-2 outline-none text-sm text-[#333333] placeholder-gray-400"
                     maxLength={10}
+                    value={mobileNumber}
+                    onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))}
                   />
                 </div>
               </div>
 
               <button 
                 type="button"
-                className="w-full text-white rounded-lg shadow-[0_4px_12px_rgba(0,107,33,0.25)] transition-opacity hover:opacity-90 flex items-center justify-center"
+                onClick={handleGetOtp}
+                disabled={loading}
+                className={`w-full text-white rounded-lg shadow-[0_4px_12px_rgba(0,107,33,0.25)] transition-opacity hover:opacity-90 flex items-center justify-center ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                 style={{
                   height: '56px',
                   background: '#006B21',
@@ -146,7 +214,7 @@ const Login = () => {
                   lineHeight: '24px'
                 }}
               >
-                Get OTP
+                {loading ? 'Sending OTP...' : 'Get OTP'}
               </button>
 
               <div className="text-center w-full pt-1">
