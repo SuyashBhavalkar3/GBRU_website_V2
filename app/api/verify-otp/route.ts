@@ -1,0 +1,69 @@
+import { NextResponse } from 'next/server';
+
+export async function POST(request: Request) {
+  try {
+    const { mobile_no, otp } = await request.json();
+
+    if (!mobile_no || !otp) {
+      return NextResponse.json({ error: 'Mobile number and OTP are required' }, { status: 400 });
+    }
+
+    const baseUrl = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
+    const apiKey = process.env.API_KEY;
+    const apiSecret = process.env.API_SECRET;
+
+    if (!baseUrl || !apiKey || !apiSecret) {
+      console.error('Missing API credentials in environment variables.');
+      return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
+    }
+
+    // 1. Verify OTP
+    const verifyResponse = await fetch(`${baseUrl}/api/method/shoption_api.otp.api.verify_otp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': apiKey,
+        'X-API-SECRET': apiSecret,
+      },
+      body: JSON.stringify({ mobile_no, otp }),
+    });
+
+    const verifyData = await verifyResponse.json();
+
+    if (!verifyData.message?.status) {
+      return NextResponse.json({ 
+        success: false, 
+        message: verifyData.message?.message || 'Invalid or expired OTP' 
+      }, { status: 400 });
+    }
+
+    // 2. Fetch User Details
+    const userResponse = await fetch(`${baseUrl}/api/method/shoption_api.erp_api.utility.get_user_details`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': apiKey,
+        'X-API-SECRET': apiSecret,
+      },
+      body: JSON.stringify({ mobile_no }),
+    });
+
+    const userData = await userResponse.json();
+
+    if (!userData.message?.status) {
+      return NextResponse.json({ 
+        success: false, 
+        message: userData.message?.message || 'Failed to fetch user details' 
+      }, { status: 400 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      user: userData.message.data,
+      ispopup: userData.message.ispopup
+    });
+  } catch (error) {
+    console.error('Error verifying OTP or fetching user:', error);
+    return NextResponse.json({ error: 'An error occurred during verification' }, { status: 500 });
+  }
+}
