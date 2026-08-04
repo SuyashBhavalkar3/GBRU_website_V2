@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Navbar from './Navbar';
+import AppDownloadBanner from './AppDownloadBanner';
+import Footer from './Footer';
 
 const stats = [
   {
@@ -365,73 +367,9 @@ const VideoHub = () => {
       </div>
 
       {/* Impact & App Section */}
-      <div className="relative w-full bg-[#E9F2EC] overflow-hidden">
-        <div className="w-full flex flex-col xl:flex-row">
-          
-          {/* Left Side (Dark Green) */}
-          <div className="w-full xl:w-[60%] py-16 px-6 lg:pl-12 lg:pr-10 bg-[#0F2F20] xl:rounded-r-[48px] z-10">
-            <h2 className="text-white text-2xl lg:text-[28px] font-bold mb-10 leading-snug">
-              Our Impact<br/>In Numbers
-            </h2>
-            
-            <div className="flex flex-wrap sm:flex-nowrap items-start gap-y-10">
-              {/* Stat 1 */}
-              <div className="w-1/2 sm:w-1/4 flex flex-col sm:border-r border-dashed border-white/20 px-2 lg:px-4">
-                <Image src="/assets/logo1.png" alt="Products" width={40} height={40} className="mb-4 object-contain h-10 w-auto object-left" />
-                <h3 className="text-white font-bold text-lg mb-1">5 Cr+</h3>
-                <p className="text-[#A1B8AD] text-sm leading-snug">Products in<br/>Indian Fields</p>
-              </div>
+      <AppDownloadBanner />
 
-              {/* Stat 2 */}
-              <div className="w-1/2 sm:w-1/4 flex flex-col sm:border-r border-dashed border-white/20 px-2 lg:px-4">
-                <Image src="/assets/logo2.png" alt="PAN India" width={40} height={40} className="mb-4 object-contain h-10 w-auto object-left" />
-                <h3 className="text-white font-bold text-lg mb-1">PAN India</h3>
-                <p className="text-[#A1B8AD] text-sm leading-snug">services</p>
-              </div>
-
-              {/* Stat 3 */}
-              <div className="w-1/2 sm:w-1/4 flex flex-col sm:border-r border-dashed border-white/20 px-2 lg:px-4">
-                <Image src="/assets/logo3.png" alt="Presence" width={40} height={40} className="mb-4 object-contain h-10 w-auto object-left" />
-                <h3 className="text-white font-bold text-lg mb-1">Our Presence</h3>
-                <p className="text-[#A1B8AD] text-sm leading-snug">Every 12 KM</p>
-              </div>
-
-              {/* Stat 4 */}
-              <div className="w-1/2 sm:w-1/4 flex flex-col px-2 lg:px-4">
-                <Image src="/assets/logo4.png" alt="Support" width={40} height={40} className="mb-4 object-contain h-10 w-auto object-left" />
-                <h3 className="text-white font-bold text-lg mb-1">Fast</h3>
-                <p className="text-[#A1B8AD] text-sm leading-snug">Service & Spare<br/>Support</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Side (Light Green) */}
-          <div className="w-full xl:w-[40%] py-16 px-6 lg:px-16 relative flex flex-col justify-center z-10">
-            <h2 className="text-[#1A1A1A] text-2xl lg:text-[28px] font-bold mb-4 leading-snug max-w-sm">
-              Track, Manage, Grow With Shoption App
-            </h2>
-            <p className="text-[#4A4A4A] font-semibold text-base mb-8">
-              Track Order, Warranty, Services & More.
-            </p>
-            
-            <div className="bg-white rounded-2xl py-4 px-6 flex gap-4 w-fit shadow-sm relative z-10 mb-16 xl:mb-0">
-              <a href="#" className="hover:opacity-80 transition-opacity">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" className="h-[38px] w-auto" />
-              </a>
-              <a href="#" className="hover:opacity-80 transition-opacity">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="Download on the App Store" className="h-[38px] w-auto" />
-              </a>
-            </div>
-
-            {/* Hand Image */}
-            <div className="xl:absolute bottom-0 right-0 lg:right-0 w-[300px] lg:w-[380px] xl:w-[450px] self-end xl:self-auto xl:translate-y-[15%] xl:mr-[-40px] translate-x-[10px] xl:translate-x-[30px]">
-              <Image src="/assets/holding_phone.png" alt="Shoption App in hand" width={500} height={800} className="object-contain w-full h-auto -scale-x-100" />
-            </div>
-          </div>
-
-        </div>
-      </div>
-
+      <Footer />
     </div>
   );
 };

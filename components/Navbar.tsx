@@ -1,13 +1,27 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState<any>(null);
   const pathname = usePathname() || "/";
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("gbru_user");
+      if (stored) {
+        try {
+          setLoggedInUser(JSON.parse(stored));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+  }, []);
 
   const isHome = pathname === "/";
 
@@ -104,27 +118,50 @@ export default function Navbar() {
               <span>EN</span>
             </button>
 
-            {/* Sign Up Button */}
-            <Link
-              href="/signup"
-              className="flex items-center justify-center gap-1 w-[78px] h-[22px] bg-[#FFC700] hover:bg-[#e6b300] text-black font-roboto font-semibold text-[11px] leading-none rounded-[4px] transition-all duration-200 shadow-md hover:scale-[1.02] mr-[25px]"
-            >
-              <svg
-                className="w-3 h-3"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+            {/* Sign Up / User Profile Button */}
+            {loggedInUser ? (
+              <Link
+                href="/user-profile"
+                className="flex items-center justify-center gap-1.5 px-3 py-1.5 border border-white/20 hover:bg-white/10 text-white font-roboto font-semibold text-[11px] leading-none rounded-[4px] transition-all duration-200 mr-[25px] hover:scale-[1.02]"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-              <span>Sign up</span>
-            </Link>
+                <span>{loggedInUser.Customer_name?.split(" ")[0] || "Profile"}</span>
+                <svg
+                  className="w-3 h-3 text-[#FFC700]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2.5"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </Link>
+            ) : (
+              <Link
+                href="/signup"
+                className="flex items-center justify-center gap-1 w-[78px] h-[22px] bg-[#FFC700] hover:bg-[#e6b300] text-black font-roboto font-semibold text-[11px] leading-none rounded-[4px] transition-all duration-200 shadow-md hover:scale-[1.02] mr-[25px]"
+              >
+                <svg
+                  className="w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+                <span>Sign up</span>
+              </Link>
+            )}
 
             {/* Cart Icon */}
             <Link href="/cart" className="relative hover:scale-110 transition-transform duration-200 w-[20px] h-[23px] flex items-center justify-center">

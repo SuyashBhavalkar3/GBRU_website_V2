@@ -1,3 +1,6 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Stats from "@/components/Stats";
@@ -8,25 +11,38 @@ import AppDownload from "@/components/AppDownload";
 import GbRUOnField from "@/components/GbRUOnField";
 import WhyGBRU from "@/components/WhyGBRU";
 import Testimonials from "@/components/Testimonials";
-import Login from '@/components/Login';
+import ToolsInAction from "@/components/ToolsInAction";
+import HelpSupportBanner from "@/components/HelpSupportBanner";
+import AppDownloadBanner from "@/components/AppDownloadBanner";
+import Footer from "@/components/Footer";
 
 export default function Home() {
-  return (
-    <div
-      className="flex flex-col min-h-screen bg-[#0F291B] dark:bg-[#07140D]"
-    >
-      <Navbar />
-      <Hero />
-      <Stats />
-      <Categories />
-      <FieldExperiences />
-      <BestSellingTools />
-      <AppDownload />
-      <GbRUOnField />
-      <WhyGBRU />
-      <Testimonials />
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-      {/* Additional sections can be placed here as we build them */}
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsLoggedIn(!!localStorage.getItem("gbru_user"));
+    }
+  }, []);
+
+  return (
+    <div className="flex flex-col min-h-screen bg-white">
+      <Navbar />
+      <main className="flex-1">
+        <Hero />
+        <Stats />
+        <Categories />
+        {!isLoggedIn && <FieldExperiences />}
+        <BestSellingTools />
+        <ToolsInAction />
+        {!isLoggedIn && <AppDownload />}
+        {!isLoggedIn && <GbRUOnField />}
+        {!isLoggedIn && <WhyGBRU />}
+        <Testimonials />
+        <HelpSupportBanner />
+        <AppDownloadBanner />
+      </main>
+      <Footer />
     </div>
   );
 }

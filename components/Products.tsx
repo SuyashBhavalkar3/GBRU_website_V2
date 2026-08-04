@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Navbar from "./Navbar";
+import Footer from "./Footer";
 
 interface ERPProduct {
   item_code: string;
@@ -288,6 +289,7 @@ export default function Products() {
           </>
         )}
       </main>
+      <Footer />
     </div>
   );
 }

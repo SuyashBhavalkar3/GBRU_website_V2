@@ -44,11 +44,20 @@ export default function BestSellingTools() {
   ];
 
   return (
-    <section className="relative w-full bg-white lg:h-[667px] pt-[58px] pb-[29.2px] px-[64px] flex flex-col items-center justify-start overflow-hidden">
+    <section className="relative w-full bg-white pt-10 pb-12 px-4 lg:px-[64px] flex flex-col items-center justify-start overflow-hidden">
       {/* Header Container */}
-      <div className="relative z-10 w-full lg:w-[1152px] lg:h-[56px] flex items-center justify-between">
-        <h2 className="text-[#0F291B] text-[32px] lg:text-[40px] font-bold leading-tight font-roboto">
-          Best Selling Tools
+      <div className="relative z-10 w-full lg:w-[1152px] flex items-center justify-between">
+        <h2 
+          className="text-[#0F291B]"
+          style={{
+            fontFamily: "Roboto",
+            fontWeight: 500,
+            fontSize: "24px",
+            lineHeight: "32px",
+            letterSpacing: "0px"
+          }}
+        >
+          Featured Products
         </h2>
         <button className="w-[100px] h-[32px] bg-[#1E532E] hover:bg-[#153B21] text-white font-roboto font-bold text-[12px] rounded-full flex items-center justify-center transition-all duration-300 shadow-md">
           View All
@@ -56,12 +65,12 @@ export default function BestSellingTools() {
       </div>
 
       {/* Products Grid Container */}
-      <div className="relative z-10 w-full lg:w-[1152px] lg:h-[464.8px] mt-[59px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[20.85px] items-stretch">
+      <div className="relative z-10 w-full lg:w-[1152px] mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[20.85px] items-stretch">
         {products.map((product) => (
           <div
             key={product.id}
-            className="relative rounded-[23.68px] border border-zinc-200/80 bg-white hover:shadow-xl transition-all duration-300 flex flex-col justify-start"
-            style={{ width: "272.36px", height: "464.8px", padding: "18.5px" }}
+            className="relative rounded-[23.68px] border border-zinc-200/80 bg-white hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+            style={{ width: "272.36px", minHeight: "410px", padding: "18.5px" }}
           >
             {/* Upper Content */}
             <div className="flex flex-col">

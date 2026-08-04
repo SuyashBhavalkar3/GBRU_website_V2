@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function LoginPage() {
   return (
-    <main>
+    <main style={{ zoom: "0.909" }}>
       <Login />
     </main>
   );
