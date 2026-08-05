@@ -47,7 +47,7 @@ export default function BestSellingTools() {
     <section className="relative w-full bg-white pt-10 pb-12 px-4 lg:px-[64px] flex flex-col items-center justify-start overflow-hidden">
       {/* Header Container */}
       <div className="relative z-10 w-full lg:w-[1152px] flex items-center justify-between">
-        <h2 
+        <h2
           className="text-[#0F291B]"
           style={{
             fontFamily: "Roboto",
@@ -75,7 +75,7 @@ export default function BestSellingTools() {
             {/* Upper Content */}
             <div className="flex flex-col">
               {/* Product Image Thumbnail */}
-              <div 
+              <div
                 className="relative rounded-[20px] bg-[#E2F0E4]/60 overflow-hidden flex items-center justify-center"
                 style={{ width: "235.36px", height: "253.12px", padding: "16px" }}
               >
@@ -132,11 +132,11 @@ export default function BestSellingTools() {
             </div>
 
             {/* Get Best Price Button */}
-            <button 
+            <button
               className="mt-4 rounded-[23.68px] bg-[#1E532E] hover:bg-[#153B21] text-white font-roboto font-bold text-sm flex items-center justify-center transition-all duration-300 shadow-md w-full"
               style={{ height: "41.68px" }}
             >
-              Get best Price
+              Add To Cart
             </button>
           </div>
         ))}

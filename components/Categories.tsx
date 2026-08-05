@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Categories() {
   const categoriesList = [
@@ -66,9 +67,11 @@ export default function Categories() {
       </div>
 
       {/* View All Categories Button */}
-      <button className="bg-[#0D9740] hover:bg-[#0b8036] text-white font-roboto font-bold text-[12px] tracking-wider w-[173px] h-[32px] rounded-full pt-[8px] pr-[24px] pb-[8px] pl-[24px] flex items-center justify-center transition-all duration-200 hover:scale-[1.02] cursor-pointer shadow-md">
-        View All categories
-      </button>
+      <Link href="/categories">
+        <button className="bg-[#0D9740] hover:bg-[#0b8036] text-white font-roboto font-bold text-[12px] tracking-wider w-[173px] h-[32px] rounded-full pt-[8px] pr-[24px] pb-[8px] pl-[24px] flex items-center justify-center transition-all duration-200 hover:scale-[1.02] cursor-pointer shadow-md">
+          View All categories
+        </button>
+      </Link>
 
     </section>
   );
