@@ -93,7 +93,7 @@ export default function Products() {
           throw new Error("Failed to load products for this category.");
         }
         const json = await response.json();
-        
+
         if (json.message?.status && Array.isArray(json.message?.data?.data)) {
           setProductsList(json.message.data.data);
         } else {
@@ -139,7 +139,7 @@ export default function Products() {
       </div>
 
       <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-12 flex flex-col min-h-[400px] justify-center">
-        
+
         {loading ? (
           /* Loading indicator */
           <div className="flex flex-col items-center justify-center py-16 gap-3">
@@ -171,9 +171,9 @@ export default function Products() {
                   Showing {productsList.length} Professional Products Found
                 </p>
               </div>
-              
+
               <div className="mt-4 md:mt-0 flex flex-wrap items-center gap-4">
-                
+
                 {/* Subcategory Dropdown Filter */}
                 {subcategories.length > 0 && (
                   <div className="flex items-center gap-2">
@@ -260,7 +260,7 @@ export default function Products() {
                         <h3 className="font-bold text-sm text-[#1A1A1A] mb-3 leading-snug min-h-[40px] line-clamp-2">
                           {product.item_name}
                         </h3>
-                        
+
                         {/* Tags */}
                         <div className="flex flex-wrap gap-2 mb-6">
                           {product.brand && (
@@ -274,7 +274,7 @@ export default function Products() {
                             </span>
                           )}
                         </div>
-                        
+
                         <div className="mt-auto">
                           {/* Price */}
                           <div className="flex items-baseline gap-2 mb-1">
@@ -283,19 +283,15 @@ export default function Products() {
                               <span className="text-xs text-[#6B7280] line-through">₹{formatPrice(product.mrp)}</span>
                             )}
                           </div>
-                          
+
                           <div className="text-[11px] text-[#4B5563] font-bold mb-4 flex flex-col gap-0.5">
                             <span>Minimum Order Quantity: <span className="text-[#0F291B]">{product.moq} {product.stock_uom}</span></span>
                           </div>
-                          
-<<<<<<< HEAD
-                          <button className="w-full bg-[#006B21] text-white font-bold py-3 rounded-lg hover:bg-[#005a1b] transition-colors text-sm shadow-sm">
-=======
-                          <button 
+
+                          <button
                             onClick={handleAddToCart}
                             className="w-full bg-[#006B21] text-white font-bold py-3 rounded-lg hover:bg-[#005a1b] transition-colors text-sm shadow-sm"
                           >
->>>>>>> origin/ayush_localDev
                             Add to Cart
                           </button>
                         </div>
@@ -310,9 +306,9 @@ export default function Products() {
       </main>
       <Footer />
 
-      <LoginPrompt 
-        isOpen={showLoginPrompt} 
-        onClose={() => setShowLoginPrompt(false)} 
+      <LoginPrompt
+        isOpen={showLoginPrompt}
+        onClose={() => setShowLoginPrompt(false)}
       />
     </div>
   );
