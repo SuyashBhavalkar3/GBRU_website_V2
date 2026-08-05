@@ -52,6 +52,12 @@ export default function SupportHelpPage() {
   // Load User details and call APIs
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const queryParams = new URLSearchParams(window.location.search);
+      const urlOrderId = queryParams.get("order_id");
+      if (urlOrderId) {
+        setSelectedOrder(urlOrderId);
+      }
+
       const stored = localStorage.getItem("gbru_user");
       if (stored) {
         try {
@@ -82,11 +88,19 @@ export default function SupportHelpPage() {
       
       if (data?.message?.status && data?.message?.data) {
         const types = data.message.data.complaint_types || [];
-        const orderList = data.message.data.orders || [];
+        const orderList = [...(data.message.data.orders || [])];
         if (types.length > 0) {
           setComplaintTypes(types);
           setCategory(types[0]);
         }
+        
+        // Ensure urlOrderId is in the dropdown options
+        const queryParams = new URLSearchParams(window.location.search);
+        const urlOrderId = queryParams.get("order_id");
+        if (urlOrderId && !orderList.includes(urlOrderId)) {
+          orderList.push(urlOrderId);
+        }
+        
         setOrders(orderList);
       }
     } catch (err) {

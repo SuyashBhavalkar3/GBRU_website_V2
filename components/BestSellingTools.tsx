@@ -70,7 +70,7 @@ export default function BestSellingTools() {
           <div
             key={product.id}
             className="relative rounded-[23.68px] border border-zinc-200/80 bg-white hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
-            style={{ width: "272.36px", minHeight: "410px", padding: "18.5px" }}
+            style={{ width: "272.36px", minHeight: "480px", padding: "18.5px" }}
           >
             {/* Upper Content */}
             <div className="flex flex-col">
@@ -133,8 +133,8 @@ export default function BestSellingTools() {
 
             {/* Get Best Price Button */}
             <button 
-              className="absolute bottom-[18.5px] left-[18.5px] rounded-[23.68px] bg-[#1E532E] hover:bg-[#153B21] text-white font-roboto font-bold text-sm flex items-center justify-center transition-all duration-300 shadow-md"
-              style={{ width: "235.36px", height: "41.68px" }}
+              className="mt-4 rounded-[23.68px] bg-[#1E532E] hover:bg-[#153B21] text-white font-roboto font-bold text-sm flex items-center justify-center transition-all duration-300 shadow-md w-full"
+              style={{ height: "41.68px" }}
             >
               Get best Price
             </button>
