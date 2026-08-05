@@ -186,9 +186,40 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
               <h3 className="font-bold text-[#1A1A1A] text-[14px] flex items-center gap-2 tracking-wide uppercase">
                 <span className="text-emerald-500 font-serif font-bold text-lg leading-none">₹</span> TRANSACTIONS
               </h3>
-              <div className="bg-white border border-zinc-200/80 rounded-xl p-8 shadow-sm flex items-center justify-center">
-                <span className="text-zinc-400 text-sm">No transactions found</span>
-              </div>
+              {(!order.transactions || order.transactions.length === 0) ? (
+                <div className="bg-white border border-zinc-200/80 rounded-xl p-8 shadow-sm flex items-center justify-center">
+                  <span className="text-zinc-400 text-sm">No transactions found</span>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {order.transactions.map((tx: any, idx: number) => (
+                    <div key={idx} className="bg-white border border-zinc-200/80 rounded-xl p-6 shadow-sm flex flex-col gap-4">
+                      <div className="flex justify-between items-start">
+                        <div className="flex flex-col">
+                          <span className="text-xs text-zinc-500 font-medium">Transaction ID</span>
+                          <span className="text-sm font-bold text-[#1A1A1A] break-all">{tx.transaction_id || "--"}</span>
+                        </div>
+                        <div className="bg-emerald-50 text-[#0D9740] text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-emerald-100">
+                          {tx.status}
+                        </div>
+                      </div>
+                      <div className="h-[1px] bg-zinc-100 w-full"></div>
+                      <div className="flex justify-between items-center text-[13px]">
+                        <span className="text-zinc-500">Date</span>
+                        <span className="font-bold text-[#1A1A1A]">{tx.date}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[13px]">
+                        <span className="text-zinc-500">Mode of Payment</span>
+                        <span className="font-bold text-[#1A1A1A]">{tx.mode_of_payment}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[14px] mt-1">
+                        <span className="text-[#1A1A1A] font-medium">Amount</span>
+                        <span className="font-bold text-[#1A1A1A] text-[15px]">₹{tx.amount}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* INVOICES */}
@@ -196,9 +227,51 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
               <h3 className="font-bold text-[#1A1A1A] text-[14px] flex items-center gap-2 tracking-wide uppercase">
                 <span className="text-blue-400">🧾</span> INVOICES
               </h3>
-              <div className="bg-white border border-zinc-200/80 rounded-xl p-8 shadow-sm flex items-center justify-center">
-                <span className="text-zinc-400 text-sm">No invoices created</span>
-              </div>
+              {(!order.invoices || order.invoices.length === 0) ? (
+                <div className="bg-white border border-zinc-200/80 rounded-xl p-8 shadow-sm flex items-center justify-center">
+                  <span className="text-zinc-400 text-sm">No invoices created</span>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {order.invoices.map((inv: any, idx: number) => (
+                    <div key={idx} className="bg-white border border-zinc-200/80 rounded-xl p-6 shadow-sm flex flex-col gap-4">
+                      <div className="flex justify-between items-start">
+                        <div className="flex flex-col">
+                          <span className="text-xs text-zinc-500 font-medium">Invoice ID</span>
+                          <span className="text-sm font-bold text-[#1A1A1A]">{inv.invoice_id || "--"}</span>
+                        </div>
+                        <div className="bg-blue-50 text-blue-600 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-blue-100">
+                          {inv.status}
+                        </div>
+                      </div>
+                      <div className="h-[1px] bg-zinc-100 w-full"></div>
+                      <div className="flex justify-between items-center text-[13px]">
+                        <span className="text-zinc-500">Date</span>
+                        <span className="font-bold text-[#1A1A1A]">{inv.invoice_date}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[13px]">
+                        <span className="text-zinc-500">Dispatch Status</span>
+                        <span className="font-bold text-[#1A1A1A]">{inv.dispatch_status}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[14px] mt-1">
+                        <span className="text-[#1A1A1A] font-medium">Amount</span>
+                        <span className="font-bold text-[#1A1A1A] text-[15px]">₹{inv.amount}</span>
+                      </div>
+                      {inv.sales_invoice_print_url && (
+                        <a 
+                          href={inv.sales_invoice_print_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="mt-3 w-full py-2.5 flex items-center justify-center gap-2 border border-[#3B82F6] text-[#3B82F6] rounded-lg hover:bg-blue-50 transition-colors text-xs font-bold uppercase tracking-wider"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                          Download Invoice
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
           </div>

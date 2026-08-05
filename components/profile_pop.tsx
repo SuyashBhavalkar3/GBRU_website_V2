@@ -19,6 +19,7 @@ interface ProfilePopProps {
 export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProps) {
   const [user, setUser] = useState<UserDetails | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     if (isOpen && !user) {
@@ -233,12 +234,16 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
             <li>
               <button 
                 onClick={() => {
-                  if (onLogout) {
-                    onLogout();
-                  } else {
-                    localStorage.removeItem("gbru_user");
-                  }
-                  onClose();
+                  setIsLoggingOut(true);
+                  setTimeout(() => {
+                    if (onLogout) {
+                      onLogout();
+                    } else {
+                      localStorage.removeItem("gbru_user");
+                    }
+                    onClose();
+                    setIsLoggingOut(false);
+                  }, 2000);
                 }}
                 className="w-full flex items-center gap-4 py-4 px-2 text-[#EF4444] hover:bg-gray-50 rounded-lg transition-colors group"
               >
@@ -252,6 +257,21 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
           </ul>
         </div>
       </div>
+
+      {/* Logout Success Popup */}
+      {isLoggingOut && (
+        <div className="fixed inset-0 bg-black/50 z-[2000] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 shadow-2xl flex flex-col items-center gap-4 animate-in zoom-in duration-200">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 text-[#0D9740] flex items-center justify-center">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-[#0F291B]">Logged out successfully</h3>
+            <p className="text-zinc-500 text-sm">See you soon!</p>
+          </div>
+        </div>
+      )}
     </>
   );
 }
