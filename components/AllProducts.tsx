@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Navbar from './Navbar';
 import LoginPrompt from './LoginPrompt';
+import { addToCartUtil } from "@/utils/cartUtils";
 
 const products = [
   { id: 1, title: 'Smart Guard 4G Solar Power', brand: 'GBRU PRO', price: '₹14,999', rating: '4.8', discount: '25% OFF', image: '/assets/sprayer.png' },
@@ -20,20 +21,37 @@ const products = [
 const AllProducts = () => {
   const router = useRouter();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async (itemCode: string) => {
     const user = localStorage.getItem("gbru_user");
     if (!user) {
       setShowLoginPrompt(true);
     } else {
-      alert("Added to cart!");
+      const success = await addToCartUtil(itemCode);
+      if (success) {
+        setToastMessage("Product added to cart successfully!");
+        setTimeout(() => setToastMessage(""), 3000);
+      } else {
+        alert("Failed to add to cart. Please try again.");
+      }
     }
   };
 
   return (
-    <div className="min-h-screen bg-white font-roboto flex flex-col">
+    <div className="min-h-screen bg-[#FDFDFD] font-roboto relative">
       <Navbar />
-      
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 bg-[#006B21] text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in-down">
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="font-medium font-inter">{toastMessage}</span>
+        </div>
+      )}
+
       <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-8">
         
         {/* Breadcrumbs */}
@@ -151,7 +169,7 @@ const AllProducts = () => {
                     {product.price}
                   </div>
                   <button 
-                    onClick={handleAddToCart}
+                    onClick={() => handleAddToCart(String(product.id))}
                     className="w-full bg-[#006B21] text-white font-bold py-2.5 rounded-lg hover:bg-[#005a1b] transition-colors text-[13px] shadow-sm"
                   >
                     Add to cart

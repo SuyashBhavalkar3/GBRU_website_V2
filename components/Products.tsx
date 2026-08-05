@@ -3,10 +3,11 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import LoginPrompt from "./LoginPrompt";
+import { addToCartUtil } from "@/utils/cartUtils";
 
 interface ERPProduct {
   item_code: string;
@@ -38,6 +39,7 @@ interface Subcategory {
 
 export default function Products() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const categoryId = searchParams.get("category_id") || "";
   const categoryName = searchParams.get("category_name") || "All Products";
 
@@ -47,6 +49,7 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   // Load subcategories
   useEffect(() => {
@@ -70,13 +73,18 @@ export default function Products() {
     setSelectedSubcategory("all"); // Reset selection on category change
   }, [categoryId]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async (itemCode: string) => {
     const user = localStorage.getItem("gbru_user");
     if (!user) {
       setShowLoginPrompt(true);
     } else {
-      // Logic to actually add to cart could go here in the future
-      alert("Added to cart!");
+      const success = await addToCartUtil(itemCode);
+      if (success) {
+        setToastMessage("Product added to cart successfully!");
+        setTimeout(() => setToastMessage(""), 3000);
+      } else {
+        alert("Failed to add to cart. Please try again.");
+      }
     }
   };
 
@@ -117,8 +125,18 @@ export default function Products() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-roboto flex flex-col">
+    <div className="min-h-screen bg-[#f8f9fa] font-roboto relative">
       <Navbar />
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 bg-[#006B21] text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in-down">
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="font-medium font-inter">{toastMessage}</span>
+        </div>
+      )}
 
       {/* Top Banner Section */}
       <div className="w-full bg-[#F9F9F9] pt-10 pb-16">
@@ -289,7 +307,7 @@ export default function Products() {
                           </div>
 
                           <button
-                            onClick={handleAddToCart}
+                            onClick={() => handleAddToCart(product.item_code)}
                             className="w-full bg-[#006B21] text-white font-bold py-3 rounded-lg hover:bg-[#005a1b] transition-colors text-sm shadow-sm"
                           >
                             Add to Cart

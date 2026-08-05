@@ -70,7 +70,8 @@ const OtpContent = () => {
           setShowRegistrationPopup(true);
         } else {
           // Save user details securely in localStorage
-          localStorage.setItem('gbru_user', JSON.stringify(data.user));
+          const userToSave = { ...data.user, mobile_no: mobileNo };
+          localStorage.setItem('gbru_user', JSON.stringify(userToSave));
 
           // Redirect based on role
           if (data.user?.role?.toLowerCase() === 'farmer') {
@@ -113,6 +114,7 @@ const OtpContent = () => {
           Customer_name: registrationName.trim(),
           customer_id: shortData.customer_id,
           user_id: shortData.user_id,
+          mobile_no: mobileNo,
           role: "Farmer",
           status: "ACTIVE",
           is_completed: false

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import LoginPrompt from "./LoginPrompt";
+import { addToCartUtil } from "@/utils/cartUtils";
 
 const images = [
   "/assets/gbru_tractor_main.png",
@@ -20,19 +21,37 @@ export default function ProductDetail() {
   const [paymentOption, setPaymentOption] = useState<"full" | "booking">("full");
   const [activeTab, setActiveTab] = useState<"specs" | "features" | "guide" | "warranty" | "faqs">("specs");
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     const user = localStorage.getItem("gbru_user");
     if (!user) {
       setShowLoginPrompt(true);
     } else {
-      alert("Added to cart!");
+      // Since ProductDetail is currently a static mockup, we'll use a placeholder item code
+      const success = await addToCartUtil("12983");
+      if (success) {
+        setToastMessage("Product added to cart successfully!");
+        setTimeout(() => setToastMessage(""), 3000);
+      } else {
+        alert("Failed to add to cart. Please try again.");
+      }
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col pb-16">
+    <div className="min-h-screen bg-white font-roboto relative">
       <Navbar />
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 bg-[#006B21] text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in-down">
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="font-medium font-inter">{toastMessage}</span>
+        </div>
+      )}
 
       {/* Main Container */}
       <main className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 pt-8 flex flex-col gap-6">

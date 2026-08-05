@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 
@@ -20,6 +20,61 @@ export default function Checkout() {
   // Address Interactivity States
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [isAddressSaved, setIsAddressSaved] = useState(false);
+  
+  const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+  const [selectedAddressIndex, setSelectedAddressIndex] = useState<number>(0);
+  const [loadingAddresses, setLoadingAddresses] = useState(true);
+
+  useEffect(() => {
+    async function fetchAddresses() {
+      try {
+        const userStr = localStorage.getItem("gbru_user");
+        if (!userStr) {
+          setLoadingAddresses(false);
+          setIsAddingAddress(true);
+          return;
+        }
+
+        const user = JSON.parse(userStr);
+        let mobile_no = user.mobile_no || user.user_id || user.customer_id;
+        if (mobile_no && mobile_no.includes("@")) {
+          mobile_no = mobile_no.split("@")[0];
+        }
+        const api_key = user.key_details?.api_key || user.api_key;
+        const api_secret = user.key_details?.api_secret || user.api_secret;
+
+        const res = await fetch("/api/shipping-address", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mobile_no, api_key, api_secret })
+        });
+        
+        if (res.ok) {
+          const json = await res.json();
+          if (json.message?.status && Array.isArray(json.message?.data)) {
+            setSavedAddresses(json.message.data);
+            if (json.message.data.length > 0) {
+              setIsAddressSaved(true);
+              const primaryIdx = json.message.data.findIndex((a: any) => a.is_primary === 1);
+              if (primaryIdx !== -1) setSelectedAddressIndex(primaryIdx);
+            } else {
+              setIsAddingAddress(true);
+            }
+          } else {
+            setIsAddingAddress(true);
+          }
+        } else {
+          setIsAddingAddress(true);
+        }
+      } catch (e) {
+        console.error("Failed to fetch addresses:", e);
+        setIsAddingAddress(true);
+      } finally {
+        setLoadingAddresses(false);
+      }
+    }
+    fetchAddresses();
+  }, []);
 
   // Address Form States
   const [formData, setFormData] = useState({
@@ -105,7 +160,7 @@ export default function Checkout() {
               <div className="flex justify-between items-center">
                 <h3 className="font-bold text-[#0F291B] text-[16px]">Payment Mode</h3>
                 <span className="text-xs text-[#0D9740] font-bold cursor-pointer hover:underline flex items-center gap-1">
-                  ✏️ Change
+                  Change
                 </span>
               </div>
 
@@ -232,7 +287,7 @@ export default function Checkout() {
                     }}
                     className="text-xs text-[#0D9740] font-bold hover:underline"
                   >
-                    ✏️ Edit
+                    Edit
                   </button>
                 ) : isAddingAddress ? (
                   <button
@@ -248,19 +303,51 @@ export default function Checkout() {
                 ) : null}
               </div>
 
-              {isAddressSaved ? (
-                /* Saved Address Preview Card */
-                <div className="bg-[#F8FBB8]/10 border border-[#E5ECC0]/60 rounded-[16px] p-5 flex flex-col gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-[#0F291B] text-sm">{formData.fullName || "Ramesh Kumar"}</span>
-                    <span className="bg-[#EBF5EE] text-[#0D9740] text-[10px] font-bold py-0.5 px-2 rounded-[4px]">Home</span>
-                  </div>
-                  <span className="text-xs text-[#374151]">
-                    {formData.address1 || "Near Temple, Sector 4"}, {formData.address2 || "Main GT Road"}, {formData.village || "Ludhiana Area"}, {formData.city || "Ludhiana"}, {formData.district || "Ludhiana"}, {formData.state || "Punjab"} - {formData.pin || "141001"}
-                  </span>
-                  <span className="text-xs text-zinc-500 font-medium">
-                    Phone: {formData.mobile || "+91 98765 43210"}
-                  </span>
+              {loadingAddresses ? (
+                <div className="flex justify-center py-6 text-sm text-zinc-500 font-semibold">
+                  Loading addresses...
+                </div>
+              ) : isAddressSaved && savedAddresses.length > 0 ? (
+                /* Saved Addresses List */
+                <div className="flex flex-col gap-4">
+                  {savedAddresses.map((addr, idx) => (
+                    <div 
+                      key={addr.name} 
+                      onClick={() => setSelectedAddressIndex(idx)}
+                      className={`relative border rounded-[16px] p-5 flex flex-col gap-2 cursor-pointer transition-all ${
+                        selectedAddressIndex === idx 
+                        ? "bg-[#F8FBB8]/20 border-[#0D9740]" 
+                        : "bg-white border-zinc-200 hover:border-zinc-300"
+                      }`}
+                    >
+                      {selectedAddressIndex === idx && (
+                        <div className="absolute top-4 right-4 bg-[#0d9740] text-white w-5 h-5 rounded-full flex items-center justify-center shadow-sm text-xs">
+                          ✓
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-[#0F291B] text-sm">{addr.address_title}</span>
+                        {addr.is_primary === 1 && (
+                          <span className="bg-[#EBF5EE] text-[#0D9740] text-[10px] font-bold py-0.5 px-2 rounded-[4px]">Primary</span>
+                        )}
+                      </div>
+                      <span className="text-xs text-[#374151] pr-6">
+                        {addr.address_line1}, {addr.address_line2}, {addr.city || addr.tahsil}, {addr.district}, {addr.state} - {addr.pincode}
+                      </span>
+                      <span className="text-xs text-zinc-500 font-medium">
+                        Phone: {addr.phone}
+                      </span>
+                    </div>
+                  ))}
+                  <button
+                    onClick={() => {
+                      setIsAddressSaved(false);
+                      setIsAddingAddress(true);
+                    }}
+                    className="mt-2 text-sm text-[#0D9740] font-bold hover:underline self-start flex items-center gap-1"
+                  >
+                    <span>＋</span> Add New Address
+                  </button>
                 </div>
               ) : !isAddingAddress ? (
                 /* Initial "+ Add Address" button state */

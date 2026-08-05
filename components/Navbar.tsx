@@ -166,7 +166,7 @@ export default function Navbar() {
             )}
 
             {/* Cart Icon */}
-            <Link href="/cart" className="relative hover:scale-110 transition-transform duration-200 w-[20px] h-[23px] flex items-center justify-center">
+            <Link href="/cart-proceed" className="relative hover:scale-110 transition-transform duration-200 w-[20px] h-[23px] flex items-center justify-center">
               <Image
                 src="/assets/header_cart_logo.png"
                 alt="Cart"
@@ -202,7 +202,7 @@ export default function Navbar() {
             </div>
 
             {/* Mobile Cart */}
-            <Link href="/cart" className="p-1 hover:scale-105 transition-transform duration-200">
+            <Link href="/cart-proceed" className="p-1 hover:scale-105 transition-transform duration-200">
               <Image
                 src="/assets/header_cart_logo.png"
                 alt="Cart"
