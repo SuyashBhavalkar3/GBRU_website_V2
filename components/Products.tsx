@@ -277,7 +277,7 @@ export default function Products() {
                           </div>
                           
                           <button className="w-full bg-[#006B21] text-white font-bold py-3 rounded-lg hover:bg-[#005a1b] transition-colors text-sm shadow-sm">
-                            Get at ₹{formatPrice(product.actual_rate)}
+                            Add to Cart
                           </button>
                         </div>
                       </div>
