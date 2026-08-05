@@ -13,9 +13,10 @@ interface UserDetails {
 interface ProfilePopProps {
   isOpen: boolean;
   onClose: () => void;
+  onLogout?: () => void;
 }
 
-export default function ProfilePop({ isOpen, onClose }: ProfilePopProps) {
+export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProps) {
   const [user, setUser] = useState<UserDetails | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -232,8 +233,11 @@ export default function ProfilePop({ isOpen, onClose }: ProfilePopProps) {
             <li>
               <button 
                 onClick={() => {
-                  // Add logout logic here (e.g. clearing localStorage, tokens)
-                  console.log("Logout clicked");
+                  if (onLogout) {
+                    onLogout();
+                  } else {
+                    localStorage.removeItem("gbru_user");
+                  }
                   onClose();
                 }}
                 className="w-full flex items-center gap-4 py-4 px-2 text-[#EF4444] hover:bg-gray-50 rounded-lg transition-colors group"

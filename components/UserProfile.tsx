@@ -126,7 +126,7 @@ export default function UserProfile() {
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
             <Link
-              href="/track-order"
+              href="/orders"
               className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow"
             >
               <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg">📦</div>
@@ -165,7 +165,7 @@ export default function UserProfile() {
               <div className="flex justify-between items-center">
                 <h3 className="font-bold text-[#0F291B] text-[18px]">Order Summary</h3>
                 <Link
-                  href="/track-order"
+                  href="/orders"
                   className="text-xs text-[#0D9740] font-bold hover:underline"
                 >
                   VIEW ALL ORDERS

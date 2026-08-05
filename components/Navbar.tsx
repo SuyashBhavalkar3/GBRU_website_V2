@@ -340,7 +340,15 @@ export default function Navbar() {
       )}
 
       {/* Profile Slider */}
-      <ProfilePop isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
+      <ProfilePop 
+        isOpen={isProfileOpen} 
+        onClose={() => setIsProfileOpen(false)} 
+        onLogout={() => {
+          localStorage.removeItem("gbru_user");
+          setLoggedInUser(null);
+          setIsProfileOpen(false);
+        }}
+      />
     </nav>
   );
 }
