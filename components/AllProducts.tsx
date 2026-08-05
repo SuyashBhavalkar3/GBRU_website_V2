@@ -163,12 +163,7 @@ export default function AllProducts() {
       <PaymentOptionModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
-        productName={selectedProduct?.item_name || ""}
-        price={selectedProduct?.price || 0}
-        mrp={selectedProduct?.mrp || 0}
-        onConfirm={(option) => {
-          alert(`Added ${selectedProduct?.item_name} to cart with ${option === "full" ? "Full Payment" : "Cash on Delivery"}!`);
-        }}
+        itemCode={selectedProduct?.item_code || ""}
       />
     </div>
   );

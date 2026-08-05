@@ -19,6 +19,8 @@ function ProductDetailContent() {
   const [paymentOption, setPaymentOption] = useState<"full" | "booking">("full");
   const [activeTab, setActiveTab] = useState<"specs" | "features" | "guide" | "warranty" | "faqs">("specs");
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -33,6 +35,7 @@ function ProductDetailContent() {
         if (data?.message?.status && data.message.data) {
           setProduct(data.message.data);
           setActiveImgIdx(0);
+          setQuantity(data.message.data.moq || 1);
         } else {
           setError(data?.message?.message || "Failed to load product details.");
         }
@@ -48,12 +51,58 @@ function ProductDetailContent() {
     }
   }, [itemCode]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     const user = localStorage.getItem("gbru_user");
     if (!user) {
       setShowLoginPrompt(true);
-    } else {
-      alert("Added to cart!");
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(user);
+      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      if (!mobile_no) {
+        setShowLoginPrompt(true);
+        return;
+      }
+
+      setSubmitting(true);
+
+      const payload = {
+        mobile_no,
+        items: [
+          {
+            item: product.item_code,
+            quantity: quantity,
+            is_moq_applicable: 0,
+            payment_type: paymentOption === "full" ? "Full Payment" : "Cash On Delivery",
+            full_payment_amount: product.full_payment_amount || 0.0,
+            full_payment_discount: product.full_payment_discount || 0.0,
+            cod_value: product.cod_value || product.COD_value || 0.0,
+            cod_display: product.cod_display || product.COD_Display || 0.0,
+            cod_discount: product.cod_discount || product.COD_discount || 0.0,
+          }
+        ]
+      };
+
+      const res = await fetch("/api/cart/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const resJson = await res.json();
+      if (resJson.message?.status) {
+        alert(`${product.item_name} added to cart successfully!`);
+        window.location.href = "/cart";
+      } else {
+        alert(resJson.message?.message || "Failed to add product to cart.");
+      }
+    } catch (err) {
+      console.error("Error in add to cart:", err);
+      alert("Failed to add product to cart.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -372,13 +421,53 @@ function ProductDetailContent() {
                 : `Only ₹${formatPrice(product.COD_Display)} required to reserve this product today. Remaining balance can be paid on delivery.`}
             </p>
 
+            {/* Quantity Selector */}
+            <div className="flex items-center justify-between py-3 px-4 bg-zinc-50 border border-zinc-100 rounded-[14px] mt-2 mb-1">
+              <div className="flex flex-col gap-0.5 text-left">
+                <span className="text-xs font-bold text-[#0F291B]">Select Quantity</span>
+                {product?.moq > 1 && (
+                  <span className="text-[10px] text-zinc-500 font-medium">
+                    Minimum: {product.moq} {product.stock_uom || "Nos"}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center bg-white rounded-[9999px] border border-zinc-200 px-3 py-1 gap-4 shadow-sm">
+                <button
+                  onClick={() => setQuantity(prev => Math.max(product?.moq || 1, prev - 1))}
+                  className="text-zinc-500 hover:text-[#0F291B] font-extrabold text-[16px] px-1 transition-colors"
+                >
+                  −
+                </button>
+                <span className="font-extrabold text-sm text-[#0F291B] min-w-4 text-center">
+                  {quantity}
+                </span>
+                <button
+                  onClick={() => setQuantity(prev => prev + 1)}
+                  className="text-zinc-500 hover:text-[#0F291B] font-extrabold text-[16px] px-1 transition-colors"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
             {/* Action Buttons */}
             <div className="flex flex-col gap-3">
               <button 
                 onClick={handleAddToCart}
-                className="w-full h-14 rounded-[14px] bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm"
+                disabled={submitting}
+                className="w-full h-14 rounded-[14px] bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
               >
-                Add to Cart
+                {submitting ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Adding to Cart...
+                  </>
+                ) : (
+                  "Add to Cart"
+                )}
               </button>
 
               <button className="w-full h-14 rounded-[14px] bg-[#22C55E] hover:bg-[#1eb053] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm">

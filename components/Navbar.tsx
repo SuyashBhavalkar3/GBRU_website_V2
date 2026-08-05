@@ -10,6 +10,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState<any>(null);
+  const [cartCount, setCartCount] = useState<number>(0);
   const pathname = usePathname() || "/";
 
   useEffect(() => {
@@ -17,7 +18,29 @@ export default function Navbar() {
       const stored = localStorage.getItem("gbru_user");
       if (stored) {
         try {
-          setLoggedInUser(JSON.parse(stored));
+          const parsed = JSON.parse(stored);
+          setLoggedInUser(parsed);
+
+          // Fetch cart count
+          const fetchCartCount = async () => {
+            try {
+              const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+              if (!mobile_no) return;
+
+              const res = await fetch("/api/cart/count", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ mobile_no }),
+              });
+              const data = await res.json();
+              if (data?.message?.status && data.message.data) {
+                setCartCount(data.message.data.count || 0);
+              }
+            } catch (err) {
+              console.error("Error fetching cart count:", err);
+            }
+          };
+          fetchCartCount();
         } catch (e) {
           console.error(e);
         }
@@ -174,6 +197,11 @@ export default function Navbar() {
                 height={23}
                 className="h-[23px] w-[20px] object-contain"
               />
+              {cartCount > 0 && (
+                <span className="absolute -top-1.5 -right-2 bg-red-500 text-white font-extrabold text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white shadow-sm">
+                  {cartCount}
+                </span>
+              )}
             </Link>
           </div>
 
@@ -202,7 +230,7 @@ export default function Navbar() {
             </div>
 
             {/* Mobile Cart */}
-            <Link href="/cart" className="p-1 hover:scale-105 transition-transform duration-200">
+            <Link href="/cart" className="relative p-1 hover:scale-105 transition-transform duration-200">
               <Image
                 src="/assets/header_cart_logo.png"
                 alt="Cart"
@@ -210,6 +238,11 @@ export default function Navbar() {
                 height={22}
                 className="h-[22px] w-auto object-contain"
               />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1.5 bg-red-500 text-white font-extrabold text-[9px] w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm">
+                  {cartCount}
+                </span>
+              )}
             </Link>
 
             {/* Hamburger Button */}
