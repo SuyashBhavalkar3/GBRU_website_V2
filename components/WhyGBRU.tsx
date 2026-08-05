@@ -82,6 +82,7 @@ export default function WhyGBRU() {
           paddingRight: "64px",
           gap: "64px",
         }}
+
       >
         {/* Header */}
         <div className="flex flex-col items-center gap-3">
