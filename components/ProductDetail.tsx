@@ -1,25 +1,52 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import LoginPrompt from "./LoginPrompt";
 
-const images = [
-  "/assets/gbru_tractor_main.png",
-  "/assets/gbru_tractor_thumb2.png",
-  "/assets/gbru_tractor_thumb3.png",
-  "/assets/gbru_tractor_thumb4.png",
-];
-
-export default function ProductDetail() {
+function ProductDetailContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const itemCode = searchParams.get("item_code") || "24529";
+
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [activeImgIdx, setActiveImgIdx] = useState(0);
   const [paymentOption, setPaymentOption] = useState<"full" | "booking">("full");
   const [activeTab, setActiveTab] = useState<"specs" | "features" | "guide" | "warranty" | "faqs">("specs");
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  useEffect(() => {
+    const fetchDetails = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/products/details", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ item_code: itemCode }),
+        });
+        const data = await res.json();
+        if (data?.message?.status && data.message.data) {
+          setProduct(data.message.data);
+          setActiveImgIdx(0);
+        } else {
+          setError(data?.message?.message || "Failed to load product details.");
+        }
+      } catch (err: any) {
+        console.error("Error loading product details:", err);
+        setError("Error loading product details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (itemCode) {
+      fetchDetails();
+    }
+  }, [itemCode]);
 
   const handleAddToCart = () => {
     const user = localStorage.getItem("gbru_user");
@@ -29,6 +56,55 @@ export default function ProductDetail() {
       alert("Added to cart!");
     }
   };
+
+  const formatPrice = (val: any) => {
+    if (val === undefined || val === null) return "0.00";
+    const num = parseFloat(val);
+    return isNaN(num) ? "0.00" : num.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col justify-center items-center gap-3">
+        <svg className="animate-spin h-8 w-8 text-[#0D9740]" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+        </svg>
+        <span className="text-zinc-500 font-semibold text-xs">Loading Product Details...</span>
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col">
+        <Navbar />
+        <main className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 py-16 text-center flex flex-col items-center gap-4">
+          <span className="text-4xl">⚠️</span>
+          <h2 className="text-lg font-bold text-red-600">{error || "Product Not Found"}</h2>
+          <Link href="/all_products" className="text-[#0D9740] font-bold hover:underline">
+            Back to All Products
+          </Link>
+        </main>
+      </div>
+    );
+  }
+
+  // Get dynamic valid images list
+  const validImages: string[] = [];
+  if (product.images) {
+    Object.keys(product.images).forEach((key) => {
+      const url = product.images[key];
+      if (url && url.startsWith("http") && !url.endsWith("/0")) {
+        validImages.push(url);
+      }
+    });
+  }
+  if (validImages.length === 0) {
+    validImages.push("/assets/sprayer.png");
+  }
+
+  const activeImg = validImages[activeImgIdx] || validImages[0];
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col pb-16">
@@ -41,26 +117,25 @@ export default function ProductDetail() {
         <div className="flex items-center gap-2 text-xs font-bold tracking-widest text-[#4A4A4A] uppercase">
           <Link href="/" className="hover:text-[#0D9740]">Home</Link>
           <span>/</span>
-          <Link href="/products" className="hover:text-[#0D9740]">Tractors</Link>
+          <Link href="/all_products" className="hover:text-[#0D9740]">Products</Link>
           <span>/</span>
-          <span className="text-[#111] font-extrabold">GBRU Pro-Series 5000</span>
+          <span className="text-[#111] font-extrabold">{product.item_name}</span>
         </div>
 
         {/* Product Meta Header (Title, Subtitle, Badges) */}
         <div className="flex flex-col gap-2">
-          <h1 className="text-[36px] font-bold text-[#0F291B] tracking-tight">
-            GBRU Pro-Series 5000
+          <h1 className="text-[32px] md:text-[36px] font-bold text-[#0F291B] tracking-tight leading-tight">
+            {product.item_name}
           </h1>
-          <p className="text-[#6B7280] text-[16px]">
-            Premium Multi-Purpose Agricultural Tractor
+          <p className="text-[#6B7280] text-[16px] font-medium">
+            Brand: <span className="text-[#0D9740] font-bold">{product.brand || "GBRU"}</span> | Code: {product.item_code}
           </p>
 
           {/* Quick Badges Row */}
           <div className="flex flex-wrap items-center gap-6 mt-2 text-sm text-[#374151]">
             <div className="flex items-center gap-1">
               <span className="text-yellow-400 text-lg">★★★★★</span>
-              <span className="font-bold">4.9</span>
-              <span className="text-[#6B7280]">(2,847)</span>
+              <span className="font-bold">4.8</span>
             </div>
             <div className="h-4 w-px bg-zinc-300"></div>
             <div className="flex items-center gap-1.5 text-[#0D9740] font-semibold">
@@ -76,13 +151,6 @@ export default function ProductDetail() {
               </svg>
               3-5 Days Delivery
             </div>
-            <div className="h-4 w-px bg-zinc-300"></div>
-            <div className="flex items-center gap-1.5 text-[#374151]">
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-zinc-400">
-                <path fillRule="evenodd" d="M9.661 2.237a.75.75 0 01.678 0l7.25 3.5a.75.75 0 01.411.676v7.124a3 3 0 01-1.579 2.63l-5.75 3.125a.75.75 0 01-.684 0l-5.75-3.125A3 3 0 013 13.537V6.413a.75.75 0 01.411-.676l7.25-3.5zM10 3.62L4.5 6.277v7.26c0 .8.44 1.54 1.151 1.926L10 18.067l4.349-2.604A2.25 2.25 0 0015.5 13.536V6.278L10 3.62z" clipRule="evenodd" />
-              </svg>
-              5 Year Warranty
-            </div>
           </div>
         </div>
 
@@ -93,61 +161,57 @@ export default function ProductDetail() {
           <div className="lg:col-span-7 flex flex-col gap-6">
             
             {/* Main Showcase Image */}
-            <div className="relative w-full h-[400px] md:h-[480px] rounded-[24px] overflow-hidden border border-zinc-200/80 bg-zinc-50 shadow-sm">
-              <Image
-                src={images[activeImgIdx]}
-                alt="GBRU Pro-Series 5000"
-                fill
-                className="object-cover"
-                priority
+            <div className="relative w-full h-[320px] md:h-[480px] rounded-[24px] overflow-hidden border border-zinc-200/80 bg-zinc-50 shadow-sm flex items-center justify-center p-4">
+              <img
+                src={activeImg}
+                alt={product.item_name}
+                className="max-h-full max-w-full object-contain"
               />
-              {/* New Launch Badge */}
-              <div className="absolute top-4 left-4 bg-[#DFB33F] text-white text-[12px] font-bold py-1.5 px-3 rounded-[9999px] shadow-sm">
-                New Launch
-              </div>
+              {product.discount > 0 && (
+                <div className="absolute top-4 left-4 bg-[#DFB33F] text-white text-[12px] font-bold py-1.5 px-3 rounded-[9999px] shadow-sm">
+                  {product.discount.toFixed(0)}% OFF
+                </div>
+              )}
             </div>
 
             {/* Thumbnail Row */}
-            <div className="flex gap-4">
-              {images.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveImgIdx(idx)}
-                  className={`relative w-20 h-20 rounded-[12px] overflow-hidden border-2 bg-zinc-100 transition-all ${
-                    activeImgIdx === idx ? "border-[#0D9740] ring-2 ring-[#0D9740]/20" : "border-transparent hover:border-zinc-300"
-                  }`}
-                >
-                  <Image
-                    src={img}
-                    alt={`Preview ${idx + 1}`}
-                    fill
-                    className="object-cover"
-                  />
-                </button>
-              ))}
-            </div>
+            {validImages.length > 1 && (
+              <div className="flex flex-wrap gap-4">
+                {validImages.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveImgIdx(idx)}
+                    className={`relative w-20 h-20 rounded-[12px] overflow-hidden border-2 bg-zinc-50 transition-all p-2 flex items-center justify-center ${
+                      activeImgIdx === idx ? "border-[#0D9740] ring-2 ring-[#0D9740]/20" : "border-zinc-200 hover:border-zinc-300"
+                    }`}
+                  >
+                    <img
+                      src={img}
+                      alt={`Preview ${idx + 1}`}
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Key Highlights */}
             <div className="bg-[#F4F6F4]/60 border border-[#E1E6E1] rounded-[20px] p-6 mt-4">
-              <h3 className="font-roboto font-bold text-[#0F291B] text-[16px] mb-6">
+              <h3 className="font-roboto font-bold text-[#0F291B] text-[16px] mb-4">
                 Key Highlights
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                 <div className="flex flex-col gap-1">
-                  <span className="font-bold text-[#0F291B] text-[18px] leading-tight">50 HP Engine</span>
-                  <span className="text-[#6B7280] text-[13px]">High Torque</span>
+                  <span className="font-bold text-[#0F291B] text-[16px] leading-tight">MOQ</span>
+                  <span className="text-[#6B7280] text-[13px]">{product.moq} {product.measurement_unit || "Nos"}</span>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <span className="font-bold text-[#0F291B] text-[18px] leading-tight">8+2 Gearbox</span>
-                  <span className="text-[#6B7280] text-[13px]">Smooth Shift</span>
+                  <span className="font-bold text-[#0F291B] text-[16px] leading-tight">HSN Code</span>
+                  <span className="text-[#6B7280] text-[13px]">{product.gst_hsn_code || "8432"}</span>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <span className="font-bold text-[#0F291B] text-[18px] leading-tight">1800 kg</span>
-                  <span className="text-[#6B7280] text-[13px]">Lifting Capacity</span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="font-bold text-[#0d9740] text-[18px] leading-tight">Fuel Efficient</span>
-                  <span className="text-[#6B7280] text-[13px]">Save ₹30k/yr</span>
+                  <span className="font-bold text-[#0d9740] text-[16px] leading-tight">Authentic Brand</span>
+                  <span className="text-[#6B7280] text-[13px]">100% GBRU Quality</span>
                 </div>
               </div>
             </div>
@@ -164,17 +228,21 @@ export default function ProductDetail() {
                   LIMITED TIME OFFER
                 </span>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-[32px] font-extrabold leading-none">₹8,499</span>
-                  <span className="text-[16px] line-through text-[#8CAF9C]">₹9,999</span>
+                  <span className="text-[32px] font-extrabold leading-none">₹{formatPrice(product.price)}</span>
+                  {product.mrp > product.price && (
+                    <span className="text-[16px] line-through text-[#8CAF9C]">₹{formatPrice(product.mrp)}</span>
+                  )}
                 </div>
               </div>
-              <div className="bg-[#22C55E] text-[12px] font-bold py-2 px-4 rounded-[10px] shadow-sm">
-                Get 15% OFF
-              </div>
+              {product.discount > 0 && (
+                <div className="bg-[#22C55E] text-[12px] font-bold py-2 px-4 rounded-[10px] shadow-sm">
+                  Get {product.discount.toFixed(0)}% OFF
+                </div>
+              )}
             </div>
 
             {/* Option Cards Row */}
-            <div className="flex gap-4 items-stretch">
+            <div className="flex flex-col sm:flex-row gap-4 items-stretch">
               
               {/* Card 1: Full Payment */}
               <div
@@ -186,7 +254,7 @@ export default function ProductDetail() {
                 }`}
               >
                 {paymentOption === "full" && (
-                  <div className="absolute top-[-10px] right-[-10px] bg-[#0d9740] text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md">
+                  <div className="absolute top-[-10px] right-[-10px] bg-[#0d9740] text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md text-xs">
                     ✓
                   </div>
                 )}
@@ -195,40 +263,41 @@ export default function ProductDetail() {
                   <div className="bg-[#DFB33F] text-white text-[9px] font-bold py-1 px-2 rounded-[6px] inline-block mb-3">
                     MOST PREFERRED
                   </div>
-                  <h4 className="font-bold text-[#0F291B] text-[14px]">FULL PAYMENT</h4>
-                  <p className="text-[11px] text-[#6B7280] mt-1">Pay complete amount today</p>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${
+                      paymentOption === "full" ? "border-[#0d9740]" : "border-zinc-300"
+                    }`}>
+                      {paymentOption === "full" && (
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#0d9740]" />
+                      )}
+                    </div>
+                    <h4 className="font-bold text-[#0F291B] text-[14px]">FULL PAYMENT</h4>
+                  </div>
+                  <p className="text-[11px] text-[#6B7280] mt-1.5 pl-6">Pay complete amount today</p>
                   
-                  <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3">
+                  <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3 pl-6">
                     <div className="flex justify-between">
                       <span>Order Total</span>
-                      <span>₹8,499</span>
+                      <span>₹{formatPrice(product.actual_rate)}</span>
                     </div>
-                    <div className="flex justify-between text-[#0D9740]">
-                      <span>Instant Discount</span>
-                      <span>- ₹1,248.74</span>
-                    </div>
+                    {product.full_payment_discount > 0 && (
+                      <div className="flex justify-between text-[#0D9740]">
+                        <span>Full Pay Discount</span>
+                        <span>- ₹{formatPrice(product.full_payment_discount)}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                <div className="mt-6 border-t border-zinc-100 pt-3">
+                <div className="mt-6 border-t border-zinc-100 pt-3 pl-6">
                   <span className="text-[11px] font-medium text-[#6B7280]">Pay Now</span>
-                  <div className="text-[20px] font-extrabold text-[#0f291b]">₹7,251</div>
+                  <div className="text-[20px] font-extrabold text-[#0f291b]">
+                    ₹{formatPrice(product.full_payment_amount || product.price)}
+                  </div>
                 </div>
-
-                <ul className="mt-4 flex flex-col gap-2 text-xs text-[#374151] border-t border-zinc-100 pt-3">
-                  <li className="flex items-center gap-1.5">
-                    <span className="text-[#0D9740] font-bold">✓</span> Priority Dispatch
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <span className="text-[#0D9740] font-bold">✓</span> Fastest Delivery
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <span className="text-[#0D9740] font-bold">✓</span> Full Warranty Benefits
-                  </li>
-                </ul>
               </div>
 
-              {/* Card 2: Book Product */}
+              {/* Card 2: Cash On Delivery */}
               <div
                 onClick={() => setPaymentOption("booking")}
                 className={`relative flex-1 p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${
@@ -238,55 +307,60 @@ export default function ProductDetail() {
                 }`}
               >
                 {paymentOption === "booking" && (
-                  <div className="absolute top-[-10px] right-[-10px] bg-[#0d9740] text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md">
+                  <div className="absolute top-[-10px] right-[-10px] bg-[#0d9740] text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md text-xs">
                     ✓
                   </div>
                 )}
 
                 <div>
-                  <div className="text-[9px] font-bold py-1 px-2 rounded-[6px] inline-block mb-3 border border-zinc-300 text-zinc-500">
-                    BOOK PRODUCT
+                  <div className="text-[9px] font-bold py-1 px-2 rounded-[6px] inline-block mb-3 border border-zinc-300 text-zinc-500 bg-zinc-50">
+                    CASH ON DELIVERY
                   </div>
-                  <h4 className="font-bold text-[#0F291B] text-[14px]">BOOKING DEPOSIT</h4>
-                  <p className="text-[11px] text-[#6B7280] mt-1">Reserve with small amount</p>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${
+                      paymentOption === "booking" ? "border-[#0d9740]" : "border-zinc-300"
+                    }`}>
+                      {paymentOption === "booking" && (
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#0d9740]" />
+                      )}
+                    </div>
+                    <h4 className="font-bold text-[#0F291B] text-[14px]">COD PAYMENT</h4>
+                  </div>
+                  <p className="text-[11px] text-[#6B7280] mt-1.5 pl-6">Pay deposit & balance on delivery</p>
 
-                  <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3">
+                  <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3 pl-6">
                     <div className="flex justify-between">
                       <span>Total Price</span>
-                      <span>₹8,499</span>
+                      <span>₹{formatPrice(product.actual_rate)}</span>
                     </div>
-                    <div className="flex justify-between text-[#0d9740]">
-                      <span>Discount</span>
-                      <span>- ₹948.74</span>
-                    </div>
+                    {product.COD_discount > 0 && (
+                      <div className="flex justify-between text-[#0d9740]">
+                        <span>COD Discount</span>
+                        <span>- ₹{formatPrice(product.COD_discount)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between bg-emerald-50 px-1 py-0.5 rounded text-[11px]">
                       <span>Effective Total</span>
-                      <span className="font-bold text-[#0d9740]">₹7,550</span>
+                      <span className="font-bold text-[#0d9740]">
+                        ₹{formatPrice((product.COD_value || 0) + (product.COD_Display || 0))}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-6 border-t border-zinc-100 pt-3 flex flex-col">
+                <div className="mt-6 border-t border-zinc-100 pt-3 flex flex-col pl-6">
                   <div>
-                    <span className="text-[11px] font-medium text-[#6B7280]">Pay Now (Booking)</span>
-                    <div className="text-[20px] font-extrabold text-[#0f291b]">₹1,000</div>
+                    <span className="text-[11px] font-medium text-[#6B7280]">Pay Now (Deposit)</span>
+                    <div className="text-[20px] font-extrabold text-[#0f291b]">
+                      ₹{formatPrice(product.COD_Display)}
+                    </div>
                   </div>
                   <div className="mt-1 text-[11px] text-zinc-500">
-                    Pay on Delivery: <span className="font-bold text-[#0f291b]">₹6,550</span>
+                    Pay on Delivery: <span className="font-bold text-[#0f291b]">
+                      ₹{formatPrice(product.COD_value)}
+                    </span>
                   </div>
                 </div>
-
-                <ul className="mt-4 flex flex-col gap-2 text-xs text-[#374151] border-t border-zinc-100 pt-3">
-                  <li className="flex items-center gap-1.5">
-                    <span className="text-zinc-400">✓</span> Secure Product Today
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <span className="text-zinc-400">✓</span> Balance on Delivery
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <span className="text-zinc-400">✓</span> Easy Reservation Process
-                  </li>
-                </ul>
               </div>
 
             </div>
@@ -295,7 +369,7 @@ export default function ProductDetail() {
             <p className="text-[11px] text-[#6B7280] leading-relaxed text-center px-4">
               {paymentOption === "full"
                 ? "Most farmers choose full payment for faster processing."
-                : "Only ₹1,000 required to reserve this product today. Remaining balance can be paid on delivery."}
+                : `Only ₹${formatPrice(product.COD_Display)} required to reserve this product today. Remaining balance can be paid on delivery.`}
             </p>
 
             {/* Action Buttons */}
@@ -331,50 +405,11 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {/* Bottom Trusted Box */}
-            <div className="bg-[#F8FBF8] border border-[#E5F2E8] py-4 px-6 rounded-[14px] flex items-center justify-center gap-2 mt-2">
-              <span className="text-[18px]">🏆</span>
-              <span className="text-xs font-bold text-[#0F291B]">
-                Trusted by 3,524 Farmers across India
-              </span>
-            </div>
-
           </div>
 
         </div>
 
       </main>
-
-      {/* ── Full-Width Green Trust Banner ── */}
-      <section className="w-full bg-[#305C45] text-white py-8 mt-12 px-4 lg:px-8">
-        <div className="max-w-[1280px] w-full mx-auto grid grid-cols-2 md:grid-cols-5 gap-6 text-center">
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-[20px]">📍</div>
-            <span className="font-bold text-sm">PAN India Support</span>
-            <span className="text-[11px] text-[#A2C3B2]">Service in 18,000+ locations</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-[20px]">📦</div>
-            <span className="font-bold text-sm">Spare Parts Available</span>
-            <span className="text-[11px] text-[#A2C3B2]">24/7 availability guarantee</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-[20px]">🔧</div>
-            <span className="font-bold text-sm">Presence Every 12 KM</span>
-            <span className="text-[11px] text-[#A2C3B2]">Quick service access</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-[20px]">⚡</div>
-            <span className="font-bold text-sm">Fast Service</span>
-            <span className="text-[11px] text-[#A2C3B2]">Same day response</span>
-          </div>
-          <div className="flex flex-col items-center gap-2 col-span-2 md:col-span-1">
-            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-[20px]">🛡️</div>
-            <span className="font-bold text-sm">Secure Payment</span>
-            <span className="text-[11px] text-[#A2C3B2]">100% safe & encrypted</span>
-          </div>
-        </div>
-      </section>
 
       {/* ── Interactive Tabs & Technical Specifications ── */}
       <section className="w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-12">
@@ -410,26 +445,6 @@ export default function ProductDetail() {
           >
             User Guide
           </button>
-          <button
-            onClick={() => setActiveTab("warranty")}
-            className={`py-4 px-6 border-b-2 transition-all ${
-              activeTab === "warranty"
-                ? "border-[#0D9740] text-[#0F291B] font-bold"
-                : "border-transparent hover:text-[#0f291b]"
-            }`}
-          >
-            Warranty
-          </button>
-          <button
-            onClick={() => setActiveTab("faqs")}
-            className={`py-4 px-6 border-b-2 transition-all ${
-              activeTab === "faqs"
-                ? "border-[#0D9740] text-[#0F291B] font-bold"
-                : "border-transparent hover:text-[#0f291b]"
-            }`}
-          >
-            FAQs
-          </button>
         </div>
 
         {/* Tab Content Display */}
@@ -439,36 +454,28 @@ export default function ProductDetail() {
               <h4 className="font-bold text-[#0F291B] text-lg">Technical Specifications</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-sm">
                 <div className="flex justify-between py-3 border-b border-zinc-100">
-                  <span className="text-zinc-500">Engine Power</span>
-                  <span className="font-bold text-[#0F291B]">50 HP</span>
+                  <span className="text-zinc-500">Item Name</span>
+                  <span className="font-bold text-[#0F291B]">{product.item_name}</span>
                 </div>
                 <div className="flex justify-between py-3 border-b border-zinc-100">
-                  <span className="text-zinc-500">Lifting Capacity</span>
-                  <span className="font-bold text-[#0F291B]">1800 kg</span>
+                  <span className="text-zinc-500">Brand</span>
+                  <span className="font-bold text-[#0F291B]">{product.brand || "GBRU"}</span>
                 </div>
                 <div className="flex justify-between py-3 border-b border-zinc-100">
-                  <span className="text-zinc-500">Engine Type</span>
-                  <span className="font-bold text-[#0F291B]">4 Cylinder Water Cooled</span>
+                  <span className="text-zinc-500">Item Code</span>
+                  <span className="font-bold text-[#0F291B]">{product.item_code}</span>
                 </div>
                 <div className="flex justify-between py-3 border-b border-zinc-100">
-                  <span className="text-zinc-500">Fuel Tank</span>
-                  <span className="font-bold text-[#0F291B]">65 Liters</span>
+                  <span className="text-zinc-500">Minimum Order Quantity</span>
+                  <span className="font-bold text-[#0F291B]">{product.moq} {product.measurement_unit || "Nos"}</span>
                 </div>
                 <div className="flex justify-between py-3 border-b border-zinc-100">
-                  <span className="text-zinc-500">Gear Box</span>
-                  <span className="font-bold text-[#0F291B]">8 Forward + 2 Reverse</span>
+                  <span className="text-zinc-500">Valid From</span>
+                  <span className="font-bold text-[#0F291B]">{product.valid_from || "N/A"}</span>
                 </div>
                 <div className="flex justify-between py-3 border-b border-zinc-100">
-                  <span className="text-zinc-500">Brakes</span>
-                  <span className="font-bold text-[#0F291B]">Oil Immersed Brakes</span>
-                </div>
-                <div className="flex justify-between py-3 border-b border-zinc-100">
-                  <span className="text-zinc-500">PTO Power</span>
-                  <span className="font-bold text-[#0F291B]">42.5 HP @ 540 RPM</span>
-                </div>
-                <div className="flex justify-between py-3 border-b border-zinc-100">
-                  <span className="text-zinc-500">Weight</span>
-                  <span className="font-bold text-[#0F291B]">2250 kg</span>
+                  <span className="text-zinc-500">GST HSN Code</span>
+                  <span className="font-bold text-[#0F291B]">{product.gst_hsn_code || "8432"}</span>
                 </div>
               </div>
             </div>
@@ -479,272 +486,39 @@ export default function ProductDetail() {
               <h4 className="font-bold text-[#0F291B] text-lg">Key Features</h4>
               <ul className="list-disc list-inside text-sm text-[#374151] flex flex-col gap-2">
                 <li>Heavy-duty structure built for extreme field terrains.</li>
-                <li>Dynamic power steering for effortless navigation.</li>
-                <li>Digital smart diagnostic engine monitor panel.</li>
-                <li>Dual clutch configuration for advanced implement control.</li>
+                <li>Designed for maximum durability and agricultural output.</li>
+                <li>Official high efficiency rating from GBRU labs.</li>
               </ul>
             </div>
           )}
 
           {activeTab === "guide" && (
             <div className="flex flex-col gap-4">
-              <h4 className="font-bold text-[#0F291B] text-lg">User Guide & Downloads</h4>
-              <p className="text-sm text-[#374151]">
-                Download our comprehensive user manual and operating instructions.
-              </p>
-              <div className="flex gap-4 mt-2">
-                <button className="bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-xs py-2.5 px-5 rounded-[8px]">
-                  Download Manual PDF
-                </button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "warranty" && (
-            <div className="flex flex-col gap-4">
-              <h4 className="font-bold text-[#0F291B] text-lg">Warranty Information</h4>
+              <h4 className="font-bold text-[#0F291B] text-lg">User Guide & Description</h4>
               <p className="text-sm text-[#374151] leading-relaxed">
-                Enjoy peace of mind with GBRU's premium 5-Year Comprehensive Warranty covering the engine, transmission, hydraulics, and structural chassis frame. Includes free annual health checks.
+                {product.description || "No manual description is currently available for this product."}
               </p>
             </div>
           )}
-
-          {activeTab === "faqs" && (
-            <div className="flex flex-col gap-4">
-              <h4 className="font-bold text-[#0F291B] text-lg">Frequently Asked Questions</h4>
-              <div className="flex flex-col gap-4 text-sm mt-2">
-                <div>
-                  <span className="font-bold text-[#0f291b] block">Q: Can I pay cash on delivery?</span>
-                  <span className="text-zinc-600 block mt-1">A: Yes, with the Booking Option you pay ₹1,000 now to reserve, and the remaining ₹6,550 on delivery.</span>
-                </div>
-                <div>
-                  <span className="font-bold text-[#0f291b] block">Q: Is home delivery available?</span>
-                  <span className="text-zinc-600 block mt-1">A: Yes, we ship directly to your farm locations anywhere across India.</span>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
-      {/* ── See It in Action Section ── */}
-      <section className="w-full bg-[#F7F9F7] py-16 px-4 lg:px-8">
-        <div className="max-w-[1280px] w-full mx-auto">
-          <h2 className="font-roboto font-bold text-[#0F291B] text-[32px] mb-2">
-            See It in Action
-          </h2>
-          <p className="text-[#6B7280] text-sm mb-10">
-            Real farmers, real results from across India
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Video Card 1 */}
-            <div className="bg-white rounded-[20px] overflow-hidden border border-zinc-100 shadow-sm flex flex-col group cursor-pointer">
-              <div className="relative h-44 bg-zinc-100 overflow-hidden">
-                <Image
-                  src="/assets/gbru_action_success.png"
-                  alt="Farmer Success Story"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                {/* Play Button Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/25 transition-all">
-                  <div className="w-12 h-12 rounded-full bg-white/90 shadow-md flex items-center justify-center text-emerald-700 text-lg pl-0.5">
-                    ▶
-                  </div>
-                </div>
-                <span className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] py-0.5 px-1.5 rounded">
-                  3:24
-                </span>
-              </div>
-              <div className="p-4 flex flex-col gap-1">
-                <span className="font-bold text-[#0F291B] text-[14px]">Farmer Success Story</span>
-                <span className="text-xs text-[#6B7280]">Ramesh Kumar from Punjab</span>
-              </div>
-            </div>
-
-            {/* Video Card 2 */}
-            <div className="bg-white rounded-[20px] overflow-hidden border border-zinc-100 shadow-sm flex flex-col group cursor-pointer">
-              <div className="relative h-44 bg-zinc-100 overflow-hidden">
-                <Image
-                  src="/assets/gbru_action_demo.png"
-                  alt="Field Demo"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/25 transition-all">
-                  <div className="w-12 h-12 rounded-full bg-white/90 shadow-md flex items-center justify-center text-emerald-700 text-lg pl-0.5">
-                    ▶
-                  </div>
-                </div>
-                <span className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] py-0.5 px-1.5 rounded">
-                  5:12
-                </span>
-              </div>
-              <div className="p-4 flex flex-col gap-1">
-                <span className="font-bold text-[#0F291B] text-[14px]">Field Demo</span>
-                <span className="text-xs text-[#6B7280]">Ploughing Performance</span>
-              </div>
-            </div>
-
-            {/* Video Card 3 */}
-            <div className="bg-white rounded-[20px] overflow-hidden border border-zinc-100 shadow-sm flex flex-col group cursor-pointer">
-              <div className="relative h-44 bg-zinc-100 overflow-hidden">
-                <Image
-                  src="/assets/gbru_field_workshop.png"
-                  alt="Installation Guide"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/25 transition-all">
-                  <div className="w-12 h-12 rounded-full bg-white/90 shadow-md flex items-center justify-center text-emerald-700 text-lg pl-0.5">
-                    ▶
-                  </div>
-                </div>
-                <span className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] py-0.5 px-1.5 rounded">
-                  2:45
-                </span>
-              </div>
-              <div className="p-4 flex flex-col gap-1">
-                <span className="font-bold text-[#0F291B] text-[14px]">Installation Guide</span>
-                <span className="text-xs text-[#6B7280]">Setup in 30 Minutes</span>
-              </div>
-            </div>
-
-            {/* Video Card 4 */}
-            <div className="bg-white rounded-[20px] overflow-hidden border border-zinc-100 shadow-sm flex flex-col group cursor-pointer">
-              <div className="relative h-44 bg-zinc-100 overflow-hidden">
-                <Image
-                  src="/assets/gbru_field_punjab_expo.png"
-                  alt="Exhibition Highlights"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/25 transition-all">
-                  <div className="w-12 h-12 rounded-full bg-white/90 shadow-md flex items-center justify-center text-emerald-700 text-lg pl-0.5">
-                    ▶
-                  </div>
-                </div>
-                <span className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] py-0.5 px-1.5 rounded">
-                  4:18
-                </span>
-              </div>
-              <div className="p-4 flex flex-col gap-1">
-                <span className="font-bold text-[#0F291B] text-[14px]">Exhibition Highlights</span>
-                <span className="text-xs text-[#6B7280]">India Agri Expo 2026</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Complete Your Farm Setup Section ── */}
-      <section className="w-full bg-white py-16 px-4 lg:px-8">
-        <div className="max-w-[1280px] w-full mx-auto">
-          <h2 className="font-roboto font-bold text-[#0F291B] text-[32px] mb-2">
-            Complete Your Farm Setup
-          </h2>
-          <p className="text-[#6B7280] text-sm mb-10">
-            Frequently bought together - Build your complete agricultural solution
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Rec 1 */}
-            <div className="bg-white rounded-[20px] overflow-hidden border border-zinc-200/80 p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-              <div>
-                <div className="relative h-40 w-full bg-[#EAF2ED] rounded-[14px] overflow-hidden mb-4">
-                  <Image
-                    src="/assets/cat_seeders.png"
-                    alt="Rotavator Attachment"
-                    fill
-                    className="object-contain p-4"
-                  />
-                </div>
-                <h4 className="font-bold text-[#0F291B] text-sm">Rotavator Attachment</h4>
-                <p className="text-xs text-[#6B7280] mt-1">Heavy-duty soil preparation</p>
-              </div>
-              <div className="flex items-center justify-between mt-6 pt-3 border-t border-zinc-100">
-                <span className="font-extrabold text-[#0F291B]">₹45,000</span>
-                <button className="w-8 h-8 rounded-full bg-[#0D9740] hover:bg-[#0a7d34] text-white flex items-center justify-center font-bold">
-                  +
-                </button>
-              </div>
-            </div>
-
-            {/* Rec 2 */}
-            <div className="bg-white rounded-[20px] overflow-hidden border border-zinc-200/80 p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-              <div>
-                <div className="relative h-40 w-full bg-[#EAF2ED] rounded-[14px] overflow-hidden mb-4">
-                  <Image
-                    src="/assets/cat_seeders.png"
-                    alt="Seed Drill"
-                    fill
-                    className="object-contain p-4"
-                  />
-                </div>
-                <h4 className="font-bold text-[#0F291B] text-sm">Seed Drill</h4>
-                <p className="text-xs text-[#6B7280] mt-1">Precision seeding system</p>
-              </div>
-              <div className="flex items-center justify-between mt-6 pt-3 border-t border-zinc-100">
-                <span className="font-extrabold text-[#0F291B]">₹35,000</span>
-                <button className="w-8 h-8 rounded-full bg-[#0D9740] hover:bg-[#0a7d34] text-white flex items-center justify-center font-bold">
-                  +
-                </button>
-              </div>
-            </div>
-
-            {/* Rec 3 */}
-            <div className="bg-white rounded-[20px] overflow-hidden border border-zinc-200/80 p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-              <div>
-                <div className="relative h-40 w-full bg-[#EAF2ED] rounded-[14px] overflow-hidden mb-4">
-                  <Image
-                    src="/assets/cat_sprayers.png"
-                    alt="Agricultural Sprayer"
-                    fill
-                    className="object-contain p-4"
-                  />
-                </div>
-                <h4 className="font-bold text-[#0F291B] text-sm">Agricultural Sprayer</h4>
-                <p className="text-xs text-[#6B7280] mt-1">Boom sprayer 400L capacity</p>
-              </div>
-              <div className="flex items-center justify-between mt-6 pt-3 border-t border-zinc-100">
-                <span className="font-extrabold text-[#0F291B]">₹28,000</span>
-                <button className="w-8 h-8 rounded-full bg-[#0D9740] hover:bg-[#0a7d34] text-white flex items-center justify-center font-bold">
-                  +
-                </button>
-              </div>
-            </div>
-
-            {/* Rec 4 */}
-            <div className="bg-white rounded-[20px] overflow-hidden border border-zinc-200/80 p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-              <div>
-                <div className="relative h-40 w-full bg-[#EAF2ED] rounded-[14px] overflow-hidden mb-4">
-                  <Image
-                    src="/assets/cat_accessories.png"
-                    alt="Trailer 2-Ton"
-                    fill
-                    className="object-contain p-4"
-                  />
-                </div>
-                <h4 className="font-bold text-[#0F291B] text-sm">Trailer 2-Ton</h4>
-                <p className="text-xs text-[#6B7280] mt-1">Heavy duty farm trailer</p>
-              </div>
-              <div className="flex items-center justify-between mt-6 pt-3 border-t border-zinc-100">
-                <span className="font-extrabold text-[#0F291B]">₹65,000</span>
-                <button className="w-8 h-8 rounded-full bg-[#0D9740] hover:bg-[#0a7d34] text-white flex items-center justify-center font-bold">
-                  +
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Login Prompt Popup */}
-      <LoginPrompt 
-        isOpen={showLoginPrompt} 
-        onClose={() => setShowLoginPrompt(false)} 
+      <LoginPrompt
+        isOpen={showLoginPrompt}
+        onClose={() => setShowLoginPrompt(false)}
       />
     </div>
+  );
+}
+
+export default function ProductDetail() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center">
+        <span className="text-zinc-500 font-medium">Loading GBRU Platform...</span>
+      </div>
+    }>
+      <ProductDetailContent />
+    </Suspense>
   );
 }

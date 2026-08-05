@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import LoginPrompt from "./LoginPrompt";
+import PaymentOptionModal from "./PaymentOptionModal";
 
 interface ERPProduct {
   item_code: string;
@@ -47,6 +48,8 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   // Load subcategories
   useEffect(() => {
@@ -70,13 +73,13 @@ export default function Products() {
     setSelectedSubcategory("all"); // Reset selection on category change
   }, [categoryId]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (product: any) => {
     const user = localStorage.getItem("gbru_user");
     if (!user) {
       setShowLoginPrompt(true);
     } else {
-      // Logic to actually add to cart could go here in the future
-      alert("Added to cart!");
+      setSelectedProduct(product);
+      setShowPaymentModal(true);
     }
   };
 
@@ -241,25 +244,29 @@ export default function Products() {
                       className="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col transition-shadow hover:shadow-lg relative"
                     >
                       {/* Image Section */}
-                      <div className="relative h-56 w-full bg-gray-50 overflow-hidden flex items-center justify-center p-4">
-                        {/* Badge Overlay */}
-                        {product.discount && product.discount > 0 ? (
-                          <div className="absolute top-4 left-4 px-3 py-1 text-xs font-bold rounded-[8px] z-10 bg-[#FEF5D1] text-[#78350F] border border-[#FDF4CE]">
-                            {product.discount.toFixed(0)}% OFF
-                          </div>
-                        ) : null}
-                        <img
-                          src={itemImage}
-                          alt={product.item_name}
-                          className="object-contain max-h-full max-w-full"
-                        />
-                      </div>
+                      <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer">
+                        <div className="relative h-56 w-full bg-gray-50 overflow-hidden flex items-center justify-center p-4 hover:opacity-90 transition-opacity">
+                          {/* Badge Overlay */}
+                          {product.discount && product.discount > 0 ? (
+                            <div className="absolute top-4 left-4 px-3 py-1 text-xs font-bold rounded-[8px] z-10 bg-[#FEF5D1] text-[#78350F] border border-[#FDF4CE]">
+                              {product.discount.toFixed(0)}% OFF
+                            </div>
+                          ) : null}
+                          <img
+                            src={itemImage}
+                            alt={product.item_name}
+                            className="object-contain max-h-full max-w-full"
+                          />
+                        </div>
+                      </Link>
 
                       {/* Content Section */}
                       <div className="p-5 flex flex-col flex-1">
-                        <h3 className="font-bold text-sm text-[#1A1A1A] mb-3 leading-snug min-h-[40px] line-clamp-2">
-                          {product.item_name}
-                        </h3>
+                        <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer hover:text-[#006B21] transition-colors">
+                          <h3 className="font-bold text-sm text-[#1A1A1A] mb-3 leading-snug min-h-[40px] line-clamp-2">
+                            {product.item_name}
+                          </h3>
+                        </Link>
 
                         {/* Tags */}
                         <div className="flex flex-wrap gap-2 mb-6">
@@ -289,7 +296,7 @@ export default function Products() {
                           </div>
 
                           <button
-                            onClick={handleAddToCart}
+                            onClick={() => handleAddToCart(product)}
                             className="w-full bg-[#006B21] text-white font-bold py-3 rounded-lg hover:bg-[#005a1b] transition-colors text-sm shadow-sm"
                           >
                             Add to Cart
@@ -309,6 +316,17 @@ export default function Products() {
       <LoginPrompt
         isOpen={showLoginPrompt}
         onClose={() => setShowLoginPrompt(false)}
+      />
+
+      <PaymentOptionModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        productName={selectedProduct?.item_name || ""}
+        price={selectedProduct?.price || 0}
+        mrp={selectedProduct?.mrp || 0}
+        onConfirm={(option) => {
+          alert(`Added ${selectedProduct?.item_name} to cart with ${option === "full" ? "Full Payment" : "Cash on Delivery"}!`);
+        }}
       />
     </div>
   );

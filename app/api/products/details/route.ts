@@ -1,0 +1,39 @@
+import { NextResponse } from 'next/server';
+
+export async function POST(request: Request) {
+  try {
+    const { item_code } = await request.json();
+    if (!item_code) {
+      return NextResponse.json({ error: 'Missing item_code parameter' }, { status: 400 });
+    }
+
+    const baseUrl = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
+    const systemApiKey = process.env.API_KEY;
+    const systemApiSecret = process.env.API_SECRET;
+
+    if (!baseUrl || !systemApiKey || !systemApiSecret) {
+      console.error('Missing API credentials or base URL in environment variables.');
+      return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
+    }
+
+    const response = await fetch(`${baseUrl}/api/method/shoption_api.gbru_shoption.item_api.get_gbru_item_details`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': systemApiKey,
+        'X-API-SECRET': systemApiSecret,
+      },
+      body: JSON.stringify({ item_code }),
+    });
+
+    if (!response.ok) {
+      return NextResponse.json({ error: 'Failed to fetch product details' }, { status: response.status });
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error: any) {
+    console.error('Error fetching product details:', error);
+    return NextResponse.json({ error: 'Failed to fetch product details', msg: error.message }, { status: 500 });
+  }
+}
