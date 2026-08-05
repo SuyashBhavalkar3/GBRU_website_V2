@@ -3,7 +3,9 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import LoginPrompt from "./LoginPrompt";
 
 const images = [
   "/assets/gbru_tractor_main.png",
@@ -13,9 +15,20 @@ const images = [
 ];
 
 export default function ProductDetail() {
+  const router = useRouter();
   const [activeImgIdx, setActiveImgIdx] = useState(0);
   const [paymentOption, setPaymentOption] = useState<"full" | "booking">("full");
   const [activeTab, setActiveTab] = useState<"specs" | "features" | "guide" | "warranty" | "faqs">("specs");
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  const handleAddToCart = () => {
+    const user = localStorage.getItem("gbru_user");
+    if (!user) {
+      setShowLoginPrompt(true);
+    } else {
+      alert("Added to cart!");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col pb-16">
@@ -287,8 +300,11 @@ export default function ProductDetail() {
 
             {/* Action Buttons */}
             <div className="flex flex-col gap-3">
-              <button className="w-full h-14 rounded-[14px] bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm">
-                Add to Cart {paymentOption === "full" ? "₹ 7,251" : "₹ 1,000"}
+              <button 
+                onClick={handleAddToCart}
+                className="w-full h-14 rounded-[14px] bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm"
+              >
+                Add to Cart
               </button>
 
               <button className="w-full h-14 rounded-[14px] bg-[#22C55E] hover:bg-[#1eb053] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm">
@@ -723,6 +739,12 @@ export default function ProductDetail() {
           </div>
         </div>
       </section>
+
+      {/* Login Prompt Popup */}
+      <LoginPrompt 
+        isOpen={showLoginPrompt} 
+        onClose={() => setShowLoginPrompt(false)} 
+      />
     </div>
   );
 }

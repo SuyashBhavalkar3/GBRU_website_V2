@@ -49,12 +49,31 @@ export async function POST(request: Request) {
     });
 
     const userData = await userResponse.json();
+    console.log("get_user_details response:", JSON.stringify(userData));
 
-    if (!userData.message?.status) {
+    const status = userData.message?.status;
+    const dataObj = userData.message?.data;
+    
+    // A user is new if:
+    // 1. status is false (boolean or string)
+    // 2. data is an empty array or null
+    // 3. registration_completed is false
+    const isNewUser = 
+      status === false || 
+      status === 'false' || 
+      !status || 
+      !dataObj || 
+      (Array.isArray(dataObj) && dataObj.length === 0) ||
+      dataObj.registration_completed === false;
+
+    if (isNewUser) {
+      // User not found in ERP (but OTP was verified) - redirect to short registration
       return NextResponse.json({ 
-        success: false, 
-        message: userData.message?.message || 'Failed to fetch user details' 
-      }, { status: 400 });
+        success: true, 
+        isNewUser: true,
+        mobile_no,
+        message: userData.message?.message || 'User not found' 
+      });
     }
 
     return NextResponse.json({

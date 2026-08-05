@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import LoginPrompt from "./LoginPrompt";
 
 interface ERPProduct {
   item_code: string;
@@ -45,6 +46,7 @@ export default function Products() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   // Load subcategories
   useEffect(() => {
@@ -67,6 +69,16 @@ export default function Products() {
     loadSubcategories();
     setSelectedSubcategory("all"); // Reset selection on category change
   }, [categoryId]);
+
+  const handleAddToCart = () => {
+    const user = localStorage.getItem("gbru_user");
+    if (!user) {
+      setShowLoginPrompt(true);
+    } else {
+      // Logic to actually add to cart could go here in the future
+      alert("Added to cart!");
+    }
+  };
 
   // Load products based on category and subcategory
   useEffect(() => {
@@ -276,7 +288,14 @@ export default function Products() {
                             <span>Minimum Order Quantity: <span className="text-[#0F291B]">{product.moq} {product.stock_uom}</span></span>
                           </div>
                           
+<<<<<<< HEAD
                           <button className="w-full bg-[#006B21] text-white font-bold py-3 rounded-lg hover:bg-[#005a1b] transition-colors text-sm shadow-sm">
+=======
+                          <button 
+                            onClick={handleAddToCart}
+                            className="w-full bg-[#006B21] text-white font-bold py-3 rounded-lg hover:bg-[#005a1b] transition-colors text-sm shadow-sm"
+                          >
+>>>>>>> origin/ayush_localDev
                             Add to Cart
                           </button>
                         </div>
@@ -290,6 +309,11 @@ export default function Products() {
         )}
       </main>
       <Footer />
+
+      <LoginPrompt 
+        isOpen={showLoginPrompt} 
+        onClose={() => setShowLoginPrompt(false)} 
+      />
     </div>
   );
 }

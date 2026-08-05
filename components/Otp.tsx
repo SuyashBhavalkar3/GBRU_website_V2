@@ -8,6 +8,11 @@ const OtpContent = () => {
   const [loading, setLoading] = useState(false);
   const [timeLeft, setTimeLeft] = useState(24);
   const [toastMessage, setToastMessage] = useState('');
+  
+  // Registration States
+  const [showRegistrationPopup, setShowRegistrationPopup] = useState(false);
+  const [registrationName, setRegistrationName] = useState('');
+  const [registering, setRegistering] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
   const mobileNo = searchParams.get('mobile_no');
@@ -61,14 +66,18 @@ const OtpContent = () => {
       const data = await response.json();
 
       if (data.success) {
-        // Save user details securely in localStorage
-        localStorage.setItem('gbru_user', JSON.stringify(data.user));
-
-        // Redirect based on role
-        if (data.user?.role?.toLowerCase() === 'farmer') {
-          router.push('/dashboard');
+        if (data.isNewUser) {
+          setShowRegistrationPopup(true);
         } else {
-          router.push('/profile');
+          // Save user details securely in localStorage
+          localStorage.setItem('gbru_user', JSON.stringify(data.user));
+
+          // Redirect based on role
+          if (data.user?.role?.toLowerCase() === 'farmer') {
+            router.push('/dashboard');
+          } else {
+            router.push('/profile');
+          }
         }
       } else {
         alert(data.message || data.error || 'Invalid OTP. Please try again.');
@@ -78,6 +87,47 @@ const OtpContent = () => {
       alert('An error occurred during verification. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleShortRegistration = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!registrationName.trim()) {
+      alert("Please enter your name");
+      return;
+    }
+
+    setRegistering(true);
+    try {
+      const response = await fetch('/api/short-registration', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobile_no: mobileNo, name: registrationName.trim() }),
+      });
+      const data = await response.json();
+
+      if (data?.message?.status) {
+        // Create basic user session from short registration data
+        const shortData = data.message.data;
+        const basicUser = {
+          Customer_name: registrationName.trim(),
+          customer_id: shortData.customer_id,
+          user_id: shortData.user_id,
+          role: "Farmer",
+          status: "ACTIVE",
+          is_completed: false
+        };
+        localStorage.setItem('gbru_user', JSON.stringify(basicUser));
+        setShowRegistrationPopup(false);
+        router.push('/dashboard');
+      } else {
+        alert(data?.message?.message || "Registration failed. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error in short registration:", err);
+      alert("An error occurred during registration. Please try again.");
+    } finally {
+      setRegistering(false);
     }
   };
 
@@ -335,6 +385,73 @@ const OtpContent = () => {
 
         </div>
       </div>
+
+      {/* Short Registration Popup */}
+      {showRegistrationPopup && (
+        <div className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden animate-in zoom-in duration-200">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-[#2E6F18] to-[#4F8D14] p-6 relative">
+              <button 
+                onClick={() => router.push('/dashboard')}
+                className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-3">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <h3 className="text-white font-bold text-xl" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                Join GBRU Today
+              </h3>
+              <p className="text-white/90 text-sm mt-1" style={{ fontFamily: 'Inter, sans-serif' }}>
+                Interested in a short registration? Get started in seconds!
+              </p>
+            </div>
+
+            {/* Body */}
+            <div className="p-6">
+              <form onSubmit={handleShortRegistration} className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-bold text-[#1A1A1A]" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                    Full Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter your name"
+                    value={registrationName}
+                    onChange={(e) => setRegistrationName(e.target.value)}
+                    className="h-12 px-4 border border-zinc-200 rounded-xl text-[15px] text-[#1A1A1A] focus:outline-none focus:border-[#0D9740] focus:ring-1 focus:ring-[#0D9740] transition-all bg-[#F9F9F9]"
+                  />
+                </div>
+                
+
+                <div className="flex justify-end gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => router.push('/dashboard')}
+                    className="px-6 py-2.5 border border-zinc-200 text-zinc-600 font-bold text-sm rounded-xl hover:bg-zinc-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={registering}
+                    className={`px-8 py-2.5 bg-[#006B21] text-white font-bold text-sm rounded-xl hover:bg-[#005a1b] transition-colors shadow-[0_4px_12px_rgba(0,107,33,0.25)] flex items-center justify-center ${registering ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  >
+                    {registering ? 'Processing...' : 'Proceed'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
