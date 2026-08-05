@@ -430,17 +430,6 @@ const OtpContent = () => {
                   />
                 </div>
                 
-                <div className="flex flex-col gap-1.5 mt-2">
-                  <label className="text-sm font-bold text-[#1A1A1A]" style={{ fontFamily: 'Roboto, sans-serif' }}>
-                    Phone Number
-                  </label>
-                  <input
-                    type="text"
-                    disabled
-                    value={mobileNo ? `+91 ${mobileNo}` : ''}
-                    className="h-12 px-4 border border-zinc-200 rounded-xl text-[15px] text-zinc-500 bg-zinc-100 cursor-not-allowed"
-                  />
-                </div>
 
                 <div className="flex justify-end gap-3 mt-6">
                   <button

@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import LoginPrompt from "./LoginPrompt";
 
 interface ERPProduct {
   item_code: string;
@@ -25,8 +27,10 @@ interface ERPProduct {
 }
 
 export default function FeaturedProducts() {
+  const router = useRouter();
   const [products, setProducts] = useState<ERPProduct[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   useEffect(() => {
     async function loadFeatured() {
@@ -47,6 +51,15 @@ export default function FeaturedProducts() {
     }
     loadFeatured();
   }, []);
+
+  const handleAddToCart = () => {
+    const user = localStorage.getItem("gbru_user");
+    if (!user) {
+      setShowLoginPrompt(true);
+    } else {
+      alert("Added to cart!");
+    }
+  };
 
   const formatPrice = (val: number) => {
     return new Intl.NumberFormat("en-IN", {
@@ -135,7 +148,10 @@ export default function FeaturedProducts() {
                   </div>
 
                   {/* Add to Cart button */}
-                  <button className="w-full bg-[#005B28] hover:bg-[#004a20] transition-colors text-white font-bold py-2 rounded-lg text-[11px] flex items-center justify-center gap-1.5 shadow-sm">
+                  <button 
+                    onClick={handleAddToCart}
+                    className="w-full bg-[#005B28] hover:bg-[#004a20] transition-colors text-white font-bold py-2 rounded-lg text-[11px] flex items-center justify-center gap-1.5 shadow-sm"
+                  >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
@@ -147,6 +163,12 @@ export default function FeaturedProducts() {
           );
         })}
       </div>
+
+      {/* Login Prompt Popup */}
+      <LoginPrompt 
+        isOpen={showLoginPrompt} 
+        onClose={() => setShowLoginPrompt(false)} 
+      />
     </section>
   );
 }

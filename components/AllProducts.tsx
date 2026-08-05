@@ -1,8 +1,10 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Navbar from './Navbar';
+import LoginPrompt from './LoginPrompt';
 
 const products = [
   { id: 1, title: 'Smart Guard 4G Solar Power', brand: 'GBRU PRO', price: '₹14,999', rating: '4.8', discount: '25% OFF', image: '/assets/sprayer.png' },
@@ -16,6 +18,18 @@ const products = [
 ];
 
 const AllProducts = () => {
+  const router = useRouter();
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  const handleAddToCart = () => {
+    const user = localStorage.getItem("gbru_user");
+    if (!user) {
+      setShowLoginPrompt(true);
+    } else {
+      alert("Added to cart!");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white font-roboto flex flex-col">
       <Navbar />
@@ -136,7 +150,10 @@ const AllProducts = () => {
                   <div className="text-xl font-bold text-[#1A1A1A] mb-4">
                     {product.price}
                   </div>
-                  <button className="w-full bg-[#006B21] hover:bg-[#005a1b] text-white font-semibold py-2.5 rounded-lg transition-colors text-sm">
+                  <button 
+                    onClick={handleAddToCart}
+                    className="w-full bg-[#006B21] text-white font-bold py-2.5 rounded-lg hover:bg-[#005a1b] transition-colors text-[13px] shadow-sm"
+                  >
                     Add to cart
                   </button>
                 </div>
@@ -163,6 +180,12 @@ const AllProducts = () => {
         </div>
 
       </main>
+
+      {/* Login Prompt Popup */}
+      <LoginPrompt 
+        isOpen={showLoginPrompt} 
+        onClose={() => setShowLoginPrompt(false)} 
+      />
     </div>
   );
 };
