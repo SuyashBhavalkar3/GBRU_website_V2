@@ -82,11 +82,12 @@ export default function Checkout() {
         if (!couponCodeToApply) {
           setDefaultProceedData(data.message.data);
         }
-        if (data.message.data.coupon) {
+        const appliedCoupon = data.message.data.coupon;
+        if (appliedCoupon && !appliedCoupon.error) {
           setCouponApplied(true);
           setCouponError("");
         } else if (couponCodeToApply) {
-          setCouponError("Failed to apply coupon.");
+          setCouponError(`${couponCodeToApply} invalid`);
           setCouponApplied(false);
         }
       }
@@ -1098,7 +1099,7 @@ export default function Checkout() {
                     </div>
 
                     {couponApplied && (
-                      <span className="text-[11px] text-[#0D9740] font-bold">✓ Coupon "{proceedData?.coupon?.code || couponCode}" Applied! Saved ₹{formatPrice(couponDiscount)}.</span>
+                      <span className="text-[11px] text-[#0D9740] font-bold">✓ {proceedData?.coupon?.code || couponCode} applied successfully</span>
                     )}
                     {couponError && (
                       <span className="text-[11px] text-red-500 font-bold">{couponError}</span>
