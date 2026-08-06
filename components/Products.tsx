@@ -292,7 +292,7 @@ export default function Products() {
 
                           <button
                             onClick={() => handleAddToCart(product)}
-                            className="w-full bg-[#006B21] text-white font-bold py-3 rounded-lg hover:bg-[#005a1b] transition-colors text-sm shadow-sm"
+                            className="w-full bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold py-3 rounded-xl transition-all text-sm shadow-sm active:scale-[0.99]"
                           >
                             Add to Cart
                           </button>

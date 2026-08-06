@@ -637,6 +637,25 @@ export default function Checkout() {
   
   const total = activePricingData?.grand_total || 0;
 
+  if (loadingCheckout) {
+    return (
+      <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col pb-16">
+        <Navbar />
+        <main className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 pt-8 flex flex-col gap-6 animate-pulse">
+          <div className="h-6 w-32 bg-zinc-200 rounded-[8px] mb-2"></div>
+          <div className="h-10 w-64 bg-zinc-200 rounded-[12px] mb-2"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="lg:col-span-8 flex flex-col gap-6">
+              <div className="h-48 bg-zinc-100 border border-zinc-200/60 rounded-[24px] p-6"></div>
+              <div className="h-48 bg-zinc-100 border border-zinc-200/60 rounded-[24px] p-6"></div>
+            </div>
+            <div className="lg:col-span-4 bg-zinc-100 border border-zinc-200/60 rounded-[24px] p-6 h-96"></div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col pb-16">
       <Navbar />

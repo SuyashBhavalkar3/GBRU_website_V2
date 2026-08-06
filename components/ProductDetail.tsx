@@ -111,7 +111,6 @@ function ProductDetailContent() {
       if (resJson.message?.status) {
         window.dispatchEvent(new Event("cartUpdate"));
         alert(`${product.item_name} added to cart successfully!`);
-        window.location.href = "/cart";
       } else {
         alert(resJson.message?.message || "Failed to add product to cart.");
       }

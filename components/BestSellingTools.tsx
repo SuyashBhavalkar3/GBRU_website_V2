@@ -162,10 +162,10 @@ export default function BestSellingTools() {
               {/* Add to Cart Button */}
               <button
                 onClick={() => handleAddToCart(product)}
-                className="mt-4 rounded-[23.68px] bg-[#1E532E] hover:bg-[#153B21] text-white font-roboto font-bold text-sm flex items-center justify-center transition-all duration-300 shadow-md w-full"
-                style={{ height: "41.68px" }}
+                className="mt-4 rounded-[12px] bg-[#0D9740] hover:bg-[#0a7d34] text-white font-roboto font-bold text-sm flex items-center justify-center transition-all duration-300 shadow-sm w-full active:scale-[0.99]"
+                style={{ height: "44px" }}
               >
-                Add To Cart
+                Add to Cart
               </button>
             </div>
           );

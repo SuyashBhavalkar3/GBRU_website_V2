@@ -61,6 +61,7 @@ export default function FeaturedProducts() {
     } else {
       const success = await addToCartUtil(itemCode);
       if (success) {
+        window.dispatchEvent(new Event("cartUpdate"));
         setToastMessage("Product added to cart successfully!");
         setTimeout(() => setToastMessage(""), 3000);
       } else {
@@ -146,7 +147,7 @@ export default function FeaturedProducts() {
 
               {/* Content */}
               <div className="flex flex-col flex-1">
-                <h3 className="font-bold text-xs text-[#1A1A1A] line-clamp-2 leading-snug min-h-[32px] mb-2 group-hover:text-[#006B21] transition-colors">
+                <h3 className="font-bold text-xs text-[#1A1A1A] line-clamp-2 leading-snug min-h-[32px] mb-2 group-hover:text-[#0D9740] transition-colors">
                   {product.item_name}
                 </h3>
 
@@ -160,7 +161,7 @@ export default function FeaturedProducts() {
                 <div className="mt-auto">
                   {/* Prices */}
                   <div className="flex items-baseline gap-1.5 mb-4">
-                    <span className="text-sm font-extrabold text-[#006B21]">₹{formatPrice(product.price)}</span>
+                    <span className="text-sm font-extrabold text-[#0D9740]">₹{formatPrice(product.price)}</span>
                     {product.mrp > product.price && (
                       <span className="text-[10px] text-zinc-400 line-through">₹{formatPrice(product.mrp)}</span>
                     )}
@@ -169,7 +170,7 @@ export default function FeaturedProducts() {
                   {/* Add to Cart button */}
                   <button 
                     onClick={() => handleAddToCart(product.item_code)}
-                    className="w-full bg-[#005B28] hover:bg-[#004a20] transition-colors text-white font-bold py-2 rounded-lg text-[11px] flex items-center justify-center gap-1.5 shadow-sm"
+                    className="w-full bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold py-2.5 rounded-xl transition-all text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.99]"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
