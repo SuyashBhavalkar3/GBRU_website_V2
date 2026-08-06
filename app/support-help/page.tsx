@@ -40,7 +40,7 @@ export default function SupportHelpPage() {
   const [selectedOrder, setSelectedOrder] = useState("");
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
-  const [attachment, setAttachment] = useState<File | null>(null);
+  const [attachments, setAttachments] = useState<File[]>([]);
 
   // Status flags
   const [isLoadingMasters, setIsLoadingMasters] = useState(false);
@@ -154,9 +154,10 @@ export default function SupportHelpPage() {
       }
       formPayload.append("subject", subject);
       formPayload.append("description", description);
-      if (attachment) {
-        formPayload.append("attachment_1", attachment);
-      }
+      
+      attachments.forEach((file, index) => {
+        formPayload.append(`attachment_${index + 1}`, file);
+      });
 
       const res = await fetch("/api/complaints/raise", {
         method: "POST",
@@ -168,7 +169,7 @@ export default function SupportHelpPage() {
         setSubmitSuccess(true);
         setSubject("");
         setDescription("");
-        setAttachment(null);
+        setAttachments([]);
         // Refresh ticket list
         fetchTickets(mobileNo);
         // Reset file input
@@ -367,21 +368,48 @@ export default function SupportHelpPage() {
 
                 {/* File Attachment Input */}
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-bold text-[#0F291B] font-roboto">Attach Bill / Image (Optional)</label>
-                  <div className="relative w-full border-2 border-dashed border-zinc-200 hover:border-[#1E532E] rounded-xl py-6 flex flex-col items-center justify-center cursor-pointer bg-[#F5F8F6]/50 transition-colors">
+                  <label className="text-sm font-bold text-[#0F291B] font-roboto">Attach Bills / Images (Optional - Max 3 files)</label>
+                  <div className="relative w-full border-2 border-dashed border-zinc-200 hover:border-[#1E532E] rounded-xl py-6 flex flex-col items-center justify-center bg-[#F5F8F6]/50 transition-colors">
                     <input 
                       type="file" 
                       id="file-attachment"
-                      onChange={(e) => setAttachment(e.target.files?.[0] || null)}
+                      multiple
+                      onChange={(e) => {
+                        const newFiles = Array.from(e.target.files || []);
+                        if (attachments.length + newFiles.length > 3) {
+                          alert("You can attach a maximum of 3 files.");
+                          return;
+                        }
+                        setAttachments(prev => [...prev, ...newFiles].slice(0, 3));
+                      }}
                       className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                     />
                     <svg className="w-8 h-8 text-zinc-400 mb-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                     </svg>
                     <span className="text-xs text-zinc-500 font-medium">
-                      {attachment ? `Selected: ${attachment.name}` : "Upload invoice, product image, or PDF files"}
+                      Upload up to 3 invoices, product images, or PDF files
                     </span>
                   </div>
+
+                  {/* List Selected Files */}
+                  {attachments.length > 0 && (
+                    <div className="flex flex-col gap-1.5 mt-2 bg-zinc-50 p-3 rounded-xl border border-zinc-100">
+                      <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Selected Files ({attachments.length}/3):</span>
+                      {attachments.map((file, idx) => (
+                        <div key={idx} className="flex items-center justify-between text-xs text-[#0F291B] bg-white border border-zinc-150 py-1.5 px-3 rounded-lg shadow-sm">
+                          <span className="truncate max-w-[85%] font-medium">{file.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => setAttachments(prev => prev.filter((_, i) => i !== idx))}
+                            className="text-red-500 hover:text-red-700 font-extrabold text-sm ml-2"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Submit Button */}

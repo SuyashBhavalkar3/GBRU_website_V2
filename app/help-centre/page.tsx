@@ -12,7 +12,7 @@ export default function HelpCentrePage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-[#F8F9FA] pt-24">
+      <main className="min-h-screen bg-[#FDFDFD] pt-8">
         <HelpCentre />
       </main>
       <Footer />
