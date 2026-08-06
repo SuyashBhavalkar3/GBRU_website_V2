@@ -171,6 +171,27 @@ function ProductDetailContent() {
 
   const activeImg = validImages[activeImgIdx] || validImages[0];
 
+  const hasCod = Number(product?.COD_value || product?.cod_value || 0) > 0;
+
+  const getFeaturesList = () => {
+    const raw = product?.key_features || product?.features;
+    if (Array.isArray(raw)) return raw;
+    if (typeof raw === "string" && raw.trim()) {
+      return raw.split(/\n+/).map(line => line.replace(/^[\*\-\u2022]\s*/, "").trim()).filter(Boolean);
+    }
+    const desc = product?.description || "";
+    if (desc && !desc.includes("<p>") && !desc.includes("<div>")) {
+      return desc.split(/[\n\.]+/).map(line => line.trim()).filter(line => line.length > 5);
+    }
+    return [
+      `Premium quality ${product?.item_name || 'equipment'} designed for Indian farming terrains.`,
+      `Engineered for durability, high performance, and fuel efficiency.`,
+      `Comes with standard manufacturer warranty and PAN-India service support.`
+    ];
+  };
+
+  const featuresList = getFeaturesList();
+
   return (
     <div className="min-h-screen bg-white font-roboto relative">
       <Navbar />
@@ -274,16 +295,12 @@ function ProductDetailContent() {
               <h3 className="font-roboto font-bold text-[#0F291B] text-[16px] mb-4">
                 Key Highlights
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                <div className="flex flex-col gap-1">
+              <div className="grid grid-cols-2 gap-6">
+                <div className="flex flex-col gap-1 text-left">
                   <span className="font-bold text-[#0F291B] text-[16px] leading-tight">MOQ</span>
                   <span className="text-[#6B7280] text-[13px]">{product.moq} {product.measurement_unit || "Nos"}</span>
                 </div>
-                <div className="flex flex-col gap-1">
-                  <span className="font-bold text-[#0F291B] text-[16px] leading-tight">HSN Code</span>
-                  <span className="text-[#6B7280] text-[13px]">{product.gst_hsn_code || "8432"}</span>
-                </div>
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1 text-left">
                   <span className="font-bold text-[#0d9740] text-[16px] leading-tight">Authentic Brand</span>
                   <span className="text-[#6B7280] text-[13px]">100% GBRU Quality</span>
                 </div>
@@ -370,77 +387,81 @@ function ProductDetailContent() {
               </div>
 
               {/* Card 2: Cash On Delivery */}
-              <div
-                onClick={() => setPaymentOption("booking")}
-                className={`relative flex-1 p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${paymentOption === "booking"
-                    ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
-                    : "border-zinc-200 bg-white"
-                  }`}
-              >
-                {paymentOption === "booking" && (
-                  <div className="absolute top-[-10px] right-[-10px] bg-[#0d9740] text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md text-xs">
-                    ✓
-                  </div>
-                )}
-
-                <div>
-                  <div className="text-[9px] font-bold py-1 px-2 rounded-[6px] inline-block mb-3 border border-zinc-300 text-zinc-500 bg-zinc-50">
-                    CASH ON DELIVERY
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${paymentOption === "booking" ? "border-[#0d9740]" : "border-zinc-300"
-                      }`}>
-                      {paymentOption === "booking" && (
-                        <div className="w-2.5 h-2.5 rounded-full bg-[#0d9740]" />
-                      )}
+              {hasCod && (
+                <div
+                  onClick={() => setPaymentOption("booking")}
+                  className={`relative flex-1 p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${paymentOption === "booking"
+                      ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
+                      : "border-zinc-200 bg-white"
+                    }`}
+                >
+                  {paymentOption === "booking" && (
+                    <div className="absolute top-[-10px] right-[-10px] bg-[#0d9740] text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md text-xs">
+                      ✓
                     </div>
-                    <h4 className="font-bold text-[#0F291B] text-[14px]">COD PAYMENT</h4>
-                  </div>
-                  <p className="text-[11px] text-[#6B7280] mt-1.5 pl-6">Pay deposit & balance on delivery</p>
+                  )}
 
-                  <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3 pl-6">
-                    <div className="flex justify-between">
-                      <span>Total Price</span>
-                      <span>₹{formatPrice(product.actual_rate)}</span>
+                  <div>
+                    <div className="text-[9px] font-bold py-1 px-2 rounded-[6px] inline-block mb-3 border border-zinc-300 text-zinc-500 bg-zinc-50">
+                      CASH ON DELIVERY
                     </div>
-                    {product.COD_discount > 0 && (
-                      <div className="flex justify-between text-[#0d9740]">
-                        <span>COD Discount</span>
-                        <span>- ₹{formatPrice(product.COD_discount)}</span>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${paymentOption === "booking" ? "border-[#0d9740]" : "border-zinc-300"
+                        }`}>
+                        {paymentOption === "booking" && (
+                          <div className="w-2.5 h-2.5 rounded-full bg-[#0d9740]" />
+                        )}
                       </div>
-                    )}
-                    <div className="flex justify-between bg-emerald-50 px-1 py-0.5 rounded text-[11px]">
-                      <span>Effective Total</span>
-                      <span className="font-bold text-[#0d9740]">
-                        ₹{formatPrice((product.COD_value || 0) + (product.COD_Display || 0))}
+                      <h4 className="font-bold text-[#0F291B] text-[14px]">COD PAYMENT</h4>
+                    </div>
+                    <p className="text-[11px] text-[#6B7280] mt-1.5 pl-6">Pay deposit & balance on delivery</p>
+
+                    <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3 pl-6">
+                      <div className="flex justify-between">
+                        <span>Total Price</span>
+                        <span>₹{formatPrice(product.actual_rate)}</span>
+                      </div>
+                      {product.COD_discount > 0 && (
+                        <div className="flex justify-between text-[#0d9740]">
+                          <span>COD Discount</span>
+                          <span>- ₹{formatPrice(product.COD_discount)}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between bg-emerald-50 px-1 py-0.5 rounded text-[11px]">
+                        <span>Effective Total</span>
+                        <span className="font-bold text-[#0d9740]">
+                          ₹{formatPrice((product.COD_value || 0) + (product.COD_Display || 0))}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 border-t border-zinc-100 pt-3 flex flex-col pl-6">
+                    <div>
+                      <span className="text-[11px] font-medium text-[#6B7280]">Pay Now (Deposit)</span>
+                      <div className="text-[20px] font-extrabold text-[#0f291b]">
+                        ₹{formatPrice(product.COD_Display)}
+                      </div>
+                    </div>
+                    <div className="mt-1 text-[11px] text-zinc-500">
+                      Pay on Delivery: <span className="font-bold text-[#0f291b]">
+                        ₹{formatPrice(product.COD_value)}
                       </span>
                     </div>
                   </div>
                 </div>
-
-                <div className="mt-6 border-t border-zinc-100 pt-3 flex flex-col pl-6">
-                  <div>
-                    <span className="text-[11px] font-medium text-[#6B7280]">Pay Now (Deposit)</span>
-                    <div className="text-[20px] font-extrabold text-[#0f291b]">
-                      ₹{formatPrice(product.COD_Display)}
-                    </div>
-                  </div>
-                  <div className="mt-1 text-[11px] text-zinc-500">
-                    Pay on Delivery: <span className="font-bold text-[#0f291b]">
-                      ₹{formatPrice(product.COD_value)}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              )}
 
             </div>
 
             {/* helper text */}
-            <p className="text-[11px] text-[#6B7280] leading-relaxed text-center px-4">
-              {paymentOption === "full"
-                ? "Most farmers choose full payment for faster processing."
-                : `Only ₹${formatPrice(product.COD_Display)} required to reserve this product today. Remaining balance can be paid on delivery.`}
-            </p>
+            {hasCod && (
+              <p className="text-[11px] text-[#6B7280] leading-relaxed text-center px-4">
+                {paymentOption === "full"
+                  ? "Most farmers choose full payment for faster processing."
+                  : `Only ₹${formatPrice(product.COD_Display)} required to reserve this product today. Remaining balance can be paid on delivery.`}
+              </p>
+            )}
 
             {/* Quantity Selector */}
             <div className="flex items-center justify-between py-3 px-4 bg-zinc-50 border border-zinc-100 rounded-[14px] mt-2 mb-1">
@@ -580,10 +601,6 @@ function ProductDetailContent() {
                   <span className="text-zinc-500">Valid From</span>
                   <span className="font-bold text-[#0F291B]">{product.valid_from || "N/A"}</span>
                 </div>
-                <div className="flex justify-between py-3 border-b border-zinc-100">
-                  <span className="text-zinc-500">GST HSN Code</span>
-                  <span className="font-bold text-[#0F291B]">{product.gst_hsn_code || "8432"}</span>
-                </div>
               </div>
             </div>
           )}
@@ -592,9 +609,9 @@ function ProductDetailContent() {
             <div className="flex flex-col gap-4">
               <h4 className="font-bold text-[#0F291B] text-lg">Key Features</h4>
               <ul className="list-disc list-inside text-sm text-[#374151] flex flex-col gap-2">
-                <li>Heavy-duty structure built for extreme field terrains.</li>
-                <li>Designed for maximum durability and agricultural output.</li>
-                <li>Official high efficiency rating from GBRU labs.</li>
+                {featuresList.map((feat: string, fIdx: number) => (
+                  <li key={fIdx}>{feat}</li>
+                ))}
               </ul>
             </div>
           )}
