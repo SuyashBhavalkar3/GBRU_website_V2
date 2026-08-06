@@ -200,6 +200,9 @@ export default function Checkout() {
     if (!confirm("Are you sure you want to delete this address?")) return;
     
     // Optimistically remove from state for now
+    const previousAddresses = [...savedAddresses];
+    const previousIndex = selectedAddressIndex;
+
     const updatedAddresses = savedAddresses.filter(a => a.name !== name);
     setSavedAddresses(updatedAddresses);
     if (selectedAddressIndex >= updatedAddresses.length) {
@@ -210,7 +213,109 @@ export default function Checkout() {
       setIsAddingAddress(true);
     }
 
-    alert("UI updated! Please provide the Delete API endpoint so I can connect it to the backend.");
+    try {
+      const userStr = localStorage.getItem("gbru_user");
+      if (!userStr) return;
+      
+      const user = JSON.parse(userStr);
+      let mobile_no = user.mobile_no || user.user_id || user.customer_id;
+      if (mobile_no && mobile_no.includes("@")) {
+        mobile_no = mobile_no.split("@")[0];
+      }
+      const api_key = user.key_details?.api_key || user.api_key;
+      const api_secret = user.key_details?.api_secret || user.api_secret;
+
+      const res = await fetch("/api/shipping-address/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile_no, api_key, api_secret, name })
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.message?.status) {
+        // Revert optimistic update
+        setSavedAddresses(previousAddresses);
+        setSelectedAddressIndex(previousIndex);
+        if (previousAddresses.length > 0) {
+          setIsAddressSaved(true);
+          setIsAddingAddress(false);
+        }
+        
+        let errorMsg = json.error || json.message?.message || "Failed to delete address";
+        if (json._server_messages) {
+          try {
+            const serverMsgs = JSON.parse(json._server_messages);
+            if (serverMsgs.length > 0) {
+              const msgObj = JSON.parse(serverMsgs[0]);
+              if (msgObj.message) {
+                errorMsg = msgObj.message.replace(/<[^>]*>?/gm, '');
+              }
+            }
+          } catch (e) {}
+        }
+        alert(errorMsg);
+      }
+    } catch (e) {
+      console.error(e);
+      // Revert optimistic update
+      setSavedAddresses(previousAddresses);
+      setSelectedAddressIndex(previousIndex);
+      alert("Error deleting address");
+    }
+  };
+
+  const handleMakePrimary = async (name: string) => {
+    // Optimistically update UI
+    const previousAddresses = [...savedAddresses];
+    
+    setSavedAddresses(prev => prev.map(a => ({
+      ...a,
+      is_primary: a.name === name ? 1 : 0
+    })));
+
+    try {
+      const userStr = localStorage.getItem("gbru_user");
+      if (!userStr) return;
+      
+      const user = JSON.parse(userStr);
+      let mobile_no = user.mobile_no || user.user_id || user.customer_id;
+      if (mobile_no && mobile_no.includes("@")) {
+        mobile_no = mobile_no.split("@")[0];
+      }
+      const api_key = user.key_details?.api_key || user.api_key;
+      const api_secret = user.key_details?.api_secret || user.api_secret;
+
+      const res = await fetch("/api/shipping-address/make-primary", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile_no, api_key, api_secret, name })
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.message?.status) {
+        // Revert optimistic update
+        setSavedAddresses(previousAddresses);
+        
+        let errorMsg = json.error || json.message?.message || "Failed to set primary address";
+        if (json._server_messages) {
+          try {
+            const serverMsgs = JSON.parse(json._server_messages);
+            if (serverMsgs.length > 0) {
+              const msgObj = JSON.parse(serverMsgs[0]);
+              if (msgObj.message) {
+                errorMsg = msgObj.message.replace(/<[^>]*>?/gm, '');
+              }
+            }
+          } catch (e) {}
+        }
+        alert(errorMsg);
+      }
+    } catch (e) {
+      console.error(e);
+      // Revert optimistic update
+      setSavedAddresses(previousAddresses);
+      alert("Error setting primary address");
+    }
   };
 
   const handleSaveAddress = async () => {
@@ -501,21 +606,7 @@ export default function Checkout() {
                     Tell us where to deliver your agricultural equipment and supplies.
                   </p>
                 </div>
-                {isAddressSaved ? (
-                  <button
-                    onClick={() => {
-                      setIsAddressSaved(false);
-                      setIsAddingAddress(true);
-                      setEditingAddressName(null);
-                      setFormData({
-                        fullName: "", mobile: "", pin: "", village: "", city: "", district: "", state: "", address1: "", address2: "", saveAddress: false
-                      });
-                    }}
-                    className="text-xs text-[#0D9740] font-bold hover:underline"
-                  >
-                    Add New
-                  </button>
-                ) : isAddingAddress ? (
+                {isAddingAddress ? (
                   <button
                     onClick={() => {
                       setIsAddingAddress(false);
@@ -602,6 +693,19 @@ export default function Checkout() {
                       <span className="text-xs text-zinc-500 font-medium">
                         Phone: {addr.phone}
                       </span>
+                      {selectedAddressIndex === idx && addr.is_primary !== 1 && (
+                        <div className="mt-1 pt-2 border-t border-zinc-100/50">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMakePrimary(addr.name);
+                            }}
+                            className="text-[11px] font-bold text-[#0D9740] bg-[#0D9740]/10 hover:bg-[#0D9740]/20 py-1.5 px-3 rounded-[8px] transition-colors"
+                          >
+                            Set as Primary Address
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                   <div className="pt-4 flex justify-center">
