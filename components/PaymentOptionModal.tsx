@@ -38,6 +38,10 @@ export default function PaymentOptionModal({
         if (data?.message?.status && data.message.data) {
           setProductDetails(data.message.data);
           setQuantity(data.message.data.moq || 1);
+          const codVal = data.message.data.COD_value || data.message.data.cod_value || 0;
+          if (codVal <= 0) {
+            setSelectedOption("full");
+          }
         }
       } catch (err) {
         console.error("Error fetching product details for modal:", err);
@@ -205,32 +209,34 @@ export default function PaymentOptionModal({
               </div>
 
               {/* Card 2: Cash On Delivery */}
-              <div
-                onClick={() => setSelectedOption("booking")}
-                className={`flex-1 p-4 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${
-                  selectedOption === "booking"
-                    ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
-                    : "border-zinc-200 bg-white hover:border-zinc-300"
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-2 text-left">
-                  <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${
-                    selectedOption === "booking" ? "border-[#0d9740]" : "border-zinc-300"
-                  }`}>
-                    {selectedOption === "booking" && (
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#0d9740]" />
-                    )}
+              {productDetails && (productDetails.COD_value || productDetails.cod_value || 0) > 0 && (
+                <div
+                  onClick={() => setSelectedOption("booking")}
+                  className={`flex-1 p-4 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${
+                    selectedOption === "booking"
+                      ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
+                      : "border-zinc-200 bg-white hover:border-zinc-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-2 text-left">
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${
+                      selectedOption === "booking" ? "border-[#0d9740]" : "border-zinc-300"
+                    }`}>
+                      {selectedOption === "booking" && (
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#0d9740]" />
+                      )}
+                    </div>
+                    <span className="font-bold text-[#0F291B] text-sm">Cash On Delivery</span>
                   </div>
-                  <span className="font-bold text-[#0F291B] text-sm">Cash On Delivery</span>
-                </div>
-                <p className="text-[11px] text-zinc-500 mb-4 pl-6 text-left">Pay deposit now & balance on delivery</p>
-                <div className="pl-6 pt-2 border-t border-zinc-100 mt-auto text-left">
-                  <span className="text-[10px] text-zinc-400 font-medium">Pay Now (Deposit)</span>
-                  <div className="text-base font-extrabold text-[#0f291b]">
-                    ₹{formatPrice(productDetails?.COD_Display)}
+                  <p className="text-[11px] text-zinc-500 mb-4 pl-6 text-left">Pay deposit now & balance on delivery</p>
+                  <div className="pl-6 pt-2 border-t border-zinc-100 mt-auto text-left">
+                    <span className="text-[10px] text-zinc-400 font-medium">Pay Now (Deposit)</span>
+                    <div className="text-base font-extrabold text-[#0f291b]">
+                      ₹{formatPrice(productDetails?.COD_Display)}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Quantity Selector */}
