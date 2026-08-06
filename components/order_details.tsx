@@ -28,6 +28,11 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
+  // Cancel order state
+  const [showCancelToast, setShowCancelToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [cancelling, setCancelling] = useState(false);
+
   // Tracking state
   const [activeTrackingSticker, setActiveTrackingSticker] = useState<string | null>(null);
   const [trackingData, setTrackingData] = useState<any>(null);
@@ -70,6 +75,48 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
     };
     fetchDetails();
   }, [decodedOrderId]);
+
+  const handleCancelOrder = async () => {
+    if (!window.confirm("Are you sure you want to cancel this order?")) {
+      return;
+    }
+    setCancelling(true);
+    try {
+      const stored = localStorage.getItem("gbru_user");
+      if (!stored) {
+        alert("User not logged in");
+        setCancelling(false);
+        return;
+      }
+      const parsed = JSON.parse(stored);
+      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+
+      const res = await fetch("/api/orders/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mobile_no,
+          order_id: decodedOrderId
+        })
+      });
+      const data = await res.json();
+      if (data?.message?.status) {
+        setToastMessage(data.message.message || "Sales order cancelled successfully.");
+        setShowCancelToast(true);
+        // Refresh details after 3 seconds
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      } else {
+        alert(data?.message?.message || "Failed to cancel order.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong while cancelling the order.");
+    } finally {
+      setCancelling(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -596,6 +643,26 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                   Raise complain
                 </Link>
               </div>
+
+              {String(summary.allowed_action || "").toLowerCase() === "cancel" && (
+                <button
+                  onClick={handleCancelOrder}
+                  disabled={cancelling}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl text-xs font-roboto transition-all shadow-sm flex items-center justify-center gap-1.5 duration-300 mt-2 active:scale-[0.98] disabled:opacity-50"
+                >
+                  {cancelling ? (
+                    <span className="flex items-center gap-1.5 justify-center">
+                      <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Cancelling...
+                    </span>
+                  ) : (
+                    "Cancel Order"
+                  )}
+                </button>
+              )}
             </div>
 
           </div>
@@ -704,6 +771,29 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
           </div>
         </div>
       )}
+
+      {/* Toast Notification with Progress Bar */}
+      {showCancelToast && (
+        <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom duration-300">
+          <div className="bg-[#0F291B] text-white py-4 px-6 rounded-2xl shadow-xl flex flex-col gap-2 relative overflow-hidden min-w-[320px]">
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-400 text-lg">✓</span>
+              <span className="text-xs font-bold font-roboto">{toastMessage}</span>
+            </div>
+            {/* Decreasing Line / Progress Bar */}
+            <div className="absolute bottom-0 left-0 h-1 bg-[#0D9740] w-full" style={{
+              animation: 'shrinkWidth 3s linear forwards'
+            }} />
+          </div>
+        </div>
+      )}
+
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes shrinkWidth {
+          from { width: 100%; }
+          to { width: 0%; }
+        }
+      `}} />
 
       <Footer />
     </div>
