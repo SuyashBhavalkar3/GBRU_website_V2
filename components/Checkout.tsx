@@ -633,9 +633,32 @@ export default function Checkout() {
   const subtotal = activePricingData?.payment_summary?.original_amount || 0;
   const gst = activePricingData?.total_taxes_and_charges || 0;
   const delivery = 0;
-  const couponDiscount = paymentMode === "booking" ? 0 : (proceedData?.payment_summary?.full_payment?.coupen_discount || 0);
+
+  // Total discount
+  const totalDiscount = paymentMode === "booking"
+    ? (activePricingData?.payment_summary?.cash_on_delivery?.discount_amount || 0)
+    : (activePricingData?.payment_summary?.full_payment?.discount_amount || 0);
+
+  // Coupon discount
+  const couponDiscount = paymentMode === "booking"
+    ? (activePricingData?.payment_summary?.cash_on_delivery?.coupen_discount || 0)
+    : (activePricingData?.payment_summary?.full_payment?.coupen_discount || 0);
+
+  // Normal discount (full payment / COD specific discount before coupon)
+  const normalDiscount = Math.max(0, totalDiscount - couponDiscount);
   
   const total = activePricingData?.grand_total || 0;
+
+  // Full Payment Card helper variables
+  const fullTotalDiscount = proceedData?.payment_summary?.full_payment?.discount_amount || 0;
+  const fullCouponDiscount = proceedData?.payment_summary?.full_payment?.coupen_discount || 0;
+  const fullNormalDiscount = Math.max(0, fullTotalDiscount - fullCouponDiscount);
+
+  // Booking Card helper variables
+  const bookingPricingData = defaultProceedData || proceedData;
+  const bookingTotalDiscount = bookingPricingData?.payment_summary?.cash_on_delivery?.discount_amount || 0;
+  const bookingCouponDiscount = bookingPricingData?.payment_summary?.cash_on_delivery?.coupen_discount || 0;
+  const bookingNormalDiscount = Math.max(0, bookingTotalDiscount - bookingCouponDiscount);
 
   if (loadingCheckout) {
     return (
@@ -738,10 +761,18 @@ export default function Checkout() {
                         <span>Order Total</span>
                         <span>₹{formatPrice(proceedData?.payment_summary?.original_amount)}</span>
                       </div>
-                      <div className="flex justify-between text-[#0D9740]">
-                        <span>Instant Discount</span>
-                        <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.discount_amount)}</span>
-                      </div>
+                      {fullNormalDiscount > 0 && (
+                        <div className="flex justify-between text-[#0D9740]">
+                          <span>Instant Discount</span>
+                          <span>- ₹{formatPrice(fullNormalDiscount)}</span>
+                        </div>
+                      )}
+                      {fullCouponDiscount > 0 && (
+                        <div className="flex justify-between text-[#0D9740]">
+                          <span>Coupon Discount</span>
+                          <span>- ₹{formatPrice(fullCouponDiscount)}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -791,6 +822,18 @@ export default function Checkout() {
                           <span>Order Total</span>
                           <span>₹{formatPrice(defaultProceedData?.payment_summary?.original_amount || proceedData?.payment_summary?.original_amount)}</span>
                         </div>
+                        {bookingNormalDiscount > 0 && (
+                          <div className="flex justify-between text-[#0D9740]">
+                            <span>Instant Discount</span>
+                            <span>- ₹{formatPrice(bookingNormalDiscount)}</span>
+                          </div>
+                        )}
+                        {bookingCouponDiscount > 0 && (
+                          <div className="flex justify-between text-[#0D9740]">
+                            <span>Coupon Discount</span>
+                            <span>- ₹{formatPrice(bookingCouponDiscount)}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -1211,6 +1254,12 @@ export default function Checkout() {
                   <span className="text-zinc-500">Delivery</span>
                   <span className="font-bold text-[#0d9740]">FREE</span>
                 </div>
+                 {normalDiscount > 0 && (
+                  <div className="flex justify-between text-[#0d9740]">
+                    <span>{paymentMode === "full" ? "Full Payment Discount" : "Cash On Delivery Discount"}</span>
+                    <span>- ₹{formatPrice(normalDiscount)}</span>
+                  </div>
+                )}
                 {couponDiscount > 0 && (
                   <div className="flex justify-between text-[#0d9740]">
                     <span>Coupon Discount</span>

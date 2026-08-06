@@ -200,10 +200,22 @@ export default function PaymentOptionModal({
                   <span className="font-bold text-[#0F291B] text-sm">Full Payment</span>
                 </div>
                 <p className="text-[11px] text-zinc-500 mb-4 pl-6 text-left">Pay complete amount today</p>
-                <div className="pl-6 pt-2 border-t border-zinc-100 mt-auto text-left">
-                  <span className="text-[10px] text-zinc-400 font-medium">Pay Now</span>
-                  <div className="text-base font-extrabold text-[#0f291b]">
-                    ₹{formatPrice(productDetails?.full_payment_amount || productDetails?.price)}
+                <div className="pl-6 pt-2 border-t border-zinc-100 mt-auto text-left flex flex-col gap-1.5">
+                  <div className="flex justify-between items-center text-[11px] text-zinc-500">
+                    <span>M.R.P.</span>
+                    <span>₹{formatPrice(productDetails?.actual_rate || productDetails?.price)}</span>
+                  </div>
+                  {(productDetails?.full_payment_discount || 0) > 0 && (
+                    <div className="flex justify-between items-center text-[11px] text-[#0d9740] font-medium">
+                      <span>Full Pay Discount</span>
+                      <span>-₹{formatPrice(productDetails?.full_payment_discount)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center pt-2 border-t border-zinc-100 mt-1">
+                    <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Pay Now</span>
+                    <span className="text-base font-extrabold text-[#0f291b]">
+                      ₹{formatPrice(productDetails?.full_payment_amount || productDetails?.price)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -229,10 +241,26 @@ export default function PaymentOptionModal({
                     <span className="font-bold text-[#0F291B] text-sm">Cash On Delivery</span>
                   </div>
                   <p className="text-[11px] text-zinc-500 mb-4 pl-6 text-left">Pay deposit now & balance on delivery</p>
-                  <div className="pl-6 pt-2 border-t border-zinc-100 mt-auto text-left">
-                    <span className="text-[10px] text-zinc-400 font-medium">Pay Now (Deposit)</span>
-                    <div className="text-base font-extrabold text-[#0f291b]">
-                      ₹{formatPrice(productDetails?.COD_Display)}
+                  <div className="pl-6 pt-2 border-t border-zinc-100 mt-auto text-left flex flex-col gap-1.5">
+                    <div className="flex justify-between items-center text-[11px] text-zinc-500">
+                      <span>M.R.P.</span>
+                      <span>₹{formatPrice(productDetails?.actual_rate || productDetails?.price)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-[11px] text-zinc-500">
+                      <span>Balance on Delivery</span>
+                      <span>₹{formatPrice(productDetails?.COD_value || productDetails?.cod_value)}</span>
+                    </div>
+                    {(productDetails?.COD_discount || productDetails?.cod_discount || 0) > 0 && (
+                      <div className="flex justify-between items-center text-[11px] text-[#0d9740] font-medium">
+                        <span>COD Discount</span>
+                        <span>-₹{formatPrice(productDetails?.COD_discount || productDetails?.cod_discount)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center pt-2 border-t border-zinc-100 mt-1">
+                      <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Pay Deposit</span>
+                      <span className="text-base font-extrabold text-[#0f291b]">
+                        ₹{formatPrice(productDetails?.COD_Display || productDetails?.cod_display)}
+                      </span>
                     </div>
                   </div>
                 </div>
