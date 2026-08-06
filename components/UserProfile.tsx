@@ -19,6 +19,7 @@ export default function UserProfile() {
   // Modal states
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showAddAddressModal, setShowAddAddressModal] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
 
   // User States
   const [userName, setUserName] = useState("Loading...");
@@ -31,6 +32,11 @@ export default function UserProfile() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        const savedImage = localStorage.getItem("gbru_profile_image");
+        if (savedImage) {
+          setProfileImage(savedImage);
+        }
+
         const stored = localStorage.getItem("gbru_user");
         if (!stored) {
           setLoading(false);
@@ -83,13 +89,45 @@ export default function UserProfile() {
     address: "",
   });
 
-  const handleEditProfile = (e: React.FormEvent) => {
-    e.preventDefault();
-    setUserFullName(tempName);
-    const firstName = tempName.split(" ")[0] || tempName;
-    setUserName(firstName);
-    setUserPhone(tempPhone);
-    setShowEditProfileModal(false);
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Show local preview immediately
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProfileImage(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    try {
+      const stored = localStorage.getItem("gbru_user");
+      if (!stored) return;
+      const parsed = JSON.parse(stored);
+      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id;
+
+      if (!mobile_no) return;
+
+      const formData = new FormData();
+      formData.append("mobile_no", mobile_no);
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload-image", {
+        method: "POST",
+        body: formData
+      });
+
+      const resJson = await res.json();
+      if (resJson.message?.status) {
+        const imageUrl = resJson.message.data || resJson.message.image_url;
+        if (imageUrl) {
+          setProfileImage(imageUrl);
+          localStorage.setItem("gbru_profile_image", imageUrl);
+        }
+      }
+    } catch (err) {
+      console.error("Error uploading image to server:", err);
+    }
   };
 
   const handleAddAddress = (e: React.FormEvent) => {
@@ -122,8 +160,14 @@ export default function UserProfile() {
         {/* User Welcome Banner Card */}
         <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="relative w-16 h-16 rounded-full border border-emerald-200 bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 text-2xl font-bold uppercase shadow-sm">
-              {userName && userName !== "Loading..." ? userName.charAt(0) : "U"}
+            <div className="relative w-16 h-16 rounded-full border border-emerald-200 bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 overflow-hidden shadow-sm">
+              {profileImage ? (
+                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-2xl font-bold uppercase">
+                  {userName && userName !== "Loading..." ? userName.charAt(0) : "U"}
+                </span>
+              )}
               <div className="absolute bottom-0 right-0 bg-[#0FA84D] text-white w-4 h-4 rounded-full flex items-center justify-center text-[10px] border border-white z-10">
                 ✓
               </div>
@@ -359,47 +403,52 @@ export default function UserProfile() {
       {/* Edit Profile Modal */}
       {showEditProfileModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
-          <form
-            onSubmit={handleEditProfile}
-            className="bg-white rounded-[24px] max-w-sm w-full p-6 flex flex-col gap-4 shadow-xl"
-          >
-            <h3 className="font-bold text-[#0F291B] text-lg">Edit Profile</h3>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-zinc-500">Full Name</label>
-              <input
-                type="text"
-                required
-                value={tempName}
-                onChange={(e) => setTempName(e.target.value)}
-                className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
-              />
+          <div className="bg-white rounded-[24px] max-w-sm w-full p-6 flex flex-col gap-5 shadow-xl text-center">
+            <h3 className="font-bold text-[#0F291B] text-lg text-left">Update Profile Photo</h3>
+            
+            {/* Image Preview */}
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-24 h-24 rounded-full border-2 border-emerald-500 overflow-hidden bg-emerald-50 flex items-center justify-center text-3xl font-bold uppercase text-emerald-700 shadow">
+                {profileImage ? (
+                  <img src={profileImage} alt="Preview" className="w-full h-full object-cover" />
+                ) : (
+                  <span>{userName?.charAt(0)}</span>
+                )}
+              </div>
+              
+              <label className="cursor-pointer bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-xs py-2.5 px-5 rounded-full shadow transition-all">
+                Select Photo
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-zinc-500">Phone Number</label>
-              <input
-                type="text"
-                required
-                value={tempPhone}
-                onChange={(e) => setTempPhone(e.target.value)}
-                className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
-              />
+
+            {/* Read-Only Account Details */}
+            <div className="border-t border-zinc-150 pt-4 flex flex-col gap-2 text-left text-xs text-[#374151]">
+              <div className="flex justify-between py-1 border-b border-zinc-50">
+                <span className="text-zinc-400 font-bold">Full Name</span>
+                <span className="font-semibold">{userFullName}</span>
+              </div>
+              <div className="flex justify-between py-1">
+                <span className="text-zinc-400 font-bold">Phone Number</span>
+                <span className="font-semibold">{userPhone}</span>
+              </div>
             </div>
-            <div className="flex gap-2 justify-end mt-2">
+
+            <div className="flex justify-end gap-2 mt-2">
               <button
                 type="button"
                 onClick={() => setShowEditProfileModal(false)}
-                className="h-10 px-5 border border-zinc-300 rounded-[8px] text-xs font-bold text-zinc-500"
+                className="h-10 px-5 bg-[#0F291B] hover:bg-[#08170f] text-white rounded-[10px] font-bold text-xs"
               >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="h-10 px-5 bg-[#0D9740] hover:bg-[#0a7d34] text-white rounded-[8px] font-bold text-xs"
-              >
-                Save
+                Done
               </button>
             </div>
-          </form>
+          </div>
         </div>
       )}
 
