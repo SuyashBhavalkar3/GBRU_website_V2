@@ -199,7 +199,7 @@ export default function Navbar() {
             )}
 
             {/* Cart Icon */}
-            <Link href="/cart-proceed" className="relative hover:scale-110 transition-transform duration-200 w-[20px] h-[23px] flex items-center justify-center">
+            <Link href="/cart" className="relative hover:scale-110 transition-transform duration-200 w-[20px] h-[23px] flex items-center justify-center">
               <Image
                 src="/assets/header_cart_logo.png"
                 alt="Cart"

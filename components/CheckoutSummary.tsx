@@ -139,7 +139,7 @@ export default function CheckoutSummary() {
         
         {/* Back Link */}
         <Link
-          href="/cart-proceed"
+          href="/cart"
           className="flex items-center gap-1.5 text-sm font-bold text-[#0D9740] hover:underline"
         >
           ← Back to Cart

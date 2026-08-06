@@ -160,8 +160,8 @@ export default function Cart() {
   }
 
   const subtotal = cartItems.reduce((acc, curr) => acc + (curr.amount || 0), 0);
-  const gst = subtotal * 0.18;
-  const total = subtotal + gst;
+  const gst = 0;
+  const total = subtotal;
 
   if (loading) {
     return (
@@ -366,8 +366,8 @@ export default function Cart() {
                     <span className="font-bold text-[#0d9740]">FREE</span>
                   </div>
                   <div className="flex justify-between pb-4 border-b border-zinc-100">
-                    <span className="text-zinc-500">GST (18%)</span>
-                    <span className="font-bold">₹{formatPrice(gst)}</span>
+                    <span className="text-zinc-500">Taxes & Charges</span>
+                    <span className="font-bold text-[#0d9740] text-[11px] bg-[#EBF5EE] py-0.5 px-2 rounded">INCLUSIVE</span>
                   </div>
                   <div className="flex justify-between items-baseline pt-2">
                     <span className="font-bold text-[#0F291B] text-[16px]">Total</span>
