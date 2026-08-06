@@ -141,6 +141,48 @@ export default function Cart() {
     }
   };
 
+  const handleProceedToCheckout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    const stored = localStorage.getItem("gbru_user");
+    if (stored) {
+      const user = JSON.parse(stored);
+      let mobile_no = user.customer_id?.split('-')[1] || user.user_id || user.mobile_no;
+      if (mobile_no && mobile_no.includes("@")) {
+        mobile_no = mobile_no.split("@")[0];
+      }
+      
+      const api_key = user.key_details?.api_key || user.api_key;
+      const api_secret = user.key_details?.api_secret || user.api_secret;
+
+      try {
+        const addressRes = await fetch("/api/shipping-address", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mobile_no, api_key, api_secret })
+        });
+        
+        if (addressRes.ok) {
+          const json = await addressRes.json();
+          if (json.message?.status && Array.isArray(json.message?.data)) {
+            if (json.message.data.length === 0) {
+              router.push("/location-details");
+              return;
+            }
+          } else {
+            router.push("/location-details");
+            return;
+          }
+        } else {
+          router.push("/location-details");
+          return;
+        }
+      } catch (err) {
+        console.error("Failed to check shipping address in cart handler:", err);
+      }
+    }
+    router.push("/proceed-to-checkout");
+  };
+
   const formatPrice = (val: any) => {
     if (val === undefined || val === null) return "0.00";
     const num = parseFloat(val);
@@ -421,10 +463,13 @@ export default function Cart() {
                 </div>
 
                 {/* Checkout CTA */}
-                <Link href="/proceed-to-checkout" className="w-full h-14 rounded-[14px] bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm mt-2">
+                <button 
+                  onClick={handleProceedToCheckout} 
+                  className="w-full h-14 rounded-[14px] bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm mt-2 cursor-pointer active:scale-[0.98]"
+                >
                   Proceed to Checkout
                   <span className="text-[18px]">→</span>
-                </Link>
+                </button>
               </div>
 
             </div>

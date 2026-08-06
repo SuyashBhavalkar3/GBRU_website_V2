@@ -79,6 +79,17 @@ export default function Checkout() {
         })
       });
       const data = await res.json();
+      
+      if (data?.message?.data?.requires_full_registration) {
+        if (userStr) {
+          const u = JSON.parse(userStr);
+          u.status = "IN PROGRESS";
+          localStorage.setItem("gbru_user", JSON.stringify(u));
+        }
+        router.push("/location-details");
+        return;
+      }
+
       if (data?.message?.status && data.message.data) {
         setProceedData(data.message.data);
         if (!couponCodeToApply) {
@@ -121,10 +132,38 @@ export default function Checkout() {
         }
 
         const user = JSON.parse(userStr);
-        let mobile_no = user.mobile_no || user.user_id || user.customer_id;
+        if (user.status?.toUpperCase() === "IN PROGRESS") {
+          router.push("/location-details");
+          return;
+        }
+        let mobile_no = user.customer_id?.split('-')[1] || user.user_id || user.mobile_no;
         if (mobile_no && mobile_no.includes("@")) {
           mobile_no = mobile_no.split("@")[0];
         }
+
+        // Real-time API check fallback in case localStorage status is stale or missing
+        try {
+          const statusRes = await fetch('/api/user-details', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mobile_no })
+          });
+          if (statusRes.ok) {
+            const statusJson = await statusRes.json();
+            if (statusJson?.message?.status && statusJson?.message?.data) {
+              const currentStatus = statusJson.message.data.status;
+              if (currentStatus?.toUpperCase() === "IN PROGRESS") {
+                const updatedUser = { ...user, status: "IN PROGRESS" };
+                localStorage.setItem("gbru_user", JSON.stringify(updatedUser));
+                router.push("/location-details");
+                return;
+              }
+            }
+          }
+        } catch (e) {
+          console.error("Failed to check user status via API:", e);
+        }
+
         const api_key = user.key_details?.api_key || user.api_key;
         const api_secret = user.key_details?.api_secret || user.api_secret;
 
@@ -137,19 +176,25 @@ export default function Checkout() {
         
         if (res.ok) {
           const json = await res.json();
+          console.log("Shipping address check response:", json);
           if (json.message?.status && Array.isArray(json.message?.data)) {
-            setSavedAddresses(json.message.data);
-            if (json.message.data.length > 0) {
-              setIsAddressSaved(true);
-              const primaryIdx = json.message.data.findIndex((a: any) => a.is_primary === 1);
-              if (primaryIdx !== -1) setSelectedAddressIndex(primaryIdx);
-            } else {
-              setIsAddingAddress(true);
+            // Intercept: If shipping address list is empty, redirect to location details form
+            if (json.message.data.length === 0) {
+              console.log("Shipping addresses list is empty, redirecting to location details");
+              router.push("/location-details");
+              return;
             }
+            
+            setSavedAddresses(json.message.data);
+            setIsAddressSaved(true);
+            const primaryIdx = json.message.data.findIndex((a: any) => a.is_primary === 1);
+            if (primaryIdx !== -1) setSelectedAddressIndex(primaryIdx);
           } else {
+            console.log("Shipping address fetch status is false or data is not array. Allowing page load.");
             setIsAddingAddress(true);
           }
         } else {
+          console.log("Shipping address fetch failed with status:", res.status);
           setIsAddingAddress(true);
         }
 
