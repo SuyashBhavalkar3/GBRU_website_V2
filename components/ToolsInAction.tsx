@@ -16,27 +16,27 @@ export default function ToolsInAction() {
   const videos: VideoItem[] = [
     {
       id: 1,
-      title: "Power Weeder in Action",
-      thumbnail: "/assets/thumb_farmers_review_wide_1785751072100.png",
-      videoUrl: "https://www.youtube.com/embed/ismU9cWjqJE?autoplay=1",
+      title: "spray pump in action",
+      thumbnail: "/assets/thumb_spray_pumps.png",
+      videoUrl: "https://www.youtube.com/embed/3rhBieQevLA?autoplay=1",
     },
     {
       id: 2,
-      title: "Spray Pump Performance",
-      thumbnail: "/assets/thumb_spray_pumps.png",
-      videoUrl: "https://www.youtube.com/embed/ismU9cWjqJE?autoplay=1",
+      title: "solar camera in action",
+      thumbnail: "/assets/thumb_solar_camera.png",
+      videoUrl: "https://www.youtube.com/embed/7gGJHSmBGOM?autoplay=1",
     },
     {
       id: 3,
-      title: "Seeder Field Test",
-      thumbnail: "/assets/thumb_farmers_review_new_1785751049481.png",
-      videoUrl: "https://www.youtube.com/embed/ismU9cWjqJE?autoplay=1",
+      title: "mobile auto in action",
+      thumbnail: "/assets/thumb_mobile_auto.png",
+      videoUrl: "https://www.youtube.com/embed/DX5_nQpXYjA?autoplay=1",
     },
     {
       id: 4,
-      title: "Solar Fence Installation",
-      thumbnail: "/assets/thumb_solar_camera.png",
-      videoUrl: "https://www.youtube.com/embed/ismU9cWjqJE?autoplay=1",
+      title: "seeder in action",
+      thumbnail: "/assets/cat_seeders.png",
+      videoUrl: "https://www.youtube.com/embed/fGxiAGA4uf0?autoplay=1",
     },
   ];
 
@@ -74,12 +74,20 @@ export default function ToolsInAction() {
                 className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-zinc-100 shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md hover:scale-[1.01]"
               >
                 {/* Image */}
-                <Image
-                  src={vid.thumbnail}
-                  alt={vid.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                {vid.thumbnail.startsWith('http') ? (
+                  <img
+                    src={vid.thumbnail}
+                    alt={vid.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <Image
+                    src={vid.thumbnail}
+                    alt={vid.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                )}
                 
                 {/* Translucent overlay */}
                 <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors" />
