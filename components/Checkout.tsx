@@ -1269,45 +1269,90 @@ export default function Checkout() {
               </div>
 
               {/* Price Details */}
-              <div className="flex flex-col gap-4 text-sm text-[#374151] border-t border-zinc-100 pt-4">
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">Subtotal</span>
-                  <span className="font-bold">₹{formatPrice(subtotal)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">GST</span>
-                  <span className="font-bold">₹{formatPrice(gst)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">Delivery</span>
-                  <span className="font-bold text-[#0d9740]">FREE</span>
-                </div>
-                 {normalDiscount > 0 && (
-                  <div className="flex justify-between text-[#0d9740]">
-                    <span>{paymentMode === "full" ? "Full Payment Discount" : "Cash On Delivery Discount"}</span>
-                    <span>- ₹{formatPrice(normalDiscount)}</span>
+              <div className="flex flex-col gap-4 text-sm text-[#374151] border-t border-zinc-100 pt-4 text-left">
+                {Number(activePricingData?.sub_total || 0) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-zinc-500">Subtotal</span>
+                    <span className="font-bold">₹{formatPrice(activePricingData?.sub_total)}</span>
                   </div>
                 )}
-                {couponDiscount > 0 && (
-                  <div className="flex justify-between text-[#0d9740]">
-                    <span>Coupon Discount</span>
-                    <span>- ₹{formatPrice(couponDiscount)}</span>
+                {Number(activePricingData?.total_taxes_and_charges || 0) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-zinc-500">Delivery Charges</span>
+                    <span className="font-bold">₹{formatPrice(activePricingData?.total_taxes_and_charges)}</span>
                   </div>
+                )}
+                {Number(activePricingData?.total_taxes_and_charges || 0) === 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-zinc-500">Delivery</span>
+                    <span className="font-bold text-[#0d9740]">FREE</span>
+                  </div>
+                )}
+
+                {/* Full Payment Details */}
+                {paymentMode === "full" && (
+                  <>
+                    {Number(proceedData?.payment_summary?.full_payment?.discount_amount || 0) > 0 && (
+                      <div className="flex justify-between text-[#0d9740]">
+                        <span>Discount ({proceedData?.payment_summary?.full_payment?.label || "Instant"})</span>
+                        <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.discount_amount)}</span>
+                      </div>
+                    )}
+                    {Number(proceedData?.payment_summary?.full_payment?.discount_amount_without_gst || 0) > 0 && (
+                      <div className="flex justify-between text-zinc-500">
+                        <span>Discount (Excl. GST)</span>
+                        <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.discount_amount_without_gst)}</span>
+                      </div>
+                    )}
+                    {Number(proceedData?.payment_summary?.full_payment?.coupen_discount || 0) > 0 && (
+                      <div className="flex justify-between text-[#0d9740]">
+                        <span>Coupon Discount ({proceedData?.payment_summary?.full_payment?.coupon_label || "Promo"})</span>
+                        <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.coupen_discount)}</span>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Cash On Delivery Details */}
+                {paymentMode === "booking" && (
+                  <>
+                    {Number(proceedData?.payment_summary?.cash_on_delivery?.discount_amount || 0) > 0 && (
+                      <div className="flex justify-between text-[#0d9740]">
+                        <span>Discount ({proceedData?.payment_summary?.cash_on_delivery?.label || "Instant"})</span>
+                        <span>- ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.discount_amount)}</span>
+                      </div>
+                    )}
+                    {Number(proceedData?.payment_summary?.cash_on_delivery?.discount_amount_without_gst || 0) > 0 && (
+                      <div className="flex justify-between text-zinc-500">
+                        <span>Discount (Excl. GST)</span>
+                        <span>- ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.discount_amount_without_gst)}</span>
+                      </div>
+                    )}
+                    {Number(proceedData?.payment_summary?.cash_on_delivery?.coupen_discount || 0) > 0 && (
+                      <div className="flex justify-between text-[#0d9740]">
+                        <span>Coupon Discount ({proceedData?.payment_summary?.cash_on_delivery?.coupon_label || "Promo"})</span>
+                        <span>- ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.coupen_discount)}</span>
+                      </div>
+                    )}
+                  </>
                 )}
                 
                 <div className="flex justify-between items-baseline pt-2 border-t border-zinc-100">
-                  <span className="font-bold text-[#0F291B] text-[16px]">Total</span>
-                  <span className="font-extrabold text-[#0F291B] text-[24px]">
+                  <span className="font-bold text-[#0F291B] text-[16px]">Pay Now</span>
+                  <span className="font-extrabold text-[#0D9740] text-[24px]">
                     {paymentMode === "full" 
                       ? `₹${formatPrice(proceedData?.payment_summary?.full_payment?.payable_amount)}`
                       : `₹${formatPrice(proceedData?.payment_summary?.cash_on_delivery?.pay_now)}`
                     }
                   </span>
                 </div>
-                {paymentMode === "booking" && (
-                  <span className="text-[11px] text-zinc-500 text-right block leading-none">
-                    (₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.pay_on_delivery)} payable on delivery)
-                  </span>
+                {paymentMode === "booking" && Number(proceedData?.payment_summary?.cash_on_delivery?.pay_on_delivery || 0) > 0 && (
+                  <div className="flex justify-between items-baseline pt-1">
+                    <span className="font-bold text-zinc-500 text-[14px]">Pay on Delivery</span>
+                    <span className="font-bold text-zinc-700 text-[18px]">
+                      ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.pay_on_delivery)}
+                    </span>
+                  </div>
                 )}
               </div>
 

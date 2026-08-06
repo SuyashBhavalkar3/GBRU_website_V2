@@ -199,7 +199,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
   }
 
   const summary = order.order_summary || {};
-  const payAmount = Number(summary.pending_amount || 0);
+  const payAmount = Number(summary.payupreferedamount || summary.pending_amount || 0);
   const shipment = order.shipment || {};
   const items = shipment.items || [];
   const statusDisplay = shipment.status || summary.allowed_action || "Pending Payment";
