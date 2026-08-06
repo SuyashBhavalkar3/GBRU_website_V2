@@ -81,14 +81,24 @@ export default function Checkout() {
         setProceedData(data.message.data);
         if (!couponCodeToApply) {
           setDefaultProceedData(data.message.data);
+          const savedCoupon = localStorage.getItem("gbru_applied_coupon") || "";
+          if (!savedCoupon) {
+            setCouponApplied(false);
+            setCouponCode("");
+          }
         }
         const appliedCoupon = data.message.data.coupon;
         if (appliedCoupon && !appliedCoupon.error) {
           setCouponApplied(true);
+          setCouponCode(appliedCoupon.code || couponCodeToApply || "");
           setCouponError("");
+          if (appliedCoupon.code) {
+            localStorage.setItem("gbru_applied_coupon", appliedCoupon.code);
+          }
         } else if (couponCodeToApply) {
           setCouponError(`${couponCodeToApply} invalid`);
           setCouponApplied(false);
+          localStorage.removeItem("gbru_applied_coupon");
         }
       }
     } catch (e) {
@@ -162,7 +172,13 @@ export default function Checkout() {
             }
 
             // Immediately load Proceed details
-            await fetchProceedData(checkoutJson.message.data.items);
+            const savedCoupon = localStorage.getItem("gbru_applied_coupon") || "";
+            if (savedCoupon) {
+              setCouponCode(savedCoupon);
+              await fetchProceedData(checkoutJson.message.data.items, savedCoupon);
+            } else {
+              await fetchProceedData(checkoutJson.message.data.items);
+            }
           }
         }
       } catch (e) {
@@ -528,28 +544,22 @@ export default function Checkout() {
 
   const applyCoupon = () => {
     if (!couponCode) return;
-    if (paymentMode === "booking") {
-      setCouponError("coupon valid only if payment type is Full Payment");
-      setCouponApplied(false);
-      return;
-    }
     if (!checkoutDetails?.items) return;
     fetchProceedData(checkoutDetails.items, couponCode);
   };
 
+  const handleRemoveCoupon = () => {
+    setCouponCode("");
+    setCouponApplied(false);
+    setCouponError("");
+    localStorage.removeItem("gbru_applied_coupon");
+    if (checkoutDetails?.items) {
+      fetchProceedData(checkoutDetails.items, "");
+    }
+  };
+
   const handleSelectPaymentMode = (mode: "full" | "booking") => {
     setPaymentMode(mode);
-    if (mode === "booking") {
-      if (couponApplied || couponCode) {
-        setCouponError("coupon valid only if payment type is Full Payment");
-        setCouponApplied(false);
-        if (checkoutDetails?.items) {
-          fetchProceedData(checkoutDetails.items, "");
-        }
-      }
-    } else {
-      setCouponError("");
-    }
   };
 
   const [placingOrder, setPlacingOrder] = useState(false);
@@ -586,7 +596,7 @@ export default function Checkout() {
         body: JSON.stringify({
           mobile_no,
           items: formattedItems,
-          coupon_code: paymentMode === "full" && couponApplied ? (proceedData?.coupon?.code || couponCode) : null,
+          coupon_code: couponApplied ? (proceedData?.coupon?.code || couponCode) : null,
           payment_type,
           transaction_amount,
           email
@@ -597,6 +607,7 @@ export default function Checkout() {
       if (data.status && data.token && data.actionUrl) {
         // Clear cart to avoid showing stale cart items upon return
         localStorage.removeItem("gbru_cart");
+        localStorage.removeItem("gbru_applied_coupon");
         window.dispatchEvent(new Event("cartUpdate"));
 
         const form = document.createElement("form");
@@ -629,7 +640,7 @@ export default function Checkout() {
   };
 
   // Pricing calculations based on paymentMode and proceedData
-  const activePricingData = paymentMode === "booking" ? (defaultProceedData || proceedData) : proceedData;
+  const activePricingData = proceedData || defaultProceedData;
   const subtotal = activePricingData?.payment_summary?.original_amount || 0;
   const gst = activePricingData?.total_taxes_and_charges || 0;
   const delivery = 0;
@@ -655,7 +666,7 @@ export default function Checkout() {
   const fullNormalDiscount = Math.max(0, fullTotalDiscount - fullCouponDiscount);
 
   // Booking Card helper variables
-  const bookingPricingData = defaultProceedData || proceedData;
+  const bookingPricingData = proceedData || defaultProceedData;
   const bookingTotalDiscount = bookingPricingData?.payment_summary?.cash_on_delivery?.discount_amount || 0;
   const bookingCouponDiscount = bookingPricingData?.payment_summary?.cash_on_delivery?.coupen_discount || 0;
   const bookingNormalDiscount = Math.max(0, bookingTotalDiscount - bookingCouponDiscount);
@@ -713,9 +724,6 @@ export default function Checkout() {
             <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-6">
               <div className="flex justify-between items-center">
                 <h3 className="font-bold text-[#0F291B] text-[16px]">Payment Mode</h3>
-                <span className="text-xs text-[#0D9740] font-bold cursor-pointer hover:underline flex items-center gap-1">
-                  Change
-                </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -756,24 +764,30 @@ export default function Checkout() {
                     )}
                     <p className="text-[11px] text-[#6B7280] mt-3">Pay complete amount today</p>
 
-                    <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3">
-                      <div className="flex justify-between">
-                        <span>Order Total</span>
-                        <span>₹{formatPrice(proceedData?.payment_summary?.original_amount)}</span>
-                      </div>
-                      {fullNormalDiscount > 0 && (
-                        <div className="flex justify-between text-[#0D9740]">
-                          <span>Instant Discount</span>
-                          <span>- ₹{formatPrice(fullNormalDiscount)}</span>
-                        </div>
-                      )}
-                      {fullCouponDiscount > 0 && (
-                        <div className="flex justify-between text-[#0D9740]">
-                          <span>Coupon Discount</span>
-                          <span>- ₹{formatPrice(fullCouponDiscount)}</span>
-                        </div>
-                      )}
-                    </div>
+                     <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3 text-left">
+                       <div className="flex justify-between">
+                         <span>M.R.P. Subtotal</span>
+                         <span>₹{formatPrice(proceedData?.payment_summary?.original_amount)}</span>
+                       </div>
+                       {Number(proceedData?.payment_summary?.full_payment?.discount_amount || 0) > 0 && (
+                         <div className="flex justify-between text-[#0D9740]">
+                           <span>Discount ({proceedData?.payment_summary?.full_payment?.label || "Instant"})</span>
+                           <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.discount_amount)}</span>
+                         </div>
+                       )}
+                       {Number(proceedData?.payment_summary?.full_payment?.discount_amount_without_gst || 0) > 0 && (
+                         <div className="flex justify-between text-zinc-500">
+                           <span>Discount (Excl. GST)</span>
+                           <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.discount_amount_without_gst)}</span>
+                         </div>
+                       )}
+                       {Number(proceedData?.payment_summary?.full_payment?.coupen_discount || 0) > 0 && (
+                         <div className="flex justify-between text-[#0D9740]">
+                           <span>Coupon Discount ({proceedData?.payment_summary?.full_payment?.coupon_label || "Promo"})</span>
+                           <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.coupen_discount)}</span>
+                         </div>
+                       )}
+                     </div>
                   </div>
 
                   <div className="mt-6 border-t border-zinc-100 pt-3">
@@ -812,26 +826,32 @@ export default function Checkout() {
                       <h4 className="font-bold text-[#0F291B] text-[14px]">Booking Deposit</h4>
                       <div className="flex items-baseline gap-2 mt-1">
                         <span className="text-[20px] font-extrabold text-[#0f291b]">
-                          ₹{formatPrice(defaultProceedData?.payment_summary?.cash_on_delivery?.pay_now || proceedData?.payment_summary?.cash_on_delivery?.pay_now)}
+                          ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.pay_now || defaultProceedData?.payment_summary?.cash_on_delivery?.pay_now)}
                         </span>
                       </div>
                       <p className="text-[11px] text-[#6B7280] mt-3">Reserve with small amount</p>
 
-                      <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3">
+                      <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3 text-left">
                         <div className="flex justify-between">
-                          <span>Order Total</span>
+                          <span>M.R.P. Subtotal</span>
                           <span>₹{formatPrice(defaultProceedData?.payment_summary?.original_amount || proceedData?.payment_summary?.original_amount)}</span>
                         </div>
-                        {bookingNormalDiscount > 0 && (
+                        {Number(proceedData?.payment_summary?.cash_on_delivery?.discount_amount || 0) > 0 && (
                           <div className="flex justify-between text-[#0D9740]">
-                            <span>Instant Discount</span>
-                            <span>- ₹{formatPrice(bookingNormalDiscount)}</span>
+                            <span>Discount ({proceedData?.payment_summary?.cash_on_delivery?.label || "Instant"})</span>
+                            <span>- ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.discount_amount)}</span>
                           </div>
                         )}
-                        {bookingCouponDiscount > 0 && (
+                        {Number(proceedData?.payment_summary?.cash_on_delivery?.discount_amount_without_gst || 0) > 0 && (
+                          <div className="flex justify-between text-zinc-500">
+                            <span>Discount (Excl. GST)</span>
+                            <span>- ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.discount_amount_without_gst)}</span>
+                          </div>
+                        )}
+                        {Number(proceedData?.payment_summary?.cash_on_delivery?.coupen_discount || 0) > 0 && (
                           <div className="flex justify-between text-[#0D9740]">
-                            <span>Coupon Discount</span>
-                            <span>- ₹{formatPrice(bookingCouponDiscount)}</span>
+                            <span>Coupon Discount ({proceedData?.payment_summary?.cash_on_delivery?.coupon_label || "Promo"})</span>
+                            <span>- ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.coupen_discount)}</span>
                           </div>
                         )}
                       </div>
@@ -840,11 +860,11 @@ export default function Checkout() {
                     <div className="mt-6 border-t border-zinc-100 pt-3">
                       <span className="text-[11px] font-medium text-[#6B7280]">Pay Now (Booking)</span>
                       <div className="text-[20px] font-extrabold text-[#0f291b]">
-                        ₹{formatPrice(defaultProceedData?.payment_summary?.cash_on_delivery?.pay_now || proceedData?.payment_summary?.cash_on_delivery?.pay_now)}
+                        ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.pay_now || defaultProceedData?.payment_summary?.cash_on_delivery?.pay_now)}
                       </div>
                       <span className="text-[11px] text-zinc-500 block mt-1">
                         Pay on Delivery: <span className="font-bold text-[#0f291b]">
-                          ₹{formatPrice(defaultProceedData?.payment_summary?.cash_on_delivery?.pay_on_delivery || proceedData?.payment_summary?.cash_on_delivery?.pay_on_delivery)}
+                          ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.pay_on_delivery || defaultProceedData?.payment_summary?.cash_on_delivery?.pay_on_delivery)}
                         </span>
                       </span>
                     </div>
@@ -1231,7 +1251,15 @@ export default function Checkout() {
                     </div>
 
                     {couponApplied && (
-                      <span className="text-[11px] text-[#0D9740] font-bold">✓ {proceedData?.coupon?.code || couponCode} applied successfully</span>
+                      <div className="flex items-center justify-between mt-1 bg-emerald-50/50 px-2 py-1.5 rounded-lg">
+                        <span className="text-[11px] text-[#0D9740] font-bold">✓ {proceedData?.coupon?.code || couponCode} applied successfully</span>
+                        <button
+                          onClick={handleRemoveCoupon}
+                          className="text-[10px] text-red-600 hover:text-red-800 font-extrabold flex items-center gap-0.5 hover:underline"
+                        >
+                          ✕ Remove
+                        </button>
+                      </div>
                     )}
                     {couponError && (
                       <span className="text-[11px] text-red-500 font-bold">{couponError}</span>
