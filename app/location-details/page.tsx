@@ -45,6 +45,10 @@ export default function LocationDetailsPage() {
       return;
     }
     const parsed = JSON.parse(stored);
+    if (parsed.status?.toUpperCase() === "ACTIVE") {
+      router.push("/proceed-to-checkout");
+      return;
+    }
     setUser(parsed);
     if (parsed.Customer_name) {
       setName(parsed.Customer_name);

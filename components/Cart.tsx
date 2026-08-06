@@ -45,7 +45,18 @@ export default function Cart() {
 
         const data = await res.json();
         if (data?.message?.status && data.message.data) {
-          setCartItems(data.message.data.items || []);
+          const normalizedItems = (data.message.data.items || []).map((item: any) => {
+            const qty = item.quantity || item.qty || 1;
+            const unitPrice = item.price || (item.rate === item.amount ? item.rate / qty : item.rate) || 0;
+            return {
+              ...item,
+              quantity: qty,
+              price: unitPrice,
+              rate: unitPrice,
+              amount: unitPrice * qty
+            };
+          });
+          setCartItems(normalizedItems);
           setCartSummary(data.message.data);
         } else {
           setError(data?.message?.message || "Failed to load cart.");
@@ -101,6 +112,31 @@ export default function Cart() {
       console.log("update_cart_item response payload:", resJson);
       if (resJson?.message?.status) {
         window.dispatchEvent(new Event("cartUpdate"));
+        
+        // Re-fetch cart details to sync final calculations from ERP
+        const refreshRes = await fetch("/api/cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mobile_no }),
+        });
+        if (refreshRes.ok) {
+          const refreshData = await refreshRes.json();
+          if (refreshData?.message?.status && refreshData.message.data) {
+            const normalizedItems = (refreshData.message.data.items || []).map((item: any) => {
+              const qty = item.quantity || item.qty || 1;
+              const unitPrice = item.price || (item.rate === item.amount ? item.rate / qty : item.rate) || 0;
+              return {
+                ...item,
+                quantity: qty,
+                price: unitPrice,
+                rate: unitPrice,
+                amount: unitPrice * qty
+              };
+            });
+            setCartItems(normalizedItems);
+            setCartSummary(refreshData.message.data);
+          }
+        }
       } else {
         console.error("Failed to sync quantity update:", resJson);
       }
@@ -133,6 +169,31 @@ export default function Cart() {
         setTimeout(() => {
           setToastMessage("");
         }, 1500);
+
+        // Re-fetch cart details to sync final calculations from ERP
+        const refreshRes = await fetch("/api/cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mobile_no }),
+        });
+        if (refreshRes.ok) {
+          const refreshData = await refreshRes.json();
+          if (refreshData?.message?.status && refreshData.message.data) {
+            const normalizedItems = (refreshData.message.data.items || []).map((item: any) => {
+              const qty = item.quantity || item.qty || 1;
+              const unitPrice = item.price || (item.rate === item.amount ? item.rate / qty : item.rate) || 0;
+              return {
+                ...item,
+                quantity: qty,
+                price: unitPrice,
+                rate: unitPrice,
+                amount: unitPrice * qty
+              };
+            });
+            setCartItems(normalizedItems);
+            setCartSummary(refreshData.message.data);
+          }
+        }
       } else {
         console.error("Failed to delete cart item:", resJson);
       }
@@ -207,7 +268,7 @@ export default function Cart() {
     );
   }
 
-  const totalMrp = cartItems.reduce((acc, curr) => acc + (Number(curr.rate || curr.amount || 0) * Number(curr.quantity || 1)), 0);
+  const totalMrp = cartSummary?.total_amount || 0;
 
   const totalFullPaymentDiscount = cartItems.reduce((acc, curr) => {
     if (curr.payment_type === "Full Payment") {
@@ -223,13 +284,7 @@ export default function Cart() {
     return acc;
   }, 0);
 
-  const totalPayNow = cartItems.reduce((acc, curr) => {
-    if (curr.payment_type === "Full Payment") {
-      return acc + (Number(curr.full_payment_amount || curr.rate || 0) * Number(curr.quantity || 1));
-    } else {
-      return acc + (Number(curr.cod_display || 0) * Number(curr.quantity || 1));
-    }
-  }, 0);
+  const totalPayNow = cartSummary?.total_amount || 0;
 
   const totalPayOnDelivery = cartItems.reduce((acc, curr) => {
     if (curr.payment_type === "Cash On Delivery") {

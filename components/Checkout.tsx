@@ -11,11 +11,11 @@ export default function Checkout() {
   const [paymentMode, setPaymentMode] = useState<"full" | "booking">("full");
   const [pincode, setPincode] = useState("");
   const [pincodeStatus, setPincodeStatus] = useState<"idle" | "checking" | "available" | "unavailable">("idle");
-  
+
   const [couponCode, setCouponCode] = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
   const [couponError, setCouponError] = useState("");
-  
+
   const [paymentMethod, setPaymentMethod] = useState<"upi" | "card" | "netbanking">("upi");
   const [isOffersOpen, setIsOffersOpen] = useState(true);
 
@@ -28,12 +28,12 @@ export default function Checkout() {
   // Address Interactivity States
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [isAddressSaved, setIsAddressSaved] = useState(false);
-  
+
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
   const [selectedAddressIndex, setSelectedAddressIndex] = useState<number>(0);
   const [loadingAddresses, setLoadingAddresses] = useState(true);
   const [editingAddressName, setEditingAddressName] = useState<string | null>(null);
-  
+
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
     type: "alert" | "confirm";
@@ -79,7 +79,7 @@ export default function Checkout() {
         })
       });
       const data = await res.json();
-      
+
       if (data?.message?.data?.requires_full_registration) {
         if (userStr) {
           const u = JSON.parse(userStr);
@@ -173,7 +173,7 @@ export default function Checkout() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ mobile_no, api_key, api_secret })
         });
-        
+
         if (res.ok) {
           const json = await res.json();
           console.log("Shipping address check response:", json);
@@ -184,7 +184,7 @@ export default function Checkout() {
               router.push("/location-details");
               return;
             }
-            
+
             setSavedAddresses(json.message.data);
             setIsAddressSaved(true);
             const primaryIdx = json.message.data.findIndex((a: any) => a.is_primary === 1);
@@ -214,7 +214,48 @@ export default function Checkout() {
               return;
             }
             setCheckoutDetails(checkoutJson.message.data);
-            
+
+            // Populate fallback proceed data immediately from items
+            const fallbackItems = checkoutJson.message.data.items || [];
+            const mrpSubtotal = fallbackItems.reduce((sum: number, i: any) => {
+              const mrp = i.mrp || i.price || i.rate || 0;
+              const qty = i.quantity || i.qty || 1;
+              return sum + (mrp * qty);
+            }, 0);
+            const payableAmount = fallbackItems.reduce((sum: number, i: any) => {
+              const rate = i.price || i.rate || i.amount || 0;
+              // If we are using i.amount directly, do not multiply it by quantity as it is already qty * rate
+              if (i.amount && !i.price && !i.rate) {
+                return sum + i.amount;
+              }
+              const qty = i.quantity || i.qty || 1;
+              return sum + (rate * qty);
+            }, 0);
+            const discountAmount = Math.max(0, mrpSubtotal - payableAmount);
+
+            const mockProceedData = {
+              payment_summary: {
+                original_amount: mrpSubtotal,
+                full_payment: {
+                  payable_amount: payableAmount,
+                  discount_amount: discountAmount,
+                  label: "Discount",
+                  discount_amount_without_gst: 0,
+                  coupen_discount: 0
+                },
+                cash_on_delivery: {
+                  pay_now: payableAmount,
+                  discount_amount: discountAmount,
+                  pay_on_delivery: 0,
+                  coupen_discount: 0
+                }
+              },
+              grand_total: payableAmount,
+              sub_total: payableAmount
+            };
+            setProceedData(mockProceedData);
+            setDefaultProceedData(mockProceedData);
+
             // Set paymentMode based on checkout items' payment type
             const firstItem = checkoutJson.message.data.items?.[0];
             if (firstItem?.payment_type === "Cash On Delivery") {
@@ -379,7 +420,7 @@ export default function Checkout() {
     try {
       const userStr = localStorage.getItem("gbru_user");
       if (!userStr) return;
-      
+
       const user = JSON.parse(userStr);
       let mobile_no = user.mobile_no || user.user_id || user.customer_id;
       if (mobile_no && mobile_no.includes("@")) {
@@ -403,7 +444,7 @@ export default function Checkout() {
           setIsAddressSaved(true);
           setIsAddingAddress(false);
         }
-        
+
         let errorMsg = json.error || json.message?.message || "Failed to delete address";
         if (json._server_messages) {
           try {
@@ -414,7 +455,7 @@ export default function Checkout() {
                 errorMsg = msgObj.message.replace(/<[^>]*>?/gm, '');
               }
             }
-          } catch (e) {}
+          } catch (e) { }
         }
         showAlert(errorMsg, "Deletion Error");
       }
@@ -430,7 +471,7 @@ export default function Checkout() {
   const handleMakePrimary = async (name: string) => {
     // Optimistically update UI
     const previousAddresses = [...savedAddresses];
-    
+
     setSavedAddresses(prev => prev.map(a => ({
       ...a,
       is_primary: a.name === name ? 1 : 0
@@ -439,7 +480,7 @@ export default function Checkout() {
     try {
       const userStr = localStorage.getItem("gbru_user");
       if (!userStr) return;
-      
+
       const user = JSON.parse(userStr);
       let mobile_no = user.mobile_no || user.user_id || user.customer_id;
       if (mobile_no && mobile_no.includes("@")) {
@@ -458,7 +499,7 @@ export default function Checkout() {
       if (!res.ok || !json.message?.status) {
         // Revert optimistic update
         setSavedAddresses(previousAddresses);
-        
+
         let errorMsg = json.error || json.message?.message || "Failed to set primary address";
         if (json._server_messages) {
           try {
@@ -469,7 +510,7 @@ export default function Checkout() {
                 errorMsg = msgObj.message.replace(/<[^>]*>?/gm, '');
               }
             }
-          } catch (e) {}
+          } catch (e) { }
         }
         showAlert(errorMsg, "Error");
       }
@@ -502,16 +543,16 @@ export default function Checkout() {
       }
       const api_key = user.key_details?.api_key || user.api_key;
       const api_secret = user.key_details?.api_secret || user.api_secret;
-      
+
       const email_id = user.user_id && user.user_id.includes("@") ? user.user_id : (user.email || "");
 
       const address_data: any = {
         address_title: formData.fullName,
         address_line1: formData.address1,
         address_line2: formData.address2 || "",
-        marketplace: formData.village, 
-        tahsil: formData.city,         
-        district: formData.district,   
+        marketplace: formData.village,
+        tahsil: formData.city,
+        district: formData.district,
         state: formData.state,
         pincode: formData.pin,
         country: "India",
@@ -535,7 +576,7 @@ export default function Checkout() {
       if (res.ok && json.message?.status) {
         const returnedAddress = json.message.data;
         if (editingAddressName) {
-          const updatedAddresses = savedAddresses.map(a => 
+          const updatedAddresses = savedAddresses.map(a =>
             a.name === editingAddressName ? returnedAddress : a
           );
           setSavedAddresses(updatedAddresses);
@@ -544,7 +585,7 @@ export default function Checkout() {
         } else {
           const newAddresses = [...savedAddresses, returnedAddress];
           setSavedAddresses(newAddresses);
-          setSelectedAddressIndex(newAddresses.length - 1); 
+          setSelectedAddressIndex(newAddresses.length - 1);
         }
         setIsAddressSaved(true);
         setIsAddingAddress(false);
@@ -554,7 +595,7 @@ export default function Checkout() {
         });
       } else {
         let errorMsg = json.error || json.message?.message || "Failed to save address";
-        
+
         if (json._server_messages) {
           try {
             const serverMsgs = JSON.parse(json._server_messages);
@@ -569,7 +610,7 @@ export default function Checkout() {
             console.error("Could not parse server messages", e);
           }
         }
-        
+
         showAlert(errorMsg, "Error Saving Address");
       }
     } catch (e) {
@@ -641,8 +682,8 @@ export default function Checkout() {
 
       // Determine payment type and transaction amount dynamically based on paymentMode selection
       const payment_type = paymentMode === "full" ? "Full Payment" : "Cash On Delivery";
-      const transaction_amount = paymentMode === "full" 
-        ? (proceedData?.payment_summary?.full_payment?.payable_amount || total) 
+      const transaction_amount = paymentMode === "full"
+        ? (proceedData?.payment_summary?.full_payment?.payable_amount || total)
         : (defaultProceedData?.payment_summary?.cash_on_delivery?.pay_now || proceedData?.payment_summary?.cash_on_delivery?.pay_now);
 
       const email = user.user_id && user.user_id.includes("@") ? user.user_id : (user.email || "");
@@ -724,7 +765,7 @@ export default function Checkout() {
 
   // Normal discount (full payment / COD specific discount before coupon)
   const normalDiscount = Math.max(0, totalDiscount - couponDiscount);
-  
+
   const total = activePricingData?.grand_total || 0;
 
   // Full Payment Card helper variables
@@ -762,7 +803,7 @@ export default function Checkout() {
       <Navbar />
 
       <main className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 pt-8 flex flex-col gap-6">
-        
+
         {/* Back Link */}
         <Link
           href="/cart"
@@ -783,10 +824,10 @@ export default function Checkout() {
 
         {/* Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-4">
-          
+
           {/* ── Left Column (Forms & Selection Cards) ── */}
           <div className="lg:col-span-8 flex flex-col gap-8">
-            
+
             {/* 1. Payment Mode Selector */}
             <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-6">
               <div className="flex justify-between items-center">
@@ -797,11 +838,10 @@ export default function Checkout() {
                 {/* Mode 1: Full Payment */}
                 <div
                   onClick={() => handleSelectPaymentMode("full")}
-                  className={`relative p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${
-                    paymentMode === "full"
+                  className={`relative p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${paymentMode === "full"
                       ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
                       : "border-zinc-200 bg-white"
-                  }`}
+                    }`}
                 >
                   {paymentMode === "full" && (
                     <div className="absolute top-[-10px] right-[-10px] bg-[#0d9740] text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md">
@@ -831,30 +871,30 @@ export default function Checkout() {
                     )}
                     <p className="text-[11px] text-[#6B7280] mt-3">Pay complete amount today</p>
 
-                     <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3 text-left">
-                       <div className="flex justify-between">
-                         <span>M.R.P. Subtotal</span>
-                         <span>₹{formatPrice(proceedData?.payment_summary?.original_amount)}</span>
-                       </div>
-                       {Number(proceedData?.payment_summary?.full_payment?.discount_amount || 0) > 0 && (
-                         <div className="flex justify-between text-[#0D9740]">
-                           <span>Discount ({proceedData?.payment_summary?.full_payment?.label || "Instant"})</span>
-                           <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.discount_amount)}</span>
-                         </div>
-                       )}
-                       {Number(proceedData?.payment_summary?.full_payment?.discount_amount_without_gst || 0) > 0 && (
-                         <div className="flex justify-between text-zinc-500">
-                           <span>Discount (Excl. GST)</span>
-                           <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.discount_amount_without_gst)}</span>
-                         </div>
-                       )}
-                       {Number(proceedData?.payment_summary?.full_payment?.coupen_discount || 0) > 0 && (
-                         <div className="flex justify-between text-[#0D9740]">
-                           <span>Coupon Discount ({proceedData?.payment_summary?.full_payment?.coupon_label || "Promo"})</span>
-                           <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.coupen_discount)}</span>
-                         </div>
-                       )}
-                     </div>
+                    <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3 text-left">
+                      <div className="flex justify-between">
+                        <span>M.R.P. Subtotal</span>
+                        <span>₹{formatPrice(proceedData?.payment_summary?.original_amount)}</span>
+                      </div>
+                      {Number(proceedData?.payment_summary?.full_payment?.discount_amount || 0) > 0 && (
+                        <div className="flex justify-between text-[#0D9740]">
+                          <span>Discount ({proceedData?.payment_summary?.full_payment?.label || "Instant"})</span>
+                          <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.discount_amount)}</span>
+                        </div>
+                      )}
+                      {Number(proceedData?.payment_summary?.full_payment?.discount_amount_without_gst || 0) > 0 && (
+                        <div className="flex justify-between text-zinc-500">
+                          <span>Discount (Excl. GST)</span>
+                          <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.discount_amount_without_gst)}</span>
+                        </div>
+                      )}
+                      {Number(proceedData?.payment_summary?.full_payment?.coupen_discount || 0) > 0 && (
+                        <div className="flex justify-between text-[#0D9740]">
+                          <span>Coupon Discount ({proceedData?.payment_summary?.full_payment?.coupon_label || "Promo"})</span>
+                          <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.coupen_discount)}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="mt-6 border-t border-zinc-100 pt-3">
@@ -874,11 +914,10 @@ export default function Checkout() {
                   /* Mode 2: Book Now & Pay Later */
                   <div
                     onClick={() => handleSelectPaymentMode("booking")}
-                    className={`relative p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${
-                      paymentMode === "booking"
+                    className={`relative p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${paymentMode === "booking"
                         ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
                         : "border-zinc-200 bg-white"
-                    }`}
+                      }`}
                   >
                     {paymentMode === "booking" && (
                       <div className="absolute top-[-10px] right-[-10px] bg-[#0d9740] text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md">
@@ -975,14 +1014,13 @@ export default function Checkout() {
                 /* Saved Addresses List */
                 <div className="flex flex-col gap-4">
                   {savedAddresses.map((addr, idx) => (
-                    <div 
-                      key={addr.name} 
+                    <div
+                      key={addr.name}
                       onClick={() => setSelectedAddressIndex(idx)}
-                      className={`relative border rounded-[16px] p-5 flex flex-col gap-2 cursor-pointer transition-all ${
-                        selectedAddressIndex === idx 
-                        ? "bg-[#F8FBB8]/20 border-[#0D9740]" 
-                        : "bg-white border-zinc-200 hover:border-zinc-300"
-                      }`}
+                      className={`relative border rounded-[16px] p-5 flex flex-col gap-2 cursor-pointer transition-all ${selectedAddressIndex === idx
+                          ? "bg-[#F8FBB8]/20 border-[#0D9740]"
+                          : "bg-white border-zinc-200 hover:border-zinc-300"
+                        }`}
                     >
 
                       <div className="flex items-center gap-2">
@@ -991,7 +1029,7 @@ export default function Checkout() {
                           <span className="bg-[#EBF5EE] text-[#0D9740] text-[10px] font-bold py-0.5 px-2 rounded-[4px]">Primary</span>
                         )}
                         <div className="ml-auto flex items-center gap-3">
-                          <button 
+                          <button
                             onClick={(e) => {
                               e.stopPropagation();
                               setFormData({
@@ -999,7 +1037,7 @@ export default function Checkout() {
                                 mobile: addr.phone || "",
                                 pin: addr.pincode || "",
                                 village: addr.marketplace || "",
-                                city: addr.tahsil || "", 
+                                city: addr.tahsil || "",
                                 district: addr.district || "",
                                 state: addr.state || "",
                                 address1: addr.address_line1 || "",
@@ -1279,7 +1317,7 @@ export default function Checkout() {
 
           {/* ── Right Column (Order Summary) ── */}
           <div className="lg:col-span-4 flex flex-col gap-6">
-            
+
             {/* Summary Box */}
             <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-5">
               <h3 className="font-roboto font-bold text-[#0F291B] text-lg">
@@ -1403,11 +1441,11 @@ export default function Checkout() {
                     )}
                   </>
                 )}
-                
+
                 <div className="flex justify-between items-baseline pt-2 border-t border-zinc-100">
                   <span className="font-bold text-[#0F291B] text-[16px]">Pay Now</span>
                   <span className="font-extrabold text-[#0D9740] text-[24px]">
-                    {paymentMode === "full" 
+                    {paymentMode === "full"
                       ? `₹${formatPrice(proceedData?.payment_summary?.full_payment?.payable_amount)}`
                       : `₹${formatPrice(proceedData?.payment_summary?.cash_on_delivery?.pay_now)}`
                     }
@@ -1424,7 +1462,7 @@ export default function Checkout() {
               </div>
 
               {/* Secure Checkout CTA */}
-              <button 
+              <button
                 onClick={handlePlaceOrder}
                 disabled={placingOrder}
                 className={`w-full h-14 rounded-[14px] ${placingOrder ? 'bg-zinc-400' : 'bg-gradient-to-r from-[#1A4D2E] to-[#2A6F45] hover:opacity-90 active:scale-[0.99]'} text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm mt-2`}
@@ -1446,7 +1484,7 @@ export default function Checkout() {
       {/* Custom Modal for Alerts/Confirms */}
       {modalConfig.isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div 
+          <div
             className="bg-white rounded-[24px] shadow-2xl p-6 w-full max-w-sm flex flex-col items-center text-center transform animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
@@ -1459,10 +1497,10 @@ export default function Checkout() {
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
               </div>
             )}
-            
+
             <h3 className="font-bold text-lg text-zinc-900 mb-2">{modalConfig.title}</h3>
             <p className="text-sm text-zinc-500 mb-6">{modalConfig.message}</p>
-            
+
             <div className="flex gap-3 w-full">
               {modalConfig.type === "confirm" && (
                 <button
@@ -1477,9 +1515,8 @@ export default function Checkout() {
                   if (modalConfig.onConfirm) modalConfig.onConfirm();
                   setModalConfig(prev => ({ ...prev, isOpen: false }));
                 }}
-                className={`flex-1 py-2.5 px-4 rounded-[12px] font-bold text-sm text-white shadow-sm transition-colors ${
-                  modalConfig.type === "confirm" ? "bg-red-500 hover:bg-red-600" : "bg-[#0D9740] hover:bg-[#0b8036]"
-                }`}
+                className={`flex-1 py-2.5 px-4 rounded-[12px] font-bold text-sm text-white shadow-sm transition-colors ${modalConfig.type === "confirm" ? "bg-red-500 hover:bg-red-600" : "bg-[#0D9740] hover:bg-[#0b8036]"
+                  }`}
               >
                 {modalConfig.type === "confirm" ? "Confirm" : "OK"}
               </button>

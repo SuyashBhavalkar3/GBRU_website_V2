@@ -188,7 +188,7 @@ function ProductDetailContent() {
     }
     const desc = product?.description || "";
     if (desc && !desc.includes("<p>") && !desc.includes("<div>")) {
-      return desc.split(/[\n\.]+/).map(line => line.trim()).filter(line => line.length > 5);
+      return desc.split(/[\n\.]+/).map((line: string) => line.trim()).filter((line: string) => line.length > 5);
     }
     return [
       `Premium quality ${product?.item_name || 'equipment'} designed for Indian farming terrains.`,
@@ -350,8 +350,8 @@ function ProductDetailContent() {
               <div
                 onClick={() => setPaymentOption("full")}
                 className={`relative flex-1 p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${paymentOption === "full"
-                    ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
-                    : "border-zinc-200 bg-white"
+                  ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
+                  : "border-zinc-200 bg-white"
                   }`}
               >
                 {paymentOption === "full" && (
@@ -412,8 +412,8 @@ function ProductDetailContent() {
                 <div
                   onClick={() => setPaymentOption("booking")}
                   className={`relative flex-1 p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${paymentOption === "booking"
-                      ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
-                      : "border-zinc-200 bg-white"
+                    ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
+                    : "border-zinc-200 bg-white"
                     }`}
                 >
                   {paymentOption === "booking" && (
@@ -578,8 +578,8 @@ function ProductDetailContent() {
           <button
             onClick={() => setActiveTab("specs")}
             className={`py-4 px-6 border-b-2 transition-all ${activeTab === "specs"
-                ? "border-[#0D9740] text-[#0F291B] font-bold"
-                : "border-transparent hover:text-[#0f291b]"
+              ? "border-[#0D9740] text-[#0F291B] font-bold"
+              : "border-transparent hover:text-[#0f291b]"
               }`}
           >
             Technical Specifications
@@ -587,8 +587,8 @@ function ProductDetailContent() {
           <button
             onClick={() => setActiveTab("features")}
             className={`py-4 px-6 border-b-2 transition-all ${activeTab === "features"
-                ? "border-[#0D9740] text-[#0F291B] font-bold"
-                : "border-transparent hover:text-[#0f291b]"
+              ? "border-[#0D9740] text-[#0F291B] font-bold"
+              : "border-transparent hover:text-[#0f291b]"
               }`}
           >
             Key Features
@@ -596,8 +596,8 @@ function ProductDetailContent() {
           <button
             onClick={() => setActiveTab("guide")}
             className={`py-4 px-6 border-b-2 transition-all ${activeTab === "guide"
-                ? "border-[#0D9740] text-[#0F291B] font-bold"
-                : "border-transparent hover:text-[#0f291b]"
+              ? "border-[#0D9740] text-[#0F291B] font-bold"
+              : "border-transparent hover:text-[#0f291b]"
               }`}
           >
             User Guide
