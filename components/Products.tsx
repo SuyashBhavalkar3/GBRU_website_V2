@@ -45,6 +45,7 @@ export default function Products() {
   const [productsList, setProductsList] = useState<ERPProduct[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("newest");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -113,6 +114,17 @@ export default function Products() {
       maximumFractionDigits: 0,
     }).format(val);
   };
+
+  const sortedProducts = [...productsList].sort((a, b) => {
+    switch (sortBy) {
+      case "price_asc":
+        return (a.price || 0) - (b.price || 0);
+      case "price_desc":
+        return (b.price || 0) - (a.price || 0);
+      default:
+        return 0; // Default order (newest/best sellers)
+    }
+  });
 
   return (
     <div className="min-h-screen bg-white font-roboto flex flex-col">
@@ -200,11 +212,15 @@ export default function Products() {
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-semibold text-[#4A4A4A]">SORT BY:</span>
                   <div className="relative">
-                    <select className="appearance-none bg-white border border-gray-300 text-[#1A1A1A] text-sm rounded-md pl-4 pr-10 py-2 outline-none focus:border-[#006B21] focus:ring-1 focus:ring-[#006B21] cursor-pointer">
-                      <option>Newest Arrivals</option>
-                      <option>Price: Low to High</option>
-                      <option>Price: High to Low</option>
-                      <option>Best Sellers</option>
+                    <select 
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="appearance-none bg-white border border-gray-300 text-[#1A1A1A] text-sm rounded-md pl-4 pr-10 py-2 outline-none focus:border-[#006B21] focus:ring-1 focus:ring-[#006B21] cursor-pointer"
+                    >
+                      <option value="newest">Newest Arrivals</option>
+                      <option value="price_asc">Price: Low to High</option>
+                      <option value="price_desc">Price: High to Low</option>
+                      <option value="best_sellers">Best Sellers</option>
                     </select>
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -227,7 +243,7 @@ export default function Products() {
             ) : (
               /* Product grid rendering */
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-                {productsList.map((product) => {
+                {sortedProducts.map((product) => {
                   const discountText = product.discount > 0 ? `${product.discount.toFixed(0)}% OFF` : "SPECIAL PRICE";
                   const itemImage = product.custom_image_1 && product.custom_image_1.startsWith("http")
                     ? product.custom_image_1
