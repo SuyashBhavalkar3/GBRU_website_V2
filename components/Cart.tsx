@@ -12,6 +12,7 @@ export default function Cart() {
   const [cartSummary, setCartSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [toastMessage, setToastMessage] = useState("");
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -98,11 +99,45 @@ export default function Cart() {
       
       const resJson = await res.json();
       console.log("update_cart_item response payload:", resJson);
-      if (!resJson?.message?.status) {
+      if (resJson?.message?.status) {
+        window.dispatchEvent(new Event("cartUpdate"));
+      } else {
         console.error("Failed to sync quantity update:", resJson);
       }
     } catch (e) {
       console.error("Failed to sync quantity update to ERP:", e);
+    }
+  };
+
+  const handleDeleteItem = async (itemId: string) => {
+    // Locally remove item for immediate response
+    setCartItems(prev => prev.filter(item => item.item !== itemId));
+
+    try {
+      const stored = localStorage.getItem("gbru_user");
+      if (!stored) return;
+      const parsed = JSON.parse(stored);
+      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      if (!mobile_no) return;
+
+      const res = await fetch("/api/cart/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile_no, item: itemId })
+      });
+      
+      const resJson = await res.json();
+      if (resJson.message?.status) {
+        window.dispatchEvent(new Event("cartUpdate"));
+        setToastMessage("Product removed from cart successfully!");
+        setTimeout(() => {
+          setToastMessage("");
+        }, 1500);
+      } else {
+        console.error("Failed to delete cart item:", resJson);
+      }
+    } catch (e) {
+      console.error("Failed to delete cart item:", e);
     }
   };
 
@@ -221,6 +256,17 @@ export default function Cart() {
                             </span>
                           </div>
                         </div>
+
+                        {/* Trash Button */}
+                        <button
+                          onClick={() => handleDeleteItem(item.item)}
+                          className="text-red-500 hover:text-red-700 transition-colors p-1"
+                          title="Remove Item"
+                        >
+                          <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                            <path fillRule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.587 7.402a.75.75 0 01.796.7l.25 4a.75.75 0 11-1.492.094l-.25-4a.75.75 0 01.7-.796zm3-.7l.25 4a.75.75 0 01-.796.796a.75.75 0 01-.7-.796l.25-4a.75.75 0 011 .7z" clipRule="evenodd" />
+                          </svg>
+                        </button>
                       </div>
 
                       {/* Quantity & Total Price Footer */}
@@ -333,6 +379,13 @@ export default function Cart() {
         )}
 
       </main>
+
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-[9999] bg-[#0D9740] text-white px-5 py-3.5 rounded-xl shadow-2xl font-bold text-xs flex items-center gap-2 animate-in fade-in slide-in-from-bottom-5 duration-300">
+          <span>🗑️</span>
+          <span>{toastMessage}</span>
+        </div>
+      )}
     </div>
   );
 }

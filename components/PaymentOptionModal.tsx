@@ -126,6 +126,8 @@ export default function PaymentOptionModal({
       const resJson = await res.json();
 
       if (resJson.message?.status) {
+        // Dispatch event to update navbar cart count
+        window.dispatchEvent(new Event("cartUpdate"));
         alert(`${productDetails?.item_name || "Product"} added to cart successfully!`);
         if (onConfirm) onConfirm();
         onClose();

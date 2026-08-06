@@ -106,6 +106,7 @@ function ProductDetailContent() {
 
       const resJson = await res.json();
       if (resJson.message?.status) {
+        window.dispatchEvent(new Event("cartUpdate"));
         alert(`${product.item_name} added to cart successfully!`);
         window.location.href = "/cart";
       } else {

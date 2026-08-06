@@ -40,7 +40,17 @@ export default function Navbar() {
               console.error("Error fetching cart count:", err);
             }
           };
+
           fetchCartCount();
+
+          // Listen to custom cartUpdate event
+          const handleCartUpdate = () => {
+            fetchCartCount();
+          };
+          window.addEventListener("cartUpdate", handleCartUpdate);
+          return () => {
+            window.removeEventListener("cartUpdate", handleCartUpdate);
+          };
         } catch (e) {
           console.error(e);
         }
