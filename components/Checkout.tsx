@@ -25,6 +25,22 @@ export default function Checkout() {
   const [selectedAddressIndex, setSelectedAddressIndex] = useState<number>(0);
   const [loadingAddresses, setLoadingAddresses] = useState(true);
   const [editingAddressName, setEditingAddressName] = useState<string | null>(null);
+  
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    type: "alert" | "confirm";
+    title: string;
+    message: string;
+    onConfirm?: () => void;
+  }>({ isOpen: false, type: "alert", title: "", message: "" });
+
+  const showAlert = (message: string, title = "Message") => {
+    setModalConfig({ isOpen: true, type: "alert", title, message });
+  };
+
+  const showConfirm = (message: string, onConfirm: () => void, title = "Confirm") => {
+    setModalConfig({ isOpen: true, type: "confirm", title, message, onConfirm });
+  };
 
   const [states, setStates] = useState<any[]>([]);
 
@@ -196,9 +212,11 @@ export default function Checkout() {
 
   const [isSavingAddress, setIsSavingAddress] = useState(false);
 
-  const handleDeleteAddress = async (name: string) => {
-    if (!confirm("Are you sure you want to delete this address?")) return;
-    
+  const requestDeleteAddress = (name: string) => {
+    showConfirm("Are you sure you want to delete this address?", () => performDeleteAddress(name), "Delete Address");
+  };
+
+  const performDeleteAddress = async (name: string) => {
     // Optimistically remove from state for now
     const previousAddresses = [...savedAddresses];
     const previousIndex = selectedAddressIndex;
@@ -253,14 +271,14 @@ export default function Checkout() {
             }
           } catch (e) {}
         }
-        alert(errorMsg);
+        showAlert(errorMsg, "Deletion Error");
       }
     } catch (e) {
       console.error(e);
       // Revert optimistic update
       setSavedAddresses(previousAddresses);
       setSelectedAddressIndex(previousIndex);
-      alert("Error deleting address");
+      showAlert("Error deleting address", "Error");
     }
   };
 
@@ -308,19 +326,19 @@ export default function Checkout() {
             }
           } catch (e) {}
         }
-        alert(errorMsg);
+        showAlert(errorMsg, "Error");
       }
     } catch (e) {
       console.error(e);
       // Revert optimistic update
       setSavedAddresses(previousAddresses);
-      alert("Error setting primary address");
+      showAlert("Error setting primary address", "Error");
     }
   };
 
   const handleSaveAddress = async () => {
     if (!formData.fullName || !formData.mobile || !formData.pin || !formData.village || !formData.city || !formData.district || !formData.state || !formData.address1) {
-      alert("Please fill all required fields");
+      showAlert("Please fill all required fields", "Missing Information");
       return;
     }
 
@@ -328,7 +346,7 @@ export default function Checkout() {
     try {
       const userStr = localStorage.getItem("gbru_user");
       if (!userStr) {
-        alert("Please login first");
+        showAlert("Please login first", "Authentication Required");
         return;
       }
 
@@ -407,11 +425,11 @@ export default function Checkout() {
           }
         }
         
-        alert(errorMsg);
+        showAlert(errorMsg, "Error Saving Address");
       }
     } catch (e) {
       console.error(e);
-      alert("Error saving address");
+      showAlert("Error saving address", "Error");
     } finally {
       setIsSavingAddress(false);
     }
@@ -674,7 +692,7 @@ export default function Checkout() {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleDeleteAddress(addr.name);
+                              requestDeleteAddress(addr.name);
                             }}
                             className="text-zinc-400 hover:text-red-500 transition-colors"
                             title="Delete Address"
@@ -1116,6 +1134,51 @@ export default function Checkout() {
         </div>
 
       </main>
+
+      {/* Custom Modal for Alerts/Confirms */}
+      {modalConfig.isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div 
+            className="bg-white rounded-[24px] shadow-2xl p-6 w-full max-w-sm flex flex-col items-center text-center transform animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {modalConfig.type === "confirm" ? (
+              <div className="w-12 h-12 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              </div>
+            ) : (
+              <div className="w-12 h-12 bg-[#0D9740]/10 text-[#0D9740] rounded-full flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              </div>
+            )}
+            
+            <h3 className="font-bold text-lg text-zinc-900 mb-2">{modalConfig.title}</h3>
+            <p className="text-sm text-zinc-500 mb-6">{modalConfig.message}</p>
+            
+            <div className="flex gap-3 w-full">
+              {modalConfig.type === "confirm" && (
+                <button
+                  onClick={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+                  className="flex-1 py-2.5 px-4 rounded-[12px] font-bold text-sm text-zinc-700 bg-zinc-100 hover:bg-zinc-200 transition-colors"
+                >
+                  Cancel
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  if (modalConfig.onConfirm) modalConfig.onConfirm();
+                  setModalConfig(prev => ({ ...prev, isOpen: false }));
+                }}
+                className={`flex-1 py-2.5 px-4 rounded-[12px] font-bold text-sm text-white shadow-sm transition-colors ${
+                  modalConfig.type === "confirm" ? "bg-red-500 hover:bg-red-600" : "bg-[#0D9740] hover:bg-[#0b8036]"
+                }`}
+              >
+                {modalConfig.type === "confirm" ? "Confirm" : "OK"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
