@@ -487,6 +487,25 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                   <Printer className="w-4 h-4" />
                   <span>Print LR</span>
                 </button>
+                {String(summary.allowed_action || "").toLowerCase() === "cancel" && (
+                  <button
+                    onClick={handleCancelOrder}
+                    disabled={cancelling}
+                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-2xl text-xs font-roboto transition-all shadow-sm flex items-center justify-center gap-1.5 duration-300 active:scale-[0.98] disabled:opacity-50"
+                  >
+                    {cancelling ? (
+                      <span className="flex items-center gap-1.5 justify-center">
+                        <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Cancelling...
+                      </span>
+                    ) : (
+                      "Cancel Order"
+                    )}
+                  </button>
+                )}
               </div>
             </div>
 
@@ -697,26 +716,6 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                   Raise complain
                 </Link>
               </div>
-
-              {String(summary.allowed_action || "").toLowerCase() === "cancel" && (
-                <button
-                  onClick={handleCancelOrder}
-                  disabled={cancelling}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl text-xs font-roboto transition-all shadow-sm flex items-center justify-center gap-1.5 duration-300 mt-2 active:scale-[0.98] disabled:opacity-50"
-                >
-                  {cancelling ? (
-                    <span className="flex items-center gap-1.5 justify-center">
-                      <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                      Cancelling...
-                    </span>
-                  ) : (
-                    "Cancel Order"
-                  )}
-                </button>
-              )}
             </div>
 
           </div>

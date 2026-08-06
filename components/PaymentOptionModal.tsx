@@ -203,6 +203,16 @@ export default function PaymentOptionModal({
                 <div className="pl-6 pt-2 border-t border-zinc-100 mt-auto text-left flex flex-col gap-1.5">
                   <div className="flex justify-between items-center text-[11px] text-zinc-500">
                     <span>M.R.P.</span>
+                    <span className="line-through">₹{formatPrice(productDetails?.mrp)}</span>
+                  </div>
+                  {(productDetails?.discount || 0) > 0 && (
+                    <div className="flex justify-between items-center text-[11px] text-[#0d9740] font-medium">
+                      <span>Discount</span>
+                      <span>{Number(productDetails?.discount).toFixed(0)}% OFF</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center text-[11px] text-zinc-500">
+                    <span>Sales Price</span>
                     <span>₹{formatPrice(productDetails?.actual_rate || productDetails?.price)}</span>
                   </div>
                   {(productDetails?.full_payment_discount || 0) > 0 && (
@@ -244,6 +254,16 @@ export default function PaymentOptionModal({
                   <div className="pl-6 pt-2 border-t border-zinc-100 mt-auto text-left flex flex-col gap-1.5">
                     <div className="flex justify-between items-center text-[11px] text-zinc-500">
                       <span>M.R.P.</span>
+                      <span className="line-through">₹{formatPrice(productDetails?.mrp)}</span>
+                    </div>
+                    {(productDetails?.discount || 0) > 0 && (
+                      <div className="flex justify-between items-center text-[11px] text-[#0d9740] font-medium">
+                        <span>Discount</span>
+                        <span>{Number(productDetails?.discount).toFixed(0)}% OFF</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center text-[11px] text-zinc-500">
+                      <span>Sales Price</span>
                       <span>₹{formatPrice(productDetails?.actual_rate || productDetails?.price)}</span>
                     </div>
                     <div className="flex justify-between items-center text-[11px] text-zinc-500">
