@@ -8,7 +8,7 @@ const OtpContent = () => {
   const [loading, setLoading] = useState(false);
   const [timeLeft, setTimeLeft] = useState(24);
   const [toastMessage, setToastMessage] = useState('');
-  
+
   // Registration States
   const [showRegistrationPopup, setShowRegistrationPopup] = useState(false);
   const [registrationName, setRegistrationName] = useState('');
@@ -28,7 +28,7 @@ const OtpContent = () => {
 
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) value = value.slice(-1);
-    
+
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
@@ -112,8 +112,15 @@ const OtpContent = () => {
           setShowRegistrationPopup(true);
         } else {
           // Save user details securely in localStorage
-          localStorage.setItem('gbru_user', JSON.stringify(data.user));
-          await handlePendingCart(data.user);
+          const userToSave = { ...data.user, mobile_no: mobileNo };
+          localStorage.setItem('gbru_user', JSON.stringify(userToSave));
+
+          // Redirect based on role
+          if (data.user?.role?.toLowerCase() === 'farmer') {
+            router.push('/dashboard');
+          } else {
+            router.push('/profile');
+          }
         }
       } else {
         alert(data.message || data.error || 'Invalid OTP. Please try again.');
@@ -149,13 +156,14 @@ const OtpContent = () => {
           Customer_name: registrationName.trim(),
           customer_id: shortData.customer_id,
           user_id: shortData.user_id,
+          mobile_no: mobileNo,
           role: "Farmer",
           status: "ACTIVE",
           is_completed: false
         };
         localStorage.setItem('gbru_user', JSON.stringify(basicUser));
         setShowRegistrationPopup(false);
-        
+
         // Handle pending cart item adding
         const pendingItemStr = localStorage.getItem("gbru_pending_cart_item");
         if (pendingItemStr) {
@@ -217,7 +225,8 @@ const OtpContent = () => {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600&family=Manrope:wght@600&family=Roboto:wght@400;500;600&display=swap');
         
         @keyframes fadeOut {
@@ -229,7 +238,7 @@ const OtpContent = () => {
           animation: fadeOut 2.5s forwards;
         }
       `}} />
-      
+
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 bg-[#006B21] text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 toast-animate"
@@ -242,27 +251,27 @@ const OtpContent = () => {
         </div>
       )}
 
-      <div 
+      <div
         className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center"
         style={{ backgroundImage: "url('/assets/caroussel-2.jpg')" }}
       >
         <div className="flex flex-col md:flex-row w-full max-w-[1100px] bg-white rounded-xl shadow-2xl overflow-hidden min-h-[650px]">
-          
+
           {/* Left Side (Green Gradient) - Exactly same as Login */}
           <div className="w-full md:w-[45%] relative p-10 flex flex-col bg-gradient-to-b from-[#2E6F18] via-[#4F8D14] to-[#C99C15] overflow-hidden">
             {/* Logo */}
             <div className="mb-10 relative z-10">
-              <Image 
-                src="/assets/gbru_header_logo.png" 
-                alt="GBRU Logo" 
-                width={120} 
-                height={50} 
+              <Image
+                src="/assets/gbru_header_logo.png"
+                alt="GBRU Logo"
+                width={120}
+                height={50}
                 className="object-contain"
               />
             </div>
 
             {/* Welcome Text */}
-            <h1 
+            <h1
               className="text-white mb-8 relative z-10"
               style={{
                 fontFamily: 'Manrope, sans-serif',
@@ -284,7 +293,7 @@ const OtpContent = () => {
               ].map((item, idx) => (
                 <li key={idx} className="flex items-center space-x-3 text-white">
                   {item.icon}
-                  <span 
+                  <span
                     style={{
                       fontFamily: 'Inter, sans-serif',
                       fontWeight: 600,
@@ -301,22 +310,22 @@ const OtpContent = () => {
 
             {/* Farmer Image */}
             <div className="mt-auto relative z-10 flex-1 flex items-end justify-center rounded-xl overflow-hidden">
-              <Image 
-                src="/assets/farmer.png" 
-                alt="Farmer" 
-                width={300} 
-                height={250} 
+              <Image
+                src="/assets/farmer.png"
+                alt="Farmer"
+                width={300}
+                height={250}
                 className="object-cover rounded-xl shadow-lg border border-white/20 w-full h-auto max-h-[260px]"
               />
             </div>
-            
+
             {/* Subtle glow overlay for styling */}
             <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/20 to-transparent z-0"></div>
           </div>
 
           {/* Right Side (OTP Form) */}
           <div className="w-full md:w-[55%] p-10 md:p-16 flex flex-col justify-center bg-white">
-            <h2 
+            <h2
               className="text-[#1A1A1A] mb-3"
               style={{
                 fontFamily: 'Roboto, sans-serif',
@@ -327,8 +336,8 @@ const OtpContent = () => {
             >
               Verify Your Number
             </h2>
-            
-            <p 
+
+            <p
               className="text-[#4A4A4A] mb-1"
               style={{
                 fontFamily: 'Roboto, sans-serif',
@@ -340,7 +349,7 @@ const OtpContent = () => {
               Enter the 6-digit code sent to <span className="font-semibold text-black">{mobileNo ? `+91 ${mobileNo}` : '+91 98765 43210'}</span>
             </p>
 
-            <button 
+            <button
               className="text-[#006B21] text-left hover:underline mb-10 w-fit"
               style={{
                 fontFamily: 'Roboto, sans-serif',
@@ -373,7 +382,7 @@ const OtpContent = () => {
                 ))}
               </div>
 
-              <button 
+              <button
                 type="button"
                 onClick={handleVerify}
                 disabled={loading}
@@ -391,7 +400,7 @@ const OtpContent = () => {
               </button>
 
               <div className="text-center w-full mb-8">
-                <p 
+                <p
                   className="text-[#6B7280]"
                   style={{
                     fontFamily: 'Roboto, sans-serif',
@@ -405,7 +414,7 @@ const OtpContent = () => {
               </div>
 
               <div className="text-center w-full">
-                <p 
+                <p
                   className="text-[#6B7280]"
                   style={{
                     fontFamily: 'Roboto, sans-serif',
@@ -419,8 +428,8 @@ const OtpContent = () => {
                       Resend OTP in 00:{timeLeft.toString().padStart(2, '0')}
                     </span>
                   ) : (
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={handleResendOtp}
                       className="text-[#006B21] font-medium hover:underline"
                     >
@@ -432,9 +441,9 @@ const OtpContent = () => {
             </form>
 
             <div className="mt-12 pt-6 border-t border-[#D9D9D9] flex justify-center items-center w-full">
-              <a 
-                href="#" 
-                className="flex items-center gap-2 text-[#4A4A4A] hover:text-[#006B21] transition-colors" 
+              <a
+                href="#"
+                className="flex items-center gap-2 text-[#4A4A4A] hover:text-[#006B21] transition-colors"
                 style={{ fontSize: '15px', fontFamily: 'Roboto, sans-serif', fontWeight: 500 }}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -454,7 +463,7 @@ const OtpContent = () => {
           <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden animate-in zoom-in duration-200">
             {/* Header */}
             <div className="bg-gradient-to-r from-[#2E6F18] to-[#4F8D14] p-6 relative">
-              <button 
+              <button
                 onClick={() => router.push('/dashboard')}
                 className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
               >
@@ -491,7 +500,7 @@ const OtpContent = () => {
                     className="h-12 px-4 border border-zinc-200 rounded-xl text-[15px] text-[#1A1A1A] focus:outline-none focus:border-[#0D9740] focus:ring-1 focus:ring-[#0D9740] transition-all bg-[#F9F9F9]"
                   />
                 </div>
-                
+
 
                 <div className="flex justify-end gap-3 mt-6">
                   <button

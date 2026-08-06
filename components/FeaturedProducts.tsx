@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import LoginPrompt from "./LoginPrompt";
+import { addToCartUtil } from "@/utils/cartUtils";
 
 interface ERPProduct {
   item_code: string;
@@ -31,6 +32,7 @@ export default function FeaturedProducts() {
   const [products, setProducts] = useState<ERPProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   useEffect(() => {
     async function loadFeatured() {
@@ -52,12 +54,18 @@ export default function FeaturedProducts() {
     loadFeatured();
   }, []);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async (itemCode: string) => {
     const user = localStorage.getItem("gbru_user");
     if (!user) {
       setShowLoginPrompt(true);
     } else {
-      alert("Added to cart!");
+      const success = await addToCartUtil(itemCode);
+      if (success) {
+        setToastMessage("Product added to cart successfully!");
+        setTimeout(() => setToastMessage(""), 3000);
+      } else {
+        alert("Failed to add to cart. Please try again.");
+      }
     }
   };
 
@@ -78,7 +86,18 @@ export default function FeaturedProducts() {
   if (products.length === 0) return null;
 
   return (
-    <section className="max-w-[1280px] mx-auto px-4 lg:px-8 w-full py-16">
+    <section className="py-16 md:py-24 bg-white font-roboto relative">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 bg-[#006B21] text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in-down">
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="font-medium font-inter">{toastMessage}</span>
+        </div>
+      )}
+      
+      <div className="max-w-[1280px] mx-auto px-4 lg:px-8 w-full">
       
       {/* Header controls */}
       <div className="flex items-center justify-between mb-10">
@@ -149,7 +168,7 @@ export default function FeaturedProducts() {
 
                   {/* Add to Cart button */}
                   <button 
-                    onClick={handleAddToCart}
+                    onClick={() => handleAddToCart(product.item_code)}
                     className="w-full bg-[#005B28] hover:bg-[#004a20] transition-colors text-white font-bold py-2 rounded-lg text-[11px] flex items-center justify-center gap-1.5 shadow-sm"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,6 +188,7 @@ export default function FeaturedProducts() {
         isOpen={showLoginPrompt} 
         onClose={() => setShowLoginPrompt(false)} 
       />
+      </div>
     </section>
   );
 }

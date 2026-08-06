@@ -96,7 +96,7 @@ export default function Cart() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
-      
+
       const resJson = await res.json();
       console.log("update_cart_item response payload:", resJson);
       if (resJson?.message?.status) {
@@ -125,7 +125,7 @@ export default function Cart() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mobile_no, item: itemId })
       });
-      
+
       const resJson = await res.json();
       if (resJson.message?.status) {
         window.dispatchEvent(new Event("cartUpdate"));
@@ -163,12 +163,23 @@ export default function Cart() {
   const gst = subtotal * 0.18;
   const total = subtotal + gst;
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col pb-16">
+        <Navbar />
+        <div className="flex flex-col items-center justify-center py-16 gap-3">
+          <div className="w-10 h-10 border-4 border-[#006B21] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col pb-16">
       <Navbar />
 
       <main className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 pt-8 flex flex-col gap-6">
-        
+
         {/* Back Link */}
         <Link
           href="/all_products"
@@ -216,17 +227,17 @@ export default function Cart() {
         ) : (
           /* Column Grid Layout */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-4">
-            
+
             {/* ── Left Column (Cart Item & Trust Badges) ── */}
             <div className="lg:col-span-7 flex flex-col gap-6">
-              
+
               {/* Product Cards List */}
               {cartItems.map((item) => {
                 const itemImage = item.image || "/assets/sprayer.png";
 
                 return (
                   <div key={item.item} className="bg-white border border-zinc-200/80 rounded-[24px] p-6 flex flex-col md:flex-row items-stretch gap-6 relative shadow-sm">
-                    
+
                     {/* Product Image */}
                     <div className="relative w-full md:w-[160px] h-[160px] rounded-[16px] overflow-hidden bg-zinc-50 border border-zinc-100 flex-shrink-0 flex items-center justify-center p-2">
                       <img
@@ -238,7 +249,7 @@ export default function Cart() {
 
                     {/* Details */}
                     <div className="flex flex-col justify-between flex-1 py-1 text-left">
-                      
+
                       {/* Info Header */}
                       <div className="flex justify-between items-start gap-4">
                         <div className="flex flex-col gap-1">
@@ -248,7 +259,7 @@ export default function Cart() {
                           <p className="text-xs text-[#6B7280]">
                             Brand: <span className="font-bold text-[#0D9740]">{item.brand || "GBRU"}</span> | HSN: {item.gst_hsn_code}
                           </p>
-                          
+
                           {/* Payment Mode Badge */}
                           <div className="mt-2.5">
                             <span className="bg-[#EBF5EE] text-[#0D9740] text-[11px] font-bold py-1 px-3 rounded-[9999px]">
@@ -334,7 +345,7 @@ export default function Cart() {
 
             {/* ── Right Column (Order Summary & Estimates) ── */}
             <div className="lg:col-span-5 flex flex-col gap-6 text-left">
-              
+
               {/* Summary Box */}
               <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-5">
                 <h3 className="font-roboto font-bold text-[#0F291B] text-lg">
@@ -367,10 +378,10 @@ export default function Cart() {
                 </div>
 
                 {/* Checkout CTA */}
-                <button className="w-full h-14 rounded-[14px] bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm mt-2">
+                <Link href="/proceed-to-checkout" className="w-full h-14 rounded-[14px] bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm mt-2">
                   Proceed to Checkout
                   <span className="text-[18px]">→</span>
-                </button>
+                </Link>
               </div>
 
             </div>

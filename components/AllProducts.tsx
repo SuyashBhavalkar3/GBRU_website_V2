@@ -1,15 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import Navbar from "./Navbar";
 import LoginPrompt from "./LoginPrompt";
 import PaymentOptionModal from "./PaymentOptionModal";
 
 export default function AllProducts() {
-  const router = useRouter();
   const [productsList, setProductsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -45,11 +42,10 @@ export default function AllProducts() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-roboto flex flex-col">
+    <div className="min-h-screen bg-[#FDFDFD] font-roboto relative">
       <Navbar />
-      
+
       <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-8">
-        
         {/* Breadcrumbs */}
         <div className="flex items-center gap-2 text-sm font-medium mb-6">
           <Link href="/" className="text-[#4A4A4A] hover:text-[#006B21]">Home</Link>
@@ -105,26 +101,26 @@ export default function AllProducts() {
                             {discountVal.toFixed(0)}% OFF
                           </div>
                         )}
-                        <img 
-                          src={itemImage} 
-                          alt={product.item_name} 
+                        <img
+                          src={itemImage}
+                          alt={product.item_name}
                           className="object-contain max-h-full max-w-full p-4"
                         />
                       </div>
                     </Link>
-                    
+
                     {/* Product Info */}
-                    <div className="p-5 flex flex-col flex-1">
+                    <div className="p-5 flex flex-col flex-1 text-left">
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-[#006B21] text-xs font-bold tracking-wide uppercase">{product.brand || "GBRU"}</span>
                       </div>
-                      
+
                       <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer hover:text-[#006B21] transition-colors">
                         <h3 className="text-[#1A1A1A] font-bold mb-3 line-clamp-2 leading-snug min-h-[40px]">
                           {product.item_name}
                         </h3>
                       </Link>
-                      
+
                       <div className="mt-auto">
                         <div className="flex items-baseline gap-2 mb-4">
                           <span className="text-xl font-bold text-[#006B21]">₹{formatPrice(product.price)}</span>
@@ -132,7 +128,7 @@ export default function AllProducts() {
                             <span className="text-xs text-[#6B7280] line-through">₹{formatPrice(product.mrp)}</span>
                           )}
                         </div>
-                        <button 
+                        <button
                           onClick={() => handleAddToCart(product)}
                           className="w-full bg-[#006B21] text-white font-bold py-3 rounded-lg hover:bg-[#005a1b] transition-colors text-sm shadow-sm"
                         >
@@ -146,13 +142,12 @@ export default function AllProducts() {
             </div>
           </>
         )}
-
       </main>
 
       {/* Login Prompt Popup */}
-      <LoginPrompt 
-        isOpen={showLoginPrompt} 
-        onClose={() => setShowLoginPrompt(false)} 
+      <LoginPrompt
+        isOpen={showLoginPrompt}
+        onClose={() => setShowLoginPrompt(false)}
       />
 
       <PaymentOptionModal

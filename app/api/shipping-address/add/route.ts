@@ -2,10 +2,15 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { items, mobile_no, api_key, api_secret } = await request.json();
+    const body = await request.json();
+    const { mobile_no, api_key, api_secret, address_data } = body;
 
-    if (!items || (!mobile_no && (!api_key || !api_secret))) {
-      return NextResponse.json({ error: 'Items, and either mobile_no or API keys are required' }, { status: 400 });
+    if (!mobile_no && (!api_key || !api_secret)) {
+      return NextResponse.json({ error: 'Either mobile_no or API keys are required' }, { status: 400 });
+    }
+
+    if (!address_data) {
+      return NextResponse.json({ error: 'address_data is required' }, { status: 400 });
     }
 
     const baseUrl = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
@@ -13,7 +18,7 @@ export async function POST(request: Request) {
     const systemApiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !systemApiKey || !systemApiSecret) {
-      console.error('Missing API_BASE_URL or system credentials in environment variables.');
+      console.error('Missing API credentials in environment variables.');
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -33,7 +38,7 @@ export async function POST(request: Request) {
       });
 
       const userDetailsData = await userDetailsRes.json();
-
+      
       if (!userDetailsData?.message?.status || !userDetailsData?.message?.data) {
         console.error("Failed to retrieve user data", userDetailsData);
         return NextResponse.json({ error: 'Failed to retrieve user data', details: userDetailsData, attempted_mobile_no: mobile_no }, { status: 400 });
@@ -49,28 +54,28 @@ export async function POST(request: Request) {
       }
     }
 
-    // Fetch add to cart using the user's keys
-    const response = await fetch(`${baseUrl}/api/method/shoption_api.cart.cart.add_cart`, {
+    // Add shipping address using the user's keys
+    const response = await fetch(`${baseUrl}/api/method/shoption_api.cart.cart.add_customer_shipping_address`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `token ${userApiKey}:${userApiSecret}`,
       },
-      body: JSON.stringify({ items }),
+      body: JSON.stringify(address_data)
     });
 
-    const text = await response.text();
+    const responseText = await response.text();
     let data;
     try {
-      data = JSON.parse(text);
+      data = JSON.parse(responseText);
     } catch (e) {
-      data = { rawText: text, error: "Failed to parse JSON from Frappe" };
+      console.error("Failed to parse response:", responseText);
+      return NextResponse.json({ error: 'Invalid response from server' }, { status: 500 });
     }
 
-    console.log("add_cart status:", response.status, "response:", JSON.stringify(data));
     return NextResponse.json(data, { status: response.status });
   } catch (error: any) {
-    console.error('Error adding to cart:', error);
-    return NextResponse.json({ error: 'Failed to add to cart', msg: error.message }, { status: 500 });
+    console.error('Error adding shipping address:', error);
+    return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 });
   }
 }

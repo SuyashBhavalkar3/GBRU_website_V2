@@ -1,0 +1,40 @@
+import { NextResponse } from 'next/server';
+
+export async function POST(request: Request) {
+  try {
+    const { state_id = "" } = await request.json();
+
+    const baseUrl = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
+    const systemApiKey = process.env.API_KEY;
+    const systemApiSecret = process.env.API_SECRET;
+
+    if (!baseUrl || !systemApiKey || !systemApiSecret) {
+      console.error('Missing API credentials in environment variables.');
+      return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
+    }
+
+    const response = await fetch(`${baseUrl}/api/method/shoption_api.area.api.get_districts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': systemApiKey,
+        'X-API-SECRET': systemApiSecret,
+      },
+      body: JSON.stringify({ state_id })
+    });
+
+    const responseText = await response.text();
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      console.error("Failed to parse response:", responseText);
+      return NextResponse.json({ error: 'Invalid response from server' }, { status: 500 });
+    }
+
+    return NextResponse.json(data, { status: response.status });
+  } catch (error: any) {
+    console.error('Error fetching districts:', error);
+    return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 });
+  }
+}

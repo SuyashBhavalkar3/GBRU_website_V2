@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import LoginPrompt from "./LoginPrompt";
+import { addToCartUtil } from "@/utils/cartUtils";
 
 function ProductDetailContent() {
   const router = useRouter();
@@ -50,6 +51,8 @@ function ProductDetailContent() {
       fetchDetails();
     }
   }, [itemCode]);
+
+  const [toastMessage, setToastMessage] = useState("");
 
   const handleAddToCart = async () => {
     const user = localStorage.getItem("gbru_user");
@@ -170,12 +173,22 @@ function ProductDetailContent() {
   const activeImg = validImages[activeImgIdx] || validImages[0];
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col pb-16">
+    <div className="min-h-screen bg-white font-roboto relative">
       <Navbar />
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 bg-[#006B21] text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in-down">
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="font-medium font-inter">{toastMessage}</span>
+        </div>
+      )}
 
       {/* Main Container */}
       <main className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 pt-8 flex flex-col gap-6">
-        
+
         {/* Breadcrumbs */}
         <div className="flex items-center gap-2 text-xs font-bold tracking-widest text-[#4A4A4A] uppercase">
           <Link href="/" className="hover:text-[#0D9740]">Home</Link>
@@ -219,10 +232,10 @@ function ProductDetailContent() {
 
         {/* Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-4">
-          
+
           {/* ── Left Column (Media Gallery & Details) ── */}
           <div className="lg:col-span-7 flex flex-col gap-6">
-            
+
             {/* Main Showcase Image */}
             <div className="relative w-full h-[320px] md:h-[480px] rounded-[24px] overflow-hidden border border-zinc-200/80 bg-zinc-50 shadow-sm flex items-center justify-center p-4">
               <img
@@ -244,9 +257,8 @@ function ProductDetailContent() {
                   <button
                     key={idx}
                     onClick={() => setActiveImgIdx(idx)}
-                    className={`relative w-20 h-20 rounded-[12px] overflow-hidden border-2 bg-zinc-50 transition-all p-2 flex items-center justify-center ${
-                      activeImgIdx === idx ? "border-[#0D9740] ring-2 ring-[#0D9740]/20" : "border-zinc-200 hover:border-zinc-300"
-                    }`}
+                    className={`relative w-20 h-20 rounded-[12px] overflow-hidden border-2 bg-zinc-50 transition-all p-2 flex items-center justify-center ${activeImgIdx === idx ? "border-[#0D9740] ring-2 ring-[#0D9740]/20" : "border-zinc-200 hover:border-zinc-300"
+                      }`}
                   >
                     <img
                       src={img}
@@ -283,7 +295,7 @@ function ProductDetailContent() {
 
           {/* ── Right Column (Booking & Checkout Options) ── */}
           <div className="lg:col-span-5 flex flex-col gap-6">
-            
+
             {/* Limited Time Offer Price Banner */}
             <div className="bg-[#2D5A42] rounded-[16px] p-5 text-white flex items-center justify-between shadow-sm">
               <div className="flex flex-col gap-0.5">
@@ -306,30 +318,28 @@ function ProductDetailContent() {
 
             {/* Option Cards Row */}
             <div className="flex flex-col sm:flex-row gap-4 items-stretch">
-              
+
               {/* Card 1: Full Payment */}
               <div
                 onClick={() => setPaymentOption("full")}
-                className={`relative flex-1 p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${
-                  paymentOption === "full"
+                className={`relative flex-1 p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${paymentOption === "full"
                     ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
                     : "border-zinc-200 bg-white"
-                }`}
+                  }`}
               >
                 {paymentOption === "full" && (
                   <div className="absolute top-[-10px] right-[-10px] bg-[#0d9740] text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md text-xs">
                     ✓
                   </div>
                 )}
-                
+
                 <div>
                   <div className="bg-[#DFB33F] text-white text-[9px] font-bold py-1 px-2 rounded-[6px] inline-block mb-3">
                     MOST PREFERRED
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${
-                      paymentOption === "full" ? "border-[#0d9740]" : "border-zinc-300"
-                    }`}>
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${paymentOption === "full" ? "border-[#0d9740]" : "border-zinc-300"
+                      }`}>
                       {paymentOption === "full" && (
                         <div className="w-2.5 h-2.5 rounded-full bg-[#0d9740]" />
                       )}
@@ -337,7 +347,7 @@ function ProductDetailContent() {
                     <h4 className="font-bold text-[#0F291B] text-[14px]">FULL PAYMENT</h4>
                   </div>
                   <p className="text-[11px] text-[#6B7280] mt-1.5 pl-6">Pay complete amount today</p>
-                  
+
                   <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3 pl-6">
                     <div className="flex justify-between">
                       <span>Order Total</span>
@@ -363,11 +373,10 @@ function ProductDetailContent() {
               {/* Card 2: Cash On Delivery */}
               <div
                 onClick={() => setPaymentOption("booking")}
-                className={`relative flex-1 p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${
-                  paymentOption === "booking"
+                className={`relative flex-1 p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${paymentOption === "booking"
                     ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
                     : "border-zinc-200 bg-white"
-                }`}
+                  }`}
               >
                 {paymentOption === "booking" && (
                   <div className="absolute top-[-10px] right-[-10px] bg-[#0d9740] text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md text-xs">
@@ -380,9 +389,8 @@ function ProductDetailContent() {
                     CASH ON DELIVERY
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${
-                      paymentOption === "booking" ? "border-[#0d9740]" : "border-zinc-300"
-                    }`}>
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${paymentOption === "booking" ? "border-[#0d9740]" : "border-zinc-300"
+                      }`}>
                       {paymentOption === "booking" && (
                         <div className="w-2.5 h-2.5 rounded-full bg-[#0d9740]" />
                       )}
@@ -466,7 +474,7 @@ function ProductDetailContent() {
 
             {/* Action Buttons */}
             <div className="flex flex-col gap-3">
-              <button 
+              <button
                 onClick={handleAddToCart}
                 disabled={submitting}
                 className="w-full h-14 rounded-[14px] bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
@@ -520,31 +528,28 @@ function ProductDetailContent() {
         <div className="flex flex-wrap border-b border-zinc-200 text-sm font-semibold text-zinc-500 mb-8">
           <button
             onClick={() => setActiveTab("specs")}
-            className={`py-4 px-6 border-b-2 transition-all ${
-              activeTab === "specs"
+            className={`py-4 px-6 border-b-2 transition-all ${activeTab === "specs"
                 ? "border-[#0D9740] text-[#0F291B] font-bold"
                 : "border-transparent hover:text-[#0f291b]"
-            }`}
+              }`}
           >
             Technical Specifications
           </button>
           <button
             onClick={() => setActiveTab("features")}
-            className={`py-4 px-6 border-b-2 transition-all ${
-              activeTab === "features"
+            className={`py-4 px-6 border-b-2 transition-all ${activeTab === "features"
                 ? "border-[#0D9740] text-[#0F291B] font-bold"
                 : "border-transparent hover:text-[#0f291b]"
-            }`}
+              }`}
           >
             Key Features
           </button>
           <button
             onClick={() => setActiveTab("guide")}
-            className={`py-4 px-6 border-b-2 transition-all ${
-              activeTab === "guide"
+            className={`py-4 px-6 border-b-2 transition-all ${activeTab === "guide"
                 ? "border-[#0D9740] text-[#0F291B] font-bold"
                 : "border-transparent hover:text-[#0f291b]"
-            }`}
+              }`}
           >
             User Guide
           </button>

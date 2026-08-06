@@ -236,7 +236,7 @@ export default function Products() {
                   return (
                     <div
                       key={product.item_code}
-                      className="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col transition-shadow hover:shadow-lg relative"
+                      className="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col transition-shadow hover:shadow-lg relative text-left"
                     >
                       {/* Image Section */}
                       <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer">
