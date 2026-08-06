@@ -118,6 +118,50 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
     }
   };
 
+  const handlePayNow = async () => {
+    try {
+      const stored = localStorage.getItem("gbru_user");
+      if (!stored) {
+        alert("User not logged in");
+        return;
+      }
+      const parsed = JSON.parse(stored);
+      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      const email = parsed.user_id && parsed.user_id.includes("@") ? parsed.user_id : (parsed.email || "");
+
+      const res = await fetch("/api/orders/pay-now", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mobile_no,
+          order_id: decodedOrderId,
+          amount: payAmount,
+          email
+        })
+      });
+      const data = await res.json();
+      if (data.status && data.token && data.actionUrl) {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = data.actionUrl;
+
+        const hidden = document.createElement("input");
+        hidden.type = "hidden";
+        hidden.name = "token";
+        hidden.value = data.token;
+        form.appendChild(hidden);
+
+        document.body.appendChild(form);
+        form.submit();
+      } else {
+        alert(data.error || data.message || "Failed to initiate payment.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred while initiating payment.");
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F9FBF9] flex flex-col">
@@ -155,6 +199,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
   }
 
   const summary = order.order_summary || {};
+  const payAmount = Number(summary.pending_amount || 0);
   const shipment = order.shipment || {};
   const items = shipment.items || [];
   const statusDisplay = shipment.status || summary.allowed_action || "Pending Payment";
@@ -402,6 +447,15 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                     ₹{Number(summary.order_amount || 0).toLocaleString('en-IN')}
                   </span>
                 </div>
+
+                {payAmount > 0 && (
+                  <button
+                    onClick={handlePayNow}
+                    className="w-full bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold py-3.5 rounded-xl text-xs font-roboto transition-all shadow-md flex items-center justify-center gap-1.5 duration-300 mt-2 active:scale-[0.98]"
+                  >
+                    💳 Pay Now (₹{payAmount.toLocaleString('en-IN')})
+                  </button>
+                )}
               </div>
 
               {actionMessage && (
