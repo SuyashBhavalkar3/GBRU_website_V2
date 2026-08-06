@@ -552,6 +552,62 @@ export default function Checkout() {
     }
   };
 
+  const [placingOrder, setPlacingOrder] = useState(false);
+
+  const handlePlaceOrder = async () => {
+    if (!checkoutDetails?.items) {
+      alert("No items in checkout details.");
+      return;
+    }
+    setPlacingOrder(true);
+    try {
+      const userStr = localStorage.getItem("gbru_user");
+      if (!userStr) return;
+      const user = JSON.parse(userStr);
+      const mobile_no = user.customer_id?.split('-')[1] || user.user_id || user.mobile_no;
+      if (!mobile_no) return;
+
+      const formattedItems = checkoutDetails.items.map((i: any) => ({
+        item: i.item,
+        quantity: i.quantity
+      }));
+
+      // Determine payment type and transaction amount dynamically based on paymentMode selection
+      const payment_type = paymentMode === "full" ? "Full Payment" : "Cash On Delivery";
+      const transaction_amount = paymentMode === "full" 
+        ? (proceedData?.payment_summary?.full_payment?.payable_amount || total) 
+        : (defaultProceedData?.payment_summary?.cash_on_delivery?.pay_now || proceedData?.payment_summary?.cash_on_delivery?.pay_now);
+
+      const email = user.user_id && user.user_id.includes("@") ? user.user_id : (user.email || "");
+
+      const res = await fetch("/api/cart/place-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mobile_no,
+          items: formattedItems,
+          coupon_code: paymentMode === "full" && couponApplied ? (proceedData?.coupon?.code || couponCode) : null,
+          payment_type,
+          transaction_amount,
+          email
+        })
+      });
+
+      const data = await res.json();
+      if (data.status && data.paymentLink) {
+        // Redirect to PayU payment link
+        window.location.href = data.paymentLink;
+      } else {
+        alert(data.error || data.message || "Failed to place order.");
+      }
+    } catch (e: any) {
+      console.error("Error placing order:", e);
+      alert("An error occurred while placing your order.");
+    } finally {
+      setPlacingOrder(false);
+    }
+  };
+
   const formatPrice = (val: any) => {
     if (val === undefined || val === null) return "0.00";
     const num = parseFloat(val);
@@ -1146,8 +1202,12 @@ export default function Checkout() {
               </div>
 
               {/* Secure Checkout CTA */}
-              <button className="w-full h-14 rounded-[14px] bg-gradient-to-r from-[#1A4D2E] to-[#2A6F45] hover:opacity-90 active:scale-[0.99] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm mt-2">
-                🔒 Place Order Securely
+              <button 
+                onClick={handlePlaceOrder}
+                disabled={placingOrder}
+                className={`w-full h-14 rounded-[14px] ${placingOrder ? 'bg-zinc-400' : 'bg-gradient-to-r from-[#1A4D2E] to-[#2A6F45] hover:opacity-90 active:scale-[0.99]'} text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm mt-2`}
+              >
+                {placingOrder ? "Placing Order..." : "🔒 Place Order Securely"}
               </button>
 
               <span className="text-[11px] text-zinc-500 text-center block">
