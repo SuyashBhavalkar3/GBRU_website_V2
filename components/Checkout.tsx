@@ -594,9 +594,23 @@ export default function Checkout() {
       });
 
       const data = await res.json();
-      if (data.status && data.paymentLink) {
-        // Redirect to PayU payment link
-        window.location.href = data.paymentLink;
+      if (data.status && data.token && data.actionUrl) {
+        // Clear cart to avoid showing stale cart items upon return
+        localStorage.removeItem("gbru_cart");
+        window.dispatchEvent(new Event("cartUpdate"));
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = data.actionUrl;
+
+        const hidden = document.createElement("input");
+        hidden.type = "hidden";
+        hidden.name = "token";
+        hidden.value = data.token;
+        form.appendChild(hidden);
+
+        document.body.appendChild(form);
+        form.submit();
       } else {
         alert(data.error || data.message || "Failed to place order.");
       }

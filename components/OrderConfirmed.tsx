@@ -1,11 +1,95 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 
 export default function OrderConfirmed() {
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const [orderDetails, setOrderDetails] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("orderId");
+      setOrderId(id);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchOrder = async () => {
+      if (!orderId) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const userStr = localStorage.getItem("gbru_user");
+        if (!userStr) {
+          setLoading(false);
+          return;
+        }
+        const user = JSON.parse(userStr);
+        const mobile_no = user.customer_id?.split('-')[1] || user.user_id || user.mobile_no;
+        if (!mobile_no) {
+          setLoading(false);
+          return;
+        }
+
+        const res = await fetch("/api/orders/details", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mobile_no, order_id: orderId }),
+        });
+        const data = await res.json();
+        if (data?.message?.status && data.message.data) {
+          setOrderDetails(data.message.data);
+        }
+      } catch (err) {
+        console.error("Failed to load order details:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (orderId) {
+      fetchOrder();
+    }
+  }, [orderId]);
+
+  const formatPrice = (val: any) => {
+    if (val === undefined || val === null) return "0.00";
+    const num = parseFloat(val);
+    return isNaN(num) ? "0.00" : num.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col pb-16">
+        <Navbar />
+        <div className="flex-1 flex flex-col items-center justify-center gap-3">
+          <svg className="animate-spin h-8 w-8 text-[#0D9740]" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
+          <span className="text-zinc-500 font-semibold text-xs">Loading Order Details...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Get first item details for display card, fallback to default tractor if no items or invalid order
+  const displayItem = orderDetails?.items?.[0] || {
+    item_name: "GBRU Pro-Series 5000",
+    description: "Premium Multi-Purpose Agricultural Tractor",
+    image: "/assets/gbru_tractor_main.png"
+  };
+
+  const deliveryDateStr = orderDetails?.delivery_date 
+    ? new Date(orderDetails.delivery_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
+    : "June 2-5, 2026";
+
   return (
     <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col pb-16">
       <Navbar />
@@ -24,7 +108,7 @@ export default function OrderConfirmed() {
             Thank you for choosing GBRU
           </p>
           <span className="text-xs text-zinc-500 font-bold bg-zinc-100 py-1.5 px-4 rounded-[8px] mt-2">
-            Order ID: <span className="text-[#0F291B]">#GBRU2026052901</span>
+            Order ID: <span className="text-[#0F291B]">#{orderId || "GBRU2026052901"}</span>
           </span>
         </div>
 
@@ -33,8 +117,8 @@ export default function OrderConfirmed() {
           {/* Image */}
           <div className="relative w-full md:w-[120px] h-[120px] rounded-[16px] overflow-hidden bg-zinc-50 border border-zinc-100 flex-shrink-0">
             <Image
-              src="/assets/gbru_tractor_main.png"
-              alt="GBRU Pro-Series 5000"
+              src={displayItem.image || "/assets/gbru_tractor_main.png"}
+              alt={displayItem.item_name}
               fill
               className="object-cover"
             />
@@ -44,26 +128,26 @@ export default function OrderConfirmed() {
           <div className="flex flex-col justify-between flex-1 py-1">
             <div className="flex flex-col gap-1.5">
               <h3 className="font-bold text-[#0F291B] text-[18px]">
-                GBRU Pro-Series 5000
+                {displayItem.item_name}
               </h3>
               <p className="text-xs text-zinc-500">
-                Premium Multi-Purpose Agricultural Tractor
+                {displayItem.description || "Premium Multi-Purpose Agricultural Equipment"}
               </p>
               
               <div className="flex items-center gap-3 mt-3">
                 <span className="bg-[#EBF5EE] text-[#0D9740] text-[10px] font-bold py-1 px-3 rounded-[6px]">
-                  Confirmed
+                  {orderDetails?.status || "Confirmed"}
                 </span>
                 <span className="text-xs text-zinc-500">
-                  Delivery: <span className="font-semibold text-[#0F291B]">June 2-5, 2026</span>
+                  Delivery: <span className="font-semibold text-[#0F291B]">{deliveryDateStr}</span>
                 </span>
               </div>
             </div>
 
             <div className="flex items-center justify-between border-t border-zinc-100 pt-4 mt-6">
-              <span className="text-xs font-bold text-zinc-500 uppercase">Total Paid</span>
+              <span className="text-xs font-bold text-zinc-500 uppercase">Total Amount</span>
               <span className="font-extrabold text-[#0F291B] text-[20px]">
-                ₹10,32,500
+                ₹{formatPrice(orderDetails?.grand_total || "1032500")}
               </span>
             </div>
           </div>
@@ -80,9 +164,12 @@ export default function OrderConfirmed() {
           <button className="h-12 bg-[#0FA84D] hover:bg-[#0b8a3d] text-white font-bold text-sm rounded-[14px] flex items-center justify-center gap-2 shadow-sm transition-all">
             📞 Contact Support
           </button>
-          <button className="h-12 bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-sm rounded-[14px] flex items-center justify-center gap-2 shadow-sm transition-all">
+          <Link
+            href="/orders"
+            className="h-12 bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-sm rounded-[14px] flex items-center justify-center gap-2 shadow-sm transition-all"
+          >
             📍 Track Order
-          </button>
+          </Link>
         </div>
 
         {/* "What Happens Next?" Section */}

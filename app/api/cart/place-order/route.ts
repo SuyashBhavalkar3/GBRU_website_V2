@@ -12,16 +12,12 @@ export async function POST(request: Request) {
     const apiKey = process.env.API_KEY;
     const apiSecret = process.env.API_SECRET;
 
-    const payuClientId = process.env.PAYU_CLIENT_ID;
-    const payuSecret = process.env.PAYU_SECRET;
-    const payuMerchantId = process.env.PAYU_MERCHANT_ID;
-
     if (!baseUrl || !apiKey || !apiSecret) {
       console.error('Missing API credentials in environment variables.');
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
-    // Step 1: Fetch user details for auth keys
+    // Step 1: Fetch user details for auth keys & customer info
     const userRes = await fetch(`${baseUrl}/api/method/shoption_api.erp_api.utility.get_user_details`, {
       method: 'POST',
       headers: {
@@ -33,12 +29,12 @@ export async function POST(request: Request) {
     });
 
     if (!userRes.ok) {
-      return NextResponse.json({ error: 'Failed to fetch user auth keys' }, { status: userRes.status });
+      return NextResponse.json({ error: 'Failed to fetch user details' }, { status: userRes.status });
     }
 
     const userData = await userRes.json();
     if (!userData.message?.status || !userData.message?.data?.key_details) {
-      return NextResponse.json({ error: 'User auth keys not found' }, { status: 401 });
+      return NextResponse.json({ error: 'User details not found' }, { status: 401 });
     }
 
     const userApiKey = userData.message.data.key_details.api_key;
@@ -64,7 +60,6 @@ export async function POST(request: Request) {
       }),
     });
 
-    console.log("place_order response status:", placeOrderRes.status);
     if (!placeOrderRes.ok) {
       const errText = await placeOrderRes.text();
       console.error("place_order failed:", errText);
@@ -79,119 +74,51 @@ export async function POST(request: Request) {
     const salesOrder = orderData.message.data.sales_order;
     const actualTransactionAmount = orderData.message.data.transaction_amount || transaction_amount;
 
-    // Step 3: Get PayU OAuth Access Token
-    const payuAuthRes = await fetch('https://uat-accounts.payu.in/oauth/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        client_id: payuClientId,
-        client_secret: payuSecret,
-        scope: 'create_payment_links',
-        grant_type: 'client_credentials'
-      })
-    });
-
-    if (!payuAuthRes.ok) {
-      const errText = await payuAuthRes.text();
-      console.error("PayU OAuth failed:", errText);
-      return NextResponse.json({ error: 'Failed PayU authorization', details: errText }, { status: payuAuthRes.status });
-    }
-
-    const payuAuthData = await payuAuthRes.json();
-    const payuAccessToken = payuAuthData.access_token;
-
-    // Step 4: Get transaction ID from ERP
-    // Pass order_id in both query parameters and body to ensure compatibility with ERP GET schemas
-    const transactionIdUrl = `${baseUrl}/api/method/shoption_api.payment.payment_api.payment_api.get_transactionid`;
-    const txIdRes = await fetch(transactionIdUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': authorizationHeader,
-      },
-      body: JSON.stringify({ order_id: salesOrder })
-    });
-
-    if (!txIdRes.ok) {
-      const errText = await txIdRes.text();
-      console.error("Failed to retrieve transaction ID:", errText);
-      return NextResponse.json({ error: 'Failed to retrieve transaction ID from ERP', details: errText }, { status: txIdRes.status });
-    }
-
-    const txIdData = await txIdRes.json();
-    if (!txIdData.message?.status || !txIdData.message?.data?.transaction_id) {
-      return NextResponse.json({ error: 'ERP did not return a valid transaction ID', details: txIdData }, { status: 400 });
-    }
-
-    const transactionId = txIdData.message.data.transaction_id;
-
-    // Step 5: Calculate expiryDate (100 days from now)
-    const expiry = new Date();
-    expiry.setDate(expiry.getDate() + 100);
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    const expiryDateStr = `${expiry.getFullYear()}-${pad(expiry.getMonth() + 1)}-${pad(expiry.getDate())} 23:59:59`;
-
-    const customerName = userData.message?.data?.Customer_name || userData.message?.data?.customer_name || null;
-    let customerPhone = userData.message?.data?.mobile_no || mobile_no || null;
-    if (customerPhone && customerPhone.startsWith("+91")) {
+    // Step 3: Format customer details for payment token
+    const customerName = userData.message.data.Customer_name || userData.message.data.customer_name || 'Customer';
+    const customerEmail = userData.message.data.user_id || userData.message.data.email_id || email || 'utkarsh.rathore@shoption.in';
+    
+    let customerPhone = userData.message.data.mobile_no || mobile_no || '';
+    if (customerPhone.startsWith("+91")) {
       customerPhone = customerPhone.replace("+91", "");
     }
-    if (customerPhone) {
-      customerPhone = customerPhone.trim().replace(/\D/g, "");
-    }
-    const customerEmail = userData.message?.data?.user_id || userData.message?.data?.email_id || userData.message?.data?.email || email || null;
+    customerPhone = customerPhone.trim().replace(/\D/g, "");
 
-    // Step 6: Generate PayU Payment Link
-    const payuLinkRes = await fetch('https://uatoneapi.payu.in/payment-links', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${payuAccessToken}`,
-        'merchantId': payuMerchantId || ''
-      },
-      body: JSON.stringify({
-        subAmount: actualTransactionAmount,
-        isPartialPaymentAllowed: false,
-        description: 'Test payment link',
-        source: 'API',
-        order_id: salesOrder,
-        transactionId: transactionId,
-        expiryDate: expiryDateStr,
-        successURL: 'https://uaterp.gbru.in/app',
-        failureURL: 'https://uaterp.gbru.in/app',
-        udf: { udf1: 'Easypay' },
-        customerName: customerName,
-        customerPhone: customerPhone,
-        customerEmail: customerEmail,
-        customer: {
-          name: customerName,
-          email: customerEmail,
-          phone: customerPhone
-        }
-      })
-    });
+    const userId = userData.message.data.shoption_customer_id || userData.message.data.username || '';
 
-    if (!payuLinkRes.ok) {
-      const errText = await payuLinkRes.text();
-      console.error("PayU link generation failed:", errText);
-      return NextResponse.json({ error: 'Failed PayU payment link generation', details: errText }, { status: payuLinkRes.status });
+    // Step 4: Detect website base URL
+    const host = request.headers.get('host') || '';
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    let websiteBaseUrl = `${protocol}://${host}`;
+    if (!host || host.includes('localhost') || host.includes('127.0.0.1')) {
+      websiteBaseUrl = 'https://gbru.shoption.in';
     }
 
-    const payuLinkData = await payuLinkRes.json();
-    if (payuLinkData.status !== 0 || !payuLinkData.result?.paymentLink) {
-      return NextResponse.json({ error: 'PayU rejected payment link generation', details: payuLinkData }, { status: 400 });
-    }
+    // Step 5: Build base64-encoded payment token
+    const callbackUrl = `${websiteBaseUrl}/place-order`;
+    const qs = [
+      `ProductInfo=Shoption Order`,
+      `FirstName=${customerName}`,
+      `Email=${customerEmail}`,
+      `Amount=${actualTransactionAmount.toFixed(2)}`,
+      `Phone=${customerPhone}`,
+      `UserId=${userId}`,
+      `Order_id=${salesOrder}`,
+      `Call_Back_URL=${callbackUrl}`,
+    ].join("&");
+
+    const token = Buffer.from(qs).toString('base64');
 
     return NextResponse.json({
       status: true,
-      message: 'Order placed and payment link generated successfully',
+      message: 'Order placed successfully',
       sales_order: salesOrder,
-      paymentLink: payuLinkData.result.paymentLink
+      token: token,
+      paymentMode: payment_type === 'Full Payment' ? 'full' : 'booking',
+      actionUrl: 'https://pg.shoption.in/Payment/StartPayment'
     });
   } catch (error: any) {
-    console.error('Error placing order & generating payment link:', error);
+    console.error('Error placing order:', error);
     return NextResponse.json({ error: 'Internal server error', msg: error.message }, { status: 500 });
   }
 }
