@@ -20,7 +20,7 @@ export default function HelpSupportBanner() {
         {/* Right buttons */}
         <div className="flex flex-wrap items-center gap-4">
           <a
-            href="tel:+918121819367"
+            href="tel:+919226514174"
             className="flex items-center gap-2 bg-[#006B21] hover:bg-[#005a1b] transition-colors text-white font-bold py-3.5 px-6 rounded-full text-sm shadow-md"
           >
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

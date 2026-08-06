@@ -179,7 +179,7 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
             <MenuItem 
               icon={<svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
               label="Support & Help" 
-              href="/support-help" 
+              href="/help-centre" 
               onClick={onClose}
             />
 
@@ -200,7 +200,7 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
               </a>
 
               {/* Call Card */}
-              <a href="#" className="flex items-center justify-between bg-white p-4 rounded-2xl hover:bg-gray-50 transition-colors group shadow-[0_2px_12px_rgb(0,0,0,0.06)] border border-gray-100">
+              <a href="tel:+919226514174" className="flex items-center justify-between bg-white p-4 rounded-2xl hover:bg-gray-50 transition-colors group shadow-[0_2px_12px_rgb(0,0,0,0.06)] border border-gray-100">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 flex items-center justify-center shrink-0">
                     <svg className="w-[26px] h-[26px] text-[#194028]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>

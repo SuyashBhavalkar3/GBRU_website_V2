@@ -1,25 +1,41 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import Navbar from "./Navbar";
 import LoginPrompt from "./LoginPrompt";
 import PaymentOptionModal from "./PaymentOptionModal";
 
-export default function AllProducts() {
+function AllProductsContent() {
   const [productsList, setProductsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search");
 
   useEffect(() => {
     async function fetchFeatured() {
       try {
-        const res = await fetch("/api/products/featured", { method: "POST" });
+        let res;
+        if (searchQuery) {
+          res = await fetch(`/api/products?q=${encodeURIComponent(searchQuery)}`);
+        } else {
+          res = await fetch("/api/products/featured", { method: "POST" });
+        }
+        
         const data = await res.json();
-        if (data?.message?.status && Array.isArray(data.message.data?.data)) {
-          setProductsList(data.message.data.data);
+        
+        if (searchQuery) {
+          if (data?.message?.data?.data && Array.isArray(data.message.data.data)) {
+            setProductsList(data.message.data.data);
+          }
+        } else {
+          if (data?.message?.status && Array.isArray(data.message.data?.data)) {
+            setProductsList(data.message.data.data);
+          }
         }
       } catch (e) {
         console.error("Error loading featured products:", e);
@@ -28,7 +44,7 @@ export default function AllProducts() {
       }
     }
     fetchFeatured();
-  }, []);
+  }, [searchQuery]);
 
   const handleAddToCart = (product: any) => {
     setSelectedProduct(product);
@@ -56,11 +72,12 @@ export default function AllProducts() {
         {/* Header */}
         <div className="mb-10">
           <h1 className="text-3xl md:text-4xl font-bold text-[#1A1A1A] mb-4 tracking-tight">
-            Featured Agricultural Solutions
+            {searchQuery ? `Search Results for "${searchQuery}"` : "Featured Agricultural Solutions"}
           </h1>
           <p className="text-[#4A4A4A] max-w-3xl leading-relaxed text-sm md:text-base">
-            Explore our curated collection of industrial-grade machinery, smart irrigation systems,
-            and professional farming tools designed for the modern agri-enterprise.
+            {searchQuery 
+              ? "Browse through the products matching your search criteria." 
+              : "Explore our curated collection of industrial-grade machinery, smart irrigation systems, and professional farming tools designed for the modern agri-enterprise."}
           </p>
         </div>
 
@@ -129,6 +146,7 @@ export default function AllProducts() {
                           )}
                         </div>
                         <button
+
                           onClick={() => handleAddToCart(product)}
                           className="w-full bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold py-3 rounded-xl transition-all text-sm shadow-sm active:scale-[0.99]"
                         >
@@ -156,5 +174,13 @@ export default function AllProducts() {
         itemCode={selectedProduct?.item_code || ""}
       />
     </div>
+  );
+}
+
+export default function AllProducts() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#FDFDFD] font-roboto flex items-center justify-center">Loading...</div>}>
+      <AllProductsContent />
+    </Suspense>
   );
 }

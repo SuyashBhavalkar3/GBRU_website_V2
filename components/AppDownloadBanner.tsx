@@ -64,10 +64,10 @@ export default function AppDownloadBanner() {
           </p>
           
           <div className="bg-white rounded-2xl py-3 px-5 flex gap-4 w-fit shadow-md relative z-20 mb-6 lg:mb-0 border border-gray-100">
-            <a href="#" className="hover:opacity-80 transition-opacity">
+            <a href="https://play.google.com/store/apps/details?id=com.shoption.app" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
               <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" className="h-[32px] w-auto" />
             </a>
-            <a href="#" className="hover:opacity-80 transition-opacity">
+            <a href="https://apps.apple.com/in/app/shoption-for-irrigation-shops/id1544284156" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
               <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="Download on the App Store" className="h-[32px] w-auto" />
             </a>
           </div>

@@ -115,7 +115,9 @@ export default function AppDownload() {
           <div className="flex gap-4 items-center">
             {/* Google Play Store Badge */}
             <a
-              href="#"
+              href="https://play.google.com/store/apps/details?id=com.shoption.app"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-[14px] w-[145px] h-[48px] hover:bg-black/90 transition-all shadow-md"
             >
               {/* Play Store Colored Icon */}
@@ -133,7 +135,9 @@ export default function AppDownload() {
 
             {/* Apple App Store Badge */}
             <a
-              href="#"
+              href="https://apps.apple.com/in/app/shoption-for-irrigation-shops/id1544284156"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-[14px] w-[145px] h-[48px] hover:bg-black/90 transition-all shadow-md"
             >
               {/* Apple Icon */}

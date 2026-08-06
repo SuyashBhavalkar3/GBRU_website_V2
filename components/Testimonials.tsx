@@ -1,12 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 
-const flyers = [
-  { src: "/assets/gbru_flyer_happy_kisan1.png", alt: "Happy Kisan Flyer 1" },
-  { src: "/assets/gbru_flyer_happy_kisan2.png", alt: "Happy Kisan Flyer 2" },
-  { src: "/assets/gbru_flyer_happy_kisan3.png", alt: "Happy Kisan Flyer 3" },
+const farmerReviews = [
+  { src: "/assets/farmer_review (1).jpg", alt: "Farmer Review 1" },
+  { src: "/assets/farmer_review (2).jpg", alt: "Farmer Review 2" },
+  { src: "/assets/farmer_review (3).jpg", alt: "Farmer Review 3" },
+  { src: "/assets/farmer_review (4).jpg", alt: "Farmer Review 4" },
+  { src: "/assets/farmer_review (5).jpg", alt: "Farmer Review 5" },
+  { src: "/assets/farmer_review (6).jpg", alt: "Farmer Review 6" },
+  { src: "/assets/farmer_review (7).jpg", alt: "Farmer Review 7" },
+  { src: "/assets/farmer_review (8).jpg", alt: "Farmer Review 8" },
+  { src: "/assets/farmer_review (9).jpg", alt: "Farmer Review 9" },
+  { src: "/assets/farmer_review (10).jpg", alt: "Farmer Review 10" },
 ];
 
 const reviews = [
@@ -37,11 +44,13 @@ const reviews = [
 ];
 
 export default function Testimonials() {
+  const [visibleCount, setVisibleCount] = useState(3);
+
   return (
     <section className="w-full bg-white flex flex-col items-center py-[44px] px-[37px] lg:px-0">
       {/* ── Top Testimonial Rounded Box ── */}
       <div
-        className="relative w-full max-w-[1206px] rounded-[47px] overflow-hidden border border-[#CDE5D2] flex flex-col items-center py-10 px-4 lg:px-6 bg-no-repeat"
+        className="relative w-full max-w-[1206px] rounded-[47px] overflow-hidden border border-[#CDE5D2] flex flex-col items-center py-10 px-4 lg:px-6 bg-no-repeat transition-all duration-500"
         style={{
           background: "linear-gradient(135deg, #F0FAF2 0%, #DCEFE0 100%)",
           minHeight: "730px",
@@ -75,11 +84,11 @@ export default function Testimonials() {
           </p>
 
           {/* Flyers Row */}
-          <div className="flex flex-wrap lg:flex-nowrap justify-center gap-4 lg:gap-5 w-full max-w-[1152px] mb-10">
-            {flyers.map((flyer, idx) => (
+          <div className="flex flex-wrap justify-center gap-4 lg:gap-5 w-full max-w-[1152px] mb-10 transition-all duration-500">
+            {farmerReviews.slice(0, visibleCount).map((review, idx) => (
               <div
                 key={idx}
-                className="relative overflow-hidden shadow-lg border border-white/60 bg-white"
+                className="relative overflow-hidden shadow-lg border border-white/60 bg-white animate-in zoom-in-95 duration-500"
                 style={{
                   width: "357px",
                   height: "357px",
@@ -87,8 +96,8 @@ export default function Testimonials() {
                 }}
               >
                 <Image
-                  src={flyer.src}
-                  alt={flyer.alt}
+                  src={review.src}
+                  alt={review.alt}
                   fill
                   className="object-cover"
                 />
@@ -97,20 +106,23 @@ export default function Testimonials() {
           </div>
 
           {/* View More Button */}
-          <button
-            className="bg-[#0D9740] hover:bg-[#0a7d34] text-white font-roboto font-semibold text-[15px] shadow-md transition-all duration-300 hover:scale-105 active:scale-95"
-            style={{
-              width: "226px",
-              height: "64px",
-              borderRadius: "9999px",
-              paddingTop: "21px",
-              paddingBottom: "21px",
-              paddingLeft: "67px",
-              paddingRight: "67px",
-            }}
-          >
-            View More
-          </button>
+          {visibleCount < farmerReviews.length && (
+            <button
+              onClick={() => setVisibleCount((prev) => prev + 3)}
+              className="bg-[#0D9740] hover:bg-[#0a7d34] text-white font-roboto font-semibold text-[15px] shadow-md transition-all duration-300 hover:scale-105 active:scale-95"
+              style={{
+                width: "226px",
+                height: "64px",
+                borderRadius: "9999px",
+                paddingTop: "21px",
+                paddingBottom: "21px",
+                paddingLeft: "67px",
+                paddingRight: "67px",
+              }}
+            >
+              Load More
+            </button>
+          )}
         </div>
       </div>
 

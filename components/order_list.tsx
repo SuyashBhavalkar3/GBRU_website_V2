@@ -197,7 +197,7 @@ export default function OrderList() {
 
             {/* Shortcut: Support */}
             <Link 
-              href="/support-help" 
+              href="/help-centre" 
               className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer"
             >
               <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center">
@@ -368,7 +368,7 @@ export default function OrderList() {
 
                     {/* Help Link */}
                     <Link 
-                      href="/support-help" 
+                      href="/help-centre" 
                       className="inline-flex items-center gap-1 text-[#1E532E] hover:text-[#153B21] transition-colors text-xs font-bold mt-1.5 md:mr-1"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">

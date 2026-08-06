@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const Login = () => {
   const [mobileNumber, setMobileNumber] = useState('');
@@ -233,13 +234,13 @@ const Login = () => {
             </form>
 
             <div className="mt-8 pt-8 border-t border-[#D9D9D9] w-full flex flex-col space-y-4">
-              <a 
-                href="#" 
+              <Link 
+                href="/help-centre" 
                 className="text-[#4A4A4A] text-left hover:text-[#006B21] transition-colors" 
                 style={{ fontSize: '15px', fontFamily: 'Roboto, sans-serif', fontWeight: 400 }}
               >
                 Help Center
-              </a>
+              </Link>
               <div className="flex justify-center w-full">
                 <a 
                   href="#" 
