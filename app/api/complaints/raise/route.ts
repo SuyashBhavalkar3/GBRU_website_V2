@@ -48,19 +48,14 @@ export async function POST(request: Request) {
     erpFormData.append("subject", incomingFormData.get("subject") || "");
     erpFormData.append("description", incomingFormData.get("description") || "");
 
-    const file = incomingFormData.get("attachment_1");
-    if (file && file instanceof File) {
-      // Append the file field
-      erpFormData.append("attachment_1", file, file.name);
+    for (let i = 1; i <= 3; i++) {
+      const fileKey = `attachment_${i}`;
+      const file = incomingFormData.get(fileKey);
+      if (file && file instanceof File) {
+        erpFormData.append(fileKey, file, file.name);
+        console.log(`attachment_${i}:`, file.name);
+      }
     }
-
-    // Step 3: Post the complaint to ERP using user authorization keys
-    console.log("Raising complaint with fields:");
-    console.log("complaint_type:", erpFormData.get("complaint_type"));
-    console.log("order_id:", erpFormData.get("order_id"));
-    console.log("subject:", erpFormData.get("subject"));
-    console.log("description:", erpFormData.get("description"));
-    console.log("attachment:", file ? (file as File).name : "none");
 
     const response = await fetch(`${baseUrl}/api/method/shoption_api.cart.cart.raise_complaint`, {
       method: 'POST',

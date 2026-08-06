@@ -28,6 +28,11 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
+  // Cancel order state
+  const [showCancelToast, setShowCancelToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [cancelling, setCancelling] = useState(false);
+
   // Tracking state
   const [activeTrackingSticker, setActiveTrackingSticker] = useState<string | null>(null);
   const [trackingData, setTrackingData] = useState<any>(null);
@@ -71,6 +76,92 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
     fetchDetails();
   }, [decodedOrderId]);
 
+  const handleCancelOrder = async () => {
+    if (!window.confirm("Are you sure you want to cancel this order?")) {
+      return;
+    }
+    setCancelling(true);
+    try {
+      const stored = localStorage.getItem("gbru_user");
+      if (!stored) {
+        alert("User not logged in");
+        setCancelling(false);
+        return;
+      }
+      const parsed = JSON.parse(stored);
+      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+
+      const res = await fetch("/api/orders/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mobile_no,
+          order_id: decodedOrderId
+        })
+      });
+      const data = await res.json();
+      if (data?.message?.status) {
+        setToastMessage(data.message.message || "Sales order cancelled successfully.");
+        setShowCancelToast(true);
+        // Refresh details after 3 seconds
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      } else {
+        alert(data?.message?.message || "Failed to cancel order.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong while cancelling the order.");
+    } finally {
+      setCancelling(false);
+    }
+  };
+
+  const handlePayNow = async () => {
+    try {
+      const stored = localStorage.getItem("gbru_user");
+      if (!stored) {
+        alert("User not logged in");
+        return;
+      }
+      const parsed = JSON.parse(stored);
+      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      const email = parsed.user_id && parsed.user_id.includes("@") ? parsed.user_id : (parsed.email || "");
+
+      const res = await fetch("/api/orders/pay-now", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mobile_no,
+          order_id: decodedOrderId,
+          amount: payAmount,
+          email
+        })
+      });
+      const data = await res.json();
+      if (data.status && data.token && data.actionUrl) {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = data.actionUrl;
+
+        const hidden = document.createElement("input");
+        hidden.type = "hidden";
+        hidden.name = "token";
+        hidden.value = data.token;
+        form.appendChild(hidden);
+
+        document.body.appendChild(form);
+        form.submit();
+      } else {
+        alert(data.error || data.message || "Failed to initiate payment.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred while initiating payment.");
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F9FBF9] flex flex-col">
@@ -108,6 +199,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
   }
 
   const summary = order.order_summary || {};
+  const payAmount = Number(summary.pending_amount || 0);
   const shipment = order.shipment || {};
   const items = shipment.items || [];
   const statusDisplay = shipment.status || summary.allowed_action || "Pending Payment";
@@ -355,6 +447,15 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                     ₹{Number(summary.order_amount || 0).toLocaleString('en-IN')}
                   </span>
                 </div>
+
+                {payAmount > 0 && (
+                  <button
+                    onClick={handlePayNow}
+                    className="w-full bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold py-3.5 rounded-xl text-xs font-roboto transition-all shadow-md flex items-center justify-center gap-1.5 duration-300 mt-2 active:scale-[0.98]"
+                  >
+                    💳 Pay Now (₹{payAmount.toLocaleString('en-IN')})
+                  </button>
+                )}
               </div>
 
               {actionMessage && (
@@ -386,6 +487,25 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                   <Printer className="w-4 h-4" />
                   <span>Print LR</span>
                 </button>
+                {String(summary.allowed_action || "").toLowerCase() === "cancel" && (
+                  <button
+                    onClick={handleCancelOrder}
+                    disabled={cancelling}
+                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-2xl text-xs font-roboto transition-all shadow-sm flex items-center justify-center gap-1.5 duration-300 active:scale-[0.98] disabled:opacity-50"
+                  >
+                    {cancelling ? (
+                      <span className="flex items-center gap-1.5 justify-center">
+                        <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Cancelling...
+                      </span>
+                    ) : (
+                      "Cancel Order"
+                    )}
+                  </button>
+                )}
               </div>
             </div>
 
@@ -404,16 +524,21 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                       <div className="space-y-1.5">
                         <h4 className="text-md font-bold text-[#0F291B] font-roboto">{item.item_name}</h4>
                         <div className="text-xs text-zinc-500 font-medium">
-                          Qty: {item.qty} • Rate: ₹{Number(item.rate).toLocaleString('en-IN')}
+                          Qty: {item.qty} • Rate: ₹{Number(items.length === 1 ? (Number(summary.order_amount) / item.qty) : item.rate).toLocaleString('en-IN')}
                         </div>
-                        <div className={`inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border border-amber-200/50`}>
+                        {items.length === 1 && Number(summary.discount_received) > 0 && (
+                          <div className="text-xs text-rose-600 font-semibold mt-0.5">
+                            Discount Received: -₹{Number(summary.discount_received).toLocaleString('en-IN')}
+                          </div>
+                        )}
+                        <div className={`inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border border-amber-200/50 mt-1`}>
                           ● {item.status || "Pending Payment"}
                         </div>
                       </div>
                       
                       <div className="text-right self-end md:self-center shrink-0">
                         <span className="text-lg font-extrabold text-[#0F291B]">
-                          ₹{Number(item.total).toLocaleString('en-IN')}
+                          ₹{Number(items.length === 1 ? summary.order_amount : item.total).toLocaleString('en-IN')}
                         </span>
                       </div>
                     </div>
@@ -590,7 +715,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 </a>
                 
                 <Link 
-                  href={`/help-centre?order_id=${summary.order_id}`}
+                  href={`/support-help?order_id=${summary.order_id}`}
                   className="bg-white border border-zinc-200 hover:bg-zinc-50 text-[#0F291B] font-bold py-2.5 rounded-xl text-xs font-roboto transition-all shadow-sm flex items-center justify-center text-center"
                 >
                   Raise complain
@@ -704,6 +829,29 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
           </div>
         </div>
       )}
+
+      {/* Toast Notification with Progress Bar */}
+      {showCancelToast && (
+        <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom duration-300">
+          <div className="bg-[#0F291B] text-white py-4 px-6 rounded-2xl shadow-xl flex flex-col gap-2 relative overflow-hidden min-w-[320px]">
+            <div className="flex items-center gap-2">
+              <span className="text-emerald-400 text-lg">✓</span>
+              <span className="text-xs font-bold font-roboto">{toastMessage}</span>
+            </div>
+            {/* Decreasing Line / Progress Bar */}
+            <div className="absolute bottom-0 left-0 h-1 bg-[#0D9740] w-full" style={{
+              animation: 'shrinkWidth 3s linear forwards'
+            }} />
+          </div>
+        </div>
+      )}
+
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes shrinkWidth {
+          from { width: 100%; }
+          to { width: 0%; }
+        }
+      `}} />
 
       <Footer />
     </div>

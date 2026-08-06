@@ -35,6 +35,7 @@ export default function OrderList() {
   
   // Search query
   const [searchQuery, setSearchQuery] = useState("");
+  const [payingOrderId, setPayingOrderId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -102,6 +103,53 @@ export default function OrderList() {
     if (!searchQuery.trim()) return true;
     return order.order_id?.toLowerCase().includes(searchQuery.toLowerCase().trim());
   });
+
+  const handlePayNow = async (orderId: string, amount: number) => {
+    setPayingOrderId(orderId);
+    try {
+      const stored = localStorage.getItem("gbru_user");
+      if (!stored) {
+        alert("User not logged in");
+        return;
+      }
+      const parsed = JSON.parse(stored);
+      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      const email = parsed.user_id && parsed.user_id.includes("@") ? parsed.user_id : (parsed.email || "");
+
+      const res = await fetch("/api/orders/pay-now", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mobile_no,
+          order_id: orderId,
+          amount: amount,
+          email
+        })
+      });
+      const data = await res.json();
+      if (data.status && data.token && data.actionUrl) {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = data.actionUrl;
+
+        const hidden = document.createElement("input");
+        hidden.type = "hidden";
+        hidden.name = "token";
+        hidden.value = data.token;
+        form.appendChild(hidden);
+
+        document.body.appendChild(form);
+        form.submit();
+      } else {
+        alert(data.error || data.message || "Failed to initiate payment.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred while initiating payment.");
+    } finally {
+      setPayingOrderId(null);
+    }
+  };
 
   // Calculate statistics
   const totalOrdersCount = orders.length;
@@ -348,14 +396,25 @@ export default function OrderList() {
                   <div className="flex-1 flex flex-col justify-center items-stretch md:items-end gap-3 md:pl-8">
                     {/* Pay Now Button */}
                     <button 
-                      disabled={isFullPayment}
+                      disabled={isFullPayment || payingOrderId === order.order_id}
+                      onClick={() => handlePayNow(order.order_id, Number(order.pending_amount || 0))}
                       className={`w-full md:max-w-[200px] text-white font-bold py-3.5 rounded-2xl transition-all duration-200 font-roboto text-sm flex items-center justify-center ${
                         isFullPayment 
                           ? "bg-[#8DBA9A] cursor-not-allowed opacity-80" 
                           : "bg-[#1E532E] hover:bg-[#153B21]"
                       }`}
                     >
-                      Pay Now
+                      {payingOrderId === order.order_id ? (
+                        <span className="flex items-center gap-1.5 justify-center">
+                          <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                          Processing...
+                        </span>
+                      ) : (
+                        "Pay Now"
+                      )}
                     </button>
 
                     {/* View Details Outline Button */}
