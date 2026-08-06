@@ -279,7 +279,7 @@ export default function HelpCentre() {
                     </div>
                     <div>
                       <h4 className="text-sm font-bold text-[#0F291B]">Phone Support</h4>
-                      <p className="text-xs text-zinc-500 mt-1">+91 9114151617</p>
+                      <p className="text-xs text-zinc-500 mt-1">+91 9226514174</p>
                     </div>
                   </div>
                   <div className="border border-zinc-200 p-5 rounded-xl flex items-center gap-4 hover:border-[#0D9740] transition-colors">

@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const Login = () => {
   const [mobileNumber, setMobileNumber] = useState('');

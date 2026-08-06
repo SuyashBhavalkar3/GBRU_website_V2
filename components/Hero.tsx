@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Hero() {
   const [carouselIndex, setCarouselIndex] = useState(1); // 0, 1, 2
@@ -127,9 +128,9 @@ export default function Hero() {
             <div className="space-y-5 mt-6 lg:mt-0">
               {/* Buttons */}
               <div className="flex flex-wrap gap-[16px]">
-                <button className="bg-[#0D9740] hover:bg-[#0b8036] text-white font-roboto font-bold text-[14px] leading-none w-[185px] h-[58px] min-h-[48px] rounded-[32px] pt-[16px] pr-[32px] pb-[16px] pl-[32px] flex items-center justify-center transition-all duration-200 hover:scale-[1.02] cursor-pointer shadow-lg">
+                <Link href="/all_products" className="bg-[#0D9740] hover:bg-[#0b8036] text-white font-roboto font-bold text-[14px] leading-none w-[185px] h-[58px] min-h-[48px] rounded-[32px] pt-[16px] pr-[32px] pb-[16px] pl-[32px] flex items-center justify-center transition-all duration-200 hover:scale-[1.02] cursor-pointer shadow-lg">
                   Explore Products
-                </button>
+                </Link>
                 <button className="flex items-center justify-center gap-[7.99px] bg-white border border-[#2B7832] text-[#2B7832] font-roboto font-bold text-[14px] leading-none w-[185px] h-[58px] min-h-[48px] rounded-[32px] pt-[16px] pr-[32px] pb-[16px] pl-[32px] transition-all duration-200 cursor-pointer shadow-md">
                   <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="10" stroke="#2B7832" strokeWidth="2.5" fill="none" />

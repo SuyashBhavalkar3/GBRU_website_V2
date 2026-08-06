@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const categoryId = searchParams.get("category_id") || "";
+  const categoryId = searchParams.get("category_id") || null;
   const subcategoryId = searchParams.get("subcategory_id") || null;
+  const search = searchParams.get("q") || searchParams.get("search") || null;
 
   const apiBaseUrl = process.env.API_BASE_URL;
   const apiKey = process.env.API_KEY;
@@ -20,10 +21,10 @@ export async function GET(request: Request) {
     const payload = {
       category: categoryId,
       subcategory: subcategoryId === "all" ? null : subcategoryId,
-      search: null,
+      search: search,
       brand: "175",
       page: 1,
-      page_size: 100, // Fetch a larger list to display all products in category
+      page_size: search ? 20 : 100, // Fetch a larger list if not searching, or 20 for search
     };
 
     const response = await fetch(

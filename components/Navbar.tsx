@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Image from "next/image";
+import { useRouter, usePathname } from "next/navigation";
+import SearchBar from "./SearchBar";
 import ProfilePop from "./profile_pop";
 
 export default function Navbar() {
@@ -109,27 +110,7 @@ export default function Navbar() {
 
           {/* Desktop Search Bar */}
           <div className="hidden md:flex items-center relative w-[260px] h-[35px] lg:mr-[26px]">
-            <input
-              type="text"
-              placeholder="Search tools, products...."
-              className="w-full h-full bg-white/10 hover:bg-white/15 focus:bg-white/20 text-white placeholder-white/50 font-roboto font-semibold text-[12px] leading-none rounded-full pl-4 pr-10 border border-white/20 focus:border-[#FFC700] focus:outline-none transition-all duration-200"
-            />
-            <button className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-[#FFC700] transition-colors duration-200 cursor-pointer">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </button>
+            <SearchBar className="w-full h-full" placeholder="Search tools, products...." />
           </div>
 
           {/* Desktop Action Buttons */}
@@ -218,25 +199,8 @@ export default function Navbar() {
           {/* Mobile Right Controls (Hamburger & Cart) */}
           <div className="flex lg:hidden items-center space-x-4">
             {/* Search Toggle / Input on medium screen */}
-            <div className="hidden sm:flex md:hidden items-center relative max-w-[180px]">
-              <input
-                type="text"
-                placeholder="Search..."
-                className="w-full bg-white/10 text-white placeholder-white/50 text-xs rounded-full py-1.5 pl-3 pr-8 border border-white/20 focus:outline-none"
-              />
-              <svg
-                className="w-4 h-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-white/50"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+            <div className="hidden sm:flex md:hidden items-center relative max-w-[180px] h-[30px]">
+              <SearchBar className="w-full h-full" placeholder="Search..." />
             </div>
 
             {/* Mobile Cart */}
@@ -300,25 +264,8 @@ export default function Navbar() {
       {isOpen && (
         <div className="lg:hidden bg-[#0A331E] border-t border-white/10 px-4 pt-2 pb-6 space-y-4 animate-fadeIn">
           {/* Mobile Search (Visible on small mobile viewports) */}
-          <div className="relative sm:hidden">
-            <input
-              type="text"
-              placeholder="Search tools, products...."
-              className="w-full bg-white/10 text-white placeholder-white/50 text-sm rounded-full py-2.5 pl-4 pr-10 border border-white/20 focus:outline-none"
-            />
-            <svg
-              className="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 text-white/50"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
+          <div className="relative sm:hidden h-[40px]">
+            <SearchBar className="w-full h-full" placeholder="Search tools, products...." />
           </div>
 
           {/* Links */}

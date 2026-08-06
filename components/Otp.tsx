@@ -1,5 +1,6 @@
 'use client';
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
@@ -441,15 +442,9 @@ const OtpContent = () => {
             </form>
 
             <div className="mt-12 pt-6 border-t border-[#D9D9D9] flex justify-center items-center w-full">
-<<<<<<< Updated upstream
-              <a
-                href="#"
-                className="flex items-center gap-2 text-[#4A4A4A] hover:text-[#006B21] transition-colors"
-=======
               <Link 
                 href="/help-centre" 
-                className="flex items-center gap-2 text-[#4A4A4A] hover:text-[#006B21] transition-colors" 
->>>>>>> Stashed changes
+                className="flex items-center gap-2 text-[#4A4A4A] hover:text-[#006B21] transition-colors"
                 style={{ fontSize: '15px', fontFamily: 'Roboto, sans-serif', fontWeight: 500 }}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
