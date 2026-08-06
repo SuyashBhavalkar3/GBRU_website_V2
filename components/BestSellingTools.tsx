@@ -32,13 +32,8 @@ export default function BestSellingTools() {
   }, []);
 
   const handleAddToCart = (product: any) => {
-    const user = localStorage.getItem("gbru_user");
-    if (!user) {
-      setShowLoginPrompt(true);
-    } else {
-      setSelectedProduct(product);
-      setShowPaymentModal(true);
-    }
+    setSelectedProduct(product);
+    setShowPaymentModal(true);
   };
 
   if (loading) {

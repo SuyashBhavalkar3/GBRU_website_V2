@@ -74,13 +74,8 @@ export default function Products() {
   }, [categoryId]);
 
   const handleAddToCart = (product: any) => {
-    const user = localStorage.getItem("gbru_user");
-    if (!user) {
-      setShowLoginPrompt(true);
-    } else {
-      setSelectedProduct(product);
-      setShowPaymentModal(true);
-    }
+    setSelectedProduct(product);
+    setShowPaymentModal(true);
   };
 
   // Load products based on category and subcategory

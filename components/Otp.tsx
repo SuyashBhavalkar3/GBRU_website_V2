@@ -53,6 +53,48 @@ const OtpContent = () => {
       return;
     }
 
+    const handlePendingCart = async (userObj: any) => {
+      const pendingItemStr = localStorage.getItem("gbru_pending_cart_item");
+      if (!pendingItemStr) {
+        if (userObj?.role?.toLowerCase() === 'farmer') {
+          router.push('/dashboard');
+        } else {
+          router.push('/profile');
+        }
+        return;
+      }
+
+      try {
+        const pendingItem = JSON.parse(pendingItemStr);
+        const mobile_no = userObj.customer_id?.split('-')[1] || userObj.user_id || userObj.mobile_no;
+        if (!mobile_no) {
+          localStorage.removeItem("gbru_pending_cart_item");
+          router.push('/cart');
+          return;
+        }
+
+        // Add to cart
+        const res = await fetch("/api/cart/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            mobile_no,
+            items: [pendingItem]
+          })
+        });
+
+        const resJson = await res.json();
+        if (resJson.message?.status) {
+          alert(`${pendingItem.item_name || "Product"} added to cart successfully!`);
+        }
+      } catch (e) {
+        console.error("Error adding pending item to cart:", e);
+      } finally {
+        localStorage.removeItem("gbru_pending_cart_item");
+        router.push('/cart');
+      }
+    };
+
     setLoading(true);
     try {
       const response = await fetch('/api/verify-otp', {
@@ -71,13 +113,7 @@ const OtpContent = () => {
         } else {
           // Save user details securely in localStorage
           localStorage.setItem('gbru_user', JSON.stringify(data.user));
-
-          // Redirect based on role
-          if (data.user?.role?.toLowerCase() === 'farmer') {
-            router.push('/dashboard');
-          } else {
-            router.push('/profile');
-          }
+          await handlePendingCart(data.user);
         }
       } else {
         alert(data.message || data.error || 'Invalid OTP. Please try again.');
@@ -119,7 +155,33 @@ const OtpContent = () => {
         };
         localStorage.setItem('gbru_user', JSON.stringify(basicUser));
         setShowRegistrationPopup(false);
-        router.push('/dashboard');
+        
+        // Handle pending cart item adding
+        const pendingItemStr = localStorage.getItem("gbru_pending_cart_item");
+        if (pendingItemStr) {
+          try {
+            const pendingItem = JSON.parse(pendingItemStr);
+            const res = await fetch("/api/cart/add", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                mobile_no: mobileNo,
+                items: [pendingItem]
+              })
+            });
+            const resJson = await res.json();
+            if (resJson.message?.status) {
+              alert(`${pendingItem.item_name || "Product"} added to cart successfully!`);
+            }
+          } catch (err) {
+            console.error("Error adding pending item to cart:", err);
+          } finally {
+            localStorage.removeItem("gbru_pending_cart_item");
+            router.push('/cart');
+          }
+        } else {
+          router.push('/dashboard');
+        }
       } else {
         alert(data?.message?.message || "Registration failed. Please try again.");
       }

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import LoginPrompt from "./LoginPrompt";
 
 interface PaymentOptionModalProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ export default function PaymentOptionModal({
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   useEffect(() => {
     if (!isOpen || !itemCode) return;
@@ -58,7 +60,20 @@ export default function PaymentOptionModal({
     try {
       const stored = localStorage.getItem("gbru_user");
       if (!stored) {
-        alert("Please sign in to add products to your cart.");
+        const pendingItem = {
+          item: itemCode,
+          item_name: productDetails?.item_name,
+          quantity: quantity,
+          is_moq_applicable: 0,
+          payment_type: selectedOption === "full" ? "Full Payment" : "Cash On Delivery",
+          full_payment_amount: productDetails?.full_payment_amount || 0.0,
+          full_payment_discount: productDetails?.full_payment_discount || 0.0,
+          cod_value: productDetails?.COD_value || 0.0,
+          cod_display: productDetails?.COD_Display || 0.0,
+          cod_discount: productDetails?.COD_discount || 0.0,
+        };
+        localStorage.setItem("gbru_pending_cart_item", JSON.stringify(pendingItem));
+        setShowLoginPrompt(true);
         return;
       }
 
@@ -66,7 +81,20 @@ export default function PaymentOptionModal({
       const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
 
       if (!mobile_no) {
-        alert("Please sign in to add products to your cart.");
+        const pendingItem = {
+          item: itemCode,
+          item_name: productDetails?.item_name,
+          quantity: quantity,
+          is_moq_applicable: 0,
+          payment_type: selectedOption === "full" ? "Full Payment" : "Cash On Delivery",
+          full_payment_amount: productDetails?.full_payment_amount || 0.0,
+          full_payment_discount: productDetails?.full_payment_discount || 0.0,
+          cod_value: productDetails?.COD_value || 0.0,
+          cod_display: productDetails?.COD_Display || 0.0,
+          cod_discount: productDetails?.COD_discount || 0.0,
+        };
+        localStorage.setItem("gbru_pending_cart_item", JSON.stringify(pendingItem));
+        setShowLoginPrompt(true);
         return;
       }
 
@@ -262,6 +290,11 @@ export default function PaymentOptionModal({
           </>
         )}
       </div>
+
+      <LoginPrompt 
+        isOpen={showLoginPrompt} 
+        onClose={() => setShowLoginPrompt(false)} 
+      />
     </div>
   );
 }

@@ -54,6 +54,19 @@ function ProductDetailContent() {
   const handleAddToCart = async () => {
     const user = localStorage.getItem("gbru_user");
     if (!user) {
+      const pendingItem = {
+        item: product.item_code,
+        item_name: product.item_name,
+        quantity: quantity,
+        is_moq_applicable: 0,
+        payment_type: paymentOption === "full" ? "Full Payment" : "Cash On Delivery",
+        full_payment_amount: product.full_payment_amount || 0.0,
+        full_payment_discount: product.full_payment_discount || 0.0,
+        cod_value: product.cod_value || product.COD_value || 0.0,
+        cod_display: product.cod_display || product.COD_Display || 0.0,
+        cod_discount: product.cod_discount || product.COD_discount || 0.0,
+      };
+      localStorage.setItem("gbru_pending_cart_item", JSON.stringify(pendingItem));
       setShowLoginPrompt(true);
       return;
     }
