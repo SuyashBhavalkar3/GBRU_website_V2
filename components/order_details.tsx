@@ -31,6 +31,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
   // Cancel order state
   const [showCancelToast, setShowCancelToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error">("success");
   const [cancelling, setCancelling] = useState(false);
 
   // Tracking state
@@ -84,7 +85,10 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
     try {
       const stored = localStorage.getItem("gbru_user");
       if (!stored) {
-        alert("User not logged in");
+        setToastType("error");
+        setToastMessage("User not logged in");
+        setShowCancelToast(true);
+        setTimeout(() => setShowCancelToast(false), 3000);
         setCancelling(false);
         return;
       }
@@ -101,6 +105,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
       });
       const data = await res.json();
       if (data?.message?.status) {
+        setToastType("success");
         setToastMessage(data.message.message || "Sales order cancelled successfully.");
         setShowCancelToast(true);
         // Refresh details after 3 seconds
@@ -108,11 +113,17 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
           window.location.reload();
         }, 3000);
       } else {
-        alert(data?.message?.message || "Failed to cancel order.");
+        setToastType("error");
+        setToastMessage(data?.message?.message || "Failed to cancel order.");
+        setShowCancelToast(true);
+        setTimeout(() => setShowCancelToast(false), 3000);
       }
     } catch (err) {
       console.error(err);
-      alert("Something went wrong while cancelling the order.");
+      setToastType("error");
+      setToastMessage("Something went wrong while cancelling the order.");
+      setShowCancelToast(true);
+      setTimeout(() => setShowCancelToast(false), 3000);
     } finally {
       setCancelling(false);
     }
@@ -122,7 +133,10 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
     try {
       const stored = localStorage.getItem("gbru_user");
       if (!stored) {
-        alert("User not logged in");
+        setToastType("error");
+        setToastMessage("User not logged in");
+        setShowCancelToast(true);
+        setTimeout(() => setShowCancelToast(false), 3000);
         return;
       }
       const parsed = JSON.parse(stored);
@@ -154,11 +168,17 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         document.body.appendChild(form);
         form.submit();
       } else {
-        alert(data.error || data.message || "Failed to initiate payment.");
+        setToastType("error");
+        setToastMessage(data.error || data.message || "Failed to initiate payment.");
+        setShowCancelToast(true);
+        setTimeout(() => setShowCancelToast(false), 3000);
       }
     } catch (err) {
       console.error(err);
-      alert("An error occurred while initiating payment.");
+      setToastType("error");
+      setToastMessage("An error occurred while initiating payment.");
+      setShowCancelToast(true);
+      setTimeout(() => setShowCancelToast(false), 3000);
     }
   };
 
@@ -833,13 +853,15 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
       {/* Toast Notification with Progress Bar */}
       {showCancelToast && (
         <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom duration-300">
-          <div className="bg-[#0F291B] text-white py-4 px-6 rounded-2xl shadow-xl flex flex-col gap-2 relative overflow-hidden min-w-[320px]">
+          <div className={`${toastType === "error" ? "bg-red-950" : "bg-[#0F291B]"} text-white py-4 px-6 rounded-2xl shadow-xl flex flex-col gap-2 relative overflow-hidden min-w-[320px]`}>
             <div className="flex items-center gap-2">
-              <span className="text-emerald-400 text-lg">✓</span>
+              <span className={toastType === "error" ? "text-red-400 text-lg" : "text-emerald-400 text-lg"}>
+                {toastType === "error" ? "⚠️" : "✓"}
+              </span>
               <span className="text-xs font-bold font-roboto">{toastMessage}</span>
             </div>
             {/* Decreasing Line / Progress Bar */}
-            <div className="absolute bottom-0 left-0 h-1 bg-[#0D9740] w-full" style={{
+            <div className={`absolute bottom-0 left-0 h-1 ${toastType === "error" ? "bg-red-500" : "bg-[#0D9740]"} w-full` style={{
               animation: 'shrinkWidth 3s linear forwards'
             }} />
           </div>

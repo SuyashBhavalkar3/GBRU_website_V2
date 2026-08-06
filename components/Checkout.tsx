@@ -573,7 +573,12 @@ export default function Checkout() {
 
   const handlePlaceOrder = async () => {
     if (!checkoutDetails?.items) {
-      alert("No items in checkout details.");
+      setModalConfig({
+        isOpen: true,
+        title: "Alert",
+        message: "No items in checkout details.",
+        type: "alert"
+      });
       return;
     }
     setPlacingOrder(true);
@@ -630,11 +635,21 @@ export default function Checkout() {
         document.body.appendChild(form);
         form.submit();
       } else {
-        alert(data.error || data.message || "Failed to place order.");
+        setModalConfig({
+          isOpen: true,
+          title: "Error",
+          message: data.error || data.message || "Failed to place order.",
+          type: "alert"
+        });
       }
     } catch (e: any) {
       console.error("Error placing order:", e);
-      alert("An error occurred while placing your order.");
+      setModalConfig({
+        isOpen: true,
+        title: "Error",
+        message: "An error occurred while placing your order.",
+        type: "alert"
+      });
     } finally {
       setPlacingOrder(false);
     }

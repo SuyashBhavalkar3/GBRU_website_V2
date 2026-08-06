@@ -36,6 +36,8 @@ export default function OrderList() {
   // Search query
   const [searchQuery, setSearchQuery] = useState("");
   const [payingOrderId, setPayingOrderId] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error">("success");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -109,7 +111,9 @@ export default function OrderList() {
     try {
       const stored = localStorage.getItem("gbru_user");
       if (!stored) {
-        alert("User not logged in");
+        setToastType("error");
+        setToastMessage("User not logged in");
+        setTimeout(() => setToastMessage(""), 3000);
         return;
       }
       const parsed = JSON.parse(stored);
@@ -141,11 +145,15 @@ export default function OrderList() {
         document.body.appendChild(form);
         form.submit();
       } else {
-        alert(data.error || data.message || "Failed to initiate payment.");
+        setToastType("error");
+        setToastMessage(data.error || data.message || "Failed to initiate payment.");
+        setTimeout(() => setToastMessage(""), 3000);
       }
     } catch (err) {
       console.error(err);
-      alert("An error occurred while initiating payment.");
+      setToastType("error");
+      setToastMessage("An error occurred while initiating payment.");
+      setTimeout(() => setToastMessage(""), 3000);
     } finally {
       setPayingOrderId(null);
     }
@@ -472,6 +480,20 @@ export default function OrderList() {
         </div>
 
       </main>
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className={`fixed top-8 left-1/2 transform -translate-x-1/2 z-[9999] ${toastType === "error" ? "bg-red-600" : "bg-[#006B21]"} text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in-down`}>
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {toastType === "error" ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            )}
+          </svg>
+          <span className="font-medium font-inter">{toastMessage}</span>
+        </div>
+      )}
 
       <Footer />
     </div>

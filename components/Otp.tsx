@@ -9,6 +9,7 @@ const OtpContent = () => {
   const [loading, setLoading] = useState(false);
   const [timeLeft, setTimeLeft] = useState(24);
   const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState<'success' | 'error'>('success');
 
   // Registration States
   const [showRegistrationPopup, setShowRegistrationPopup] = useState(false);
@@ -50,7 +51,9 @@ const OtpContent = () => {
   const handleVerify = async () => {
     const otpValue = otp.join('');
     if (otpValue.length !== 6 || !mobileNo) {
-      alert('Please enter a valid 6-digit OTP.');
+      setToastType("error");
+      setToastMessage('Please enter a valid 6-digit OTP.');
+      setTimeout(() => setToastMessage(""), 3000);
       return;
     }
 
@@ -86,7 +89,9 @@ const OtpContent = () => {
 
         const resJson = await res.json();
         if (resJson.message?.status) {
-          alert(`${pendingItem.item_name || "Product"} added to cart successfully!`);
+          setToastType("success");
+          setToastMessage(`${pendingItem.item_name || "Product"} added to cart successfully!`);
+          setTimeout(() => setToastMessage(""), 3000);
         }
       } catch (e) {
         console.error("Error adding pending item to cart:", e);
@@ -124,11 +129,15 @@ const OtpContent = () => {
           }
         }
       } else {
-        alert(data.message || data.error || 'Invalid OTP. Please try again.');
+        setToastType("error");
+        setToastMessage(data.message || data.error || 'Invalid OTP. Please try again.');
+        setTimeout(() => setToastMessage(""), 3000);
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);
-      alert('An error occurred during verification. Please try again.');
+      setToastType("error");
+      setToastMessage('An error occurred during verification. Please try again.');
+      setTimeout(() => setToastMessage(""), 3000);
     } finally {
       setLoading(false);
     }
@@ -137,7 +146,9 @@ const OtpContent = () => {
   const handleShortRegistration = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!registrationName.trim()) {
-      alert("Please enter your name");
+      setToastType("error");
+      setToastMessage("Please enter your name");
+      setTimeout(() => setToastMessage(""), 3000);
       return;
     }
 
@@ -180,7 +191,9 @@ const OtpContent = () => {
             });
             const resJson = await res.json();
             if (resJson.message?.status) {
-              alert(`${pendingItem.item_name || "Product"} added to cart successfully!`);
+              setToastType("success");
+              setToastMessage(`${pendingItem.item_name || "Product"} added to cart successfully!`);
+              setTimeout(() => setToastMessage(""), 3000);
             }
           } catch (err) {
             console.error("Error adding pending item to cart:", err);
@@ -192,11 +205,15 @@ const OtpContent = () => {
           router.push('/dashboard');
         }
       } else {
-        alert(data?.message?.message || "Registration failed. Please try again.");
+        setToastType("error");
+        setToastMessage(data?.message?.message || "Registration failed. Please try again.");
+        setTimeout(() => setToastMessage(""), 3000);
       }
     } catch (err) {
       console.error("Error in short registration:", err);
-      alert("An error occurred during registration. Please try again.");
+      setToastType("error");
+      setToastMessage("An error occurred during registration. Please try again.");
+      setTimeout(() => setToastMessage(""), 3000);
     } finally {
       setRegistering(false);
     }
@@ -212,15 +229,20 @@ const OtpContent = () => {
       });
       const data = await response.json();
       if (data.message?.status || data.success) { // checking both depending on route return structure
+        setToastType("success");
         setToastMessage(`OTP sent successfully check ${mobileNo}`);
         setTimeLeft(24); // Reset countdown
         setTimeout(() => setToastMessage(''), 2500); // Clear toast message
       } else {
-        alert(data.message?.message || data.error || 'Failed to resend OTP.');
+        setToastType("error");
+        setToastMessage(data.message?.message || data.error || 'Failed to resend OTP.');
+        setTimeout(() => setToastMessage(''), 3000);
       }
     } catch (error) {
       console.error('Error resending OTP:', error);
-      alert('An error occurred. Please try again.');
+      setToastType("error");
+      setToastMessage('An error occurred. Please try again.');
+      setTimeout(() => setToastMessage(''), 3000);
     }
   };
 
@@ -242,11 +264,15 @@ const OtpContent = () => {
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 bg-[#006B21] text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 toast-animate"
+        <div className={`fixed top-8 left-1/2 transform -translate-x-1/2 z-[9999] ${toastType === "error" ? "bg-red-600" : "bg-[#006B21]"} text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 toast-animate`}
           style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
         >
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            {toastType === "error" ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            )}
           </svg>
           {toastMessage}
         </div>

@@ -8,11 +8,14 @@ const Login = () => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState<'success' | 'error'>('success');
   const router = useRouter();
 
   const handleGetOtp = async () => {
     if (mobileNumber.length !== 10) {
-      alert('Please enter a valid 10-digit mobile number.');
+      setToastType("error");
+      setToastMessage('Please enter a valid 10-digit mobile number.');
+      setTimeout(() => setToastMessage(""), 2500);
       return;
     }
     
@@ -30,17 +33,22 @@ const Login = () => {
       
       if (data.message?.status) {
         // Successfully sent OTP
+        setToastType("success");
         setToastMessage(`OTP sent successfully check ${mobileNumber}`);
         setTimeout(() => {
           // Redirect to OTP page and pass data via query params
           router.push(`/otp?mobile_no=${mobileNumber}&txn_id=${data.message.txn_id}`);
         }, 2000);
       } else {
-        alert(data.message?.message || data.error || 'Failed to send OTP. Please try again.');
+        setToastType("error");
+        setToastMessage(data.message?.message || data.error || 'Failed to send OTP. Please try again.');
+        setTimeout(() => setToastMessage(""), 2500);
       }
     } catch (error) {
       console.error('Error sending OTP:', error);
-      alert('An error occurred. Please try again.');
+      setToastType("error");
+      setToastMessage('An error occurred. Please try again.');
+      setTimeout(() => setToastMessage(""), 2500);
     } finally {
       setLoading(false);
     }
@@ -63,11 +71,15 @@ const Login = () => {
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 bg-[#006B21] text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 toast-animate"
+        <div className={`fixed top-8 left-1/2 transform -translate-x-1/2 z-[9999] ${toastType === "error" ? "bg-red-600" : "bg-[#006B21]"} text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 toast-animate`}
           style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500 }}
         >
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            {toastType === "error" ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            )}
           </svg>
           {toastMessage}
         </div>

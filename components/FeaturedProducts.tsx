@@ -33,6 +33,7 @@ export default function FeaturedProducts() {
   const [loading, setLoading] = useState(true);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error">("success");
 
   useEffect(() => {
     async function loadFeatured() {
@@ -62,10 +63,13 @@ export default function FeaturedProducts() {
       const success = await addToCartUtil(itemCode);
       if (success) {
         window.dispatchEvent(new Event("cartUpdate"));
+        setToastType("success");
         setToastMessage("Product added to cart successfully!");
         setTimeout(() => setToastMessage(""), 3000);
       } else {
-        alert("Failed to add to cart. Please try again.");
+        setToastType("error");
+        setToastMessage("Failed to add to cart. Please try again.");
+        setTimeout(() => setToastMessage(""), 3000);
       }
     }
   };
@@ -90,9 +94,13 @@ export default function FeaturedProducts() {
     <section className="py-16 md:py-24 bg-white font-roboto relative">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 bg-[#006B21] text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in-down">
+        <div className={`fixed top-8 left-1/2 transform -translate-x-1/2 z-[9999] ${toastType === "error" ? "bg-red-600" : "bg-[#006B21]"} text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in-down`}>
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            {toastType === "error" ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            )}
           </svg>
           <span className="font-medium font-inter">{toastMessage}</span>
         </div>
