@@ -524,16 +524,21 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                       <div className="space-y-1.5">
                         <h4 className="text-md font-bold text-[#0F291B] font-roboto">{item.item_name}</h4>
                         <div className="text-xs text-zinc-500 font-medium">
-                          Qty: {item.qty} • Rate: ₹{Number(item.rate).toLocaleString('en-IN')}
+                          Qty: {item.qty} • Rate: ₹{Number(items.length === 1 ? (Number(summary.order_amount) / item.qty) : item.rate).toLocaleString('en-IN')}
                         </div>
-                        <div className={`inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border border-amber-200/50`}>
+                        {items.length === 1 && Number(summary.discount_received) > 0 && (
+                          <div className="text-xs text-rose-600 font-semibold mt-0.5">
+                            Discount Received: -₹{Number(summary.discount_received).toLocaleString('en-IN')}
+                          </div>
+                        )}
+                        <div className={`inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border border-amber-200/50 mt-1`}>
                           ● {item.status || "Pending Payment"}
                         </div>
                       </div>
                       
                       <div className="text-right self-end md:self-center shrink-0">
                         <span className="text-lg font-extrabold text-[#0F291B]">
-                          ₹{Number(item.total).toLocaleString('en-IN')}
+                          ₹{Number(items.length === 1 ? summary.order_amount : item.total).toLocaleString('en-IN')}
                         </span>
                       </div>
                     </div>
