@@ -861,7 +861,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
               <span className="text-xs font-bold font-roboto">{toastMessage}</span>
             </div>
             {/* Decreasing Line / Progress Bar */}
-            <div className={`absolute bottom-0 left-0 h-1 ${toastType === "error" ? "bg-red-500" : "bg-[#0D9740]"} w-full` style={{
+            <div className={`absolute bottom-0 left-0 h-1 ${toastType === "error" ? "bg-red-500" : "bg-[#0D9740]"} w-full`} style={{
               animation: 'shrinkWidth 3s linear forwards'
             }} />
           </div>
