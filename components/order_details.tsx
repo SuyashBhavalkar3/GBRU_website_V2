@@ -590,7 +590,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 </a>
                 
                 <Link 
-                  href={`/support-help?order_id=${summary.order_id}`}
+                  href={`/help-centre?order_id=${summary.order_id}`}
                   className="bg-white border border-zinc-200 hover:bg-zinc-50 text-[#0F291B] font-bold py-2.5 rounded-xl text-xs font-roboto transition-all shadow-sm flex items-center justify-center text-center"
                 >
                   Raise complain

@@ -69,7 +69,7 @@ const Footer = () => {
           <h3 className="footer-heading">Support</h3>
           <ul className="flex flex-col gap-4">
             <li><Link href="/faq" className="footer-link">FAQ</Link></li>
-            <li><Link href="/help" className="footer-link">Help Center</Link></li>
+            <li><Link href="/help-centre" className="footer-link">Help Center</Link></li>
             <li><Link href="/terms" className="footer-link">Terms of Service</Link></li>
             <li><Link href="/privacy" className="footer-link">Privacy Policy</Link></li>
             <li><Link href="/returns" className="footer-link">Return Policy</Link></li>
