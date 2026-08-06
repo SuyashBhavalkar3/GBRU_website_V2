@@ -60,17 +60,50 @@ export default function Cart() {
     fetchCart();
   }, [router]);
 
-  const handleUpdateQty = async (itemId: string, currentQty: number, delta: number) => {
+  const handleUpdateQty = async (itemObj: any, currentQty: number, delta: number) => {
     const newQty = Math.max(1, currentQty + delta);
     // Locally update quantity for immediate response
     setCartItems(prev =>
       prev.map(item =>
-        item.item === itemId
+        item.item === itemObj.item
           ? { ...item, quantity: newQty, amount: item.rate * newQty }
           : item
       )
     );
-    // In a real application, you would make an API call to update quantity here.
+
+    try {
+      const stored = localStorage.getItem("gbru_user");
+      if (!stored) return;
+      const parsed = JSON.parse(stored);
+      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      if (!mobile_no) return;
+
+      const payload = {
+        mobile_no,
+        item: itemObj.item,
+        quantity: newQty,
+        payment_type: itemObj.payment_type || "Full Payment",
+        full_payment_amount: itemObj.full_payment_amount || 0.0,
+        full_payment_discount: itemObj.full_payment_discount || 0.0,
+        COD_value: itemObj.cod_value || 0.0,
+        COD_Display: itemObj.cod_display || 0.0,
+        COD_discount: itemObj.cod_discount || 0.0
+      };
+
+      const res = await fetch("/api/cart/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      
+      const resJson = await res.json();
+      console.log("update_cart_item response payload:", resJson);
+      if (!resJson?.message?.status) {
+        console.error("Failed to sync quantity update:", resJson);
+      }
+    } catch (e) {
+      console.error("Failed to sync quantity update to ERP:", e);
+    }
   };
 
   const formatPrice = (val: any) => {
@@ -195,7 +228,7 @@ export default function Cart() {
                         {/* Quantity Toggle */}
                         <div className="flex items-center bg-[#F4F6F4] rounded-[9999px] px-3 py-1.5 gap-4">
                           <button
-                            onClick={() => handleUpdateQty(item.item, item.quantity, -1)}
+                            onClick={() => handleUpdateQty(item, item.quantity, -1)}
                             className="text-zinc-500 hover:text-[#0F291B] font-extrabold text-[16px] px-1"
                           >
                             −
@@ -204,7 +237,7 @@ export default function Cart() {
                             {item.quantity}
                           </span>
                           <button
-                            onClick={() => handleUpdateQty(item.item, item.quantity, 1)}
+                            onClick={() => handleUpdateQty(item, item.quantity, 1)}
                             className="text-zinc-500 hover:text-[#0F291B] font-extrabold text-[16px] px-1"
                           >
                             +
