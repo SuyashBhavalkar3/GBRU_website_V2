@@ -165,9 +165,40 @@ export default function Cart() {
     );
   }
 
-  const subtotal = cartItems.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+  const totalMrp = cartItems.reduce((acc, curr) => acc + (Number(curr.rate || curr.amount || 0) * Number(curr.quantity || 1)), 0);
+
+  const totalFullPaymentDiscount = cartItems.reduce((acc, curr) => {
+    if (curr.payment_type === "Full Payment") {
+      return acc + (Number(curr.full_payment_discount || 0) * Number(curr.quantity || 1));
+    }
+    return acc;
+  }, 0);
+
+  const totalCodDiscount = cartItems.reduce((acc, curr) => {
+    if (curr.payment_type === "Cash On Delivery") {
+      return acc + (Number(curr.cod_discount || 0) * Number(curr.quantity || 1));
+    }
+    return acc;
+  }, 0);
+
+  const totalPayNow = cartItems.reduce((acc, curr) => {
+    if (curr.payment_type === "Full Payment") {
+      return acc + (Number(curr.full_payment_amount || curr.rate || 0) * Number(curr.quantity || 1));
+    } else {
+      return acc + (Number(curr.cod_display || 0) * Number(curr.quantity || 1));
+    }
+  }, 0);
+
+  const totalPayOnDelivery = cartItems.reduce((acc, curr) => {
+    if (curr.payment_type === "Cash On Delivery") {
+      return acc + (Number(curr.cod_value || 0) * Number(curr.quantity || 1));
+    }
+    return acc;
+  }, 0);
+
+  const subtotal = totalMrp;
   const gst = 0;
-  const total = subtotal;
+  const total = totalPayNow;
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col pb-16">
@@ -347,29 +378,46 @@ export default function Cart() {
                   Order Summary
                 </h3>
 
-                <div className="flex flex-col gap-4 text-sm text-[#374151]">
+                 <div className="flex flex-col gap-4 text-sm text-[#374151]">
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">Subtotal</span>
-                    <span className="font-bold">₹{formatPrice(subtotal)}</span>
+                    <span className="text-zinc-500">M.R.P. Subtotal</span>
+                    <span className="font-bold">₹{formatPrice(totalMrp)}</span>
                   </div>
+                  {totalFullPaymentDiscount > 0 && (
+                    <div className="flex justify-between text-[#0d9740]">
+                      <span>Full Pay Discount</span>
+                      <span>-₹{formatPrice(totalFullPaymentDiscount)}</span>
+                    </div>
+                  )}
+                  {totalCodDiscount > 0 && (
+                    <div className="flex justify-between text-[#0d9740]">
+                      <span>COD Discount</span>
+                      <span>-₹{formatPrice(totalCodDiscount)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-zinc-500">Delivery</span>
                     <span className="font-bold text-[#0d9740]">FREE</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-zinc-500">Installation</span>
-                    <span className="font-bold text-[#0d9740]">FREE</span>
-                  </div>
+
                   <div className="flex justify-between pb-4 border-b border-zinc-100">
                     <span className="text-zinc-500">Taxes & Charges</span>
                     <span className="font-bold text-[#0d9740] text-[11px] bg-[#EBF5EE] py-0.5 px-2 rounded">INCLUSIVE</span>
                   </div>
                   <div className="flex justify-between items-baseline pt-2">
-                    <span className="font-bold text-[#0F291B] text-[16px]">Total</span>
-                    <span className="font-extrabold text-[#0F291B] text-[28px]">
-                      ₹{formatPrice(total)}
+                    <span className="font-bold text-[#0F291B] text-[16px]">Pay Now</span>
+                    <span className="font-extrabold text-[#0D9740] text-[28px]">
+                      ₹{formatPrice(totalPayNow)}
                     </span>
                   </div>
+                  {totalPayOnDelivery > 0 && (
+                    <div className="flex justify-between items-baseline pt-1">
+                      <span className="font-bold text-zinc-500 text-[14px]">Pay on Delivery</span>
+                      <span className="font-bold text-zinc-700 text-[18px]">
+                        ₹{formatPrice(totalPayOnDelivery)}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Checkout CTA */}
