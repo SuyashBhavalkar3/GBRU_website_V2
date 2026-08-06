@@ -22,6 +22,8 @@ export default function PaymentOptionModal({
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error">("success");
 
   useEffect(() => {
     if (!isOpen || !itemCode) return;
@@ -132,15 +134,23 @@ export default function PaymentOptionModal({
       if (resJson.message?.status) {
         // Dispatch event to update navbar cart count
         window.dispatchEvent(new Event("cartUpdate"));
-        alert(`${productDetails?.item_name || "Product"} added to cart successfully!`);
-        if (onConfirm) onConfirm();
-        onClose();
+        setToastType("success");
+        setToastMessage(`${productDetails?.item_name || "Product"} added to cart successfully!`);
+        setTimeout(() => {
+          setToastMessage("");
+          if (onConfirm) onConfirm();
+          onClose();
+        }, 1500);
       } else {
-        alert(resJson.message?.message || "Failed to add product to cart.");
+        setToastType("error");
+        setToastMessage(resJson.message?.message || "Failed to add product to cart.");
+        setTimeout(() => setToastMessage(""), 3000);
       }
     } catch (err: any) {
       console.error("Error adding item to cart:", err);
-      alert("Failed to add product to cart.");
+      setToastType("error");
+      setToastMessage("Failed to add product to cart.");
+      setTimeout(() => setToastMessage(""), 3000);
     } finally {
       setSubmitting(false);
     }
@@ -346,6 +356,20 @@ export default function PaymentOptionModal({
           </>
         )}
       </div>
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className={`fixed top-8 left-1/2 transform -translate-x-1/2 z-[9999] ${toastType === "error" ? "bg-red-600" : "bg-[#006B21]"} text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in-down`}>
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {toastType === "error" ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            )}
+          </svg>
+          <span className="font-medium font-inter">{toastMessage}</span>
+        </div>
+      )}
 
       <LoginPrompt 
         isOpen={showLoginPrompt} 

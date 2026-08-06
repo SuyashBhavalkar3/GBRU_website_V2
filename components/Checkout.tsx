@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
 export default function Checkout() {
+  const router = useRouter();
   // Interactivity States
   const [paymentMode, setPaymentMode] = useState<"full" | "booking">("full");
   const [pincode, setPincode] = useState("");
@@ -161,6 +163,11 @@ export default function Checkout() {
         if (checkoutRes.ok) {
           const checkoutJson = await checkoutRes.json();
           if (checkoutJson.message?.status && checkoutJson.message.data) {
+            const checkoutItems = checkoutJson.message.data.items || [];
+            if (checkoutItems.length === 0) {
+              router.push("/cart");
+              return;
+            }
             setCheckoutDetails(checkoutJson.message.data);
             
             // Set paymentMode based on checkout items' payment type
