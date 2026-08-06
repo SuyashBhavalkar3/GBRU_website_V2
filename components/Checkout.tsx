@@ -30,6 +30,23 @@ export default function Checkout() {
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
   const [selectedAddressIndex, setSelectedAddressIndex] = useState<number>(0);
   const [loadingAddresses, setLoadingAddresses] = useState(true);
+  const [editingAddressName, setEditingAddressName] = useState<string | null>(null);
+  
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    type: "alert" | "confirm";
+    title: string;
+    message: string;
+    onConfirm?: () => void;
+  }>({ isOpen: false, type: "alert", title: "", message: "" });
+
+  const showAlert = (message: string, title = "Message") => {
+    setModalConfig({ isOpen: true, type: "alert", title, message });
+  };
+
+  const showConfirm = (message: string, onConfirm: () => void, title = "Confirm") => {
+    setModalConfig({ isOpen: true, type: "confirm", title, message, onConfirm });
+  };
 
   const [states, setStates] = useState<any[]>([]);
 
@@ -271,9 +288,133 @@ export default function Checkout() {
 
   const [isSavingAddress, setIsSavingAddress] = useState(false);
 
+  const requestDeleteAddress = (name: string) => {
+    showConfirm("Are you sure you want to delete this address?", () => performDeleteAddress(name), "Delete Address");
+  };
+
+  const performDeleteAddress = async (name: string) => {
+    // Optimistically remove from state for now
+    const previousAddresses = [...savedAddresses];
+    const previousIndex = selectedAddressIndex;
+
+    const updatedAddresses = savedAddresses.filter(a => a.name !== name);
+    setSavedAddresses(updatedAddresses);
+    if (selectedAddressIndex >= updatedAddresses.length) {
+      setSelectedAddressIndex(Math.max(0, updatedAddresses.length - 1));
+    }
+    if (updatedAddresses.length === 0) {
+      setIsAddressSaved(false);
+      setIsAddingAddress(true);
+    }
+
+    try {
+      const userStr = localStorage.getItem("gbru_user");
+      if (!userStr) return;
+      
+      const user = JSON.parse(userStr);
+      let mobile_no = user.mobile_no || user.user_id || user.customer_id;
+      if (mobile_no && mobile_no.includes("@")) {
+        mobile_no = mobile_no.split("@")[0];
+      }
+      const api_key = user.key_details?.api_key || user.api_key;
+      const api_secret = user.key_details?.api_secret || user.api_secret;
+
+      const res = await fetch("/api/shipping-address/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile_no, api_key, api_secret, name })
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.message?.status) {
+        // Revert optimistic update
+        setSavedAddresses(previousAddresses);
+        setSelectedAddressIndex(previousIndex);
+        if (previousAddresses.length > 0) {
+          setIsAddressSaved(true);
+          setIsAddingAddress(false);
+        }
+        
+        let errorMsg = json.error || json.message?.message || "Failed to delete address";
+        if (json._server_messages) {
+          try {
+            const serverMsgs = JSON.parse(json._server_messages);
+            if (serverMsgs.length > 0) {
+              const msgObj = JSON.parse(serverMsgs[0]);
+              if (msgObj.message) {
+                errorMsg = msgObj.message.replace(/<[^>]*>?/gm, '');
+              }
+            }
+          } catch (e) {}
+        }
+        showAlert(errorMsg, "Deletion Error");
+      }
+    } catch (e) {
+      console.error(e);
+      // Revert optimistic update
+      setSavedAddresses(previousAddresses);
+      setSelectedAddressIndex(previousIndex);
+      showAlert("Error deleting address", "Error");
+    }
+  };
+
+  const handleMakePrimary = async (name: string) => {
+    // Optimistically update UI
+    const previousAddresses = [...savedAddresses];
+    
+    setSavedAddresses(prev => prev.map(a => ({
+      ...a,
+      is_primary: a.name === name ? 1 : 0
+    })));
+
+    try {
+      const userStr = localStorage.getItem("gbru_user");
+      if (!userStr) return;
+      
+      const user = JSON.parse(userStr);
+      let mobile_no = user.mobile_no || user.user_id || user.customer_id;
+      if (mobile_no && mobile_no.includes("@")) {
+        mobile_no = mobile_no.split("@")[0];
+      }
+      const api_key = user.key_details?.api_key || user.api_key;
+      const api_secret = user.key_details?.api_secret || user.api_secret;
+
+      const res = await fetch("/api/shipping-address/make-primary", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile_no, api_key, api_secret, name })
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.message?.status) {
+        // Revert optimistic update
+        setSavedAddresses(previousAddresses);
+        
+        let errorMsg = json.error || json.message?.message || "Failed to set primary address";
+        if (json._server_messages) {
+          try {
+            const serverMsgs = JSON.parse(json._server_messages);
+            if (serverMsgs.length > 0) {
+              const msgObj = JSON.parse(serverMsgs[0]);
+              if (msgObj.message) {
+                errorMsg = msgObj.message.replace(/<[^>]*>?/gm, '');
+              }
+            }
+          } catch (e) {}
+        }
+        showAlert(errorMsg, "Error");
+      }
+    } catch (e) {
+      console.error(e);
+      // Revert optimistic update
+      setSavedAddresses(previousAddresses);
+      showAlert("Error setting primary address", "Error");
+    }
+  };
+
   const handleSaveAddress = async () => {
     if (!formData.fullName || !formData.mobile || !formData.pin || !formData.village || !formData.city || !formData.district || !formData.state || !formData.address1) {
-      alert("Please fill all required fields");
+      showAlert("Please fill all required fields", "Missing Information");
       return;
     }
 
@@ -281,7 +422,7 @@ export default function Checkout() {
     try {
       const userStr = localStorage.getItem("gbru_user");
       if (!userStr) {
-        alert("Please login first");
+        showAlert("Please login first", "Authentication Required");
         return;
       }
 
@@ -295,7 +436,7 @@ export default function Checkout() {
       
       const email_id = user.user_id && user.user_id.includes("@") ? user.user_id : (user.email || "");
 
-      const address_data = {
+      const address_data: any = {
         address_title: formData.fullName,
         address_line1: formData.address1,
         address_line2: formData.address2 || "",
@@ -309,7 +450,13 @@ export default function Checkout() {
         phone: formData.mobile
       };
 
-      const res = await fetch("/api/shipping-address/add", {
+      if (editingAddressName) {
+        address_data.name = editingAddressName;
+      }
+
+      const endpoint = editingAddressName ? "/api/shipping-address/update" : "/api/shipping-address/add";
+
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mobile_no, api_key, api_secret, address_data })
@@ -317,21 +464,48 @@ export default function Checkout() {
 
       const json = await res.json();
       if (res.ok && json.message?.status) {
-        const newAddress = json.message.data;
-        const newAddresses = [...savedAddresses, newAddress];
-        setSavedAddresses(newAddresses);
-        setSelectedAddressIndex(newAddresses.length - 1); 
+        const returnedAddress = json.message.data;
+        if (editingAddressName) {
+          const updatedAddresses = savedAddresses.map(a => 
+            a.name === editingAddressName ? returnedAddress : a
+          );
+          setSavedAddresses(updatedAddresses);
+          const idx = updatedAddresses.findIndex(a => a.name === returnedAddress.name);
+          if (idx !== -1) setSelectedAddressIndex(idx);
+        } else {
+          const newAddresses = [...savedAddresses, returnedAddress];
+          setSavedAddresses(newAddresses);
+          setSelectedAddressIndex(newAddresses.length - 1); 
+        }
         setIsAddressSaved(true);
         setIsAddingAddress(false);
+        setEditingAddressName(null);
         setFormData({
           fullName: "", mobile: "", pin: "", village: "", city: "", district: "", state: "", address1: "", address2: "", saveAddress: false
         });
       } else {
-        alert(json.error || json.message?.message || "Failed to save address");
+        let errorMsg = json.error || json.message?.message || "Failed to save address";
+        
+        if (json._server_messages) {
+          try {
+            const serverMsgs = JSON.parse(json._server_messages);
+            if (serverMsgs.length > 0) {
+              const msgObj = JSON.parse(serverMsgs[0]);
+              // Remove HTML tags for clean alert text
+              if (msgObj.message) {
+                errorMsg = msgObj.message.replace(/<[^>]*>?/gm, '');
+              }
+            }
+          } catch (e) {
+            console.error("Could not parse server messages", e);
+          }
+        }
+        
+        showAlert(errorMsg, "Error Saving Address");
       }
     } catch (e) {
       console.error(e);
-      alert("Error saving address");
+      showAlert("Error saving address", "Error");
     } finally {
       setIsSavingAddress(false);
     }
@@ -555,17 +729,7 @@ export default function Checkout() {
                     Tell us where to deliver your agricultural equipment and supplies.
                   </p>
                 </div>
-                {isAddressSaved ? (
-                  <button
-                    onClick={() => {
-                      setIsAddressSaved(false);
-                      setIsAddingAddress(true);
-                    }}
-                    className="text-xs text-[#0D9740] font-bold hover:underline"
-                  >
-                    Edit
-                  </button>
-                ) : isAddingAddress ? (
+                {isAddingAddress ? (
                   <button
                     onClick={() => {
                       setIsAddingAddress(false);
@@ -600,16 +764,51 @@ export default function Checkout() {
                         : "bg-white border-zinc-200 hover:border-zinc-300"
                       }`}
                     >
-                      {selectedAddressIndex === idx && (
-                        <div className="absolute top-4 right-4 bg-[#0d9740] text-white w-5 h-5 rounded-full flex items-center justify-center shadow-sm text-xs">
-                          ✓
-                        </div>
-                      )}
+
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-[#0F291B] text-sm">{addr.address_title}</span>
                         {addr.is_primary === 1 && (
                           <span className="bg-[#EBF5EE] text-[#0D9740] text-[10px] font-bold py-0.5 px-2 rounded-[4px]">Primary</span>
                         )}
+                        <div className="ml-auto flex items-center gap-3">
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setFormData({
+                                fullName: addr.address_title || "",
+                                mobile: addr.phone || "",
+                                pin: addr.pincode || "",
+                                village: addr.marketplace || "",
+                                city: addr.tahsil || "", 
+                                district: addr.district || "",
+                                state: addr.state || "",
+                                address1: addr.address_line1 || "",
+                                address2: addr.address_line2 || "",
+                                saveAddress: false,
+                              });
+                              setEditingAddressName(addr.name);
+                              setIsAddressSaved(false);
+                              setIsAddingAddress(true);
+                            }}
+                            className="text-xs text-[#0D9740] hover:underline font-bold"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              requestDeleteAddress(addr.name);
+                            }}
+                            className="text-zinc-400 hover:text-red-500 transition-colors"
+                            title="Delete Address"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M3 6h18"></path>
+                              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                       <span className="text-xs text-[#374151] pr-6">
                         {addr.address_line1}, {addr.address_line2}, {addr.city || addr.tahsil}, {addr.district}, {addr.state} - {addr.pincode}
@@ -617,6 +816,19 @@ export default function Checkout() {
                       <span className="text-xs text-zinc-500 font-medium">
                         Phone: {addr.phone}
                       </span>
+                      {selectedAddressIndex === idx && addr.is_primary !== 1 && (
+                        <div className="mt-1 pt-2 border-t border-zinc-100/50">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMakePrimary(addr.name);
+                            }}
+                            className="text-[11px] font-bold text-[#0D9740] bg-[#0D9740]/10 hover:bg-[#0D9740]/20 py-1.5 px-3 rounded-[8px] transition-colors"
+                          >
+                            Set as Primary Address
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                   <div className="pt-4 flex justify-center">
@@ -624,6 +836,10 @@ export default function Checkout() {
                       onClick={() => {
                         setIsAddressSaved(false);
                         setIsAddingAddress(true);
+                        setEditingAddressName(null);
+                        setFormData({
+                          fullName: "", mobile: "", pin: "", village: "", city: "", district: "", state: "", address1: "", address2: "", saveAddress: false
+                        });
                       }}
                       className="h-12 px-8 border-2 border-dashed border-[#0D9740] hover:bg-[#0d9740]/[0.02] text-[#0D9740] font-bold text-sm rounded-[14px] transition-all flex items-center gap-2 shadow-sm"
                     >
@@ -635,7 +851,13 @@ export default function Checkout() {
                 /* Initial "+ Add Address" button state */
                 <div className="py-6 flex justify-center">
                   <button
-                    onClick={() => setIsAddingAddress(true)}
+                    onClick={() => {
+                      setIsAddingAddress(true);
+                      setEditingAddressName(null);
+                      setFormData({
+                        fullName: "", mobile: "", pin: "", village: "", city: "", district: "", state: "", address1: "", address2: "", saveAddress: false
+                      });
+                    }}
                     className="h-12 px-8 border-2 border-dashed border-[#0D9740] hover:bg-[#0d9740]/[0.02] text-[#0D9740] font-bold text-sm rounded-[14px] transition-all flex items-center gap-2 shadow-sm"
                   >
                     ＋ Add Delivery Address
@@ -1011,6 +1233,51 @@ export default function Checkout() {
         </div>
 
       </main>
+
+      {/* Custom Modal for Alerts/Confirms */}
+      {modalConfig.isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div 
+            className="bg-white rounded-[24px] shadow-2xl p-6 w-full max-w-sm flex flex-col items-center text-center transform animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {modalConfig.type === "confirm" ? (
+              <div className="w-12 h-12 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              </div>
+            ) : (
+              <div className="w-12 h-12 bg-[#0D9740]/10 text-[#0D9740] rounded-full flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              </div>
+            )}
+            
+            <h3 className="font-bold text-lg text-zinc-900 mb-2">{modalConfig.title}</h3>
+            <p className="text-sm text-zinc-500 mb-6">{modalConfig.message}</p>
+            
+            <div className="flex gap-3 w-full">
+              {modalConfig.type === "confirm" && (
+                <button
+                  onClick={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+                  className="flex-1 py-2.5 px-4 rounded-[12px] font-bold text-sm text-zinc-700 bg-zinc-100 hover:bg-zinc-200 transition-colors"
+                >
+                  Cancel
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  if (modalConfig.onConfirm) modalConfig.onConfirm();
+                  setModalConfig(prev => ({ ...prev, isOpen: false }));
+                }}
+                className={`flex-1 py-2.5 px-4 rounded-[12px] font-bold text-sm text-white shadow-sm transition-colors ${
+                  modalConfig.type === "confirm" ? "bg-red-500 hover:bg-red-600" : "bg-[#0D9740] hover:bg-[#0b8036]"
+                }`}
+              >
+                {modalConfig.type === "confirm" ? "Confirm" : "OK"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
