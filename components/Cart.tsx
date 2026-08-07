@@ -268,23 +268,18 @@ export default function Cart() {
     );
   }
 
+  const cartPaymentType = cartItems[0]?.payment_type || "Full Payment";
+  const isFullPayment = cartPaymentType === "Full Payment";
+
   const totalMrp = cartSummary?.total_amount || 0;
 
   const totalFullPaymentDiscount = cartItems.reduce((acc, curr) => {
-    if (curr.payment_type === "Full Payment") {
-      return acc + (Number(curr.full_payment_discount || 0) * Number(curr.quantity || 1));
-    }
-    return acc;
+    return acc + (Number(curr.full_payment_discount || 0) * Number(curr.quantity || 1));
   }, 0);
 
   const totalCodDiscount = cartItems.reduce((acc, curr) => {
-    if (curr.payment_type === "Cash On Delivery") {
-      return acc + (Number(curr.cod_discount || 0) * Number(curr.quantity || 1));
-    }
-    return acc;
+    return acc + (Number(curr.cod_discount || 0) * Number(curr.quantity || 1));
   }, 0);
-
-  const totalPayNow = cartSummary?.total_amount || 0;
 
   const totalPayOnDelivery = cartItems.reduce((acc, curr) => {
     if (curr.payment_type === "Cash On Delivery") {
@@ -292,6 +287,16 @@ export default function Cart() {
     }
     return acc;
   }, 0);
+
+  const totalCodBooking = cartItems.reduce((acc, curr) => {
+    return acc + (Number(curr.cod_display || 0) * Number(curr.quantity || 1));
+  }, 0);
+
+  // If Full Payment: Pay Now = totalMrp - totalFullPaymentDiscount
+  // If COD: Pay Now = totalCodBooking
+  const totalPayNow = isFullPayment
+    ? Math.max(0, totalMrp - totalFullPaymentDiscount)
+    : totalCodBooking;
 
   const subtotal = totalMrp;
   const gst = 0;
@@ -480,13 +485,13 @@ export default function Cart() {
                     <span className="text-zinc-500">M.R.P. Subtotal</span>
                     <span className="font-bold">₹{formatPrice(totalMrp)}</span>
                   </div>
-                  {totalFullPaymentDiscount > 0 && (
+                  {isFullPayment && totalFullPaymentDiscount > 0 && (
                     <div className="flex justify-between text-[#0d9740]">
                       <span>Full Pay Discount</span>
                       <span>-₹{formatPrice(totalFullPaymentDiscount)}</span>
                     </div>
                   )}
-                  {totalCodDiscount > 0 && (
+                  {!isFullPayment && totalCodDiscount > 0 && (
                     <div className="flex justify-between text-[#0d9740]">
                       <span>COD Discount</span>
                       <span>-₹{formatPrice(totalCodDiscount)}</span>

@@ -839,8 +839,8 @@ export default function Checkout() {
                 <div
                   onClick={() => handleSelectPaymentMode("full")}
                   className={`relative p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${paymentMode === "full"
-                      ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
-                      : "border-zinc-200 bg-white"
+                    ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
+                    : "border-zinc-200 bg-white"
                     }`}
                 >
                   {paymentMode === "full" && (
@@ -915,8 +915,8 @@ export default function Checkout() {
                   <div
                     onClick={() => handleSelectPaymentMode("booking")}
                     className={`relative p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${paymentMode === "booking"
-                        ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
-                        : "border-zinc-200 bg-white"
+                      ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
+                      : "border-zinc-200 bg-white"
                       }`}
                   >
                     {paymentMode === "booking" && (
@@ -1018,8 +1018,8 @@ export default function Checkout() {
                       key={addr.name}
                       onClick={() => setSelectedAddressIndex(idx)}
                       className={`relative border rounded-[16px] p-5 flex flex-col gap-2 cursor-pointer transition-all ${selectedAddressIndex === idx
-                          ? "bg-[#F8FBB8]/20 border-[#0D9740]"
-                          : "bg-white border-zinc-200 hover:border-zinc-300"
+                        ? "bg-[#F8FBB8]/20 border-[#0D9740]"
+                        : "bg-white border-zinc-200 hover:border-zinc-300"
                         }`}
                     >
 
