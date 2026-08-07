@@ -249,11 +249,11 @@ export default function PopularItemsModal() {
           <button
             onClick={() => {
               setIsOpen(false);
-              router.push("/checkout");
+              router.push("/cart");
             }}
             className="flex-1 h-12 bg-[#0F291B] hover:bg-[#081810] text-white font-bold text-xs rounded-xl transition-all shadow-md"
           >
-            Proceed to Checkout
+            Go to Cart
           </button>
         </div>
       </div>
