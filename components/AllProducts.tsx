@@ -155,9 +155,8 @@ function AllProductsContent() {
                           )}
                         </div>
                         <button
-
                           onClick={() => handleAddToCart(product)}
-                          className="w-full bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold py-3 rounded-xl transition-all text-sm shadow-sm active:scale-[0.99]"
+                          className="w-full h-11 bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-sm rounded-xl shadow-sm transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.99]"
                         >
                           Add to Cart
                         </button>
