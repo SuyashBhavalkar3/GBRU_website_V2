@@ -380,7 +380,7 @@ export default function OrderList() {
                       </div>
                       {Number(order.payupreferedamount || 0) > 0 && (
                         <div className="text-zinc-500 text-xs font-medium mt-1">
-                          Preferred Payment Amount: <span className="font-bold text-[#1E532E]">₹{Number(order.payupreferedamount).toLocaleString('en-IN')}</span>
+                          Preferred Payment Amount: <span className="font-bold text-[#0D9740]">₹{Number(order.payupreferedamount).toLocaleString('en-IN')}</span>
                         </div>
                       )}
                     </div>
@@ -391,21 +391,21 @@ export default function OrderList() {
                     {/* Total Amount Row */}
                     <div className="flex justify-between items-center">
                       <span className="text-zinc-400 text-xs font-bold font-roboto">TOTAL AMOUNT</span>
-                      <span className="text-lg font-bold text-zinc-800">₹{Number(order.total_amount).toLocaleString('en-IN')}</span>
+                      <span className="text-lg font-bold text-[#0D9740]">₹{Number(order.total_amount).toLocaleString('en-IN')}</span>
                     </div>
                     <div className="h-[1px] bg-zinc-100" />
 
                     {/* Received Amount Row */}
                     <div className="flex justify-between items-center">
                       <span className="text-zinc-400 text-xs font-bold font-roboto">RECEIVED AMOUNT</span>
-                      <span className="text-lg font-bold text-[#1E532E]">₹{Number(order.received_amount).toLocaleString('en-IN')}</span>
+                      <span className="text-lg font-bold text-[#0D9740]">₹{Number(order.received_amount).toLocaleString('en-IN')}</span>
                     </div>
                     <div className="h-[1px] bg-zinc-100" />
 
                     {/* Pending Amount Row */}
                     <div className="flex justify-between items-center">
                       <span className="text-zinc-400 text-xs font-bold font-roboto">PENDING AMOUNT</span>
-                      <span className={`text-lg font-extrabold ${pendingAmt > 0 ? "text-rose-600" : "text-zinc-800"}`}>
+                      <span className="text-lg font-bold text-[#0D9740]">
                         ₹{pendingAmt.toLocaleString('en-IN')}
                       </span>
                     </div>
@@ -414,7 +414,7 @@ export default function OrderList() {
                     <div className="h-[1px] bg-zinc-100" />
                     <div className="flex justify-between items-center">
                       <span className="text-zinc-400 text-xs font-bold font-roboto">UNSETTLED AMOUNT</span>
-                      <span className="text-lg font-bold text-amber-600">₹{Number(order.unsettled_amount || 0).toLocaleString('en-IN')}</span>
+                      <span className="text-lg font-bold text-[#0D9740]">₹{Number(order.unsettled_amount || 0).toLocaleString('en-IN')}</span>
                     </div>
                   </div>
 
