@@ -194,6 +194,14 @@ function ProductDetailContent() {
       const resJson = await res.json();
       if (resJson.message?.status || resJson.success) {
         window.dispatchEvent(new Event("cartUpdate"));
+        window.dispatchEvent(new CustomEvent("productAddedToCart", {
+          detail: {
+            category: product.item_group,
+            subcategory: product.custom_sub_category,
+            brand: product.brand_id || "175",
+            item_name: product.item_name
+          }
+        }));
         setToastType("success");
         setToastMessage(`${product.item_name} ${isInCart ? "updated in" : "added to"} cart successfully!`);
         setIsInCart(true);

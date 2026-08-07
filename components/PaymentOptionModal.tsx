@@ -186,6 +186,14 @@ export default function PaymentOptionModal({
 
       if (resJson.message?.status || resJson.success) {
         window.dispatchEvent(new Event("cartUpdate"));
+        window.dispatchEvent(new CustomEvent("productAddedToCart", {
+          detail: {
+            category: productDetails?.item_group,
+            subcategory: productDetails?.custom_sub_category,
+            brand: productDetails?.brand_id || "175",
+            item_name: productDetails?.item_name
+          }
+        }));
         setToastType("success");
         setToastMessage(`${productDetails?.item_name || "Product"} ${isInCart ? "updated in" : "added to"} cart successfully!`);
         setIsInCart(true);
