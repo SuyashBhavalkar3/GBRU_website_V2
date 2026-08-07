@@ -34,6 +34,35 @@ export default function FeaturedProducts() {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "error">("success");
+  const [cartItemCodes, setCartItemCodes] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchCartStatus = async () => {
+      const user = localStorage.getItem("gbru_user");
+      if (!user) return;
+      try {
+        const parsed = JSON.parse(user);
+        const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+        if (!mobile_no) return;
+        const res = await fetch("/api/cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mobile_no })
+        });
+        if (res.ok) {
+          const json = await res.json();
+          const items = json.message?.data?.items || [];
+          setCartItemCodes(items.map((i: any) => i.item));
+        }
+      } catch (e) {
+        console.error("Failed to fetch cart status:", e);
+      }
+    };
+
+    fetchCartStatus();
+    window.addEventListener("cartUpdate", fetchCartStatus);
+    return () => window.removeEventListener("cartUpdate", fetchCartStatus);
+  }, []);
 
   useEffect(() => {
     async function loadFeatured() {
@@ -188,7 +217,7 @@ export default function FeaturedProducts() {
                     onClick={() => handleAddToCart(product.item_code)}
                     className="w-full h-11 bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-sm rounded-xl shadow-sm transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.99]"
                   >
-                    Add to Cart
+                    {cartItemCodes.includes(product.item_code) ? "Update Cart" : "Add to Cart"}
                   </button>
                 </div>
               </div>
