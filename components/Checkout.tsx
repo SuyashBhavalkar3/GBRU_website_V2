@@ -34,6 +34,7 @@ export default function Checkout() {
   // Address Interactivity States
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [isAddressSaved, setIsAddressSaved] = useState(false);
+  const [isSelectingAddress, setIsSelectingAddress] = useState(false);
 
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
   const [selectedAddressIndex, setSelectedAddressIndex] = useState<number>(0);
@@ -663,6 +664,7 @@ export default function Checkout() {
         }
         setIsAddressSaved(true);
         setIsAddingAddress(false);
+        setIsSelectingAddress(false);
         setEditingAddressName(null);
         setFormData({
           fullName: "", mobile: "", pin: "", village: "", city: "", district: "", state: "", address1: "", address2: "", saveAddress: false
@@ -1125,6 +1127,13 @@ export default function Checkout() {
                   >
                     ✕ Minimize
                   </button>
+                ) : isAddressSaved && savedAddresses.length > 0 ? (
+                  <button
+                    onClick={() => setIsSelectingAddress(!isSelectingAddress)}
+                    className="text-xs text-[#0D9740] hover:text-[#0a7d34] font-bold border border-[#0D9740]/20 rounded-lg py-1.5 px-3 bg-[#EBF5EE] hover:bg-[#EBF5EE]/80 transition-all"
+                  >
+                    {isSelectingAddress ? "✕ Close" : "Change"}
+                  </button>
                 ) : null}
               </div>
 
@@ -1133,100 +1142,131 @@ export default function Checkout() {
                   Loading addresses...
                 </div>
               ) : isAddressSaved && savedAddresses.length > 0 ? (
-                /* Saved Addresses List */
-                <div className="flex flex-col gap-4">
-                  {savedAddresses.map((addr, idx) => (
-                    <div
-                      key={addr.name}
-                      onClick={() => setSelectedAddressIndex(idx)}
-                      className={`relative border rounded-[16px] p-5 flex flex-col gap-2 cursor-pointer transition-all ${selectedAddressIndex === idx
-                        ? "bg-[#F8FBB8]/20 border-[#0D9740]"
-                        : "bg-white border-zinc-200 hover:border-zinc-300"
-                        }`}
-                    >
-
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-[#0F291B] text-sm">{addr.address_title}</span>
-                        {addr.is_primary === 1 && (
-                          <span className="bg-[#EBF5EE] text-[#0D9740] text-[10px] font-bold py-0.5 px-2 rounded-[4px]">Primary</span>
+                /* Address is saved */
+                isAddingAddress ? (
+                  null
+                ) : isSelectingAddress ? (
+                  /* Saved Addresses List (Change Mode) */
+                  <div className="flex flex-col gap-4">
+                    {savedAddresses.map((addr, idx) => (
+                      <div
+                        key={addr.name}
+                        onClick={() => {
+                          setSelectedAddressIndex(idx);
+                          setIsSelectingAddress(false);
+                        }}
+                        className={`relative border rounded-[16px] p-5 flex flex-col gap-2 cursor-pointer transition-all ${selectedAddressIndex === idx
+                          ? "bg-[#F8FBB8]/20 border-[#0D9740]"
+                          : "bg-white border-zinc-200 hover:border-zinc-300"
+                          }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-[#0F291B] text-sm">{addr.address_title}</span>
+                          {addr.is_primary === 1 && (
+                            <span className="bg-[#EBF5EE] text-[#0D9740] text-[10px] font-bold py-0.5 px-2 rounded-[4px]">Primary</span>
+                          )}
+                          <div className="ml-auto flex items-center gap-3">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setFormData({
+                                  fullName: addr.address_title || "",
+                                  mobile: addr.phone || "",
+                                  pin: addr.pincode || "",
+                                  village: addr.marketplace || "",
+                                  city: addr.tahsil || "",
+                                  district: addr.district || "",
+                                  state: addr.state || "",
+                                  address1: addr.address_line1 || "",
+                                  address2: addr.address_line2 || "",
+                                  saveAddress: false,
+                                });
+                                setEditingAddressName(addr.name);
+                                setIsAddressSaved(false);
+                                setIsAddingAddress(true);
+                              }}
+                              className="text-xs text-[#0D9740] hover:underline font-bold"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                requestDeleteAddress(addr.name);
+                              }}
+                              className="text-zinc-400 hover:text-red-500 transition-colors"
+                              title="Delete Address"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M3 6h18"></path>
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                        <span className="text-xs text-[#374151] pr-6">
+                          {addr.address_line1}, {addr.address_line2}, {addr.city || addr.tahsil}, {addr.district}, {addr.state} - {addr.pincode}
+                        </span>
+                        <span className="text-xs text-zinc-500 font-medium">
+                          Phone: {addr.phone}
+                        </span>
+                        {selectedAddressIndex === idx && addr.is_primary !== 1 && (
+                          <div className="mt-1 pt-2 border-t border-zinc-100/50">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleMakePrimary(addr.name);
+                              }}
+                              className="text-[11px] font-bold text-[#0D9740] bg-[#0D9740]/10 hover:bg-[#0D9740]/20 py-1.5 px-3 rounded-[8px] transition-colors"
+                            >
+                              Set as Primary Address
+                            </button>
+                          </div>
                         )}
-                        <div className="ml-auto flex items-center gap-3">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setFormData({
-                                fullName: addr.address_title || "",
-                                mobile: addr.phone || "",
-                                pin: addr.pincode || "",
-                                village: addr.marketplace || "",
-                                city: addr.tahsil || "",
-                                district: addr.district || "",
-                                state: addr.state || "",
-                                address1: addr.address_line1 || "",
-                                address2: addr.address_line2 || "",
-                                saveAddress: false,
-                              });
-                              setEditingAddressName(addr.name);
-                              setIsAddressSaved(false);
-                              setIsAddingAddress(true);
-                            }}
-                            className="text-xs text-[#0D9740] hover:underline font-bold"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              requestDeleteAddress(addr.name);
-                            }}
-                            className="text-zinc-400 hover:text-red-500 transition-colors"
-                            title="Delete Address"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M3 6h18"></path>
-                              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            </svg>
-                          </button>
-                        </div>
                       </div>
-                      <span className="text-xs text-[#374151] pr-6">
-                        {addr.address_line1}, {addr.address_line2}, {addr.city || addr.tahsil}, {addr.district}, {addr.state} - {addr.pincode}
-                      </span>
-                      <span className="text-xs text-zinc-500 font-medium">
-                        Phone: {addr.phone}
-                      </span>
-                      {selectedAddressIndex === idx && addr.is_primary !== 1 && (
-                        <div className="mt-1 pt-2 border-t border-zinc-100/50">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleMakePrimary(addr.name);
-                            }}
-                            className="text-[11px] font-bold text-[#0D9740] bg-[#0D9740]/10 hover:bg-[#0D9740]/20 py-1.5 px-3 rounded-[8px] transition-colors"
-                          >
-                            Set as Primary Address
-                          </button>
-                        </div>
-                      )}
+                    ))}
+                    <div className="pt-4 flex justify-center">
+                      <button
+                        onClick={() => {
+                          setIsAddressSaved(false);
+                          setIsAddingAddress(true);
+                          setEditingAddressName(null);
+                          setFormData({
+                            fullName: "", mobile: "", pin: "", village: "", city: "", district: "", state: "", address1: "", address2: "", saveAddress: false
+                          });
+                        }}
+                        className="h-12 px-8 border-2 border-dashed border-[#0D9740] hover:bg-[#0d9740]/[0.02] text-[#0D9740] font-bold text-sm rounded-[14px] transition-all flex items-center gap-2 shadow-sm"
+                      >
+                        ＋ Add Delivery Address
+                      </button>
                     </div>
-                  ))}
-                  <div className="pt-4 flex justify-center">
-                    <button
-                      onClick={() => {
-                        setIsAddressSaved(false);
-                        setIsAddingAddress(true);
-                        setEditingAddressName(null);
-                        setFormData({
-                          fullName: "", mobile: "", pin: "", village: "", city: "", district: "", state: "", address1: "", address2: "", saveAddress: false
-                        });
-                      }}
-                      className="h-12 px-8 border-2 border-dashed border-[#0D9740] hover:bg-[#0d9740]/[0.02] text-[#0D9740] font-bold text-sm rounded-[14px] transition-all flex items-center gap-2 shadow-sm"
-                    >
-                      ＋ Add Delivery Address
-                    </button>
                   </div>
-                </div>
+                ) : (
+                  /* Single Selected/Primary Address View (Default Mode) */
+                  <div className="border rounded-[16px] p-5 flex flex-col gap-2 bg-white border-zinc-200">
+                    {(() => {
+                      const addr = savedAddresses[selectedAddressIndex] || savedAddresses[0];
+                      if (!addr) return null;
+                      return (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-[#0F291B] text-sm">{addr.address_title}</span>
+                            {addr.is_primary === 1 && (
+                              <span className="bg-[#EBF5EE] text-[#0D9740] text-[10px] font-bold py-0.5 px-2 rounded-[4px]">Primary</span>
+                            )}
+                          </div>
+                          <span className="text-xs text-[#374151] pr-6">
+                            {addr.address_line1}, {addr.address_line2}, {addr.city || addr.tahsil}, {addr.district}, {addr.state} - {addr.pincode}
+                          </span>
+                          <span className="text-xs text-zinc-500 font-medium">
+                            Phone: {addr.phone}
+                          </span>
+                        </>
+                      );
+                    })()}
+                  </div>
+                )
               ) : !isAddingAddress ? (
                 /* Initial "+ Add Address" button state */
                 <div className="py-6 flex justify-center">
