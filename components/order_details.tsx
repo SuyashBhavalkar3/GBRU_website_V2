@@ -815,7 +815,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                     return (
                       <div key={idx} className="border border-[#CDE5D2]/60 rounded-2xl p-4 space-y-4 bg-white shadow-sm">
                         {/* Invoice Header */}
-                        <div 
+                        <div
                           className="flex items-center justify-between cursor-pointer"
                           onClick={() => setExpandedInvoiceIdx(isExpanded ? null : idx)}
                         >
@@ -882,7 +882,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                                 {inv.transporter_details.map((pkg: any, pIdx: number) => {
                                   const tInfo = individualTrackingData[pkg.tracking_id] || { loading: false };
                                   const trackingExpanded = expandedTrackingId === pkg.tracking_id;
-                                  
+
                                   return (
                                     <div key={pIdx} className="border border-zinc-100 rounded-2xl bg-zinc-50/40 overflow-hidden">
                                       {/* Tracking Header */}
@@ -901,7 +901,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                                         <div className="flex justify-between">
                                           <span>Booked On</span>
                                           <span className="text-[#0F291B] font-bold">
-                                            {tInfo.data?.booking_details?.booked_on 
+                                            {tInfo.data?.booking_details?.booked_on
                                               ? new Date(tInfo.data.booking_details.booked_on).toLocaleDateString()
                                               : "N/A"}
                                           </span>

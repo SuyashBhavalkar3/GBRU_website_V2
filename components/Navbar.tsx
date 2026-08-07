@@ -89,7 +89,7 @@ export default function Navbar() {
       style={{ background: "linear-gradient(90deg, #204123 0%, #185A46 49.52%, #204123 100%)" }}
     >
       <div className="max-w-[1280px] w-full mx-auto pl-[21px] pr-[47px]">
-        <div className="flex items-center justify-between lg:justify-start h-[88px]">
+        <div className="flex items-center justify-between lg:justify-start h-[72px]">
 
           {/* Logo Section */}
           <div className="flex-shrink-0 flex items-center lg:mr-[142px]">
@@ -194,19 +194,18 @@ export default function Navbar() {
             )}
 
             {/* Cart Icon */}
-            <Link href="/cart" className="relative hover:scale-110 transition-transform duration-200 w-[20px] h-[23px] flex items-center justify-center">
-              <Image
-                src="/assets/header_cart_logo.png"
-                alt="Cart"
-                width={20}
-                height={23}
-                className="h-[23px] w-[20px] object-contain"
-              />
-              {cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-red-500 text-white font-extrabold text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white shadow-sm">
+            <Link href="/cart" className="flex items-end hover:scale-105 transition-transform duration-200 group mr-2">
+              <div className="relative flex justify-center w-[40px] h-[40px]">
+                <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1 3h3.5l2 11h11l2.5-7.5H5.5" />
+                  <circle cx="9" cy="19" r="1.2" fill="white" stroke="white" />
+                  <circle cx="17" cy="19" r="1.2" fill="white" stroke="white" />
+                </svg>
+                <span className="absolute top-[2px] left-[4px] right-0 text-center text-[#FF9900] font-bold text-[17px] font-sans leading-none flex items-center justify-center">
                   {cartCount}
                 </span>
-              )}
+              </div>
+              <span className="text-white font-bold text-[15px] -ml-1 pb-1 tracking-wide">Cart</span>
             </Link>
           </div>
 
@@ -218,19 +217,17 @@ export default function Navbar() {
             </div>
 
             {/* Mobile Cart */}
-            <Link href="/cart" className="relative p-1 hover:scale-105 transition-transform duration-200">
-              <Image
-                src="/assets/header_cart_logo.png"
-                alt="Cart"
-                width={22}
-                height={22}
-                className="h-[22px] w-auto object-contain"
-              />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1.5 bg-red-500 text-white font-extrabold text-[9px] w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm">
+            <Link href="/cart" className="flex items-end p-1 hover:scale-105 transition-transform duration-200 group">
+              <div className="relative flex justify-center w-[34px] h-[34px]">
+                <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1 3h3.5l2 11h11l2.5-7.5H5.5" />
+                  <circle cx="9" cy="19" r="1.2" fill="white" stroke="white" />
+                  <circle cx="17" cy="19" r="1.2" fill="white" stroke="white" />
+                </svg>
+                <span className="absolute top-[2px] left-[3px] right-0 text-center text-[#FF9900] font-bold text-[14px] font-sans leading-none flex items-center justify-center">
                   {cartCount}
                 </span>
-              )}
+              </div>
             </Link>
 
             {/* Hamburger Button */}

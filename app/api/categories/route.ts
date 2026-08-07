@@ -14,7 +14,7 @@ export async function GET() {
 
   try {
     const response = await fetch(
-      `${apiBaseUrl}/api/method/shoption_api.erp_api.category_api.get_categories`,
+      `${apiBaseUrl}/api/method/shoption_api.gbru_shoption.item_api.get_gbru_categories`,
       {
         method: "POST",
         headers: {
