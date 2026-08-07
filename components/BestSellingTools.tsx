@@ -46,6 +46,11 @@ export default function BestSellingTools() {
     setShowPaymentModal(true);
   };
 
+  const formatPrice = (num: any) => {
+    const val = parseFloat(num);
+    return isNaN(val) ? "0.00" : val.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
   if (loading) {
     return (
       <div className="py-16 flex justify-center items-center">
@@ -88,94 +93,67 @@ export default function BestSellingTools() {
       <div className="relative z-10 w-full lg:w-[1152px] mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[20.85px] items-stretch">
         {products.map((product) => {
           const discountVal = product.discount || 0;
-          const badges = [
-            product.brand || "GBRU",
-            discountVal > 0 ? `${discountVal.toFixed(0)}% OFF` : "Farmer's Choice"
-          ];
-          
-          // Generate specs based on item category or fallback properties
-          const specs = [
-            `MOQ: ${product.moq} ${product.stock_uom}`
-          ];
-
           const itemImage = product.custom_image_1 || product.image || "/assets/sprayer.png";
 
           return (
             <div
               key={product.item_code}
-              className="relative rounded-[23.68px] border border-zinc-200/80 bg-white hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
-              style={{ width: "272.36px", minHeight: "480px", padding: "18.5px" }}
+              className="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col transition-shadow hover:shadow-lg relative text-left"
             >
-              {/* Upper Content */}
-              <div className="flex flex-col">
-                {/* Product Image Thumbnail */}
-                <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer">
-                  <div
-                    className="relative rounded-[20px] bg-[#E2F0E4]/60 overflow-hidden flex items-center justify-center hover:opacity-95 transition-opacity"
-                    style={{ width: "235.36px", height: "253.12px", padding: "16px" }}
-                  >
-                    <div className="relative w-full h-full">
-                      <img
-                        src={itemImage}
-                        alt={product.item_name}
-                        className="object-contain w-full h-full"
-                      />
+              {/* Image Section */}
+              <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer">
+                <div className="relative h-56 w-full bg-gray-50 overflow-hidden flex items-center justify-center p-4 hover:opacity-90 transition-opacity">
+                  {discountVal > 0 ? (
+                    <div className="absolute top-4 left-4 px-3 py-1 text-xs font-bold rounded-[8px] z-10 bg-[#FEF5D1] text-[#78350F] border border-[#FDF4CE]">
+                      {discountVal.toFixed(0)}% OFF
                     </div>
-                  </div>
-                </Link>
-
-                {/* Badges */}
-                <div className="flex flex-wrap gap-2 mt-[12px] mb-[10px]">
-                  {badges.map((badge, idx) => (
-                    <span
-                      key={idx}
-                      className="bg-[#FCD34D] text-[#78350F] font-roboto font-bold text-[10px] px-2.5 py-0.5 rounded-full"
-                    >
-                      {badge}
-                    </span>
-                  ))}
+                  ) : null}
+                  <img
+                    src={itemImage}
+                    alt={product.item_name}
+                    className="object-contain max-h-full max-w-full"
+                  />
                 </div>
+              </Link>
 
-                {/* Product Name */}
-                <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer hover:underline text-[#0F291B] transition-all">
-                  <h3 className="font-roboto font-bold text-[#0F291B] text-[16px] lg:text-[18px] leading-tight line-clamp-1">
+              {/* Content Section */}
+              <div className="p-5 flex flex-col flex-1">
+                <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer hover:text-[#006B21] transition-colors">
+                  <h3 className="font-bold text-sm text-[#1A1A1A] mb-3 leading-snug min-h-[40px] line-clamp-2">
                     {product.item_name}
                   </h3>
                 </Link>
 
-                {/* Specs List */}
-                <ul className="mt-2.5 space-y-1.5 text-left">
-                  {specs.map((spec, idx) => (
-                    <li key={idx} className="flex items-center gap-2 text-zinc-600 font-roboto text-sm font-medium">
-                      <svg
-                        className="w-4 h-4 text-[#2D722F] flex-shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 12l2 2 4-4"
-                          strokeWidth="2"
-                        />
-                      </svg>
-                      <span>{spec}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {product.brand && (
+                    <span className="bg-[#F3F4F6] text-[#4B5563] text-[9px] font-bold px-2 py-0.5 rounded">
+                      {product.brand.toUpperCase()}
+                    </span>
+                  )}
+                </div>
 
-              {/* Add to Cart Button */}
-              <button
-                onClick={() => handleAddToCart(product)}
-                className="mt-4 rounded-[12px] bg-[#0D9740] hover:bg-[#0a7d34] text-white font-roboto font-bold text-sm flex items-center justify-center transition-all duration-300 shadow-sm w-full active:scale-[0.99]"
-                style={{ height: "44px" }}
-              >
-                Add to Cart
-              </button>
+                <div className="mt-auto">
+                  {/* Price */}
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span className="text-xl font-bold text-[#006B21]">₹{formatPrice(product.price)}</span>
+                    {product.mrp > product.price && (
+                      <span className="text-xs text-[#6B7280] line-through">₹{formatPrice(product.mrp)}</span>
+                    )}
+                  </div>
+
+                  <div className="text-[11px] text-[#4B5563] font-bold mb-4 flex flex-col gap-0.5">
+                    <span>Minimum Order Quantity: <span className="text-[#0F291B]">{product.moq} {product.stock_uom}</span></span>
+                  </div>
+
+                  <button
+                    onClick={() => handleAddToCart(product)}
+                    className="w-full h-11 bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-sm rounded-xl shadow-sm transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.99]"
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
             </div>
           );
         })}
