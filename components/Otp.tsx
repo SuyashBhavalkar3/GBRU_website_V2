@@ -3,8 +3,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useToast } from '@/components/ToastContext';
 
 const OtpContent = () => {
+  const { showToast } = useToast();
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [timeLeft, setTimeLeft] = useState(24);
@@ -86,7 +88,7 @@ const OtpContent = () => {
 
         const resJson = await res.json();
         if (resJson.message?.status) {
-          alert(`${pendingItem.item_name || "Product"} added to cart successfully!`);
+          showToast(`${pendingItem.item_name || "Product"} added to cart successfully!`, "success");
         }
       } catch (e) {
         console.error("Error adding pending item to cart:", e);
@@ -180,7 +182,7 @@ const OtpContent = () => {
             });
             const resJson = await res.json();
             if (resJson.message?.status) {
-              alert(`${pendingItem.item_name || "Product"} added to cart successfully!`);
+              showToast(`${pendingItem.item_name || "Product"} added to cart successfully!`, "success");
             }
           } catch (err) {
             console.error("Error adding pending item to cart:", err);

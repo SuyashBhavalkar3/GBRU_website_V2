@@ -6,6 +6,7 @@ import { useToast } from "@/components/ToastContext";
 import Navbar from "@/components/Navbar";
 
 export default function Checkout() {
+  const { showToast } = useToast();
   // Interactivity States
   const [paymentMode, setPaymentMode] = useState<"full" | "booking">("full");
   const [pincode, setPincode] = useState("");
@@ -26,6 +27,7 @@ export default function Checkout() {
 
   // Address Interactivity States
   const [isAddingAddress, setIsAddingAddress] = useState(false);
+  const [showAddressModal, setShowAddressModal] = useState(false);
   const [isAddressSaved, setIsAddressSaved] = useState(false);
   
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
@@ -787,7 +789,67 @@ export default function Checkout() {
           {/* ── Left Column (Forms & Selection Cards) ── */}
           <div className="lg:col-span-8 flex flex-col gap-8">
             
-            {/* 1. Payment Mode Selector */}
+            {/* 1. Delivery Address */}
+            <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-4">
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-1">
+                  <h3 className="font-bold text-[#0F291B] text-[18px]">Delivery Address</h3>
+                </div>
+                <button
+                  onClick={() => setShowAddressModal(true)}
+                  className="text-xs text-[#0D9740] hover:bg-[#0D9740]/10 font-bold flex items-center gap-1 border border-[#0D9740]/30 rounded-lg py-1.5 px-3 bg-[#0D9740]/5 transition-all"
+                >
+                  Edit
+                </button>
+              </div>
+
+              {loadingAddresses ? (
+                <div className="flex justify-center py-4 text-sm text-zinc-500 font-semibold">
+                  Loading address...
+                </div>
+              ) : savedAddresses.length > 0 ? (
+                (() => {
+                  const activeAddr = savedAddresses[selectedAddressIndex] || savedAddresses.find(a => a.is_primary === 1) || savedAddresses[0];
+                  return (
+                    <div className="flex flex-col gap-1.5 p-4 bg-zinc-50 border border-zinc-100 rounded-[16px]">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-[#0F291B] text-sm">Delivering to: {activeAddr.address_title}</span>
+                        {activeAddr.is_primary === 1 && (
+                          <span className="bg-[#EBF5EE] text-[#0D9740] text-[10px] font-bold py-0.5 px-2 rounded-[4px]">Primary</span>
+                        )}
+                      </div>
+                      <span className="text-xs text-[#374151]">
+                        {activeAddr.address_line1}, {activeAddr.address_line2}, {activeAddr.city || activeAddr.tahsil}, {activeAddr.district}, {activeAddr.state} - {activeAddr.pincode}
+                      </span>
+                      <span className="text-xs text-zinc-500 font-medium">
+                        Phone: {activeAddr.phone}
+                      </span>
+                    </div>
+                  );
+                })()
+              ) : (
+                <div className="py-2 flex justify-center">
+                  <button
+                    onClick={() => {
+                      setIsAddingAddress(true);
+                      setEditingAddressName(null);
+                      setFormData({
+                        fullName: "", mobile: "", pin: "", village: "", city: "", district: "", state: "", address1: "", address2: "", saveAddress: false
+                      });
+                      setShowAddressModal(true);
+                    }}
+                    className="h-12 px-8 border-2 border-dashed border-[#0D9740] hover:bg-[#0d9740]/[0.02] text-[#0D9740] font-bold text-sm rounded-[14px] transition-all flex items-center gap-2 shadow-sm"
+                  >
+                    ＋ Add Delivery Address
+                  </button>
+                </div>
+              )}
+            </div>
+
+
+
+
+            {/* 2. Payment Mode Selector */}
             <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-6">
               <div className="flex justify-between items-center">
                 <h3 className="font-bold text-[#0F291B] text-[16px]">Payment Mode</h3>
@@ -930,8 +992,183 @@ export default function Checkout() {
                 )}
               </div>
             </div>
+          </div>
 
-            {/* 2. Delivery Address */}
+          {/* ── Right Column (Order Summary) ── */}
+          <div className="lg:col-span-4 flex flex-col gap-6">
+            
+            {/* Summary Box */}
+            <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-5">
+              <h3 className="font-roboto font-bold text-[#0F291B] text-lg">
+                Order Summary
+              </h3>
+
+              {/* Offers & Coupons Collapsible Drawer */}
+              <div className="border border-zinc-100 rounded-[14px] overflow-hidden">
+                <button
+                  onClick={() => setIsOffersOpen(!isOffersOpen)}
+                  className="w-full bg-[#F8F9FA] px-4 py-3 flex items-center justify-between text-xs font-bold text-[#0F291B]"
+                >
+                  <span className="flex items-center gap-2">
+                    🏷️ Offers & Coupons
+                  </span>
+                  <span>{isOffersOpen ? "▲" : "▼"}</span>
+                </button>
+
+                {isOffersOpen && (
+                  <div className="p-4 flex flex-col gap-3 bg-white">
+                    <span className="text-[10px] text-zinc-500 block">Tap to apply coupon code. Use "GBRU10" to save ₹500.</span>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Enter coupon code"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value)}
+                        className="flex-1 h-9 px-3 border border-zinc-200 rounded-[8px] text-xs text-[#0F291B] focus:outline-[#0D9740]"
+                      />
+                      <button
+                        onClick={applyCoupon}
+                        className="h-9 px-4 bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-xs rounded-[8px]"
+                      >
+                        Apply
+                      </button>
+                    </div>
+
+                    {couponApplied && (
+                      <span className="text-[11px] text-[#0D9740] font-bold">✓ {proceedData?.coupon?.code || couponCode} applied successfully</span>
+                    )}
+                    {couponError && (
+                      <span className="text-[11px] text-red-500 font-bold">{couponError}</span>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Price Details */}
+              <div className="flex flex-col gap-4 text-sm text-[#374151] border-t border-zinc-100 pt-4">
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">Subtotal</span>
+                  <span className="font-bold">₹{formatPrice(subtotal)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">GST</span>
+                  <span className="font-bold">₹{formatPrice(gst)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">Delivery</span>
+                  <span className="font-bold text-[#0d9740]">FREE</span>
+                </div>
+                 {normalDiscount > 0 && (
+                  <div className="flex justify-between text-[#0d9740]">
+                    <span>{paymentMode === "full" ? "Full Payment Discount" : "Cash On Delivery Discount"}</span>
+                    <span>- ₹{formatPrice(normalDiscount)}</span>
+                  </div>
+                )}
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between text-[#0d9740]">
+                    <span>Coupon Discount</span>
+                    <span>- ₹{formatPrice(couponDiscount)}</span>
+                  </div>
+                )}
+                
+                <div className="flex justify-between items-baseline pt-2 border-t border-zinc-100">
+                  <span className="font-bold text-[#0F291B] text-[16px]">Total</span>
+                  <span className="font-extrabold text-[#0F291B] text-[24px]">
+                    {paymentMode === "full" 
+                      ? `₹${formatPrice(proceedData?.payment_summary?.full_payment?.payable_amount)}`
+                      : `₹${formatPrice(proceedData?.payment_summary?.cash_on_delivery?.pay_now)}`
+                    }
+                  </span>
+                </div>
+                {paymentMode === "booking" && (
+                  <span className="text-[11px] text-zinc-500 text-right block leading-none">
+                    (₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.pay_on_delivery)} payable on delivery)
+                  </span>
+                )}
+              </div>
+
+              {/* Secure Checkout CTA */}
+              <button 
+                onClick={handlePlaceOrder}
+                disabled={placingOrder}
+                className={`w-full h-14 rounded-[14px] ${placingOrder ? 'bg-zinc-400' : 'bg-gradient-to-r from-[#1A4D2E] to-[#2A6F45] hover:opacity-90 active:scale-[0.99]'} text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm mt-2`}
+              >
+                {placingOrder ? "Placing Order..." : "🔒 Place Order Securely"}
+              </button>
+
+              <span className="text-[11px] text-zinc-500 text-center block">
+                Your payment information is secure
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </main>
+
+      {/* Custom Modal for Alerts/Confirms */}
+      {modalConfig.isOpen && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div 
+            className="bg-white rounded-[24px] shadow-2xl p-6 w-full max-w-sm flex flex-col items-center text-center transform animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {modalConfig.type === "confirm" ? (
+              <div className="w-12 h-12 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              </div>
+            ) : (
+              <div className="w-12 h-12 bg-[#0D9740]/10 text-[#0D9740] rounded-full flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              </div>
+            )}
+            
+            <h3 className="font-bold text-lg text-zinc-900 mb-2">{modalConfig.title}</h3>
+            <p className="text-sm text-zinc-500 mb-6">{modalConfig.message}</p>
+            
+            <div className="flex gap-3 w-full">
+              {modalConfig.type === "confirm" && (
+                <button
+                  onClick={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+                  className="flex-1 py-2.5 px-4 rounded-[12px] font-bold text-sm text-zinc-700 bg-zinc-100 hover:bg-zinc-200 transition-colors"
+                >
+                  Cancel
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  if (modalConfig.onConfirm) modalConfig.onConfirm();
+                  setModalConfig(prev => ({ ...prev, isOpen: false }));
+                }}
+                className={`flex-1 py-2.5 px-4 rounded-[12px] font-bold text-sm text-white shadow-sm transition-colors ${
+                  modalConfig.type === "confirm" ? "bg-red-500 hover:bg-red-600" : "bg-[#0D9740] hover:bg-[#0b8036]"
+                }`}
+              >
+                {modalConfig.type === "confirm" ? "Confirm" : "OK"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Address Selection Modal */}
+      {showAddressModal && (
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-[24px] max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl">
+            <div className="sticky top-0 bg-white border-b border-zinc-100 p-6 flex items-center justify-between z-10 shrink-0 rounded-t-[24px]">
+              <h2 className="text-xl font-bold text-[#0F291B]">Select Delivery Address</h2>
+              <button 
+                onClick={() => setShowAddressModal(false)}
+                className="p-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-600 rounded-full transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                </svg>
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto grow flex flex-col gap-4">
+              {/* 2. Delivery Address */}
             <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-6">
               <div className="flex justify-between items-center">
                 <div className="flex flex-col gap-1">
@@ -1263,168 +1500,11 @@ export default function Checkout() {
                 </div>
               )}
             </div>
-
-
-
-          </div>
-
-          {/* ── Right Column (Order Summary) ── */}
-          <div className="lg:col-span-4 flex flex-col gap-6">
-            
-            {/* Summary Box */}
-            <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-5">
-              <h3 className="font-roboto font-bold text-[#0F291B] text-lg">
-                Order Summary
-              </h3>
-
-              {/* Offers & Coupons Collapsible Drawer */}
-              <div className="border border-zinc-100 rounded-[14px] overflow-hidden">
-                <button
-                  onClick={() => setIsOffersOpen(!isOffersOpen)}
-                  className="w-full bg-[#F8F9FA] px-4 py-3 flex items-center justify-between text-xs font-bold text-[#0F291B]"
-                >
-                  <span className="flex items-center gap-2">
-                    🏷️ Offers & Coupons
-                  </span>
-                  <span>{isOffersOpen ? "▲" : "▼"}</span>
-                </button>
-
-                {isOffersOpen && (
-                  <div className="p-4 flex flex-col gap-3 bg-white">
-                    <span className="text-[10px] text-zinc-500 block">Tap to apply coupon code. Use "GBRU10" to save ₹500.</span>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="Enter coupon code"
-                        value={couponCode}
-                        onChange={(e) => setCouponCode(e.target.value)}
-                        className="flex-1 h-9 px-3 border border-zinc-200 rounded-[8px] text-xs text-[#0F291B] focus:outline-[#0D9740]"
-                      />
-                      <button
-                        onClick={applyCoupon}
-                        className="h-9 px-4 bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-xs rounded-[8px]"
-                      >
-                        Apply
-                      </button>
-                    </div>
-
-                    {couponApplied && (
-                      <span className="text-[11px] text-[#0D9740] font-bold">✓ {proceedData?.coupon?.code || couponCode} applied successfully</span>
-                    )}
-                    {couponError && (
-                      <span className="text-[11px] text-red-500 font-bold">{couponError}</span>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Price Details */}
-              <div className="flex flex-col gap-4 text-sm text-[#374151] border-t border-zinc-100 pt-4">
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">Subtotal</span>
-                  <span className="font-bold">₹{formatPrice(subtotal)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">GST</span>
-                  <span className="font-bold">₹{formatPrice(gst)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">Delivery</span>
-                  <span className="font-bold text-[#0d9740]">FREE</span>
-                </div>
-                 {normalDiscount > 0 && (
-                  <div className="flex justify-between text-[#0d9740]">
-                    <span>{paymentMode === "full" ? "Full Payment Discount" : "Cash On Delivery Discount"}</span>
-                    <span>- ₹{formatPrice(normalDiscount)}</span>
-                  </div>
-                )}
-                {couponDiscount > 0 && (
-                  <div className="flex justify-between text-[#0d9740]">
-                    <span>Coupon Discount</span>
-                    <span>- ₹{formatPrice(couponDiscount)}</span>
-                  </div>
-                )}
-                
-                <div className="flex justify-between items-baseline pt-2 border-t border-zinc-100">
-                  <span className="font-bold text-[#0F291B] text-[16px]">Total</span>
-                  <span className="font-extrabold text-[#0F291B] text-[24px]">
-                    {paymentMode === "full" 
-                      ? `₹${formatPrice(proceedData?.payment_summary?.full_payment?.payable_amount)}`
-                      : `₹${formatPrice(proceedData?.payment_summary?.cash_on_delivery?.pay_now)}`
-                    }
-                  </span>
-                </div>
-                {paymentMode === "booking" && (
-                  <span className="text-[11px] text-zinc-500 text-right block leading-none">
-                    (₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.pay_on_delivery)} payable on delivery)
-                  </span>
-                )}
-              </div>
-
-              {/* Secure Checkout CTA */}
-              <button 
-                onClick={handlePlaceOrder}
-                disabled={placingOrder}
-                className={`w-full h-14 rounded-[14px] ${placingOrder ? 'bg-zinc-400' : 'bg-gradient-to-r from-[#1A4D2E] to-[#2A6F45] hover:opacity-90 active:scale-[0.99]'} text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm mt-2`}
-              >
-                {placingOrder ? "Placing Order..." : "🔒 Place Order Securely"}
-              </button>
-
-              <span className="text-[11px] text-zinc-500 text-center block">
-                Your payment information is secure
-              </span>
-            </div>
-
-          </div>
-
-        </div>
-
-      </main>
-
-      {/* Custom Modal for Alerts/Confirms */}
-      {modalConfig.isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div 
-            className="bg-white rounded-[24px] shadow-2xl p-6 w-full max-w-sm flex flex-col items-center text-center transform animate-in zoom-in-95 duration-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {modalConfig.type === "confirm" ? (
-              <div className="w-12 h-12 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-              </div>
-            ) : (
-              <div className="w-12 h-12 bg-[#0D9740]/10 text-[#0D9740] rounded-full flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-              </div>
-            )}
-            
-            <h3 className="font-bold text-lg text-zinc-900 mb-2">{modalConfig.title}</h3>
-            <p className="text-sm text-zinc-500 mb-6">{modalConfig.message}</p>
-            
-            <div className="flex gap-3 w-full">
-              {modalConfig.type === "confirm" && (
-                <button
-                  onClick={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
-                  className="flex-1 py-2.5 px-4 rounded-[12px] font-bold text-sm text-zinc-700 bg-zinc-100 hover:bg-zinc-200 transition-colors"
-                >
-                  Cancel
-                </button>
-              )}
-              <button
-                onClick={() => {
-                  if (modalConfig.onConfirm) modalConfig.onConfirm();
-                  setModalConfig(prev => ({ ...prev, isOpen: false }));
-                }}
-                className={`flex-1 py-2.5 px-4 rounded-[12px] font-bold text-sm text-white shadow-sm transition-colors ${
-                  modalConfig.type === "confirm" ? "bg-red-500 hover:bg-red-600" : "bg-[#0D9740] hover:bg-[#0b8036]"
-                }`}
-              >
-                {modalConfig.type === "confirm" ? "Confirm" : "OK"}
-              </button>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 }

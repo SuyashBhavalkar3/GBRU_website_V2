@@ -76,11 +76,7 @@ export default function PaymentsPage() {
 
   const handleAction = (order: OrderData) => {
     // Placeholder for actual payment mapping or razorpay integration
-    if (order.allowed_action === "map") {
-      showToast(`Mapping payment for ${order.order_id}...`, "info");
-    } else {
-      showToast(`Initiating payment for ${order.order_id}...`, "info");
-    }
+    showToast(`Initiating payment for ${order.order_id}...`, "info");
   };
 
   return (
@@ -172,8 +168,7 @@ export default function PaymentsPage() {
                   onClick={() => handleAction(order)}
                   className="w-full mt-auto bg-[#0FA84D] hover:bg-[#0b8a3d] text-white font-bold h-12 rounded-[12px] flex items-center justify-center gap-2 shadow-sm hover:shadow transition-all group"
                 >
-                  <Receipt className="w-4 h-4" />
-                  {order.allowed_action === "map" ? "Map Payment" : "Pay Now"}
+                  Pay Now
                   <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>

@@ -634,7 +634,7 @@ export default function UserProfile() {
                         </div>
                         {addr.is_primary === 1 && (
                           <span className="bg-emerald-50 text-[#0D9740] text-[9px] font-bold py-0.5 px-2 rounded">
-                            DEFAULT
+                            PRIMARY
                           </span>
                         )}
                         {addr.is_primary !== 1 && (
@@ -642,7 +642,7 @@ export default function UserProfile() {
                             onClick={() => handleMakePrimary(addr.name)}
                             className="bg-zinc-100 text-zinc-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors text-[9px] font-bold py-0.5 px-2 rounded"
                           >
-                            MAKE DEFAULT
+                            MAKE PRIMARY
                           </button>
                         )}
                       </div>
@@ -748,10 +748,9 @@ export default function UserProfile() {
               <label className="text-xs font-bold text-zinc-500">Phone Number</label>
               <input
                 type="text"
-                required
                 value={tempPhone}
-                onChange={(e) => setTempPhone(e.target.value)}
-                className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
+                disabled
+                className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-zinc-500 bg-zinc-50 cursor-not-allowed"
               />
             </div>
             <div className="flex gap-2 justify-end mt-2">

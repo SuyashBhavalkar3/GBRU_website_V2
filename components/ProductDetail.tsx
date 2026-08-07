@@ -110,13 +110,13 @@ function ProductDetailContent() {
       const resJson = await res.json();
       if (resJson.message?.status) {
         window.dispatchEvent(new Event("cartUpdate"));
-        alert(`${product.item_name} added to cart successfully!`);
+        showToast(`${product.item_name} added to cart successfully!`, "success");
       } else {
-        alert(resJson.message?.message || "Failed to add product to cart.");
+        showToast(resJson.message?.message || "Failed to add product to cart.", "error");
       }
     } catch (err) {
       console.error("Error in add to cart:", err);
-      alert("Failed to add product to cart.");
+      showToast("Failed to add product to cart.", "error");
     } finally {
       setSubmitting(false);
     }
@@ -654,6 +654,7 @@ function ProductDetailContent() {
 }
 
 export default function ProductDetail() {
+
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center">
