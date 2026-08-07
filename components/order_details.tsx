@@ -2,18 +2,18 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { 
-  Calendar, 
-  FileText, 
-  Tag, 
-  Banknote, 
-  Copy, 
+import {
+  Calendar,
+  FileText,
+  Tag,
+  Banknote,
+  Copy,
   Check,
-  Truck, 
-  Info, 
-  CreditCard, 
-  Headphones, 
-  Printer, 
+  Truck,
+  Info,
+  CreditCard,
+  Headphones,
+  Printer,
   ArrowLeft,
   Download,
   X
@@ -61,7 +61,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
           body: JSON.stringify({ mobile_no, order_id: decodedOrderId })
         });
         const data = await res.json();
-        
+
         if (data?.message?.status && data?.message?.data) {
           setOrder(data.message.data);
         } else {
@@ -390,7 +390,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
       <Navbar />
 
       <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-8 flex flex-col gap-6">
-        
+
         {/* Header Navigation Section */}
         <div className="flex items-center justify-between border-b border-zinc-100 pb-5">
           <div className="flex items-center gap-3">
@@ -402,7 +402,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
               <p className="text-zinc-500 text-xs font-semibold">Order ID: {summary.order_id}</p>
             </div>
           </div>
-          
+
           <div className={`text-[10px] font-extrabold uppercase px-3 py-1 rounded-full border ${getStatusColor(statusDisplay)}`}>
             ● {statusDisplay}
           </div>
@@ -410,10 +410,10 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
 
         {/* Main Content 2-Column Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-10">
-          
+
           {/* Left Column (8 cols): Order info, Items, Transport */}
           <div className="lg:col-span-8 space-y-6">
-            
+
             {/* Card 1: Order Summary */}
             <div className="bg-white border border-[#CDE5D2] rounded-[32px] p-6 lg:p-8 shadow-sm space-y-6">
               <h3 className="text-lg font-bold text-[#0F291B] font-roboto border-b border-zinc-100 pb-2.5 text-left">
@@ -439,8 +439,8 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="font-bold text-[#0F291B] text-sm">{summary.order_id}</span>
-                    <button 
-                      onClick={handleCopy} 
+                    <button
+                      onClick={handleCopy}
                       className="text-emerald-700 hover:text-emerald-800 transition-colors p-1"
                       title="Copy Order ID"
                     >
@@ -460,7 +460,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                     - ₹{Number(summary.discount_received || 0).toLocaleString('en-IN')}
                   </span>
                 </div>
-                
+
                 {/* Row 4: Order Amount Highlighted Box */}
                 <div className="bg-[#F5F8F6] border border-[#E0EFE6] rounded-2xl p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3 text-[#1E532E] font-bold text-sm">
@@ -490,23 +490,21 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
 
               {/* Action Buttons */}
               <div className="flex items-center gap-4">
-                <button 
+                <button
                   onClick={handleTrackOrder}
-                  className={`font-bold py-3 px-6 rounded-2xl text-xs font-roboto transition-all shadow-sm ${
-                    finalStickers.length > 0
+                  className={`font-bold py-3 px-6 rounded-2xl text-xs font-roboto transition-all shadow-sm ${finalStickers.length > 0
                       ? "bg-[#1A56DB] hover:bg-[#1E40AF] text-white cursor-pointer"
                       : "bg-zinc-100 border border-zinc-200 text-zinc-400 cursor-not-allowed"
-                  }`}
+                    }`}
                 >
                   Track Order
                 </button>
-                <button 
+                <button
                   onClick={handlePrintLR}
-                  className={`font-bold py-3 px-6 rounded-2xl text-xs font-roboto transition-all flex items-center gap-1.5 ${
-                    finalLrs.length > 0 
-                      ? "border border-zinc-200 hover:bg-zinc-50 text-zinc-600 cursor-pointer" 
+                  className={`font-bold py-3 px-6 rounded-2xl text-xs font-roboto transition-all flex items-center gap-1.5 ${finalLrs.length > 0
+                      ? "border border-zinc-200 hover:bg-zinc-50 text-zinc-600 cursor-pointer"
                       : "border border-zinc-100 bg-zinc-50 text-zinc-300 cursor-not-allowed"
-                  }`}
+                    }`}
                 >
                   <Printer className="w-4 h-4" />
                   <span>Print LR</span>
@@ -559,7 +557,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                           ● {item.status || "Pending Payment"}
                         </div>
                       </div>
-                      
+
                       <div className="text-right self-end md:self-center shrink-0">
                         <span className="text-lg font-extrabold text-[#0F291B]">
                           ₹{Number(items.length === 1 ? summary.order_amount : item.total).toLocaleString('en-IN')}
@@ -641,7 +639,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
 
           {/* Right Column (4 cols): Transactions, Invoice, Support assistance */}
           <div className="lg:col-span-4 space-y-6">
-            
+
             {/* Card A: Transactions */}
             <div className="bg-white border border-[#CDE5D2] rounded-[32px] p-6 shadow-sm flex flex-col items-center justify-center min-h-[220px] text-center space-y-4">
               {hasTransactions ? (
@@ -694,8 +692,8 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                         <p className="text-zinc-400 text-[10px] mt-0.5">{inv.invoice_date}</p>
                       </div>
                       {inv.sales_invoice_print_url && (
-                        <a 
-                          href={inv.sales_invoice_print_url} 
+                        <a
+                          href={inv.sales_invoice_print_url}
                           className="text-[#1E532E] hover:text-[#153B21] p-1.5 bg-emerald-50 rounded-lg"
                         >
                           <Download className="w-4 h-4" />
@@ -727,9 +725,9 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                   <p className="text-zinc-500 text-[10px] font-medium leading-relaxed">Available 24/7 for trade assistance</p>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-3 pt-1">
-                <a 
+                <a
                   href="https://wa.me/919226514174"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -737,8 +735,8 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 >
                   Contact Support
                 </a>
-                
-                <Link 
+
+                <Link
                   href={`/support-help?order_id=${summary.order_id}`}
                   className="bg-white border border-zinc-200 hover:bg-zinc-50 text-[#0F291B] font-bold py-2.5 rounded-xl text-xs font-roboto transition-all shadow-sm flex items-center justify-center text-center"
                 >
@@ -762,7 +760,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 <h3 className="text-lg font-bold text-[#0F291B] font-roboto">Indian Post Tracking</h3>
                 <p className="text-xs text-zinc-500 font-semibold mt-0.5">Article Number: {activeTrackingSticker}</p>
               </div>
-              <button 
+              <button
                 onClick={() => setActiveTrackingSticker(null)}
                 className="w-8 h-8 rounded-full bg-zinc-50 hover:bg-zinc-100 flex items-center justify-center text-zinc-500 hover:text-zinc-700 transition-colors"
               >
@@ -815,7 +813,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                   {/* Timeline History */}
                   <div className="space-y-4">
                     <h4 className="font-bold text-[#0F291B] text-sm uppercase tracking-wide border-b pb-2">Tracking History</h4>
-                    
+
                     {(!trackingData.tracking_details || trackingData.tracking_details.length === 0) ? (
                       <p className="text-xs text-zinc-500 text-center font-medium py-4">No tracking history entries found.</p>
                     ) : (
@@ -823,12 +821,11 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                         {trackingData.tracking_details.map((step: any, sIdx: number) => (
                           <div key={sIdx} className="relative text-xs">
                             {/* Circle Dot on timeline */}
-                            <div className={`absolute -left-[31px] top-1.5 w-4 h-4 rounded-full border-2 bg-white ${
-                              sIdx === 0 ? "border-[#1E532E]" : "border-emerald-200"
-                            } flex items-center justify-center`}>
+                            <div className={`absolute -left-[31px] top-1.5 w-4 h-4 rounded-full border-2 bg-white ${sIdx === 0 ? "border-[#1E532E]" : "border-emerald-200"
+                              } flex items-center justify-center`}>
                               {sIdx === 0 && <div className="w-1.5 h-1.5 rounded-full bg-[#1E532E]" />}
                             </div>
-                            
+
                             {/* Content */}
                             <div className="space-y-0.5 text-left">
                               <div className="flex items-center justify-between">
@@ -872,7 +869,8 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         </div>
       )}
 
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @keyframes shrinkWidth {
           from { width: 100%; }
           to { width: 0%; }
