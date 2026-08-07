@@ -24,6 +24,7 @@ export default function PaymentOptionModal({
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "error">("success");
+  const [isInCart, setIsInCart] = useState(false);
 
   useEffect(() => {
     if (!isOpen || !itemCode) return;
@@ -53,6 +54,45 @@ export default function PaymentOptionModal({
     };
 
     loadItemDetails();
+  }, [isOpen, itemCode]);
+
+  useEffect(() => {
+    if (!isOpen || !itemCode) return;
+
+    const checkCartStatus = async () => {
+      const user = localStorage.getItem("gbru_user");
+      if (!user) return;
+      try {
+        const parsed = JSON.parse(user);
+        const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+        if (!mobile_no) return;
+        const res = await fetch("/api/cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mobile_no })
+        });
+        if (res.ok) {
+          const json = await res.json();
+          const items = json.message?.data?.items || [];
+          const cartItem = items.find((i: any) => i.item === itemCode);
+          if (cartItem) {
+            setIsInCart(true);
+            setQuantity(cartItem.quantity);
+            if (cartItem.payment_type === "Cash On Delivery") {
+              setSelectedOption("booking");
+            } else {
+              setSelectedOption("full");
+            }
+          } else {
+            setIsInCart(false);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to check cart status in modal:", e);
+      }
+    };
+
+    checkCartStatus();
   }, [isOpen, itemCode]);
 
   if (!isOpen) return null;
@@ -106,24 +146,37 @@ export default function PaymentOptionModal({
 
       setSubmitting(true);
 
-      const payload = {
-        mobile_no,
-        items: [
-          {
+      const endpoint = isInCart ? "/api/cart/update" : "/api/cart/add";
+      const payload = isInCart
+        ? {
+            mobile_no,
             item: itemCode,
             quantity: quantity,
-            is_moq_applicable: 0,
             payment_type: selectedOption === "full" ? "Full Payment" : "Cash On Delivery",
             full_payment_amount: productDetails?.full_payment_amount || 0.0,
             full_payment_discount: productDetails?.full_payment_discount || 0.0,
-            cod_value: productDetails?.COD_value || 0.0,
-            cod_display: productDetails?.COD_Display || 0.0,
-            cod_discount: productDetails?.COD_discount || 0.0,
+            COD_value: productDetails?.COD_value || 0.0,
+            COD_Display: productDetails?.COD_Display || 0.0,
+            COD_discount: productDetails?.COD_discount || 0.0,
           }
-        ]
-      };
+        : {
+            mobile_no,
+            items: [
+              {
+                item: itemCode,
+                quantity: quantity,
+                is_moq_applicable: 0,
+                payment_type: selectedOption === "full" ? "Full Payment" : "Cash On Delivery",
+                full_payment_amount: productDetails?.full_payment_amount || 0.0,
+                full_payment_discount: productDetails?.full_payment_discount || 0.0,
+                cod_value: productDetails?.COD_value || 0.0,
+                cod_display: productDetails?.COD_Display || 0.0,
+                cod_discount: productDetails?.COD_discount || 0.0,
+              }
+            ]
+          };
 
-      const res = await fetch("/api/cart/add", {
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -131,25 +184,25 @@ export default function PaymentOptionModal({
 
       const resJson = await res.json();
 
-      if (resJson.message?.status) {
-        // Dispatch event to update navbar cart count
+      if (resJson.message?.status || resJson.success) {
         window.dispatchEvent(new Event("cartUpdate"));
         setToastType("success");
-        setToastMessage(`${productDetails?.item_name || "Product"} added to cart successfully!`);
+        setToastMessage(`${productDetails?.item_name || "Product"} ${isInCart ? "updated in" : "added to"} cart successfully!`);
+        setIsInCart(true);
         setTimeout(() => {
           setToastMessage("");
-          if (onConfirm) onConfirm();
           onClose();
+          if (onConfirm) onConfirm();
         }, 1500);
       } else {
         setToastType("error");
-        setToastMessage(resJson.message?.message || "Failed to add product to cart.");
+        setToastMessage(resJson.message?.message || resJson.error || `Failed to ${isInCart ? "update" : "add"} product.`);
         setTimeout(() => setToastMessage(""), 3000);
       }
-    } catch (err: any) {
-      console.error("Error adding item to cart:", err);
+    } catch (err) {
+      console.error("Error in add/update cart modal:", err);
       setToastType("error");
-      setToastMessage("Failed to add product to cart.");
+      setToastMessage(`Failed to ${isInCart ? "update" : "add"} product.`);
       setTimeout(() => setToastMessage(""), 3000);
     } finally {
       setSubmitting(false);
@@ -157,39 +210,35 @@ export default function PaymentOptionModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 font-roboto">
-      <div 
-        className="bg-white rounded-[28px] border border-zinc-200 shadow-2xl max-w-lg w-full overflow-hidden flex flex-col p-6 animate-in fade-in zoom-in-95 duration-200"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+      <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-[640px] p-6 relative flex flex-col gap-6 overflow-hidden max-h-[90vh]">
         {/* Header */}
-        <div className="flex justify-between items-start mb-6">
-          <div className="flex flex-col gap-1 text-left">
-            <h2 className="text-xl font-bold text-[#0F291B] tracking-tight">Select Payment Option</h2>
-            <p className="text-zinc-500 text-xs leading-normal">
-              Choose how you want to pay for <span className="font-bold text-[#0F291B]">{productDetails?.item_name || "selected product"}</span>
-            </p>
+        <div className="flex justify-between items-center pb-4 border-b border-zinc-100">
+          <div className="text-left">
+            <h3 className="text-lg font-bold text-[#0F291B]">Choose Payment Method</h3>
+            <p className="text-xs text-zinc-500 mt-0.5">{productDetails?.item_name || "Select option below"}</p>
           </div>
-          <button 
-            onClick={onClose} 
-            className="text-zinc-400 hover:text-zinc-600 text-xl font-bold p-1 transition-colors"
+          <button
+            onClick={onClose}
+            disabled={submitting}
+            className="w-8 h-8 rounded-full border border-zinc-200 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-50 transition-colors flex items-center justify-center text-sm font-bold disabled:opacity-50"
           >
             ✕
           </button>
         </div>
 
         {loading ? (
-          <div className="py-12 flex flex-col justify-center items-center gap-3">
-            <svg className="animate-spin h-6 w-6 text-[#0D9740]" fill="none" viewBox="0 0 24 24">
+          <div className="py-16 flex flex-col items-center justify-center gap-3">
+            <svg className="animate-spin h-8 w-8 text-[#0D9740]" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
             </svg>
-            <span className="text-zinc-500 text-[11px] font-semibold">Retrieving product price data...</span>
+            <span className="text-xs text-zinc-500 font-medium">Fetching options...</span>
           </div>
         ) : (
           <>
-            {/* Options */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            {/* Options container */}
+            <div className="flex flex-col sm:flex-row gap-4 items-stretch overflow-y-auto pr-1">
               {/* Card 1: Full Payment */}
               <div
                 onClick={() => setSelectedOption("full")}
@@ -212,17 +261,7 @@ export default function PaymentOptionModal({
                 <p className="text-[11px] text-zinc-500 mb-4 pl-6 text-left">Pay complete amount today</p>
                 <div className="pl-6 pt-2 border-t border-zinc-100 mt-auto text-left flex flex-col gap-1.5">
                   <div className="flex justify-between items-center text-[11px] text-zinc-500">
-                    <span>M.R.P.</span>
-                    <span className="line-through">₹{formatPrice((productDetails?.mrp || 0) * quantity)}</span>
-                  </div>
-                  {(productDetails?.discount || 0) > 0 && (
-                    <div className="flex justify-between items-center text-[11px] text-[#0d9740] font-medium">
-                      <span>Discount</span>
-                      <span>{Number(productDetails?.discount).toFixed(0)}% OFF</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between items-center text-[11px] text-zinc-500">
-                    <span>Sales Price</span>
+                    <span>Grand Total</span>
                     <span>₹{formatPrice((productDetails?.actual_rate || productDetails?.price || 0) * quantity)}</span>
                   </div>
                   {(productDetails?.full_payment_discount || 0) > 0 && (
@@ -263,29 +302,17 @@ export default function PaymentOptionModal({
                   <p className="text-[11px] text-zinc-500 mb-4 pl-6 text-left">Pay deposit now & balance on delivery</p>
                   <div className="pl-6 pt-2 border-t border-zinc-100 mt-auto text-left flex flex-col gap-1.5">
                     <div className="flex justify-between items-center text-[11px] text-zinc-500">
-                      <span>M.R.P.</span>
-                      <span className="line-through">₹{formatPrice((productDetails?.mrp || 0) * quantity)}</span>
-                    </div>
-                    {(productDetails?.discount || 0) > 0 && (
-                      <div className="flex justify-between items-center text-[11px] text-[#0d9740] font-medium">
-                        <span>Discount</span>
-                        <span>{Number(productDetails?.discount).toFixed(0)}% OFF</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between items-center text-[11px] text-zinc-500">
-                      <span>Sales Price</span>
+                      <span>Grand Total</span>
                       <span>₹{formatPrice((productDetails?.actual_rate || productDetails?.price || 0) * quantity)}</span>
                     </div>
                     <div className="flex justify-between items-center text-[11px] text-zinc-500">
-                      <span>Balance on Delivery</span>
+                      <span>Pay Now (Deposit)</span>
+                      <span>₹{formatPrice((productDetails?.COD_Display || productDetails?.cod_display || 0) * quantity)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-[11px] text-zinc-500">
+                      <span>Pay on Delivery</span>
                       <span>₹{formatPrice((productDetails?.COD_value || productDetails?.cod_value || 0) * quantity)}</span>
                     </div>
-                    {(productDetails?.COD_discount || productDetails?.cod_discount || 0) > 0 && (
-                      <div className="flex justify-between items-center text-[11px] text-[#0d9740] font-medium">
-                        <span>COD Discount</span>
-                        <span>-₹{formatPrice((productDetails?.COD_discount || productDetails?.cod_discount || 0) * quantity)}</span>
-                      </div>
-                    )}
                     <div className="flex justify-between items-center pt-2 border-t border-zinc-100 mt-1">
                       <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Pay Deposit</span>
                       <span className="text-base font-extrabold text-[#0f291b]">
@@ -298,35 +325,33 @@ export default function PaymentOptionModal({
             </div>
 
             {/* Quantity Selector */}
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-zinc-100 px-1">
+            <div className="flex items-center justify-between py-3 px-4 bg-zinc-50 border border-zinc-100 rounded-[14px]">
               <div className="flex flex-col gap-0.5 text-left">
-                <span className="text-sm font-bold text-[#0F291B]">Quantity</span>
+                <span className="text-xs font-bold text-[#0F291B]">Quantity</span>
                 {productDetails?.moq > 1 && (
                   <span className="text-[10px] text-zinc-500 font-medium">
-                    Minimum Order: {productDetails.moq} {productDetails.measurement_unit || "Nos"}
+                    Minimum: {productDetails.moq} {productDetails.stock_uom || "Nos"}
                   </span>
                 )}
               </div>
-              <div className="flex items-center bg-[#F4F6F4] rounded-[9999px] px-4 py-2 gap-5 shadow-sm">
+              <div className="flex items-center bg-white rounded-full border border-zinc-200 px-3 py-1 gap-4 shadow-sm">
                 <button
-                  onClick={() => setQuantity(prev => Math.max(productDetails?.moq || 1, prev - 1))}
-                  className="text-zinc-500 hover:text-[#0F291B] font-extrabold text-[18px] px-2 transition-colors"
+                  onClick={() => setQuantity((prev) => Math.max(productDetails?.moq || 1, prev - 1))}
+                  className="text-zinc-500 hover:text-[#0F291B] font-extrabold text-sm px-1 transition-colors"
                 >
                   −
                 </button>
-                <span className="font-extrabold text-sm text-[#0F291B] min-w-4 text-center">
-                  {quantity}
-                </span>
+                <span className="font-extrabold text-sm text-[#0F291B] min-w-4 text-center">{quantity}</span>
                 <button
-                  onClick={() => setQuantity(prev => prev + 1)}
-                  className="text-zinc-500 hover:text-[#0F291B] font-extrabold text-[18px] px-2 transition-colors"
+                  onClick={() => setQuantity((prev) => prev + 1)}
+                  className="text-zinc-500 hover:text-[#0F291B] font-extrabold text-sm px-1 transition-colors"
                 >
                   +
                 </button>
               </div>
             </div>
 
-            {/* Buttons */}
+            {/* Action buttons */}
             <div className="flex gap-3 justify-end">
               <button
                 onClick={onClose}
@@ -346,10 +371,10 @@ export default function PaymentOptionModal({
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    Adding...
+                    {isInCart ? "Updating..." : "Adding..."}
                   </>
                 ) : (
-                  "Add to Cart"
+                  isInCart ? "Update Cart" : "Add to Cart"
                 )}
               </button>
             </div>
@@ -367,14 +392,12 @@ export default function PaymentOptionModal({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             )}
           </svg>
-          <span className="font-medium font-inter">{toastMessage}</span>
+          <span className="text-sm font-bold">{toastMessage}</span>
         </div>
       )}
 
-      <LoginPrompt 
-        isOpen={showLoginPrompt} 
-        onClose={() => setShowLoginPrompt(false)} 
-      />
+      {/* Login Prompt Popup */}
+      <LoginPrompt isOpen={showLoginPrompt} onClose={() => setShowLoginPrompt(false)} />
     </div>
   );
 }

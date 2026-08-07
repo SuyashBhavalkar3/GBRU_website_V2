@@ -12,10 +12,12 @@ export default function BestSellingTools() {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [cartItemCodes, setCartItemCodes] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
+        setLoading(true);
         const res = await fetch("/api/products/featured", { method: "POST" });
         if (!res.ok) {
           throw new Error("Failed to load featured tools.");
@@ -29,7 +31,6 @@ export default function BestSellingTools() {
           throw new Error("Invalid JSON");
         }
         if (data?.message?.status && Array.isArray(data.message.data?.data)) {
-          // Take first 4 items for featured section
           setProducts(data.message.data.data.slice(0, 4));
         }
       } catch (e) {
@@ -39,6 +40,34 @@ export default function BestSellingTools() {
       }
     };
     fetchFeatured();
+  }, []);
+
+  useEffect(() => {
+    const fetchCartStatus = async () => {
+      const user = localStorage.getItem("gbru_user");
+      if (!user) return;
+      try {
+        const parsed = JSON.parse(user);
+        const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+        if (!mobile_no) return;
+        const res = await fetch("/api/cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mobile_no })
+        });
+        if (res.ok) {
+          const json = await res.json();
+          const items = json.message?.data?.items || [];
+          setCartItemCodes(items.map((i: any) => i.item));
+        }
+      } catch (e) {
+        console.error("Failed to fetch cart status:", e);
+      }
+    };
+
+    fetchCartStatus();
+    window.addEventListener("cartUpdate", fetchCartStatus);
+    return () => window.removeEventListener("cartUpdate", fetchCartStatus);
   }, []);
 
   const handleAddToCart = (product: any) => {
@@ -150,7 +179,7 @@ export default function BestSellingTools() {
                     onClick={() => handleAddToCart(product)}
                     className="w-full h-11 bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-sm rounded-xl shadow-sm transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.99]"
                   >
-                    Add to Cart
+                    {cartItemCodes.includes(product.item_code) ? "Update Cart" : "Add to Cart"}
                   </button>
                 </div>
               </div>
