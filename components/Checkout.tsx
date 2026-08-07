@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ToastContext";
 import Navbar from "@/components/Navbar";
 
 export default function Checkout() {
@@ -206,7 +207,14 @@ export default function Checkout() {
           body: JSON.stringify({ mobile_no: checkoutMobile })
         });
         if (checkoutRes.ok) {
-          const checkoutJson = await checkoutRes.json();
+          const text_checkoutJson = await checkoutRes.text();
+          let checkoutJson;
+          try {
+            checkoutJson = JSON.parse(text_checkoutJson);
+          } catch (e) {
+            console.error("Failed to parse JSON:", text_checkoutJson);
+            checkoutJson = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
+          }
           if (checkoutJson.message?.status && checkoutJson.message.data) {
             const checkoutItems = checkoutJson.message.data.items || [];
             if (checkoutItems.length === 0) {
@@ -290,7 +298,14 @@ export default function Checkout() {
           headers: { "Content-Type": "application/json" }
         });
         if (res.ok) {
-          const json = await res.json();
+          const text_json = await res.text();
+          let json;
+          try {
+            json = JSON.parse(text_json);
+          } catch (e) {
+            console.error("Failed to parse JSON:", text_json);
+            json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
+          }
           if (json.message?.status && Array.isArray(json.message?.data)) {
             setStates(json.message.data);
           }
@@ -332,7 +347,14 @@ export default function Checkout() {
           body: JSON.stringify({ state_id: formData.state })
         });
         if (res.ok) {
-          const json = await res.json();
+          const text_json = await res.text();
+          let json;
+          try {
+            json = JSON.parse(text_json);
+          } catch (e) {
+            console.error("Failed to parse JSON:", text_json);
+            json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
+          }
           if (json.message?.status && Array.isArray(json.message?.data)) {
             setDistricts(json.message.data);
           }
@@ -358,7 +380,14 @@ export default function Checkout() {
           body: JSON.stringify({ district_id: formData.district })
         });
         if (res.ok) {
-          const json = await res.json();
+          const text_json = await res.text();
+          let json;
+          try {
+            json = JSON.parse(text_json);
+          } catch (e) {
+            console.error("Failed to parse JSON:", text_json);
+            json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
+          }
           if (json.message?.status && Array.isArray(json.message?.data)) {
             setTahsils(json.message.data);
           }
@@ -384,7 +413,14 @@ export default function Checkout() {
           body: JSON.stringify({ tehsil_id: formData.city })
         });
         if (res.ok) {
-          const json = await res.json();
+          const text_json = await res.text();
+          let json;
+          try {
+            json = JSON.parse(text_json);
+          } catch (e) {
+            console.error("Failed to parse JSON:", text_json);
+            json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
+          }
           if (json.message?.status && Array.isArray(json.message?.data)) {
             setMarketplaces(json.message.data);
           }
@@ -435,7 +471,14 @@ export default function Checkout() {
         body: JSON.stringify({ mobile_no, api_key, api_secret, name })
       });
 
-      const json = await res.json();
+      const text_json = await res.text();
+      let json;
+      try {
+        json = JSON.parse(text_json);
+      } catch (e) {
+        console.error("Failed to parse JSON:", text_json);
+        json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
+      }
       if (!res.ok || !json.message?.status) {
         // Revert optimistic update
         setSavedAddresses(previousAddresses);
@@ -457,14 +500,14 @@ export default function Checkout() {
             }
           } catch (e) { }
         }
-        showAlert(errorMsg, "Deletion Error");
+        showToast(errorMsg, "error");
       }
     } catch (e) {
       console.error(e);
       // Revert optimistic update
       setSavedAddresses(previousAddresses);
       setSelectedAddressIndex(previousIndex);
-      showAlert("Error deleting address", "Error");
+      showToast("Error deleting address", "error");
     }
   };
 
@@ -495,7 +538,14 @@ export default function Checkout() {
         body: JSON.stringify({ mobile_no, api_key, api_secret, name })
       });
 
-      const json = await res.json();
+      const text_json = await res.text();
+      let json;
+      try {
+        json = JSON.parse(text_json);
+      } catch (e) {
+        console.error("Failed to parse JSON:", text_json);
+        json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
+      }
       if (!res.ok || !json.message?.status) {
         // Revert optimistic update
         setSavedAddresses(previousAddresses);
@@ -512,19 +562,19 @@ export default function Checkout() {
             }
           } catch (e) { }
         }
-        showAlert(errorMsg, "Error");
+        showToast(errorMsg, "error");
       }
     } catch (e) {
       console.error(e);
       // Revert optimistic update
       setSavedAddresses(previousAddresses);
-      showAlert("Error setting primary address", "Error");
+      showToast("Error setting primary address", "error");
     }
   };
 
   const handleSaveAddress = async () => {
     if (!formData.fullName || !formData.mobile || !formData.pin || !formData.village || !formData.city || !formData.district || !formData.state || !formData.address1) {
-      showAlert("Please fill all required fields", "Missing Information");
+      showToast("Please fill all required fields", "warning");
       return;
     }
 
@@ -532,7 +582,7 @@ export default function Checkout() {
     try {
       const userStr = localStorage.getItem("gbru_user");
       if (!userStr) {
-        showAlert("Please login first", "Authentication Required");
+        showToast("Please login first", "error");
         return;
       }
 
@@ -572,7 +622,14 @@ export default function Checkout() {
         body: JSON.stringify({ mobile_no, api_key, api_secret, address_data })
       });
 
-      const json = await res.json();
+      const text_json = await res.text();
+      let json;
+      try {
+        json = JSON.parse(text_json);
+      } catch (e) {
+        console.error("Failed to parse JSON:", text_json);
+        json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
+      }
       if (res.ok && json.message?.status) {
         const returnedAddress = json.message.data;
         if (editingAddressName) {
@@ -615,7 +672,7 @@ export default function Checkout() {
       }
     } catch (e) {
       console.error(e);
-      showAlert("Error saving address", "Error");
+      showToast("Error saving address", "error");
     } finally {
       setIsSavingAddress(false);
     }
@@ -701,7 +758,14 @@ export default function Checkout() {
         })
       });
 
-      const data = await res.json();
+      const text_data = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text_data);
+      } catch (e) {
+        console.error("Failed to parse JSON:", text_data);
+        data = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
+      }
       if (data.status && data.token && data.actionUrl) {
         // Clear cart to avoid showing stale cart items upon return
         localStorage.removeItem("gbru_cart");

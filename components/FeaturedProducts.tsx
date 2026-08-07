@@ -39,12 +39,20 @@ export default function FeaturedProducts() {
     async function loadFeatured() {
       try {
         const res = await fetch("/api/products?category_id=");
-        if (res.ok) {
-          const json = await res.json();
-          if (json.message?.status && Array.isArray(json.message?.data?.data)) {
-            // Take the first 10 items for the featured display
-            setProducts(json.message.data.data.slice(0, 10));
-          }
+        if (!res.ok) {
+          throw new Error("Failed to load featured products.");
+        }
+        const text = await res.text();
+        let json;
+        try {
+          json = JSON.parse(text);
+        } catch (e) {
+          console.error("Failed to parse featured JSON:", text);
+          throw new Error("Invalid JSON from featured endpoint");
+        }
+        if (json?.message?.status && Array.isArray(json.message.data?.data)) {
+          // Take the first 10 items for the featured display
+          setProducts(json.message.data.data.slice(0, 10));
         }
       } catch (err) {
         console.error("Failed to load featured products:", err);

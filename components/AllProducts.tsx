@@ -25,8 +25,17 @@ function AllProductsContent() {
         } else {
           res = await fetch("/api/products/featured", { method: "POST" });
         }
-        
-        const data = await res.json();
+        if (!res.ok) {
+          throw new Error("Failed to load products");
+        }
+        const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch(e) {
+          console.error("Failed to parse AllProducts JSON:", text);
+          throw new Error("Invalid JSON");
+        }
         
         if (searchQuery) {
           if (data?.message?.data?.data && Array.isArray(data.message.data.data)) {

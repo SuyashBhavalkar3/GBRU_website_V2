@@ -131,13 +131,18 @@ export default function Hero() {
                 <Link href="/all_products" className="bg-[#0D9740] hover:bg-[#0b8036] text-white font-roboto font-bold text-[14px] leading-none w-[185px] h-[58px] min-h-[48px] rounded-[32px] pt-[16px] pr-[32px] pb-[16px] pl-[32px] flex items-center justify-center transition-all duration-200 hover:scale-[1.02] cursor-pointer shadow-lg">
                   Explore Products
                 </Link>
-                <button className="flex items-center justify-center gap-[7.99px] bg-white border border-[#2B7832] text-[#2B7832] font-roboto font-bold text-[14px] leading-none w-[185px] h-[58px] min-h-[48px] rounded-[32px] pt-[16px] pr-[32px] pb-[16px] pl-[32px] transition-all duration-200 cursor-pointer shadow-md">
+                <a 
+                  href="https://www.youtube.com/playlist?list=PLHXlLG4lLpM1RC3vTHQf8iDX5jAI707Jm"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-[7.99px] bg-white border border-[#2B7832] text-[#2B7832] font-roboto font-bold text-[14px] leading-none w-[185px] h-[58px] min-h-[48px] rounded-[32px] pt-[16px] pr-[32px] pb-[16px] pl-[32px] transition-all duration-200 cursor-pointer shadow-md"
+                >
                   <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="10" stroke="#2B7832" strokeWidth="2.5" fill="none" />
                     <path d="M10 8.5V15.5L15.5 12L10 8.5Z" fill="#2B7832" />
                   </svg>
                   Watch Demo
-                </button>
+                </a>
               </div>
 
               {/* Feature Pill Card (White pill bottom left) */}
@@ -234,19 +239,45 @@ export default function Hero() {
 
             {/* YouTube Video Box properties - Flex row of 3 cards */}
             <div className="flex flex-wrap lg:flex-nowrap justify-center gap-3 w-full max-w-[500px]">
-              {[0, 1, 2].map((i) => (
-                <div
+              {[
+                {
+                  url: "https://www.youtube.com/watch?v=GTNiviig9Z0&list=PLHXlLG4lLpM1nsq-u5QYMel-p24VXjyUw&index=1",
+                  thumbnail: "https://img.youtube.com/vi/GTNiviig9Z0/maxresdefault.jpg",
+                  subtitle: "watch our",
+                  title: "Diesel Power Weeder"
+                },
+                {
+                  url: "https://www.youtube.com/shorts/l6gdhNhF0mc",
+                  thumbnail: "/assets/drone-sprayer-thumbnail.png",
+                  subtitle: "watch our",
+                  title: "Drone Sprayer"
+                },
+                {
+                  url: "https://www.youtube.com/watch?v=ismU9cWjqJE&list=PLHXlLG4lLpM3M2gek-b4RVCJV3hBecrf8&index=1",
+                  thumbnail: "https://img.youtube.com/vi/ismU9cWjqJE/maxresdefault.jpg",
+                  subtitle: "watch our",
+                  title: "Kisan Expo 2025"
+                }
+              ].map((video, i) => (
+                <a
+                  href={video.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   key={i}
                   className="relative group w-[154.6px] h-[131.01px] max-w-[169.77px] rounded-[11.32px] overflow-hidden border-[0.71px] border-white/10 p-[11.32px] flex flex-col gap-[2.69px] bg-neutral-800/80 backdrop-blur-md shadow-xl transition-transform duration-300 hover:scale-[1.03] text-left"
                 >
                   {/* Video Thumbnail Wrapper (132x75, rounded 6px) */}
                   <div className="relative w-[132px] h-[75px] rounded-[6px] overflow-hidden bg-black flex-shrink-0 z-10">
-                    <Image
-                      src="/assets/youtube-thumbnail.png"
-                      alt="YouTube Video Thumbnail"
-                      fill
-                      className="object-cover z-0"
-                    />
+                    {video.thumbnail.startsWith('http') ? (
+                      <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover z-0" />
+                    ) : (
+                      <Image
+                        src={video.thumbnail}
+                        alt="YouTube Video Thumbnail"
+                        fill
+                        className="object-cover z-0"
+                      />
+                    )}
                     {/* Play Button Icon Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/10 group-hover:bg-black/25 transition-colors">
                       <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110 cursor-pointer">
@@ -259,10 +290,10 @@ export default function Hero() {
 
                   {/* Info text at the bottom left */}
                   <div className="relative z-20 font-roboto text-left flex flex-col justify-center min-w-0 mt-0.5">
-                    <span className="block text-[8px] text-white/50 uppercase tracking-wider font-semibold leading-none">watch our</span>
-                    <span className="block text-[10px] text-white font-bold leading-tight mt-0.5 truncate">Kisan Expo 2025</span>
+                    <span className="block text-[8px] text-white/50 uppercase tracking-wider font-semibold leading-none">{video.subtitle}</span>
+                    <span className="block text-[10px] text-white font-bold leading-tight mt-0.5 truncate">{video.title}</span>
                   </div>
-                </div>
+                </a>
               ))}
             </div>
 

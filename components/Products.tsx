@@ -59,11 +59,16 @@ export default function Products() {
       try {
         const res = await fetch(`/api/subcategories?category_id=${categoryId}`);
         if (res.ok) {
-          const json = await res.json();
-          if (json.message?.status && Array.isArray(json.message?.data?.data)) {
-            setSubcategories(json.message.data.data);
-          } else {
-            setSubcategories([]);
+          const text = await res.text();
+          try {
+            const json = JSON.parse(text);
+            if (json.message?.status && Array.isArray(json.message.data)) {
+              setSubcategories(json.message.data);
+            } else {
+              setSubcategories([]);
+            }
+          } catch (e) {
+            console.error("Failed to parse subcategories JSON:", text);
           }
         }
       } catch (err) {
@@ -91,9 +96,15 @@ export default function Products() {
         if (!response.ok) {
           throw new Error("Failed to load products for this category.");
         }
-        const json = await response.json();
-
-        if (json.message?.status && Array.isArray(json.message?.data?.data)) {
+        const text = await response.text();
+        let json;
+        try {
+          json = JSON.parse(text);
+        } catch (e) {
+          console.error("Failed to parse products JSON:", text);
+          throw new Error("Failed to parse products data");
+        }
+        if (json?.message?.status && Array.isArray(json.message.data?.data)) {
           setProductsList(json.message.data.data);
         } else {
           setProductsList([]);
