@@ -9,9 +9,18 @@ interface ERPTicket {
   name: string; // Ticket ID
   complaint_type: string;
   order?: string;
+  order_id?: string;
   description: string;
   status: string; // Open, Resolved, etc.
   creation: string; // Created Date
+  created?: string;
+  created_on?: string;
+  created_at?: string;
+  creation_date?: string;
+  modified?: string;
+  date?: string;
+  subject?: string;
+  complaint_subject?: string;
 }
 
 export default function SupportHelpPage() {
@@ -475,14 +484,29 @@ export default function SupportHelpPage() {
                             <h4 className="font-bold text-[#0F291B] text-sm font-roboto line-clamp-1 mb-1">
                               Category: {tkt.complaint_type}
                             </h4>
-                            {tkt.order && (
+                            {(tkt.subject || tkt.complaint_subject) && (
+                              <p className="text-zinc-700 text-xs font-bold mb-1">
+                                Subject: {tkt.subject || tkt.complaint_subject}
+                              </p>
+                            )}
+                            {(tkt.order || tkt.order_id) && (
                               <p className="text-[#1E532E] text-xs font-bold mb-1.5">
-                                Order: {tkt.order}
+                                Order: {tkt.order || tkt.order_id}
                               </p>
                             )}
                             <p className="text-zinc-600 text-xs font-medium mb-2 leading-relaxed whitespace-pre-wrap">{tkt.description}</p>
                             <div className="text-[10px] text-zinc-400 font-medium text-right">
-                              Created on: {tkt.creation?.split(" ")[0]}
+                              Created on: {(() => {
+                                const standardDate = tkt.creation || tkt.created || tkt.created_on || tkt.created_at || tkt.creation_date || tkt.modified || tkt.date;
+                                if (standardDate) return standardDate.split(" ")[0];
+                                const matchYMD = tkt.name ? tkt.name.match(/C[M|O][P|M]-(\d{4})(\d{2})?-?/) : null;
+                                if (matchYMD) {
+                                  const year = matchYMD[1];
+                                  const month = matchYMD[2];
+                                  return month && year ? `01-${month}-${year}` : (year || "N/A");
+                                }
+                                return "N/A";
+                              })()}
                             </div>
                           </div>
                         ))
