@@ -219,7 +219,11 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
   }
 
   const summary = order.order_summary || {};
-  const payAmount = Number(summary.payupreferedamount || summary.pending_amount || 0);
+  const isFullPayment = summary.is_full_payment === 1 || String(summary.is_full_payment).toLowerCase() === "true" || String(summary.payment_type).toLowerCase() === "full payment";
+  const isBookingPaid = Number(summary.received_amount || 0) >= Number(summary.payupreferedamount || 0);
+  const payAmount = isFullPayment
+    ? Number(summary.pending_amount || 0)
+    : (!isBookingPaid ? Number(summary.payupreferedamount || 0) : 0);
   const shipment = order.shipment || {};
   const items = shipment.items || [];
   const statusDisplay = shipment.status || summary.allowed_action || "Pending Payment";
@@ -473,7 +477,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                     onClick={handlePayNow}
                     className="w-full bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold py-3.5 rounded-xl text-xs font-roboto transition-all shadow-md flex items-center justify-center gap-1.5 duration-300 mt-2 active:scale-[0.98]"
                   >
-                    💳 Pay Now (₹{payAmount.toLocaleString('en-IN')})
+                    💳 {isFullPayment ? "Pay Now" : "Pay Booking Deposit"} (₹{payAmount.toLocaleString('en-IN')})
                   </button>
                 )}
               </div>
