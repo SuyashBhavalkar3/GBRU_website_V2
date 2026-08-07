@@ -95,8 +95,7 @@ export default function BestSellingTools() {
           
           // Generate specs based on item category or fallback properties
           const specs = [
-            `MOQ: ${product.moq} ${product.stock_uom}`,
-            `GST HSN: ${product.gst_hsn_code || "8432"}`
+            `MOQ: ${product.moq} ${product.stock_uom}`
           ];
 
           const itemImage = product.custom_image_1 || product.image || "/assets/sprayer.png";

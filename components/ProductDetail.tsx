@@ -235,7 +235,7 @@ function ProductDetailContent() {
             {product.item_name}
           </h1>
           <p className="text-[#6B7280] text-[16px] font-medium">
-            Brand: <span className="text-[#0D9740] font-bold">{product.brand || "GBRU"}</span> | Code: {product.item_code}
+            Brand: <span className="text-[#0D9740] font-bold">{product.brand || "GBRU"}</span>
           </p>
 
           {/* Quick Badges Row */}
@@ -618,10 +618,7 @@ function ProductDetailContent() {
                   <span className="text-zinc-500">Brand</span>
                   <span className="font-bold text-[#0F291B]">{product.brand || "GBRU"}</span>
                 </div>
-                <div className="flex justify-between py-3 border-b border-zinc-100">
-                  <span className="text-zinc-500">Item Code</span>
-                  <span className="font-bold text-[#0F291B]">{product.item_code}</span>
-                </div>
+
                 <div className="flex justify-between py-3 border-b border-zinc-100">
                   <span className="text-zinc-500">Minimum Order Quantity</span>
                   <span className="font-bold text-[#0F291B]">{product.moq} {product.measurement_unit || "Nos"}</span>

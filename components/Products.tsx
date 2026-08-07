@@ -297,11 +297,6 @@ export default function Products() {
                               {product.brand.toUpperCase()}
                             </span>
                           )}
-                          {product.gst_hsn_code && (
-                            <span className="bg-[#F3F4F6] text-[#4B5563] text-[9px] font-bold px-2 py-0.5 rounded">
-                              HSN: {product.gst_hsn_code}
-                            </span>
-                          )}
                         </div>
 
                         <div className="mt-auto">
