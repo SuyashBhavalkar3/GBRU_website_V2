@@ -17,7 +17,17 @@ export default function BestSellingTools() {
     const fetchFeatured = async () => {
       try {
         const res = await fetch("/api/products/featured", { method: "POST" });
-        const data = await res.json();
+        if (!res.ok) {
+          throw new Error("Failed to load featured tools.");
+        }
+        const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch(e) {
+          console.error("Failed to parse featured JSON:", text);
+          throw new Error("Invalid JSON");
+        }
         if (data?.message?.status && Array.isArray(data.message.data?.data)) {
           // Take first 4 items for featured section
           setProducts(data.message.data.data.slice(0, 4));

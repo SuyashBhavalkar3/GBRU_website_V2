@@ -6,19 +6,15 @@ import Link from "next/link";
 import { Package, MapPin, Banknote, Bell, Headphones, ClipboardList, CheckCircle2, XCircle, Home, Plus, Edit3, Trash2, HelpCircle, MessageSquare, Phone } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-
-interface Address {
-  id: string;
-  name: string;
-  phone: string;
-  address: string;
-  isDefault: boolean;
-}
+import { useToast } from "./ToastContext";
 
 export default function UserProfile() {
   // Modal states
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showAddAddressModal, setShowAddAddressModal] = useState(false);
+  const [editingAddressName, setEditingAddressName] = useState<string | null>(null);
+  
+  const { showToast } = useToast();
 
   // User States
   const [userName, setUserName] = useState("Loading...");
@@ -26,10 +22,34 @@ export default function UserProfile() {
   const [userPhone, setUserPhone] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const [addresses, setAddresses] = useState<Address[]>([]);
+  // Form states for profile edit
+  const [tempName, setTempName] = useState("");
+  const [tempPhone, setTempPhone] = useState("");
+
+  // Address states
+  const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+  const [states, setStates] = useState<any[]>([]);
+  const [districts, setDistricts] = useState<any[]>([]);
+  const [tahsils, setTahsils] = useState<any[]>([]);
+  const [marketplaces, setMarketplaces] = useState<any[]>([]);
+  
+  const [formData, setFormData] = useState({
+    fullName: "",
+    mobile: "",
+    pin: "",
+    village: "", 
+    city: "", 
+    district: "",
+    state: "",
+    address1: "",
+    address2: "",
+    saveAddress: false,
+  });
+
+  const [isSavingAddress, setIsSavingAddress] = useState(false);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUserAndAddresses = async () => {
       try {
         const stored = localStorage.getItem("gbru_user");
         if (!stored) {
@@ -38,14 +58,27 @@ export default function UserProfile() {
         }
 
         const parsed = JSON.parse(stored);
-        const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id;
-
+        let mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+        if (mobile_no && mobile_no.includes("@")) {
+          mobile_no = mobile_no.split("@")[0];
+        }
+        
+        // 1. Fetch User Details
         const res = await fetch('/api/user-details', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ mobile_no })
         });
-        const data = await res.json();
+        
+        let data;
+        if (res.ok) {
+          const text = await res.text();
+          try {
+            data = JSON.parse(text);
+          } catch(e) {
+            console.error("Failed to parse user details JSON:", text);
+          }
+        }
 
         if (data?.message?.status && data?.message?.data) {
           const ud = data.message.data;
@@ -53,35 +86,163 @@ export default function UserProfile() {
           setUserName(ud.Customer_name ? ud.Customer_name.split(" ")[0] : "User");
           const phone = ud.customer_id?.split('-')[1] || mobile_no;
           setUserPhone(`+91 ${phone}`);
+          setTempName(ud.Customer_name || "");
+          setTempPhone(`+91 ${phone}`);
+        }
 
-          if (ud.address) {
-            setAddresses([{
-              id: "1",
-              name: ud.Customer_name || "User",
-              phone: `+91 ${phone}`,
-              address: ud.address,
-              isDefault: true,
-            }]);
+        // 2. Fetch Shipping Addresses
+        const api_key = parsed.key_details?.api_key || parsed.api_key;
+        const api_secret = parsed.key_details?.api_secret || parsed.api_secret;
+
+        const addressRes = await fetch("/api/shipping-address", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mobile_no, api_key, api_secret })
+        });
+        
+        if (addressRes.ok) {
+          const text = await addressRes.text();
+          try {
+            const json = JSON.parse(text);
+            if (json.message?.status && Array.isArray(json.message?.data)) {
+              setSavedAddresses(json.message.data);
+            }
+          } catch(e) {
+            console.error("Failed to parse addresses JSON:", text);
           }
         }
       } catch (err) {
-        console.error("Error fetching user details", err);
+        console.error("Error fetching user details or addresses", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchUser();
+
+    fetchUserAndAddresses();
   }, []);
 
-  // Form states
-  const [tempName, setTempName] = useState(userFullName);
-  const [tempPhone, setTempPhone] = useState(userPhone);
+  // Fetch states
+  useEffect(() => {
+    async function fetchStates() {
+      try {
+        const res = await fetch("/api/states", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" }
+        });
+        if (res.ok) {
+          const text = await res.text();
+          try {
+            const json = JSON.parse(text);
+            if (json.message?.status && Array.isArray(json.message?.data)) {
+              const uniqueStates = Array.from(new Map(json.message.data.map((item: any) => [item.name, item])).values());
+              setStates(uniqueStates);
+            }
+          } catch(e) {
+            console.error("Failed to parse states JSON:", text);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch states", e);
+      }
+    }
+    fetchStates();
+  }, []);
 
-  const [newAddressForm, setNewAddressForm] = useState({
-    name: "",
-    phone: "",
-    address: "",
-  });
+  // Fetch districts when state changes
+  useEffect(() => {
+    async function fetchDistricts() {
+      if (!formData.state) {
+        setDistricts([]);
+        return;
+      }
+      try {
+        const res = await fetch("/api/districts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ state_id: formData.state })
+        });
+        if (res.ok) {
+          const text = await res.text();
+          try {
+            const json = JSON.parse(text);
+            if (json.message?.status && Array.isArray(json.message?.data)) {
+              const uniqueDistricts = Array.from(new Map(json.message.data.map((item: any) => [item.name, item])).values());
+              setDistricts(uniqueDistricts);
+            }
+          } catch(e) {
+            console.error("Failed to parse districts JSON:", text);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch districts", e);
+      }
+    }
+    fetchDistricts();
+  }, [formData.state]);
+
+  // Fetch tahsils when district changes
+  useEffect(() => {
+    async function fetchTahsils() {
+      if (!formData.district) {
+        setTahsils([]);
+        return;
+      }
+      try {
+        const res = await fetch("/api/tahsils", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ district_id: formData.district })
+        });
+        if (res.ok) {
+          const text = await res.text();
+          try {
+            const json = JSON.parse(text);
+            if (json.message?.status && Array.isArray(json.message?.data)) {
+              const uniqueTahsils = Array.from(new Map(json.message.data.map((item: any) => [item.name, item])).values());
+              setTahsils(uniqueTahsils);
+            }
+          } catch(e) {
+            console.error("Failed to parse tahsils JSON:", text);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch tahsils", e);
+      }
+    }
+    fetchTahsils();
+  }, [formData.district]);
+
+  // Fetch marketplaces when tehsil changes
+  useEffect(() => {
+    async function fetchMarketplaces() {
+      if (!formData.city) {
+        setMarketplaces([]);
+        return;
+      }
+      try {
+        const res = await fetch("/api/marketplaces", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tehsil_id: formData.city })
+        });
+        if (res.ok) {
+          const text = await res.text();
+          try {
+            const json = JSON.parse(text);
+            if (json.message?.status && Array.isArray(json.message?.data)) {
+              const uniqueMarketplaces = Array.from(new Map(json.message.data.map((item: any) => [item.name, item])).values());
+              setMarketplaces(uniqueMarketplaces);
+            }
+          } catch(e) {
+            console.error("Failed to parse marketplaces JSON:", text);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch marketplaces", e);
+      }
+    }
+    fetchMarketplaces();
+  }, [formData.city]);
 
   const handleEditProfile = (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,25 +253,215 @@ export default function UserProfile() {
     setShowEditProfileModal(false);
   };
 
-  const handleAddAddress = (e: React.FormEvent) => {
+  const handleSaveAddress = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newAddressForm.name || !newAddressForm.phone || !newAddressForm.address) return;
+    if (!formData.fullName || !formData.mobile || !formData.pin || !formData.village || !formData.city || !formData.district || !formData.state || !formData.address1) {
+      showToast("Please fill all required fields", "warning");
+      return;
+    }
 
-    const created: Address = {
-      id: String(Date.now()),
-      name: newAddressForm.name,
-      phone: newAddressForm.phone,
-      address: newAddressForm.address,
-      isDefault: false,
-    };
+    setIsSavingAddress(true);
+    try {
+      const userStr = localStorage.getItem("gbru_user");
+      if (!userStr) {
+        showToast("Please login first", "error");
+        return;
+      }
 
-    setAddresses([...addresses, created]);
-    setShowAddAddressModal(false);
-    setNewAddressForm({ name: "", phone: "", address: "" });
+      const user = JSON.parse(userStr);
+      let mobile_no = user.mobile_no || user.user_id || user.customer_id;
+      if (mobile_no && mobile_no.includes("@")) {
+        mobile_no = mobile_no.split("@")[0];
+      }
+      const api_key = user.key_details?.api_key || user.api_key;
+      const api_secret = user.key_details?.api_secret || user.api_secret;
+      const email_id = user.user_id && user.user_id.includes("@") ? user.user_id : (user.email || "");
+
+      const address_data: any = {
+        address_title: formData.fullName,
+        address_line1: formData.address1,
+        address_line2: formData.address2 || "",
+        marketplace: formData.village, 
+        tahsil: formData.city,         
+        district: formData.district,   
+        state: formData.state,
+        pincode: formData.pin,
+        country: "India",
+        email_id: email_id,
+        phone: formData.mobile
+      };
+
+      if (editingAddressName) {
+        address_data.name = editingAddressName;
+      }
+
+      const endpoint = editingAddressName ? "/api/shipping-address/update" : "/api/shipping-address/add";
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile_no, api_key, api_secret, address_data })
+      });
+
+      const text_json = await res.text();
+        let json;
+        try {
+          json = JSON.parse(text_json);
+        } catch (e) {
+          console.error("Failed to parse JSON:", text_json);
+          json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
+        }
+      if (res.ok && json.message?.status) {
+        const returnedAddress = json.message.data;
+        if (editingAddressName) {
+          const updatedAddresses = savedAddresses.map(a => 
+            a.name === editingAddressName ? returnedAddress : a
+          );
+          setSavedAddresses(updatedAddresses);
+        } else {
+          setSavedAddresses([...savedAddresses, returnedAddress]);
+        }
+        setShowAddAddressModal(false);
+        setEditingAddressName(null);
+        setFormData({
+          fullName: "", mobile: "", pin: "", village: "", city: "", district: "", state: "", address1: "", address2: "", saveAddress: false
+        });
+        showToast(editingAddressName ? "Address updated successfully" : "Address saved successfully", "success");
+      } else {
+          let errorMessage = json.error || json.message?.message || "Failed to save address";
+          if (json._server_messages) {
+            try {
+              const serverMessages = JSON.parse(json._server_messages);
+              if (serverMessages.length > 0) {
+                 const msgObj = JSON.parse(serverMessages[0]);
+                 if (msgObj.message) {
+                   errorMessage = msgObj.message.replace(/<[^>]*>?/gm, '');
+                 }
+              }
+            } catch (e) {
+              // Ignore
+            }
+          }
+          showToast(errorMessage, "error");
+        }
+    } catch (e) {
+      console.error(e);
+      showToast("Error saving address", "error");
+    } finally {
+      setIsSavingAddress(false);
+    }
   };
 
-  const handleDeleteAddress = (id: string) => {
-    setAddresses(addresses.filter((a) => a.id !== id));
+  const handleDeleteAddress = async (name: string) => {
+    if(!confirm("Are you sure you want to delete this address?")) return;
+
+    // Optimistically remove from state for now
+    const previousAddresses = [...savedAddresses];
+    const updatedAddresses = savedAddresses.filter(a => a.name !== name);
+    setSavedAddresses(updatedAddresses);
+
+    try {
+      const userStr = localStorage.getItem("gbru_user");
+      if (!userStr) return;
+      
+      const user = JSON.parse(userStr);
+      let mobile_no = user.mobile_no || user.user_id || user.customer_id;
+      if (mobile_no && mobile_no.includes("@")) {
+        mobile_no = mobile_no.split("@")[0];
+      }
+      const api_key = user.key_details?.api_key || user.api_key;
+      const api_secret = user.key_details?.api_secret || user.api_secret;
+
+      const res = await fetch("/api/shipping-address/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile_no, api_key, api_secret, name })
+      });
+
+      const text_json = await res.text();
+        let json;
+        try {
+          json = JSON.parse(text_json);
+        } catch (e) {
+          console.error("Failed to parse JSON:", text_json);
+          json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
+        }
+      if (!res.ok || !json.message?.status) {
+        setSavedAddresses(previousAddresses);
+        showToast(json.error || json.message?.message || "Failed to delete address", "error");
+      } else {
+        showToast("Address deleted successfully", "success");
+      }
+    } catch (e) {
+      console.error(e);
+      setSavedAddresses(previousAddresses);
+      showToast("Error deleting address", "error");
+    }
+  };
+
+  const handleMakePrimary = async (name: string) => {
+    // Optimistically update UI
+    const previousAddresses = [...savedAddresses];
+    
+    setSavedAddresses(prev => prev.map(a => ({
+      ...a,
+      is_primary: a.name === name ? 1 : 0
+    })));
+
+    try {
+      const userStr = localStorage.getItem("gbru_user");
+      if (!userStr) return;
+      
+      const user = JSON.parse(userStr);
+      let mobile_no = user.mobile_no || user.user_id || user.customer_id;
+      if (mobile_no && mobile_no.includes("@")) {
+        mobile_no = mobile_no.split("@")[0];
+      }
+      const api_key = user.key_details?.api_key || user.api_key;
+      const api_secret = user.key_details?.api_secret || user.api_secret;
+
+      const res = await fetch("/api/shipping-address/make-primary", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile_no, api_key, api_secret, name })
+      });
+
+      const text_json = await res.text();
+        let json;
+        try {
+          json = JSON.parse(text_json);
+        } catch (e) {
+          console.error("Failed to parse JSON:", text_json);
+          json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
+        }
+      if (!res.ok || !json.message?.status) {
+        setSavedAddresses(previousAddresses);
+        showToast(json.error || json.message?.message || "Failed to set primary address", "error");
+      } else {
+        showToast("Primary address updated", "success");
+      }
+    } catch (e) {
+      console.error(e);
+      setSavedAddresses(previousAddresses);
+      showToast("Error setting primary address", "error");
+    }
+  };
+
+  const openEditAddressModal = (addr: any) => {
+    setEditingAddressName(addr.name);
+    setFormData({
+      fullName: addr.address_title || "",
+      mobile: addr.phone || "",
+      pin: addr.pincode || "",
+      village: addr.marketplace || "",
+      city: addr.tahsil || "",
+      district: addr.district || "",
+      state: addr.state || "",
+      address1: addr.address_line1 || "",
+      address2: addr.address_line2 || "",
+      saveAddress: false
+    });
+    setShowAddAddressModal(true);
   };
 
   return (
@@ -143,8 +494,6 @@ export default function UserProfile() {
 
           <button
             onClick={() => {
-              setTempName(userFullName);
-              setTempPhone(userPhone);
               setShowEditProfileModal(true);
             }}
             className="h-10 px-6 border border-[#0D9740]/60 hover:bg-[#0D9740]/[0.02] text-[#0D9740] font-bold text-xs rounded-[10px] shadow-sm transition-all"
@@ -167,24 +516,30 @@ export default function UserProfile() {
               <span className="font-bold text-xs text-[#0F291B]">My Orders</span>
             </Link>
             <div
-              onClick={() => setShowAddAddressModal(true)}
+              onClick={() => {
+                setEditingAddressName(null);
+                setFormData({
+                  fullName: "", mobile: "", pin: "", village: "", city: "", district: "", state: "", address1: "", address2: "", saveAddress: false
+                });
+                setShowAddAddressModal(true);
+              }}
               className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer"
             >
               <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><MapPin className="w-5 h-5" /></div>
               <span className="font-bold text-xs text-[#0F291B]">Addresses</span>
             </div>
-            <div className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer">
+            <Link href="/payments" className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer">
               <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><Banknote className="w-5 h-5" /></div>
               <span className="font-bold text-xs text-[#0F291B]">Payments</span>
-            </div>
-            <div className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer">
+            </Link>
+            <Link href="/notifications" className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer">
               <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><Bell className="w-5 h-5" /></div>
               <span className="font-bold text-xs text-[#0F291B]">Notifications</span>
-            </div>
-            <div className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer">
+            </Link>
+            <Link href="/help-centre" className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer">
               <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><Headphones className="w-5 h-5" /></div>
               <span className="font-bold text-xs text-[#0F291B]">Support</span>
-            </div>
+            </Link>
           </div>
         </div>
 
@@ -250,7 +605,13 @@ export default function UserProfile() {
               <div className="flex justify-between items-center">
                 <h3 className="font-bold text-[#0F291B] text-[18px]">Saved Addresses</h3>
                 <button
-                  onClick={() => setShowAddAddressModal(true)}
+                  onClick={() => {
+                    setEditingAddressName(null);
+                    setFormData({
+                      fullName: "", mobile: "", pin: "", village: "", city: "", district: "", state: "", address1: "", address2: "", saveAddress: false
+                    });
+                    setShowAddAddressModal(true);
+                  }}
                   className="text-xs text-[#0D9740] font-bold hover:underline flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" /> ADD NEW ADDRESS
@@ -258,35 +619,44 @@ export default function UserProfile() {
               </div>
 
               <div className="flex flex-col gap-4">
-                {addresses.length === 0 ? (
+                {savedAddresses.length === 0 ? (
                   <span className="text-xs text-zinc-500">No saved addresses found.</span>
                 ) : (
-                  addresses.map((addr) => (
+                  savedAddresses.map((addr) => (
                     <div
-                      key={addr.id}
+                      key={addr.name}
                       className="border border-[#0D9740] bg-[#0D9740]/[0.01] rounded-[20px] p-5 flex flex-col gap-3 relative"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span className="text-[16px] text-[#0D9740]"><Home className="w-4 h-4" /></span>
-                          <span className="font-bold text-xs text-[#0F291B]">{addr.name}</span>
+                          <span className="font-bold text-xs text-[#0F291B]">{addr.address_title}</span>
                         </div>
-                        {addr.isDefault && (
+                        {addr.is_primary === 1 && (
                           <span className="bg-emerald-50 text-[#0D9740] text-[9px] font-bold py-0.5 px-2 rounded">
                             DEFAULT
                           </span>
                         )}
+                        {addr.is_primary !== 1 && (
+                          <button
+                            onClick={() => handleMakePrimary(addr.name)}
+                            className="bg-zinc-100 text-zinc-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors text-[9px] font-bold py-0.5 px-2 rounded"
+                          >
+                            MAKE DEFAULT
+                          </button>
+                        )}
                       </div>
 
                       <p className="text-xs text-[#374151] leading-relaxed">
-                        {addr.address} <br />
+                        {addr.address_line1}{addr.address_line2 ? `, ${addr.address_line2}` : ''}<br />
+                        {addr.marketplace}, {addr.tahsil}, {addr.district}, {addr.state} - {addr.pincode} <br />
                         <span className="text-zinc-500 font-medium block mt-1">Phone: {addr.phone}</span>
                       </p>
 
                       <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-wider mt-2 border-t border-zinc-100 pt-3">
-                        <button className="text-zinc-500 hover:text-[#0D9740] flex items-center gap-1"><Edit3 className="w-3.5 h-3.5" /> EDIT</button>
+                        <button onClick={() => openEditAddressModal(addr)} className="text-zinc-500 hover:text-[#0D9740] flex items-center gap-1"><Edit3 className="w-3.5 h-3.5" /> EDIT</button>
                         <button
-                          onClick={() => handleDeleteAddress(addr.id)}
+                          onClick={() => handleDeleteAddress(addr.name)}
                           className="text-red-500 hover:text-red-700 flex items-center gap-1"
                         >
                           <Trash2 className="w-3.5 h-3.5" /> DELETE
@@ -339,10 +709,10 @@ export default function UserProfile() {
                   <span className="flex items-center gap-2"><HelpCircle className="w-4 h-4 text-zinc-500" /> Visit FAQs</span>
                   <span className="text-zinc-400">›</span>
                 </Link>
-                <button className="flex items-center justify-between py-3 border-b border-zinc-100 text-left hover:text-[#0D9740] transition-colors">
+                <Link href="/help-centre" className="flex items-center justify-between py-3 border-b border-zinc-100 text-left hover:text-[#0D9740] transition-colors">
                   <span className="flex items-center gap-2"><MessageSquare className="w-4 h-4 text-zinc-500" /> Contact Support</span>
                   <span className="text-zinc-400">›</span>
-                </button>
+                </Link>
                 <button className="flex items-center justify-between py-3 bg-emerald-50/50 mt-1 px-3 rounded-lg text-left text-emerald-600 hover:text-[#0D9740] hover:bg-emerald-50 transition-colors font-bold">
                   <span className="flex items-center gap-2"><MessageSquare className="w-4 h-4" /> WhatsApp Support</span>
                   <span className="text-[14px]">↗</span>
@@ -403,59 +773,149 @@ export default function UserProfile() {
         </div>
       )}
 
-      {/* Add Address Modal */}
+      {/* Add Address Modal (Checkout style) */}
       {showAddAddressModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-xs overflow-y-auto">
           <form
-            onSubmit={handleAddAddress}
-            className="bg-white rounded-[24px] max-w-sm w-full p-6 flex flex-col gap-4 shadow-xl"
+            onSubmit={handleSaveAddress}
+            className="bg-white rounded-[24px] max-w-2xl w-full p-6 sm:p-8 flex flex-col gap-5 shadow-xl my-8"
           >
-            <h3 className="font-bold text-[#0F291B] text-lg">Add New Address</h3>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-zinc-500">Full Name</label>
-              <input
-                type="text"
-                required
-                placeholder="Enter recipient name"
-                value={newAddressForm.name}
-                onChange={(e) => setNewAddressForm({ ...newAddressForm, name: e.target.value })}
-                className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
-              />
+            <h3 className="font-bold text-[#0F291B] text-xl pb-3 border-b border-zinc-100">
+              {editingAddressName ? "Edit Address" : "Add New Address"}
+            </h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-zinc-500">Full Name</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter recipient name"
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-zinc-500">Mobile Number</label>
+                <input
+                  type="tel"
+                  required
+                  maxLength={10}
+                  placeholder="10-digit mobile number"
+                  value={formData.mobile}
+                  onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+                  className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wide">State</label>
+                <select
+                  value={formData.state}
+                  onChange={(e) => setFormData({ ...formData, state: e.target.value, district: "", city: "", village: "" })}
+                  className="h-11 px-3 border border-zinc-200 rounded-xl text-sm text-[#0F291B] focus:border-[#0D9740] focus:ring-1 focus:ring-[#0D9740] outline-none"
+                  required
+                >
+                  <option value="">Select State</option>
+                  {states.map(s => <option key={s.id || s.name} value={s.name}>{s.name}</option>)}
+                </select>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wide">District</label>
+                <select
+                  value={formData.district}
+                  onChange={(e) => setFormData({ ...formData, district: e.target.value, city: "", village: "" })}
+                  className="h-11 px-3 border border-zinc-200 rounded-xl text-sm text-[#0F291B] focus:border-[#0D9740] focus:ring-1 focus:ring-[#0D9740] outline-none disabled:bg-zinc-50"
+                  required
+                  disabled={!formData.state}
+                >
+                  <option value="">Select District</option>
+                  {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wide">Tahsil / City</label>
+                <select
+                  value={formData.city}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value, village: "" })}
+                  className="h-11 px-3 border border-zinc-200 rounded-xl text-sm text-[#0F291B] focus:border-[#0D9740] focus:ring-1 focus:ring-[#0D9740] outline-none disabled:bg-zinc-50"
+                  required
+                  disabled={!formData.district}
+                >
+                  <option value="">Select Tahsil</option>
+                  {tahsils.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                </select>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wide">Marketplace / Village</label>
+                <select
+                  value={formData.village}
+                  onChange={(e) => setFormData({ ...formData, village: e.target.value })}
+                  className="h-11 px-3 border border-zinc-200 rounded-xl text-sm text-[#0F291B] focus:border-[#0D9740] focus:ring-1 focus:ring-[#0D9740] outline-none disabled:bg-zinc-50"
+                  required
+                  disabled={!formData.city}
+                >
+                  <option value="">Select Marketplace</option>
+                  {marketplaces.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1.5 sm:col-span-2">
+                <label className="text-xs font-bold text-zinc-500">Address Line 1</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="House No., Building Name, Street"
+                  value={formData.address1}
+                  onChange={(e) => setFormData({ ...formData, address1: e.target.value })}
+                  className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-zinc-500">Address Line 2 (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="Area, Colony, Landmark"
+                  value={formData.address2}
+                  onChange={(e) => setFormData({ ...formData, address2: e.target.value })}
+                  className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-zinc-500">PIN Code</label>
+                <input
+                  type="text"
+                  required
+                  maxLength={6}
+                  placeholder="6-digit PIN"
+                  value={formData.pin}
+                  onChange={(e) => setFormData({ ...formData, pin: e.target.value })}
+                  className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
+                />
+              </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-zinc-500">Phone Number</label>
-              <input
-                type="text"
-                required
-                placeholder="10-digit mobile number"
-                value={newAddressForm.phone}
-                onChange={(e) => setNewAddressForm({ ...newAddressForm, phone: e.target.value })}
-                className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-zinc-500">Address details</label>
-              <textarea
-                required
-                placeholder="House no, Village, District, State & Pincode"
-                value={newAddressForm.address}
-                onChange={(e) => setNewAddressForm({ ...newAddressForm, address: e.target.value })}
-                className="h-20 p-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740] resize-none"
-              />
-            </div>
-            <div className="flex gap-2 justify-end mt-2">
+
+            <div className="flex gap-2 justify-end mt-4 pt-4 border-t border-zinc-100">
               <button
                 type="button"
                 onClick={() => setShowAddAddressModal(false)}
-                className="h-10 px-5 border border-zinc-300 rounded-[8px] text-xs font-bold text-zinc-500"
+                className="h-11 px-6 border border-zinc-300 rounded-[10px] text-sm font-bold text-zinc-600 hover:bg-zinc-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="h-10 px-5 bg-[#0D9740] hover:bg-[#0a7d34] text-white rounded-[8px] font-bold text-xs"
+                disabled={isSavingAddress}
+                className="h-11 px-8 bg-[#0D9740] hover:bg-[#0a7d34] text-white rounded-[10px] font-bold text-sm disabled:opacity-70 flex items-center justify-center gap-2"
               >
-                Add
+                {isSavingAddress ? (
+                  <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span> Saving...</>
+                ) : (
+                  editingAddressName ? "Update Address" : "Add Address"
+                )}
               </button>
             </div>
           </form>
