@@ -16,6 +16,7 @@ interface Order {
   payupreferedmode?: string;
   payupreferedamount?: number | string;
   unsettled_amount?: number | string;
+  payment_type?: string;
 }
 
 interface UserDetails {

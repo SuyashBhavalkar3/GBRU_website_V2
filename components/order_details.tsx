@@ -13,6 +13,8 @@ import {
   Info,
   CreditCard,
   Headphones,
+  ChevronDown,
+  ChevronUp,
   Printer,
   ArrowLeft,
   Download,
@@ -35,6 +37,9 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
   const [cancelling, setCancelling] = useState(false);
 
   // Tracking state
+  const [expandedInvoiceIdx, setExpandedInvoiceIdx] = useState<number | null>(0);
+  const [expandedTrackingId, setExpandedTrackingId] = useState<string | null>(null);
+  const [individualTrackingData, setIndividualTrackingData] = useState<Record<string, { data?: any; loading: boolean; error?: string }>>({});
   const [activeTrackingSticker, setActiveTrackingSticker] = useState<string | null>(null);
   const [trackingData, setTrackingData] = useState<any>(null);
   const [trackingLoading, setTrackingLoading] = useState(false);
@@ -413,6 +418,41 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
     }
   };
 
+  const handleTrackStickerInline = async (stickerCode: string) => {
+    if (individualTrackingData[stickerCode]?.data) {
+      return;
+    }
+    setIndividualTrackingData(prev => ({
+      ...prev,
+      [stickerCode]: { loading: true }
+    }));
+    try {
+      const res = await fetch("/api/tracking/indian-post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tracking_id: stickerCode })
+      });
+      const resData = await res.json();
+      if (resData.success && resData.data && resData.data[0]) {
+        setIndividualTrackingData(prev => ({
+          ...prev,
+          [stickerCode]: { data: resData.data[0], loading: false }
+        }));
+      } else {
+        setIndividualTrackingData(prev => ({
+          ...prev,
+          [stickerCode]: { error: resData.message || "Failed to retrieve tracking data.", loading: false }
+        }));
+      }
+    } catch (err) {
+      console.error(err);
+      setIndividualTrackingData(prev => ({
+        ...prev,
+        [stickerCode]: { error: "Failed to fetch tracking details.", loading: false }
+      }));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F9FBF9] font-roboto flex flex-col relative">
       <Navbar />
@@ -435,6 +475,19 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
             ● {statusDisplay}
           </div>
         </div>
+
+        {/* Warning Banner / Message from ERP */}
+        {(summary.paynow_message || order.paynow_message) && (
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3 text-left">
+            <span className="text-xl">⚠️</span>
+            <div className="space-y-1">
+              <h4 className="font-bold text-amber-900 text-sm">Important Update regarding your Order</h4>
+              <p className="text-xs text-amber-800 font-medium leading-relaxed">
+                {summary.paynow_message || order.paynow_message}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Main Content 2-Column Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-10">
@@ -591,27 +644,8 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
               )}
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={handleTrackOrder}
-                  className={`font-bold py-3 px-6 rounded-2xl text-xs font-roboto transition-all shadow-sm ${finalStickers.length > 0
-                      ? "bg-[#1A56DB] hover:bg-[#1E40AF] text-white cursor-pointer"
-                      : "bg-zinc-100 border border-zinc-200 text-zinc-400 cursor-not-allowed"
-                    }`}
-                >
-                  Track Order
-                </button>
-                <button
-                  onClick={handlePrintLR}
-                  className={`font-bold py-3 px-6 rounded-2xl text-xs font-roboto transition-all flex items-center gap-1.5 ${finalLrs.length > 0
-                      ? "border border-zinc-200 hover:bg-zinc-50 text-zinc-600 cursor-pointer"
-                      : "border border-zinc-100 bg-zinc-50 text-zinc-300 cursor-not-allowed"
-                    }`}
-                >
-                  <Printer className="w-4 h-4" />
-                  <span>Print LR</span>
-                </button>
-                {String(summary.allowed_action || "").toLowerCase() === "cancel" && (
+              {String(summary.allowed_action || "").toLowerCase() === "cancel" && (
+                <div className="flex items-center gap-4">
                   <button
                     onClick={handleCancelOrder}
                     disabled={cancelling}
@@ -629,8 +663,8 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                       "Cancel Order"
                     )}
                   </button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
 
             {/* Card 2: Shipment Details */}
@@ -645,18 +679,25 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 ) : (
                   items.map((item: any, idx: number) => (
                     <div key={idx} className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-100 last:border-b-0 pb-4 last:pb-0 text-left">
-                      <div className="space-y-1.5">
-                        <h4 className="text-md font-bold text-[#0F291B] font-roboto">{item.item_name}</h4>
-                        <div className="text-xs text-zinc-500 font-medium">
-                          Qty: {item.qty} • Rate: ₹{Number(items.length === 1 ? (Number(summary.order_amount) / item.qty) : item.rate).toLocaleString('en-IN')}
-                        </div>
-                        {items.length === 1 && Number(summary.discount_received) > 0 && (
-                          <div className="text-xs text-rose-600 font-semibold mt-0.5">
-                            Discount Received: -₹{Number(summary.discount_received).toLocaleString('en-IN')}
+                      <div className="flex items-start gap-4">
+                        {item.image && (
+                          <div className="w-16 h-16 rounded-xl border border-zinc-100 bg-zinc-50 overflow-hidden shrink-0 flex items-center justify-center">
+                            <img src={item.image} alt={item.item_name} className="w-full h-full object-cover" />
                           </div>
                         )}
-                        <div className={`inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border border-amber-200/50 mt-1`}>
-                          ● {item.status || "Pending Payment"}
+                        <div className="space-y-1.5">
+                          <h4 className="text-md font-bold text-[#0F291B] font-roboto">{item.item_name}</h4>
+                          <div className="text-xs text-zinc-500 font-medium">
+                            Qty: {item.qty} • Rate: ₹{Number(items.length === 1 ? (Number(summary.order_amount) / item.qty) : item.rate).toLocaleString('en-IN')}
+                          </div>
+                          {items.length === 1 && Number(summary.discount_received) > 0 && (
+                            <div className="text-xs text-rose-600 font-semibold mt-0.5">
+                              Discount Received: -₹{Number(summary.discount_received).toLocaleString('en-IN')}
+                            </div>
+                          )}
+                          <div className={`inline-flex items-center gap-1 bg-[#FFF8E1] text-[#F57F17] px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border border-amber-200/50 mt-1`}>
+                            ● {item.status || "Pending Payment"}
+                          </div>
                         </div>
                       </div>
 
@@ -670,30 +711,6 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 )}
               </div>
             </div>
-
-            {/* Stickers / Barcodes List (For Indian Post Tracking) */}
-            {finalStickers.length > 0 && (
-              <div className="bg-white border border-[#CDE5D2] rounded-[32px] p-6 lg:p-8 shadow-sm space-y-4 text-left">
-                <h3 className="text-lg font-bold text-[#0F291B] font-roboto border-b border-zinc-100 pb-2.5">
-                  Indian Post Stickers
-                </h3>
-                <p className="text-xs text-zinc-500 font-medium">
-                  Select a sticker/article number to track your shipment in real-time.
-                </p>
-                <div className="flex flex-wrap gap-2.5 pt-2">
-                  {finalStickers.map((stickerCode: any, idx: number) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleTrackSticker(stickerCode)}
-                      className="bg-emerald-50 hover:bg-emerald-100/80 text-emerald-800 border border-emerald-100 rounded-xl px-4 py-2.5 text-xs font-bold font-roboto transition-all flex items-center gap-2"
-                    >
-                      <span className="text-base">📦</span>
-                      <span>{stickerCode}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Card 3: Transport Details */}
             <div className="bg-white border border-[#CDE5D2] rounded-[32px] p-6 lg:p-8 shadow-sm space-y-6">
@@ -783,36 +800,237 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
             </div>
 
             {/* Card B: Invoice */}
-            <div className="bg-white border border-[#CDE5D2] rounded-[32px] p-6 shadow-sm flex flex-col items-center justify-center min-h-[160px] text-center space-y-3">
+            <div className="bg-white border border-[#CDE5D2] rounded-[32px] p-6 shadow-sm w-full space-y-4">
+              <div className="flex items-center gap-2 border-b border-zinc-100 pb-3 text-left">
+                <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-800 flex items-center justify-center">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <h4 className="font-bold text-[#0F291B] text-lg font-roboto">Invoices</h4>
+              </div>
+
               {hasInvoices ? (
-                <div className="w-full space-y-3 text-left">
-                  <h4 className="font-bold text-[#0F291B] text-sm tracking-wide uppercase border-b pb-2">Invoices</h4>
-                  {order.invoices.map((inv: any, idx: number) => (
-                    <div key={idx} className="flex items-center justify-between bg-zinc-50/50 rounded-xl p-3 border border-zinc-100">
-                      <div className="text-xs">
-                        <p className="font-bold text-zinc-700">{inv.invoice_id}</p>
-                        <p className="text-zinc-400 text-[10px] mt-0.5">{inv.invoice_date}</p>
-                      </div>
-                      {inv.sales_invoice_print_url && (
-                        <a
-                          href={inv.sales_invoice_print_url}
-                          className="text-[#1E532E] hover:text-[#153B21] p-1.5 bg-emerald-50 rounded-lg"
+                <div className="space-y-6">
+                  {order.invoices.map((inv: any, idx: number) => {
+                    const isExpanded = expandedInvoiceIdx === idx;
+                    return (
+                      <div key={idx} className="border border-[#CDE5D2]/60 rounded-2xl p-4 space-y-4 bg-white shadow-sm">
+                        {/* Invoice Header */}
+                        <div 
+                          className="flex items-center justify-between cursor-pointer"
+                          onClick={() => setExpandedInvoiceIdx(isExpanded ? null : idx)}
                         >
-                          <Download className="w-4 h-4" />
-                        </a>
-                      )}
-                    </div>
-                  ))}
+                          <div className="text-left">
+                            <p className="font-extrabold text-[#0F291B] text-sm tracking-tight">{inv.invoice_id}</p>
+                            <p className="text-zinc-800 font-bold text-sm mt-1">₹{Number(inv.amount || 0).toLocaleString('en-IN')}</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center bg-[#EBF3EF] text-[#2E7D32] px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border border-emerald-100">
+                              {inv.dispatch_status || "Dispatched"}
+                            </span>
+                            {isExpanded ? <ChevronUp className="w-5 h-5 text-zinc-500" /> : <ChevronDown className="w-5 h-5 text-zinc-500" />}
+                          </div>
+                        </div>
+
+                        {/* Expanded details */}
+                        {isExpanded && (
+                          <div className="pt-3 border-t border-zinc-100 space-y-4 text-left">
+                            {/* Invoice Date & Amount */}
+                            <div className="grid grid-cols-2 gap-4 text-xs font-semibold text-zinc-500 pb-2">
+                              <div>
+                                <p className="mb-1">Invoice Date</p>
+                                <p className="text-[#0F291B] font-bold text-sm">{inv.invoice_date}</p>
+                              </div>
+                              <div>
+                                <p className="mb-1">Amount</p>
+                                <p className="text-[#0F291B] font-bold text-sm">₹{Number(inv.amount || 0).toLocaleString('en-IN')}</p>
+                              </div>
+                            </div>
+
+                            {/* Print Invoice Button */}
+                            {inv.sales_invoice_print_url && (
+                              <a
+                                href={inv.sales_invoice_print_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-600 hover:text-sky-700 transition-colors"
+                              >
+                                <Printer className="w-3.5 h-3.5" /> Print Invoice
+                              </a>
+                            )}
+
+                            {/* Large Green Track Order Button */}
+                            {inv.transporter_details?.[0] && String(inv.transporter_details[0].transporter_name).toLowerCase() === "indian post" && (
+                              <button
+                                onClick={() => {
+                                  const trackingId = inv.transporter_details[0].tracking_id;
+                                  if (expandedTrackingId === trackingId) {
+                                    setExpandedTrackingId(null);
+                                  } else {
+                                    setExpandedTrackingId(trackingId);
+                                    handleTrackStickerInline(trackingId);
+                                  }
+                                }}
+                                className="w-full bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold py-3.5 rounded-2xl text-xs font-roboto transition-all shadow-sm flex items-center justify-center gap-2 duration-300"
+                              >
+                                Track Order ({inv.transporter_details[0].transporter_name || "Transporter"})
+                              </button>
+                            )}
+
+                            {/* Tracking cards list */}
+                            {inv.transporter_details && inv.transporter_details.length > 0 && String(inv.transporter_details[0].transporter_name).toLowerCase() === "indian post" && (
+                              <div className="space-y-4 mt-4">
+                                {inv.transporter_details.map((pkg: any, pIdx: number) => {
+                                  const tInfo = individualTrackingData[pkg.tracking_id] || { loading: false };
+                                  const trackingExpanded = expandedTrackingId === pkg.tracking_id;
+                                  
+                                  return (
+                                    <div key={pIdx} className="border border-zinc-100 rounded-2xl bg-zinc-50/40 overflow-hidden">
+                                      {/* Tracking Header */}
+                                      <div className="bg-[#EBF3EF]/60 px-4 py-3 flex items-center justify-between border-b border-zinc-100">
+                                        <div className="text-left">
+                                          <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Tracking ID</p>
+                                          <p className="font-extrabold text-sm text-[#0F291B]">{pkg.tracking_id}</p>
+                                        </div>
+                                        <span className="inline-flex items-center bg-orange-50 text-orange-700 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase border border-orange-100">
+                                          {tInfo.data?.del_status?.del_status || "NOT DELIVERED"}
+                                        </span>
+                                      </div>
+
+                                      {/* Tracking Rows */}
+                                      <div className="p-4 space-y-2 text-xs font-semibold text-zinc-500">
+                                        <div className="flex justify-between">
+                                          <span>Booked On</span>
+                                          <span className="text-[#0F291B] font-bold">
+                                            {tInfo.data?.booking_details?.booked_on 
+                                              ? new Date(tInfo.data.booking_details.booked_on).toLocaleDateString()
+                                              : "N/A"}
+                                          </span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span>Article Type</span>
+                                          <span className="text-[#0F291B] font-bold">N/A</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span>Origin</span>
+                                          <span className="text-[#0F291B] font-bold">()</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span>Destination</span>
+                                          <span className="text-[#0F291B] font-bold">()</span>
+                                        </div>
+                                      </div>
+
+                                      {/* Nested Tracking History steps */}
+                                      <div className="border-t border-zinc-100 bg-white">
+                                        <button
+                                          onClick={() => {
+                                            if (trackingExpanded) {
+                                              setExpandedTrackingId(null);
+                                            } else {
+                                              setExpandedTrackingId(pkg.tracking_id);
+                                              handleTrackStickerInline(pkg.tracking_id);
+                                            }
+                                          }}
+                                          className="w-full px-4 py-2.5 flex items-center justify-between text-xs font-bold text-[#0D9740] hover:bg-zinc-50 transition-colors"
+                                        >
+                                          <span>View Tracking History</span>
+                                          {trackingExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                        </button>
+
+                                        {trackingExpanded && (
+                                          <div className="px-4 pb-4 pt-2 border-t border-zinc-100 text-[11px] space-y-3">
+                                            {tInfo.loading && (
+                                              <p className="text-zinc-500 py-2">Loading steps...</p>
+                                            )}
+                                            {tInfo.error && (
+                                              <p className="text-rose-500 py-2">{tInfo.error}</p>
+                                            )}
+                                            {tInfo.data?.tracking_details && tInfo.data.tracking_details.map((step: any, sIdx: number) => (
+                                              <div key={sIdx} className="flex gap-3 border-l-2 border-emerald-500 pl-3 py-1 text-left">
+                                                <div className="flex-1">
+                                                  <p className="font-bold text-[#0F291B]">{step.office || step.event}</p>
+                                                  <p className="text-zinc-500 text-[10px]">{step.date} {step.time}</p>
+                                                </div>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+
+                            {/* LR / Stickers cards list */}
+                            {inv.lr_and_stickers && inv.lr_and_stickers.length > 0 && (
+                              <div className="space-y-4 pt-4 border-t border-zinc-100">
+                                {inv.lr_and_stickers.map((lr: any, lrIdx: number) => (
+                                  <div key={lrIdx} className="border border-zinc-100 rounded-2xl p-4 bg-zinc-50/30 space-y-3 text-xs font-semibold text-zinc-500 shadow-sm text-left">
+                                    <div className="flex items-center gap-2 text-zinc-700 font-bold border-b border-zinc-100 pb-2 mb-1">
+                                      <span>🚚</span>
+                                      <span>LR / Stickers</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span>Transporter</span>
+                                      <span className="text-[#0F291B] font-bold">{lr.transporter_name}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span>Tracking ID</span>
+                                      <span className="text-[#0F291B] font-bold">{lr.tracking_id}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span>Payment Status</span>
+                                      <span className="text-[#2E7D32] font-bold">{lr.payment_status}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span>Charges</span>
+                                      <span className="text-[#0F291B] font-bold">₹{Number(lr.charges || lr.amount || 0).toLocaleString('en-IN')}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span>No of Boxes</span>
+                                      <span className="text-[#0F291B] font-bold">{lr.no_of_boxes}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span>Created At</span>
+                                      <span className="text-[#0F291B] font-bold">{lr.created_at}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span>Estimated Arrival Time</span>
+                                      <span className="text-[#0F291B] font-bold">{lr.estimated_arrival_time}</span>
+                                    </div>
+
+                                    {/* Print LR Button */}
+                                    {(lr.print_url || lr.document_url) && (
+                                      <a
+                                        href={lr.print_url || lr.document_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-full mt-2 border border-zinc-200 hover:bg-zinc-50 text-[#0F291B] font-bold py-2.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5"
+                                      >
+                                        <Printer className="w-3.5 h-3.5" /> Print LR
+                                      </a>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
-                <>
+                <div className="flex flex-col items-center justify-center min-h-[120px] text-center space-y-2">
                   <div className="w-12 h-12 rounded-full bg-zinc-50 flex items-center justify-center text-zinc-500 border border-zinc-100">
                     <FileText className="w-6 h-6" />
                   </div>
                   <p className="text-zinc-500 text-xs leading-relaxed max-w-[200px] mx-auto font-medium">
                     Invoice will be generated after payment confirmation.
                   </p>
-                </>
+                </div>
               )}
             </div>
 
