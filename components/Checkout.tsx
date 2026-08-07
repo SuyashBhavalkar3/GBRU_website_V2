@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 
 export default function Checkout() {
   const router = useRouter();
+  const { showToast } = useToast();
   // Interactivity States
   const [paymentMode, setPaymentMode] = useState<"full" | "booking">("full");
   const [pincode, setPincode] = useState("");

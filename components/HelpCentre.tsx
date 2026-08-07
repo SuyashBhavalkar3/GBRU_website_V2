@@ -14,6 +14,32 @@ const sections = [
 export default function HelpCentre() {
   const [activeSection, setActiveSection] = useState('getting-started');
 
+  React.useEffect(() => {
+    const checkHash = () => {
+      if (typeof window !== 'undefined') {
+        const hash = window.location.hash;
+        if (hash === '#contact-us') {
+          setActiveSection('contact-us');
+        }
+      }
+    };
+
+    checkHash();
+    
+    // Fallback checks for Next.js router transitions
+    const timer1 = setTimeout(checkHash, 100);
+    const timer2 = setTimeout(checkHash, 300);
+    const timer3 = setTimeout(checkHash, 600);
+
+    window.addEventListener('hashchange', checkHash);
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+      window.removeEventListener('hashchange', checkHash);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#FDFDFD] font-roboto pb-20">
       <div className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 pt-8 flex flex-col gap-6">

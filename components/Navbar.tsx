@@ -13,6 +13,20 @@ export default function Navbar() {
   const [loggedInUser, setLoggedInUser] = useState<any>(null);
   const [cartCount, setCartCount] = useState<number>(0);
   const pathname = usePathname() || "/";
+  const [currentHash, setCurrentHash] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCurrentHash(window.location.hash);
+      const handleHashChange = () => {
+        setCurrentHash(window.location.hash);
+      };
+      window.addEventListener("hashchange", handleHashChange);
+      return () => {
+        window.removeEventListener("hashchange", handleHashChange);
+      };
+    }
+  }, [pathname]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -66,7 +80,7 @@ export default function Navbar() {
     { name: "All Products", href: "/products", active: pathname.startsWith("/products") || pathname.startsWith("/all_products") },
     { name: "Categories", href: "/categories", active: pathname.startsWith("/categories") },
     { name: "Video Hub", href: "/videos", active: pathname.startsWith("/videos") },
-    { name: "Contact Us", href: "/contact", active: pathname.startsWith("/contact") },
+    { name: "Contact Us", href: "/help-centre#contact-us", active: pathname === "/help-centre" && currentHash === "#contact-us" },
   ];
 
   return (
