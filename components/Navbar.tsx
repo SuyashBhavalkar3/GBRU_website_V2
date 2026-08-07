@@ -197,7 +197,7 @@ export default function Navbar() {
             <Link href="/cart" className="flex items-end hover:scale-105 transition-transform duration-200 group mr-2">
               <div className="relative flex justify-center w-[40px] h-[40px]">
                 <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M1 3h3.5l2 11h11l2.5-7.5H5.5" />
+                  <path d="M1 3h3.5l2 11h11l2.5-7.5" />
                   <circle cx="9" cy="19" r="1.2" fill="white" stroke="white" />
                   <circle cx="17" cy="19" r="1.2" fill="white" stroke="white" />
                 </svg>
@@ -220,7 +220,7 @@ export default function Navbar() {
             <Link href="/cart" className="flex items-end p-1 hover:scale-105 transition-transform duration-200 group">
               <div className="relative flex justify-center w-[34px] h-[34px]">
                 <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M1 3h3.5l2 11h11l2.5-7.5H5.5" />
+                  <path d="M1 3h3.5l2 11h11l2.5-7.5" />
                   <circle cx="9" cy="19" r="1.2" fill="white" stroke="white" />
                   <circle cx="17" cy="19" r="1.2" fill="white" stroke="white" />
                 </svg>
