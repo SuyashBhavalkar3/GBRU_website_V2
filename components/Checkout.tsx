@@ -20,6 +20,10 @@ export default function Checkout() {
 
   const [paymentMethod, setPaymentMethod] = useState<"upi" | "card" | "netbanking">("upi");
   const [isOffersOpen, setIsOffersOpen] = useState(true);
+  const [isAmbassadorOpen, setIsAmbassadorOpen] = useState(false);
+  const [ambassadorCode, setAmbassadorCode] = useState("");
+  const [ambassadorApplied, setAmbassadorApplied] = useState(false);
+  const [ambassadorError, setAmbassadorError] = useState("");
 
   // Dynamic Checkout States
   const [checkoutDetails, setCheckoutDetails] = useState<any>(null);
@@ -125,6 +129,18 @@ export default function Checkout() {
     async function fetchAddressesAndCheckout() {
       try {
         setLoadingCheckout(true);
+        const savedBA = localStorage.getItem("gbru_applied_ambassador");
+        if (savedBA) {
+          try {
+            const parsed = JSON.parse(savedBA);
+            if (parsed) {
+              setAmbassadorCode(parsed.name || parsed.brand_ambassador_name || "");
+              setAmbassadorApplied(true);
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
         const userStr = localStorage.getItem("gbru_user");
         if (!userStr) {
           setLoadingAddresses(false);
@@ -707,6 +723,56 @@ export default function Checkout() {
     if (checkoutDetails?.items) {
       fetchProceedData(checkoutDetails.items, "");
     }
+  };
+
+  const applyAmbassadorCode = async () => {
+    if (!ambassadorCode) return;
+    setAmbassadorError("");
+    setAmbassadorApplied(false);
+    
+    try {
+      const userStr = localStorage.getItem("gbru_user");
+      if (!userStr) {
+        showToast("Please log in to validate ambassador code", "error");
+        return;
+      }
+      const user = JSON.parse(userStr);
+      const mobile_no = user.customer_id?.split('-')[1] || user.user_id || user.mobile_no;
+      if (!mobile_no) {
+        showToast("Customer profile not found", "error");
+        return;
+      }
+
+      const res = await fetch("/api/cart/validate-ambassador", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile_no, brand_ambassador: ambassadorCode }),
+      });
+
+      const data = await res.json();
+      
+      if (data?.message?.status) {
+        setAmbassadorApplied(true);
+        localStorage.setItem("gbru_applied_ambassador", JSON.stringify(data.message.data));
+        showToast(data.message.message || "Brand Ambassador Code Applied!", "success");
+      } else {
+        const errorMsg = data?.message?.message || data?.error || "Invalid Ambassador Code";
+        setAmbassadorError(errorMsg);
+        showToast(errorMsg, "error");
+      }
+    } catch (err: any) {
+      console.error("Error validating ambassador code:", err);
+      setAmbassadorError("Failed to validate ambassador code");
+      showToast("Failed to validate ambassador code", "error");
+    }
+  };
+
+  const handleRemoveAmbassadorCode = () => {
+    setAmbassadorCode("");
+    setAmbassadorApplied(false);
+    setAmbassadorError("");
+    localStorage.removeItem("gbru_applied_ambassador");
+    showToast("Ambassador Code Removed", "info");
   };
 
   const handleSelectPaymentMode = (mode: "full" | "booking") => {
@@ -1380,52 +1446,75 @@ export default function Checkout() {
                 Order Summary
               </h3>
 
-              {/* Offers & Coupons Collapsible Drawer */}
-              <div className="border border-zinc-100 rounded-[14px] overflow-hidden">
-                <button
-                  onClick={() => setIsOffersOpen(!isOffersOpen)}
-                  className="w-full bg-[#F8F9FA] px-4 py-3 flex items-center justify-between text-xs font-bold text-[#0F291B]"
-                >
-                  <span className="flex items-center gap-2">
-                    🏷️ Offers & Coupons
-                  </span>
-                  <span>{isOffersOpen ? "▲" : "▼"}</span>
-                </button>
+              {/* Offers & Coupons Section */}
+              <div className="flex flex-col gap-3">
+                <span className="text-xs font-semibold text-[#0F291B] block">🏷️ Offers & Coupons</span>
+                <span className="text-[10px] text-zinc-500 block -mt-1">Tap to apply coupon code. Use "GBRU10" to save ₹500.</span>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Enter coupon code"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    className="flex-1 h-9 px-3 border border-zinc-200 rounded-[8px] text-xs text-[#0F291B] focus:outline-[#0D9740]"
+                  />
+                  <button
+                    onClick={applyCoupon}
+                    className="h-9 px-4 bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-xs rounded-[8px]"
+                  >
+                    Apply
+                  </button>
+                </div>
 
-                {isOffersOpen && (
-                  <div className="p-4 flex flex-col gap-3 bg-white">
-                    <span className="text-[10px] text-zinc-500 block">Tap to apply coupon code. Use "GBRU10" to save ₹500.</span>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="Enter coupon code"
-                        value={couponCode}
-                        onChange={(e) => setCouponCode(e.target.value)}
-                        className="flex-1 h-9 px-3 border border-zinc-200 rounded-[8px] text-xs text-[#0F291B] focus:outline-[#0D9740]"
-                      />
-                      <button
-                        onClick={applyCoupon}
-                        className="h-9 px-4 bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-xs rounded-[8px]"
-                      >
-                        Apply
-                      </button>
-                    </div>
-
-                    {couponApplied && (
-                      <div className="flex items-center justify-between mt-1 bg-emerald-50/50 px-2 py-1.5 rounded-lg">
-                        <span className="text-[11px] text-[#0D9740] font-bold">✓ {proceedData?.coupon?.code || couponCode} applied successfully</span>
-                        <button
-                          onClick={handleRemoveCoupon}
-                          className="text-[10px] text-red-600 hover:text-red-800 font-extrabold flex items-center gap-0.5 hover:underline"
-                        >
-                          ✕ Remove
-                        </button>
-                      </div>
-                    )}
-                    {couponError && (
-                      <span className="text-[11px] text-red-500 font-bold">{couponError}</span>
-                    )}
+                {couponApplied && (
+                  <div className="flex items-center justify-between mt-1 bg-emerald-50/50 px-2 py-1.5 rounded-lg">
+                    <span className="text-[11px] text-[#0D9740] font-bold">✓ {proceedData?.coupon?.code || couponCode} applied successfully</span>
+                    <button
+                      onClick={handleRemoveCoupon}
+                      className="text-[10px] text-red-600 hover:text-red-800 font-extrabold flex items-center gap-0.5 hover:underline"
+                    >
+                      ✕ Remove
+                    </button>
                   </div>
+                )}
+                {couponError && (
+                  <span className="text-[11px] text-red-500 font-bold">{couponError}</span>
+                )}
+              </div>
+
+              {/* Brand Ambassador Code Section */}
+              <div className="flex flex-col gap-3 mt-2">
+                <span className="text-xs font-semibold text-[#0F291B] block">🎓 Brand Ambassador Code</span>
+                <span className="text-[10px] text-zinc-500 block -mt-1">Enter your referral code if referred by a GBRU Ambassador.</span>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Enter Ambassador Code"
+                    value={ambassadorCode}
+                    onChange={(e) => setAmbassadorCode(e.target.value)}
+                    className="flex-1 h-9 px-3 border border-zinc-200 rounded-[8px] text-xs text-[#0F291B] focus:outline-[#0D9740]"
+                  />
+                  <button
+                    onClick={applyAmbassadorCode}
+                    className="h-9 px-4 bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-xs rounded-[8px]"
+                  >
+                    Apply
+                  </button>
+                </div>
+
+                {ambassadorApplied && (
+                  <div className="flex items-center justify-between mt-1 bg-emerald-50/50 px-2 py-1.5 rounded-lg">
+                    <span className="text-[11px] text-[#0D9740] font-bold">✓ Code applied successfully</span>
+                    <button
+                      onClick={handleRemoveAmbassadorCode}
+                      className="text-[10px] text-red-600 hover:text-red-800 font-extrabold flex items-center gap-0.5 hover:underline"
+                    >
+                      ✕ Remove
+                    </button>
+                  </div>
+                )}
+                {ambassadorError && (
+                  <span className="text-[11px] text-red-500 font-bold">{ambassadorError}</span>
                 )}
               </div>
 
