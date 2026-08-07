@@ -377,17 +377,7 @@ function ProductDetailContent() {
 
                   <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3 pl-6">
                     <div className="flex justify-between">
-                      <span>M.R.P.</span>
-                      <span className="line-through">₹{formatPrice(product.mrp)}</span>
-                    </div>
-                    {product.discount > 0 && (
-                      <div className="flex justify-between text-[#0D9740]">
-                        <span>Discount</span>
-                        <span>{product.discount.toFixed(0)}% OFF</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between">
-                      <span>Sales Price</span>
+                      <span>Grand Total</span>
                       <span>₹{formatPrice(product.actual_rate || product.price)}</span>
                     </div>
                     {product.full_payment_discount > 0 && (
@@ -439,29 +429,17 @@ function ProductDetailContent() {
 
                     <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3 pl-6">
                       <div className="flex justify-between">
-                        <span>M.R.P.</span>
-                        <span className="line-through">₹{formatPrice(product.mrp)}</span>
-                      </div>
-                      {product.discount > 0 && (
-                        <div className="flex justify-between text-[#0D9740]">
-                          <span>Discount</span>
-                          <span>{product.discount.toFixed(0)}% OFF</span>
-                        </div>
-                      )}
-                      <div className="flex justify-between">
-                        <span>Sales Price</span>
+                        <span>Grand Total</span>
                         <span>₹{formatPrice(product.actual_rate || product.price)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Balance on Delivery</span>
-                        <span>₹{formatPrice(product.COD_value || product.cod_value)}</span>
+                        <span>Pay Now (Deposit)</span>
+                        <span>₹{formatPrice(product.COD_Display)}</span>
                       </div>
-                      {product.COD_discount > 0 && (
-                        <div className="flex justify-between text-[#0d9740]">
-                          <span>COD Discount</span>
-                          <span>- ₹{formatPrice(product.COD_discount)}</span>
-                        </div>
-                      )}
+                      <div className="flex justify-between">
+                        <span>Pay on Delivery</span>
+                        <span>₹{formatPrice(product.COD_value)}</span>
+                      </div>
                     </div>
                   </div>
 
