@@ -23,6 +23,8 @@ function ProductDetailContent() {
   const [quantity, setQuantity] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [isInCart, setIsInCart] = useState(false);
+  const [similarItems, setSimilarItems] = useState<any[]>([]);
+  const [loadingSimilar, setLoadingSimilar] = useState(false);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -90,6 +92,35 @@ function ProductDetailContent() {
       checkCartStatus();
     }
   }, [itemCode]);
+
+  useEffect(() => {
+    const fetchSimilar = async () => {
+      if (!product) return;
+      try {
+        setLoadingSimilar(true);
+        const res = await fetch("/api/products/similar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            category: product.item_group,
+            subcategory: product.custom_sub_category,
+            item_code: product.item_code,
+          }),
+        });
+        const data = await res.json();
+        if (data?.message?.status && data.message.data?.data) {
+          // Filter out the current product
+          const filtered = data.message.data.data.filter((item: any) => item.item_code !== product.item_code);
+          setSimilarItems(filtered);
+        }
+      } catch (err) {
+        console.error("Failed to load similar products:", err);
+      } finally {
+        setLoadingSimilar(false);
+      }
+    };
+    fetchSimilar();
+  }, [product]);
 
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "error">("success");
@@ -683,6 +714,75 @@ function ProductDetailContent() {
           )}
         </div>
       </section>
+
+      {/* Similar Products Section */}
+      {similarItems.length > 0 && (
+        <section className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 pb-16 mt-8">
+          <div className="border-t border-zinc-150 pt-10 text-left">
+            <h3 className="text-2xl font-bold text-[#0F291B] font-roboto tracking-tight mb-2">
+              Similar Products
+            </h3>
+            <p className="text-zinc-500 text-xs mb-8 font-semibold">
+              Customers who viewed this item also bought these alternative solutions
+            </p>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+              {similarItems.map((item: any) => (
+                <Link
+                  key={item.item_code}
+                  href={`/products/view_product?item_code=${item.item_code}`}
+                  className="bg-white border border-zinc-200/80 rounded-3xl p-4 flex flex-col justify-between hover:shadow-md hover:border-[#0D9740]/40 transition-all group cursor-pointer text-left"
+                >
+                  <div className="space-y-3">
+                    {/* Image container */}
+                    <div className="aspect-square bg-zinc-50 rounded-2xl overflow-hidden relative flex items-center justify-center border border-zinc-100/50">
+                      {item.custom_image_1 ? (
+                        <img
+                          src={item.custom_image_1}
+                          alt={item.item_name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <span className="text-zinc-300 text-3xl">🌱</span>
+                      )}
+                      {item.discount > 0 && (
+                        <div className="absolute top-2 left-2 bg-[#0D9740] text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow-sm">
+                          {Math.round(item.discount)}% OFF
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Meta info */}
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-zinc-400 font-extrabold uppercase tracking-wider">{item.brand || "GBRU"}</p>
+                      <h4 className="font-bold text-[#0F291B] text-xs line-clamp-2 leading-snug group-hover:text-[#0D9740] transition-colors h-8">
+                        {item.item_name}
+                      </h4>
+                    </div>
+                  </div>
+
+                  {/* Pricing info */}
+                  <div className="pt-3 mt-3 border-t border-zinc-100 flex items-baseline justify-between gap-1.5 flex-wrap">
+                    <div>
+                      <span className="text-[#0D9740] font-extrabold text-sm">
+                        ₹{Number(item.price).toLocaleString("en-IN")}
+                      </span>
+                      {item.mrp > item.price && (
+                        <span className="text-[10px] line-through text-zinc-400 ml-1.5 font-bold">
+                          ₹{Number(item.mrp).toLocaleString("en-IN")}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wide">
+                      Min Qty: {item.moq || 1}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <LoginPrompt
         isOpen={showLoginPrompt}

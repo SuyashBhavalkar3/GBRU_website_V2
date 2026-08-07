@@ -1,0 +1,46 @@
+import { NextResponse } from 'next/server';
+
+export async function POST(request: Request) {
+  try {
+    const { category, subcategory, item_code } = await request.json();
+    
+    const baseUrl = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
+    const systemApiKey = process.env.API_KEY;
+    const systemApiSecret = process.env.API_SECRET;
+
+    if (!baseUrl || !systemApiKey || !systemApiSecret) {
+      console.error('Missing API credentials or base URL in environment variables.');
+      return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
+    }
+
+    const payload = {
+      category: category || null,
+      subcategory: subcategory || null,
+      search: null,
+      brand: "175",
+      item_code: item_code || null,
+      page: 1,
+      page_size: 20
+    };
+
+    const response = await fetch(`${baseUrl}/api/method/shoption_api.gbru_shoption.item_api.get_gbru_similar_items`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': systemApiKey,
+        'X-API-SECRET': systemApiSecret,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      return NextResponse.json({ error: 'Failed to fetch similar items' }, { status: response.status });
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error: any) {
+    console.error('Error fetching similar items:', error);
+    return NextResponse.json({ error: 'Failed to fetch similar items', msg: error.message }, { status: 500 });
+  }
+}
