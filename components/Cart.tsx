@@ -274,22 +274,22 @@ export default function Cart() {
   const totalMrp = cartSummary?.total_amount || 0;
 
   const totalFullPaymentDiscount = cartItems.reduce((acc, curr) => {
-    return acc + (Number(curr.full_payment_discount || 0) * Number(curr.quantity || 1));
+    return acc + Number(curr.full_payment_discount || 0);
   }, 0);
 
   const totalCodDiscount = cartItems.reduce((acc, curr) => {
-    return acc + (Number(curr.cod_discount || 0) * Number(curr.quantity || 1));
+    return acc + Number(curr.cod_discount || 0);
   }, 0);
 
   const totalPayOnDelivery = cartItems.reduce((acc, curr) => {
     if (curr.payment_type === "Cash On Delivery") {
-      return acc + (Number(curr.cod_value || 0) * Number(curr.quantity || 1));
+      return acc + Number(curr.cod_value || 0);
     }
     return acc;
   }, 0);
 
   const totalCodBooking = cartItems.reduce((acc, curr) => {
-    return acc + (Number(curr.cod_display || 0) * Number(curr.quantity || 1));
+    return acc + Number(curr.cod_display || 0);
   }, 0);
 
   // If Full Payment: Pay Now = totalMrp - totalFullPaymentDiscount

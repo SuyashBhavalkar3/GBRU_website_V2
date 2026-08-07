@@ -249,30 +249,38 @@ export default function Checkout() {
               return sum + (mrp * qty);
             }, 0);
             const payableAmount = fallbackItems.reduce((sum: number, i: any) => {
-              const rate = i.price || i.rate || i.amount || 0;
-              // If we are using i.amount directly, do not multiply it by quantity as it is already qty * rate
-              if (i.amount && !i.price && !i.rate) {
-                return sum + i.amount;
-              }
+              if (i.amount) return sum + Number(i.amount);
+              const rate = i.price || i.rate || 0;
               const qty = i.quantity || i.qty || 1;
               return sum + (rate * qty);
             }, 0);
-            const discountAmount = Math.max(0, mrpSubtotal - payableAmount);
+
+            const totalFullPaymentDiscount = fallbackItems.reduce((sum: number, i: any) => {
+              return sum + Number(i.full_payment_discount || 0);
+            }, 0);
+
+            const totalCodDiscount = fallbackItems.reduce((sum: number, i: any) => {
+              return sum + Number(i.cod_discount || 0);
+            }, 0);
+
+            const totalCodBooking = fallbackItems.reduce((sum: number, i: any) => {
+              return sum + Number(i.cod_display || 0);
+            }, 0);
 
             const mockProceedData = {
               payment_summary: {
                 original_amount: mrpSubtotal,
                 full_payment: {
                   payable_amount: payableAmount,
-                  discount_amount: discountAmount,
+                  discount_amount: totalFullPaymentDiscount,
                   label: "Discount",
                   discount_amount_without_gst: 0,
                   coupen_discount: 0
                 },
                 cash_on_delivery: {
-                  pay_now: payableAmount,
-                  discount_amount: discountAmount,
-                  pay_on_delivery: 0,
+                  pay_now: totalCodBooking,
+                  discount_amount: totalCodDiscount,
+                  pay_on_delivery: Math.max(0, payableAmount - totalCodBooking),
                   coupen_discount: 0
                 }
               },
