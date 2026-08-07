@@ -497,10 +497,6 @@ export default function Cart() {
                       <span>-₹{formatPrice(totalCodDiscount)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between">
-                    <span className="text-zinc-500">Delivery</span>
-                    <span className="font-bold text-[#0d9740]">FREE</span>
-                  </div>
 
                   <div className="flex justify-between pb-4 border-b border-zinc-100">
                     <span className="text-zinc-500">Taxes & Charges</span>
