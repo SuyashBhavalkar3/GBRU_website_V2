@@ -15,6 +15,7 @@ interface Order {
   pending_amount: number | string;
   payupreferedmode?: string;
   payupreferedamount?: number | string;
+  unsettled_amount?: number | string;
 }
 
 interface UserDetails {
@@ -231,7 +232,7 @@ export default function OrderList() {
 
             {/* Shortcut: Payments */}
             <Link 
-              href="/user-profile" 
+              href="/payments" 
               className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer"
             >
               <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center">
