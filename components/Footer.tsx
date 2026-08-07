@@ -5,8 +5,8 @@ import Image from "next/image";
 const Footer = () => {
   return (
     <footer 
-      className="w-full text-white pt-16 pb-6 px-6 lg:px-12 font-roboto border-t border-white/10 mt-auto"
-      style={{ background: 'linear-gradient(163.13deg, #0B5D3B 44.12%, #043321 96.94%)' }}
+      className="w-full text-white pt-16 pb-6 px-6 lg:px-12 font-roboto border-t border-white/10 mt-auto mt-24"
+      style={{ marginTop: '96px', background: 'linear-gradient(163.13deg, #0B5D3B 44.12%, #043321 96.94%)' }}
     >
       <style dangerouslySetInnerHTML={{__html: `
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');

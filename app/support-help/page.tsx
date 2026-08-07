@@ -87,7 +87,7 @@ export default function SupportHelpPage() {
         body: JSON.stringify({ mobile_no: mobile }),
       });
       const data = await res.json();
-      
+
       if (data?.message?.status && data?.message?.data) {
         const types = data.message.data.complaint_types || [];
         const orderList = [...(data.message.data.orders || [])];
@@ -95,14 +95,14 @@ export default function SupportHelpPage() {
           setComplaintTypes(types);
           setCategory(types[0]);
         }
-        
+
         // Ensure urlOrderId is in the dropdown options
         const queryParams = new URLSearchParams(window.location.search);
         const urlOrderId = queryParams.get("order_id");
         if (urlOrderId && !orderList.includes(urlOrderId)) {
           orderList.push(urlOrderId);
         }
-        
+
         setOrders(orderList);
       }
     } catch (err) {
@@ -158,7 +158,7 @@ export default function SupportHelpPage() {
       }
       formPayload.append("subject", subject);
       formPayload.append("description", description);
-      
+
       attachments.forEach((file, index) => {
         formPayload.append(`attachment_${index + 1}`, file);
       });
@@ -226,7 +226,7 @@ export default function SupportHelpPage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#F9FBF9]">
       <Navbar />
-      
+
       <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 py-8 lg:py-12">
         {/* Page Title & Hero */}
         <div className="text-center max-w-2xl mx-auto mb-12">
@@ -241,10 +241,10 @@ export default function SupportHelpPage() {
         {/* Contact Grid Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           {/* WhatsApp Support */}
-          <a 
-            href="https://wa.me/919226514174" 
-            target="_blank" 
-            rel="noopener noreferrer" 
+          <a
+            href="https://wa.me/919226514174"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center justify-between bg-white border border-[#CDE5D2] rounded-3xl p-6 hover:shadow-lg transition-all duration-300 group"
           >
             <div className="flex items-center gap-4">
@@ -264,8 +264,8 @@ export default function SupportHelpPage() {
           </a>
 
           {/* Expert Call Support */}
-          <a 
-            href="tel:+918121819367" 
+          <a
+            href="tel:+918121819367"
             className="flex items-center justify-between bg-white border border-[#CDE5D2] rounded-3xl p-6 hover:shadow-lg transition-all duration-300 group"
           >
             <div className="flex items-center gap-4">
@@ -287,7 +287,7 @@ export default function SupportHelpPage() {
 
         {/* Content Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16">
-          
+
           {/* Left Column: Complaint & Support Form (7 cols on desktop) */}
           <div className="lg:col-span-7 bg-white border border-[#CDE5D2] rounded-[32px] p-6 lg:p-8 shadow-sm">
             <h2 className="text-xl lg:text-2xl font-bold text-[#0F291B] mb-6 font-roboto border-b border-zinc-100 pb-3">
@@ -318,7 +318,7 @@ export default function SupportHelpPage() {
                 {/* Category Select */}
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-bold text-[#0F291B] font-roboto">Issue Category</label>
-                  <select 
+                  <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     className="w-full bg-[#F5F8F6] border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#1E532E] font-medium text-zinc-800"
@@ -331,8 +331,8 @@ export default function SupportHelpPage() {
 
                 {/* Optional Order Select */}
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-bold text-[#0F291B] font-roboto">Order Reference (Optional)</label>
-                  <select 
+                  <label className="text-sm font-bold text-[#0F291B] font-roboto">Order Reference</label>
+                  <select
                     value={selectedOrder}
                     onChange={(e) => setSelectedOrder(e.target.value)}
                     className="w-full bg-[#F5F8F6] border border-zinc-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#1E532E] font-medium text-zinc-800"
@@ -347,8 +347,8 @@ export default function SupportHelpPage() {
                 {/* Subject Input */}
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-bold text-[#0F291B] font-roboto">Subject</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     placeholder="e.g. Issue with warranty verification or delay in shipment"
@@ -360,7 +360,7 @@ export default function SupportHelpPage() {
                 {/* Description Input */}
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-bold text-[#0F291B] font-roboto">Describe your Issue / Complaint</label>
-                  <textarea 
+                  <textarea
                     rows={5}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -374,8 +374,8 @@ export default function SupportHelpPage() {
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-bold text-[#0F291B] font-roboto">Attach Bills / Images (Optional - Max 3 files)</label>
                   <div className="relative w-full border-2 border-dashed border-zinc-200 hover:border-[#1E532E] rounded-xl py-6 flex flex-col items-center justify-center bg-[#F5F8F6]/50 transition-colors">
-                    <input 
-                      type="file" 
+                    <input
+                      type="file"
                       id="file-attachment"
                       multiple
                       onChange={(e) => {
@@ -419,8 +419,8 @@ export default function SupportHelpPage() {
                 </div>
 
                 {/* Submit Button */}
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={isSubmitting}
                   className="w-full bg-[#1E532E] hover:bg-[#153B21] disabled:bg-zinc-400 text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-md font-roboto text-sm flex items-center justify-center gap-2"
                 >
@@ -442,7 +442,7 @@ export default function SupportHelpPage() {
 
           {/* Right Column: Ticket History & FAQ (5 cols on desktop) */}
           <div className="lg:col-span-5 space-y-6">
-            
+
             {/* Ticket Status History */}
             <div className="bg-white border border-[#CDE5D2] rounded-[32px] p-6 shadow-sm">
               {(() => {
@@ -452,7 +452,7 @@ export default function SupportHelpPage() {
                     <h2 className="text-lg lg:text-xl font-bold text-[#0F291B] mb-4 font-roboto">
                       Your Support Tickets ({activeTickets.length})
                     </h2>
-                    
+
                     <div className="space-y-4 max-h-[380px] overflow-y-auto pr-1">
                       {isLoadingTickets ? (
                         <div className="py-8 flex justify-center">
@@ -466,52 +466,52 @@ export default function SupportHelpPage() {
                       ) : (
                         activeTickets.map((tkt) => (
                           <div key={tkt.name} className="border border-zinc-100 rounded-2xl p-4 bg-zinc-50/50 hover:bg-zinc-50 transition-colors">
-                      <div className="flex items-center justify-between gap-2 mb-2">
-                        <span className="text-xs font-bold text-zinc-500">{tkt.name}</span>
-                        <span className={`text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full border ${getStatusColor(tkt.status)}`}>
-                          {tkt.status || "Open"}
-                        </span>
-                      </div>
-                      <h4 className="font-bold text-[#0F291B] text-sm font-roboto line-clamp-1 mb-1">
-                        Category: {tkt.complaint_type}
-                      </h4>
-                      {tkt.order && (
-                        <p className="text-[#1E532E] text-xs font-bold mb-1.5">
-                          Order: {tkt.order}
-                        </p>
+                            <div className="flex items-center justify-between gap-2 mb-2">
+                              <span className="text-xs font-bold text-zinc-500">{tkt.name}</span>
+                              <span className={`text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full border ${getStatusColor(tkt.status)}`}>
+                                {tkt.status || "Open"}
+                              </span>
+                            </div>
+                            <h4 className="font-bold text-[#0F291B] text-sm font-roboto line-clamp-1 mb-1">
+                              Category: {tkt.complaint_type}
+                            </h4>
+                            {tkt.order && (
+                              <p className="text-[#1E532E] text-xs font-bold mb-1.5">
+                                Order: {tkt.order}
+                              </p>
+                            )}
+                            <p className="text-zinc-600 text-xs font-medium mb-2 leading-relaxed whitespace-pre-wrap">{tkt.description}</p>
+                            <div className="text-[10px] text-zinc-400 font-medium text-right">
+                              Created on: {tkt.creation?.split(" ")[0]}
+                            </div>
+                          </div>
+                        ))
                       )}
-                      <p className="text-zinc-600 text-xs font-medium mb-2 leading-relaxed whitespace-pre-wrap">{tkt.description}</p>
-                      <div className="text-[10px] text-zinc-400 font-medium text-right">
-                        Created on: {tkt.creation?.split(" ")[0]}
-                      </div>
                     </div>
-                  ))
-                )}
-              </div>
-            </>
-          );
-        })()}
-      </div>
+                  </>
+                );
+              })()}
+            </div>
 
             {/* FAQs Accordion */}
             <div className="bg-white border border-[#CDE5D2] rounded-[32px] p-6 shadow-sm">
               <h2 className="text-lg lg:text-xl font-bold text-[#0F291B] mb-4 font-roboto">
                 Frequently Asked Questions
               </h2>
-              
+
               <div className="space-y-3">
                 {faqs.map((faq, index) => (
                   <div key={index} className="border-b border-zinc-100 last:border-b-0 pb-3 last:pb-0">
-                    <button 
+                    <button
                       onClick={() => setOpenFaq(openFaq === index ? null : index)}
                       className="w-full flex items-center justify-between text-left font-bold text-sm text-[#0F291B] font-roboto py-2 focus:outline-none hover:text-[#1E532E] transition-colors"
                     >
                       <span>{faq.q}</span>
-                      <svg 
-                        className={`w-4 h-4 text-zinc-400 transition-transform duration-300 shrink-0 ${openFaq === index ? "rotate-180" : ""}`} 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="2.5" 
+                      <svg
+                        className={`w-4 h-4 text-zinc-400 transition-transform duration-300 shrink-0 ${openFaq === index ? "rotate-180" : ""}`}
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
                         viewBox="0 0 24 24"
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />

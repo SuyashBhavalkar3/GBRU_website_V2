@@ -62,8 +62,28 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         });
         const data = await res.json();
 
+        let listOrder = {};
+        try {
+          const listRes = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mobile_no, page_size: 200, page: 1 })
+          });
+          if (listRes.ok) {
+            const listJson = await listRes.json();
+            if (listJson.message?.status && Array.isArray(listJson.message?.data?.data)) {
+              const matched = listJson.message.data.data.find((o: any) => o.order_id === decodedOrderId);
+              if (matched) {
+                listOrder = matched;
+              }
+            }
+          }
+        } catch (e) {
+          console.error("Error fetching list order data:", e);
+        }
+
         if (data?.message?.status && data?.message?.data) {
-          setOrder(data.message.data);
+          setOrder({ ...listOrder, ...data.message.data });
         } else {
           setError("Failed to fetch order details");
         }
@@ -219,11 +239,19 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
   }
 
   const summary = order.order_summary || {};
-  const isFullPayment = summary.is_full_payment === 1 || String(summary.is_full_payment).toLowerCase() === "true" || String(summary.payment_type).toLowerCase() === "full payment";
-  const isBookingPaid = Number(summary.received_amount || 0) >= Number(summary.payupreferedamount || 0);
+  const totalAmount = Number(summary.total_amount || summary.order_amount || order.total_amount || order.order_amount || 0);
+  const receivedAmount = Number(summary.received_amount || summary.received || order.received_amount || order.received || 0);
+  const pendingAmount = Number(summary.pending_amount || order.pending_amount || (totalAmount - receivedAmount));
+  const unsettledAmount = Number(summary.unsettled_amount || order.unsettled_amount || 0);
+  const preferredAmount = Number(summary.payupreferedamount || order.payupreferedamount || 0);
+  const preferredMode = summary.payupreferedmode || order.payupreferedmode || "Online";
+
+  const isFullPayment = preferredMode === "Full Payment" || summary.is_full_payment === 1 || String(summary.is_full_payment).toLowerCase() === "true" || String(summary.payment_type).toLowerCase() === "full payment" || order.is_full_payment === 1 || String(order.is_full_payment).toLowerCase() === "true" || String(order.payment_type).toLowerCase() === "full payment" || !String(preferredMode).toLowerCase().includes("cash");
+  const isBookingPaid = receivedAmount >= preferredAmount;
+
   const payAmount = isFullPayment
-    ? Number(summary.pending_amount || 0)
-    : (!isBookingPaid ? Number(summary.payupreferedamount || 0) : 0);
+    ? pendingAmount
+    : (!isBookingPaid ? preferredAmount : 0);
   const shipment = order.shipment || {};
   const items = shipment.items || [];
   const statusDisplay = shipment.status || summary.allowed_action || "Pending Payment";
@@ -449,6 +477,79 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                   </div>
                 </div>
                 <div className="h-[1px] bg-zinc-100" />
+                {/* Payment Type Badge */}
+                <div className="flex items-center justify-between py-1">
+                  <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
+                    <span className="w-5 text-center text-zinc-400">ℹ️</span>
+                    <span>Payment Type</span>
+                  </div>
+                  {isFullPayment ? (
+                    <div className="inline-flex items-center gap-1.5 bg-[#E8F5E9] text-[#2E7D32] px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase">
+                      Full Payment
+                    </div>
+                  ) : isBookingPaid ? (
+                    <div className="inline-flex items-center gap-1.5 bg-[#E8F5E9] text-[#2E7D32] px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase">
+                      Booked (COD)
+                    </div>
+                  ) : (
+                    <div className="inline-flex items-center gap-1.5 bg-[#FFF3E0] text-[#E65100] px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase">
+                      Book Now (COD)
+                    </div>
+                  )}
+                </div>
+                <div className="h-[1px] bg-zinc-100" />
+
+                {/* Preferred Payment Mode */}
+                <div className="flex items-center justify-between py-1">
+                  <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
+                    <span className="w-5 text-center text-zinc-400">💳</span>
+                    <span>Preferred Mode</span>
+                  </div>
+                  <span className="font-bold text-[#0F291B] text-sm">{preferredMode}</span>
+                </div>
+                <div className="h-[1px] bg-zinc-100" />
+
+                {/* Preferred Payment Amount */}
+                <div className="flex items-center justify-between py-1">
+                  <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
+                    <span className="w-5 text-center text-zinc-400">💰</span>
+                    <span>Preferred Amount</span>
+                  </div>
+                  <span className="font-bold text-[#0D9740] text-sm">₹{preferredAmount.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="h-[1px] bg-zinc-100" />
+
+                {/* Received Amount */}
+                <div className="flex items-center justify-between py-1">
+                  <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
+                    <span className="w-5 text-center text-zinc-400">📥</span>
+                    <span>Received Amount</span>
+                  </div>
+                  <span className="font-bold text-[#0D9740] text-sm">₹{receivedAmount.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="h-[1px] bg-zinc-100" />
+
+                {/* Pending Amount */}
+                <div className="flex items-center justify-between py-1">
+                  <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
+                    <span className="w-5 text-center text-zinc-400">📤</span>
+                    <span>Pending Amount</span>
+                  </div>
+                  <span className="font-bold text-[#0D9740] text-sm">
+                    ₹{pendingAmount.toLocaleString('en-IN')}
+                  </span>
+                </div>
+                <div className="h-[1px] bg-zinc-100" />
+
+                {/* Unsettled Amount */}
+                <div className="flex items-center justify-between py-1">
+                  <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
+                    <span className="w-5 text-center text-zinc-400">🔄</span>
+                    <span>Unsettled Amount</span>
+                  </div>
+                  <span className="font-bold text-[#0D9740] text-sm">₹{unsettledAmount.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="h-[1px] bg-zinc-100" />
 
                 {/* Row 3: Discount */}
                 <div className="flex items-center justify-between py-1">
@@ -456,10 +557,11 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                     <Tag className="w-5 h-5 text-zinc-400 shrink-0" />
                     <span>Discount</span>
                   </div>
-                  <span className="font-bold text-rose-600 text-sm">
+                  <span className="font-bold text-[#0D9740] text-sm">
                     - ₹{Number(summary.discount_received || 0).toLocaleString('en-IN')}
                   </span>
                 </div>
+                <div className="h-[1px] bg-zinc-100" />
 
                 {/* Row 4: Order Amount Highlighted Box */}
                 <div className="bg-[#F5F8F6] border border-[#E0EFE6] rounded-2xl p-4 flex items-center justify-between">
@@ -468,7 +570,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                     <span>Order Amount</span>
                   </div>
                   <span className="text-xl font-extrabold text-[#1E532E]">
-                    ₹{Number(summary.order_amount || 0).toLocaleString('en-IN')}
+                    ₹{totalAmount.toLocaleString('en-IN')}
                   </span>
                 </div>
 
@@ -477,7 +579,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                     onClick={handlePayNow}
                     className="w-full bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold py-3.5 rounded-xl text-xs font-roboto transition-all shadow-md flex items-center justify-center gap-1.5 duration-300 mt-2 active:scale-[0.98]"
                   >
-                    💳 {isFullPayment ? "Pay Now" : "Pay Booking Deposit"} (₹{payAmount.toLocaleString('en-IN')})
+                    💳 {isFullPayment ? "Pay Pending" : "Pay Booking Deposit"} (₹{payAmount.toLocaleString('en-IN')})
                   </button>
                 )}
               </div>
