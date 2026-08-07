@@ -1018,17 +1018,17 @@ export default function Checkout() {
                           <span>M.R.P. Subtotal</span>
                           <span>₹{formatPrice(proceedData?.payment_summary?.original_amount)}</span>
                         </div>
-                        {Number(proceedData?.payment_summary?.full_payment?.discount_amount || 0) > 0 && (
+                        {Number(fullNormalDiscount) > 0 && (
                           <div className="flex justify-between text-[#0D9740]">
                             <span>Discount ({proceedData?.payment_summary?.full_payment?.label || "Instant"})</span>
-                            <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.discount_amount)}</span>
+                            <span>- ₹{formatPrice(fullNormalDiscount)}</span>
                           </div>
                         )}
 
-                        {Number(proceedData?.payment_summary?.full_payment?.coupen_discount || 0) > 0 && (
+                        {Number(fullCouponDiscount) > 0 && (
                           <div className="flex justify-between text-[#0D9740]">
                             <span>Coupon Discount ({proceedData?.payment_summary?.full_payment?.coupon_label || "Promo"})</span>
-                            <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.coupen_discount)}</span>
+                            <span>- ₹{formatPrice(fullCouponDiscount)}</span>
                           </div>
                         )}
                       </div>
@@ -1079,16 +1079,16 @@ export default function Checkout() {
                             <span>M.R.P. Subtotal</span>
                             <span>₹{formatPrice(defaultProceedData?.payment_summary?.original_amount || proceedData?.payment_summary?.original_amount)}</span>
                           </div>
-                          {Number(proceedData?.payment_summary?.cash_on_delivery?.discount_amount || 0) > 0 && (
+                          {Number(bookingNormalDiscount) > 0 && (
                             <div className="flex justify-between text-[#0D9740]">
                               <span>Discount ({proceedData?.payment_summary?.cash_on_delivery?.label || "Instant"})</span>
-                              <span>- ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.discount_amount)}</span>
+                              <span>- ₹{formatPrice(bookingNormalDiscount)}</span>
                             </div>
                           )}
-                          {Number(proceedData?.payment_summary?.cash_on_delivery?.coupen_discount || 0) > 0 && (
+                          {Number(bookingCouponDiscount) > 0 && (
                             <div className="flex justify-between text-[#0D9740]">
                               <span>Coupon Discount ({proceedData?.payment_summary?.cash_on_delivery?.coupon_label || "Promo"})</span>
-                              <span>- ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.coupen_discount)}</span>
+                              <span>- ₹{formatPrice(bookingCouponDiscount)}</span>
                             </div>
                           )}
                         </div>
@@ -1104,6 +1104,11 @@ export default function Checkout() {
                             ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.pay_on_delivery || defaultProceedData?.payment_summary?.cash_on_delivery?.pay_on_delivery)}
                           </span>
                         </span>
+                        {proceedData?.payment_summary?.cash_on_delivery?.discount_amount > 0 && (
+                          <div className="bg-[#EBF5EE] text-[#0D9740] text-[10px] font-medium py-1 px-2.5 rounded-[6px] mt-2 flex items-center justify-center gap-1">
+                            🎁 You'll save ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.discount_amount)} on this order!
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -1590,17 +1595,17 @@ export default function Checkout() {
                 {/* Full Payment Details */}
                 {paymentMode === "full" && (
                   <>
-                    {Number(proceedData?.payment_summary?.full_payment?.discount_amount || 0) > 0 && (
+                    {Number(fullNormalDiscount) > 0 && (
                       <div className="flex justify-between text-[#0d9740]">
                         <span>Discount ({proceedData?.payment_summary?.full_payment?.label || "Instant"})</span>
-                        <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.discount_amount)}</span>
+                        <span>- ₹{formatPrice(fullNormalDiscount)}</span>
                       </div>
                     )}
 
-                    {Number(proceedData?.payment_summary?.full_payment?.coupen_discount || 0) > 0 && (
+                    {Number(fullCouponDiscount) > 0 && (
                       <div className="flex justify-between text-[#0d9740]">
                         <span>Coupon Discount ({proceedData?.payment_summary?.full_payment?.coupon_label || "Promo"})</span>
-                        <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.coupen_discount)}</span>
+                        <span>- ₹{formatPrice(fullCouponDiscount)}</span>
                       </div>
                     )}
                   </>
@@ -1609,17 +1614,17 @@ export default function Checkout() {
                 {/* Cash On Delivery Details */}
                 {paymentMode === "booking" && (
                   <>
-                    {Number(proceedData?.payment_summary?.cash_on_delivery?.discount_amount || 0) > 0 && (
+                    {Number(bookingNormalDiscount) > 0 && (
                       <div className="flex justify-between text-[#0d9740]">
                         <span>Discount ({proceedData?.payment_summary?.cash_on_delivery?.label || "Instant"})</span>
-                        <span>- ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.discount_amount)}</span>
+                        <span>- ₹{formatPrice(bookingNormalDiscount)}</span>
                       </div>
                     )}
 
-                    {Number(proceedData?.payment_summary?.cash_on_delivery?.coupen_discount || 0) > 0 && (
+                    {Number(bookingCouponDiscount) > 0 && (
                       <div className="flex justify-between text-[#0d9740]">
                         <span>Coupon Discount ({proceedData?.payment_summary?.cash_on_delivery?.coupon_label || "Promo"})</span>
-                        <span>- ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.coupen_discount)}</span>
+                        <span>- ₹{formatPrice(bookingCouponDiscount)}</span>
                       </div>
                     )}
                   </>
@@ -1640,6 +1645,11 @@ export default function Checkout() {
                     <span className="font-bold text-zinc-700 text-[18px]">
                       ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.pay_on_delivery)}
                     </span>
+                  </div>
+                )}
+                {totalDiscount > 0 && (
+                  <div className="bg-[#EBF5EE] text-[#0D9740] text-[11px] font-semibold py-2 px-3 rounded-[10px] mt-3 flex items-center justify-center gap-1.5 border border-[#0D9740]/10">
+                    🎁 You'll save ₹{formatPrice(totalDiscount)} on this order!
                   </div>
                 )}
               </div>
