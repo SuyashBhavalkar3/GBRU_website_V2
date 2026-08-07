@@ -6,40 +6,45 @@ import Image from "next/image";
 export default function FieldExperiences() {
   const playlist = [
     {
-      title: "What Farmers Think about GBRU?",
-      subtitle: "Our Farmer Review",
-      desc: "See what our GBRU user are saying",
-      duration: "03:19",
-      category: "Exclusive Video",
-      thumbnail: "/assets/thumb_farmers_review2.png",
-    },
-    {
-      title: "GBRU Mobile Auto",
-      subtitle: "Mobile Starter Controller",
-      desc: "Learn how the smart auto controller automates water pumps",
-      duration: "02:58",
-      category: "Information",
-      thumbnail: "/assets/thumb_mobile_auto.png",
-    },
-    {
-      title: "GBRU Solar Camera",
-      subtitle: "Off-Grid Farm Security",
-      desc: "In-depth review of our farm security monitoring system",
-      duration: "08:20",
-      category: "Reviews",
-      thumbnail: "/assets/thumb_solar_camera.png",
-    },
-    {
       title: "GBRU Spray Pumps",
-      subtitle: "Battery Knapsack Sprayers",
+      subtitle: "spray pump in action",
       desc: "See our battery operated knapsack sprayer pumps in action",
       duration: "03:41",
       category: "Information",
       thumbnail: "/assets/thumb_spray_pumps.png",
+      videoUrl: "https://www.youtube.com/embed/3rhBieQevLA?autoplay=1",
+    },
+    {
+      title: "GBRU Solar Camera",
+      subtitle: "solar camera in action",
+      desc: "In-depth review of our farm security monitoring system",
+      duration: "08:20",
+      category: "Reviews",
+      thumbnail: "/assets/thumb_solar_camera.png",
+      videoUrl: "https://www.youtube.com/embed/7gGJHSmBGOM?autoplay=1",
+    },
+    {
+      title: "GBRU Mobile Auto",
+      subtitle: "mobile auto in action",
+      desc: "Learn how the smart auto controller automates water pumps",
+      duration: "02:58",
+      category: "Information",
+      thumbnail: "/assets/thumb_mobile_auto.png",
+      videoUrl: "https://www.youtube.com/embed/DX5_nQpXYjA?autoplay=1",
+    },
+    {
+      title: "GBRU Seeder",
+      subtitle: "seeder in action",
+      desc: "See how the seeder makes planting faster and easier",
+      duration: "04:15",
+      category: "Exclusive Video",
+      thumbnail: "/assets/cat_seeders.png",
+      videoUrl: "https://www.youtube.com/embed/fGxiAGA4uf0?autoplay=1",
     },
   ];
 
   const [activeIdx, setActiveIdx] = useState(0);
+  const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
   const activeVideo = playlist[activeIdx];
 
   // List of other videos (excluding active one or just showing list of all)
@@ -87,6 +92,7 @@ export default function FieldExperiences() {
             {/* Player Card */}
             <div
               className="relative w-full lg:w-[760px] lg:h-[428px] rounded-[34px] overflow-hidden shadow-2xl group cursor-pointer border border-white/10"
+              onClick={() => setActiveVideoUrl(activeVideo.videoUrl)}
               style={{ background: "linear-gradient(180deg, rgba(0, 168, 62, 0.5) 0%, rgba(34, 197, 94, 0.5) 100%)" }}
             >
               <Image
@@ -115,7 +121,7 @@ export default function FieldExperiences() {
                 {activeVideo.subtitle}
               </h3>
               <p className="text-white/80 font-roboto text-sm lg:text-base mt-1.5 font-medium">
-                See what our Gbru user are saying
+                {activeVideo.desc}
               </p>
             </div>
           </div>
@@ -163,6 +169,34 @@ export default function FieldExperiences() {
 
         </div>
       </div>
+
+
+      {/* Video Lightbox Modal */}
+      {activeVideoUrl && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-[999] p-4 animate-fade-in"
+          onClick={() => setActiveVideoUrl(null)}
+        >
+          <div className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl">
+            <button 
+              className="absolute top-4 right-4 bg-white/20 hover:bg-white/40 transition-colors text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold z-10"
+              onClick={() => setActiveVideoUrl(null)}
+            >
+              ✕
+            </button>
+            <iframe 
+              width="100%" 
+              height="100%" 
+              src={activeVideoUrl} 
+              title="YouTube video player" 
+              frameBorder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowFullScreen
+              className="w-full h-full"
+            ></iframe>
+          </div>
+        </div>
+      )}
 
     </section>
   );

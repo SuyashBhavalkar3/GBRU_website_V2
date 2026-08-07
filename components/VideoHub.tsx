@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Image from 'next/image';
 import Navbar from './Navbar';
 import AppDownloadBanner from './AppDownloadBanner';
@@ -57,11 +57,11 @@ const events = [
 ];
 
 const actionVideos = [
-  { id: 1, title: 'Power Weeder Demo', location: 'Tamil Nadu', duration: '01:45' },
-  { id: 2, title: 'Sprayer in Action', location: 'Maharashtra', duration: '02:30' },
-  { id: 3, title: 'Power Weeder Demo', location: 'Tamil Nadu', duration: '01:45' },
-  { id: 4, title: 'Tractor Demo', location: 'Punjab', duration: '03:15' },
-  { id: 5, title: 'Harvester in Action', location: 'Haryana', duration: '02:10' },
+  { id: 1, title: 'Power Weeder Demo', location: 'Tamil Nadu', duration: '01:45', videoUrl: 'https://www.youtube.com/embed/GTNiviig9Z0?autoplay=1', thumbnail: 'https://img.youtube.com/vi/GTNiviig9Z0/hqdefault.jpg' },
+  { id: 2, title: 'Sprayer in Action', location: 'Maharashtra', duration: '02:30', videoUrl: 'https://www.youtube.com/embed/3rhBieQevLA?autoplay=1', thumbnail: 'https://img.youtube.com/vi/3rhBieQevLA/hqdefault.jpg' },
+  { id: 3, title: 'Solar Camera Demo', location: 'Tamil Nadu', duration: '01:45', videoUrl: 'https://www.youtube.com/embed/7gGJHSmBGOM?autoplay=1', thumbnail: 'https://img.youtube.com/vi/7gGJHSmBGOM/hqdefault.jpg' },
+  { id: 4, title: 'Drone Sprayer Demo', location: 'Punjab', duration: '03:15', videoUrl: 'https://www.youtube.com/embed/l6gdhNhF0mc?autoplay=1', thumbnail: 'https://img.youtube.com/vi/l6gdhNhF0mc/hqdefault.jpg' },
+  { id: 5, title: 'GBRU Product Demo', location: 'Haryana', duration: '02:10', videoUrl: 'https://www.youtube.com/embed/Dhq-RLA7MwY?autoplay=1', thumbnail: 'https://img.youtube.com/vi/Dhq-RLA7MwY/hqdefault.jpg' },
 ];
 
 const initialTestimonials = [
@@ -80,7 +80,19 @@ const allTestimonials = [
 ];
 
 const VideoHub = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(false);
+  const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const { current } = scrollRef;
+      const scrollAmount = 300;
+      current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+    }
+  };
+  const [activeVideoTab, setActiveVideoTab] = useState('All Videos');
+  const [activeTab, setActiveTab] = useState('All Videos');
   const [showMoreTestimonials, setShowMoreTestimonials] = useState(false);
 
   return (
@@ -289,23 +301,26 @@ const VideoHub = () => {
         
         {/* Filter Pills */}
         <div className="flex items-center justify-center gap-4 mb-16 flex-wrap">
-          <button className="bg-[#005B28] text-white px-6 py-2.5 rounded-full font-bold shadow-md">
-            All Videos
-          </button>
-          <button className="bg-[#F3F4F6] text-[#4B5563] hover:bg-gray-200 px-6 py-2.5 rounded-full font-bold transition-colors">
-            Farmer Reviews
-          </button>
-          <button className="bg-[#F3F4F6] text-[#4B5563] hover:bg-gray-200 px-6 py-2.5 rounded-full font-bold transition-colors">
-            Product Demo
-          </button>
+          {['All Videos', 'Farmer Reviews', 'Product Demo'].map(tab => (
+            <button 
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`${activeTab === tab ? 'bg-[#005B28] text-white shadow-md' : 'bg-[#F3F4F6] text-[#4B5563] hover:bg-gray-200'} px-6 py-2.5 rounded-full font-bold transition-colors`}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
 
         {/* Videos Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 text-left">
+        <div className="flex overflow-x-auto gap-6 text-left pb-6 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {actionVideos.map(video => (
-            <div key={video.id} className="flex flex-col group cursor-pointer">
+            <div key={video.id} className="flex flex-col group cursor-pointer flex-shrink-0 w-[260px] sm:w-[280px] snap-start" onClick={() => (video as any).videoUrl && setActiveVideoUrl((video as any).videoUrl)}>
               <div className="relative w-full aspect-video bg-gradient-to-b from-[#3a3a3a] to-black rounded-xl overflow-hidden mb-4 shadow-sm group-hover:shadow-md transition-shadow">
-                <div className="absolute inset-0 flex items-center justify-center">
+                {(video as any).thumbnail && (
+                  <img src={(video as any).thumbnail} alt={video.title} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity z-0" />
+                )}
+                <div className="absolute inset-0 flex items-center justify-center z-10">
                   <div className="w-12 h-12 bg-black/60 rounded-full flex items-center justify-center group-hover:bg-black/80 transition-colors border border-white/20 shadow-lg">
                     <svg className="w-5 h-5 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M8 5v14l11-7z" />
@@ -370,6 +385,34 @@ const VideoHub = () => {
       <AppDownloadBanner />
 
       <Footer />
+
+      {/* Video Lightbox Modal */}
+      {activeVideoUrl && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-[999] p-4 animate-fade-in"
+          onClick={() => setActiveVideoUrl(null)}
+        >
+          <div className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl">
+            <button 
+              className="absolute top-4 right-4 bg-white/20 hover:bg-white/40 transition-colors text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold z-10"
+              onClick={() => setActiveVideoUrl(null)}
+            >
+              ✕
+            </button>
+            <iframe 
+              width="100%" 
+              height="100%" 
+              src={activeVideoUrl} 
+              title="YouTube video player" 
+              frameBorder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowFullScreen
+              className="w-full h-full"
+            ></iframe>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

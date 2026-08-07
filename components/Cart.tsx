@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default function Cart() {
   const router = useRouter();
@@ -534,6 +535,8 @@ export default function Cart() {
         )}
 
       </main>
+
+      <Footer />
 
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-[9999] bg-[#0D9740] text-white px-5 py-3.5 rounded-xl shadow-2xl font-bold text-xs flex items-center gap-2 animate-in fade-in slide-in-from-bottom-5 duration-300">
