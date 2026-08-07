@@ -22,6 +22,11 @@ export default function UserProfile() {
   const [userFullName, setUserFullName] = useState("");
   const [userPhone, setUserPhone] = useState("");
   const [loading, setLoading] = useState(true);
+  const [fullPaymentCount, setFullPaymentCount] = useState(0);
+  const [bookingCount, setBookingCount] = useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [deliveredCount, setDeliveredCount] = useState(0);
+  const [cancelledCount, setCancelledCount] = useState(0);
 
   // Form states for profile edit
   const [tempName, setTempName] = useState("");
@@ -116,6 +121,56 @@ export default function UserProfile() {
           } catch (e) {
             console.error("Failed to parse addresses JSON:", text);
           }
+        }
+
+        // Fetch Orders for counts
+        try {
+          const ordersRes = await fetch("/api/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+              mobile_no, 
+              from_date: "2020-01-01",
+              to_date: new Date().toISOString().split('T')[0],
+              page_size: 200, 
+              page: 1 
+            })
+          });
+          if (ordersRes.ok) {
+            const ordersJson = await ordersRes.json();
+            if (ordersJson.message?.status && Array.isArray(ordersJson.message?.data?.data)) {
+              const list: any[] = ordersJson.message.data.data;
+              let full = 0;
+              let booking = 0;
+              let pending = 0;
+              let delivered = 0;
+              let cancelled = 0;
+              list.forEach(o => {
+                const isFull = o.payupreferedmode === "Full Payment" || String(o.payment_type || "").toLowerCase() === "full payment";
+                if (isFull) {
+                  full++;
+                } else {
+                  booking++;
+                }
+
+                const status = String(o.status || "").toLowerCase();
+                if (status === "cancelled") {
+                  cancelled++;
+                } else if (status === "delivered" || status === "completed") {
+                  delivered++;
+                } else {
+                  pending++;
+                }
+              });
+              setFullPaymentCount(full);
+              setBookingCount(booking);
+              setPendingCount(pending);
+              setDeliveredCount(delivered);
+              setCancelledCount(cancelled);
+            }
+          }
+        } catch (err) {
+          console.error("Error fetching orders count:", err);
         }
       } catch (err) {
         console.error("Error fetching user details or addresses", err);
@@ -561,11 +616,8 @@ export default function UserProfile() {
             </Link>
             <div
               onClick={() => {
-                setEditingAddressName(null);
-                setFormData({
-                  fullName: "", mobile: "", pin: "", village: "", city: "", district: "", state: "", address1: "", address2: "", saveAddress: false
-                });
-                setShowAddAddressModal(true);
+                const el = document.getElementById("saved-addresses");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
               }}
               className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer"
             >
@@ -607,45 +659,51 @@ export default function UserProfile() {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {/* Pending */}
-                <div className="border border-zinc-100 rounded-[20px] p-4 flex items-center justify-between cursor-pointer hover:border-zinc-200 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-[#FCF9F3] text-[#DFB33F] flex items-center justify-center"><ClipboardList className="w-4 h-4" /></div>
-                    <div className="flex flex-col">
-                      <span className="text-[11px] text-zinc-500 font-semibold uppercase leading-none">Pending</span>
-                      <span className="font-extrabold text-[16px] text-[#0F291B] mt-1">02</span>
+                <Link href="/orders" className="block">
+                  <div className="border border-zinc-100 rounded-[20px] p-4 flex items-center justify-between cursor-pointer hover:border-zinc-200 transition-colors h-full text-left">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-[#FCF9F3] text-[#DFB33F] flex items-center justify-center"><ClipboardList className="w-4 h-4" /></div>
+                      <div className="flex flex-col">
+                        <span className="text-[11px] text-zinc-500 font-semibold uppercase leading-none">Pending</span>
+                        <span className="font-extrabold text-[16px] text-[#0F291B] mt-1">{String(pendingCount).padStart(2, '0')}</span>
+                      </div>
                     </div>
+                    <span className="text-zinc-400">›</span>
                   </div>
-                  <span className="text-zinc-400">›</span>
-                </div>
+                </Link>
 
                 {/* Delivered */}
-                <div className="border border-zinc-100 rounded-[20px] p-4 flex items-center justify-between cursor-pointer hover:border-zinc-200 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><CheckCircle2 className="w-4 h-4" /></div>
-                    <div className="flex flex-col">
-                      <span className="text-[11px] text-zinc-500 font-semibold uppercase leading-none">Delivered</span>
-                      <span className="font-extrabold text-[16px] text-[#0F291B] mt-1">12</span>
+                <Link href="/orders" className="block">
+                  <div className="border border-zinc-100 rounded-[20px] p-4 flex items-center justify-between cursor-pointer hover:border-zinc-200 transition-colors h-full text-left">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><CheckCircle2 className="w-4 h-4" /></div>
+                      <div className="flex flex-col">
+                        <span className="text-[11px] text-zinc-500 font-semibold uppercase leading-none">Delivered</span>
+                        <span className="font-extrabold text-[16px] text-[#0F291B] mt-1">{String(deliveredCount).padStart(2, '0')}</span>
+                      </div>
                     </div>
+                    <span className="text-zinc-400">›</span>
                   </div>
-                  <span className="text-zinc-400">›</span>
-                </div>
+                </Link>
 
                 {/* Cancelled */}
-                <div className="border border-zinc-100 rounded-[20px] p-4 flex items-center justify-between cursor-pointer hover:border-zinc-200 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-red-50 text-red-600 flex items-center justify-center"><XCircle className="w-4 h-4" /></div>
-                    <div className="flex flex-col">
-                      <span className="text-[11px] text-zinc-500 font-semibold uppercase leading-none">Cancelled</span>
-                      <span className="font-extrabold text-[16px] text-[#0F291B] mt-1">01</span>
+                <Link href="/orders" className="block">
+                  <div className="border border-zinc-100 rounded-[20px] p-4 flex items-center justify-between cursor-pointer hover:border-zinc-200 transition-colors h-full text-left">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-red-50 text-red-600 flex items-center justify-center"><XCircle className="w-4 h-4" /></div>
+                      <div className="flex flex-col">
+                        <span className="text-[11px] text-zinc-500 font-semibold uppercase leading-none">Cancelled</span>
+                        <span className="font-extrabold text-[16px] text-[#0F291B] mt-1">{String(cancelledCount).padStart(2, '0')}</span>
+                      </div>
                     </div>
+                    <span className="text-zinc-400">›</span>
                   </div>
-                  <span className="text-zinc-400">›</span>
-                </div>
+                </Link>
               </div>
             </div>
 
             {/* Saved Addresses */}
-            <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-6">
+            <div id="saved-addresses" className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-6">
               <div className="flex justify-between items-center">
                 <h3 className="font-bold text-[#0F291B] text-[18px]">Saved Addresses</h3>
                 <button
@@ -718,27 +776,25 @@ export default function UserProfile() {
           <div className="lg:col-span-4 flex flex-col gap-6">
 
             {/* Payment Info Card */}
-            <div className="bg-zinc-50 border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-5">
+            <div className="bg-zinc-50 border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-5 text-left">
               <h3 className="font-bold text-[#0F291B] text-lg">Payment Info</h3>
 
               <div className="flex flex-col gap-3.5 text-xs text-[#374151]">
                 <div className="flex justify-between">
                   <span className="text-zinc-500">Full Payment Orders</span>
-                  <span className="font-bold">08</span>
+                  <span className="font-bold">{String(fullPaymentCount).padStart(2, '0')}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-zinc-500">Booking Orders</span>
-                  <span className="font-bold">05</span>
-                </div>
-                <div className="flex justify-between border-t border-zinc-200/80 pt-3.5 items-baseline">
-                  <span className="text-zinc-500">Wallet Balance</span>
-                  <span className="font-extrabold text-[#0D9740] text-lg">₹1,240.00</span>
+                  <span className="font-bold">{String(bookingCount).padStart(2, '0')}</span>
                 </div>
               </div>
 
-              <button className="w-full h-12 bg-[#0FA84D] hover:bg-[#0b8a3d] text-white font-bold text-xs rounded-[10px] shadow-sm transition-all mt-2">
-                Manage Payments
-              </button>
+              <Link href="/payments" className="w-full mt-2">
+                <button className="w-full h-12 bg-[#0FA84D] hover:bg-[#0b8a3d] text-white font-bold text-xs rounded-[10px] shadow-sm transition-all">
+                  Manage Payments
+                </button>
+              </Link>
             </div>
 
             {/* Help & Support */}
