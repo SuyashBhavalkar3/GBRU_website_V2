@@ -409,52 +409,39 @@ export default function OrderList() {
                   {/* Column 3: CTAs */}
                   <div className="flex-1 flex flex-col justify-center items-stretch md:items-end gap-3 md:pl-8">
                     {/* Pay Now Button */}
-                    {!isFullPayment && Number(order.payupreferedamount || 0) > 0 && Number(order.payupreferedamount) < (pendingAmt + Number(order.received_amount || 0)) ? (
-                      <>
+                    {!isFullPayment ? (
+                      // For COD/Booking orders, only allow paying the booking deposit (if not already paid)
+                      !isBookingPaid && Number(order.payupreferedamount || 0) > 0 && (
                         <button 
-                          disabled={isBookingPaid || payingOrderId === order.order_id}
+                          disabled={payingOrderId === order.order_id}
                           onClick={() => handlePayNow(order.order_id, Number(order.payupreferedamount))}
-                          className={`w-full md:max-w-[200px] font-bold py-2.5 rounded-xl transition-all duration-200 font-roboto text-xs flex items-center justify-center ${
-                            isBookingPaid 
-                              ? "bg-zinc-200 text-zinc-400 cursor-not-allowed border border-zinc-100" 
-                              : "text-white bg-[#1E532E] hover:bg-[#153B21]"
-                          }`}
+                          className="w-full md:max-w-[200px] text-white bg-[#1E532E] hover:bg-[#153B21] font-bold py-2.5 rounded-xl transition-all duration-200 font-roboto text-xs flex items-center justify-center"
                         >
-                          {payingOrderId === order.order_id ? "Processing..." : isBookingPaid ? "Deposit Paid ✓" : `Pay Booking Deposit (₹${Number(order.payupreferedamount).toLocaleString('en-IN')})`}
+                          {payingOrderId === order.order_id ? "Processing..." : `Pay Booking Deposit (₹${Number(order.payupreferedamount).toLocaleString('en-IN')})`}
                         </button>
+                      )
+                    ) : (
+                      // For Full Payment orders, allow paying the pending amount if it's > 0
+                      pendingAmt > 0 && (
                         <button 
                           disabled={payingOrderId === order.order_id}
                           onClick={() => handlePayNow(order.order_id, pendingAmt)}
-                          className="w-full md:max-w-[200px] text-white font-bold py-2.5 rounded-xl transition-all duration-200 font-roboto text-xs flex items-center justify-center bg-rose-600 hover:bg-rose-700"
+                          className="w-full md:max-w-[200px] text-white bg-[#1E532E] hover:bg-[#153B21] font-bold py-3.5 rounded-2xl transition-all duration-200 font-roboto text-sm flex items-center justify-center"
                         >
-                          {payingOrderId === order.order_id ? "Processing..." : `Pay Full Pending (₹${pendingAmt.toLocaleString('en-IN')})`}
+                          {payingOrderId === order.order_id ? (
+                            <span className="flex items-center gap-1.5 justify-center">
+                              <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                              </svg>
+                              Processing...
+                            </span>
+                          ) : (
+                            `Pay Pending (₹${pendingAmt.toLocaleString('en-IN')})`
+                          )}
                         </button>
-                      </>
-                    ) : (
-                      <button 
-                        disabled={isFullPayment || payingOrderId === order.order_id}
-                        onClick={() => handlePayNow(order.order_id, pendingAmt)}
-                        className={`w-full md:max-w-[200px] text-white font-bold py-3.5 rounded-2xl transition-all duration-200 font-roboto text-sm flex items-center justify-center ${
-                          isFullPayment 
-                            ? "bg-[#8DBA9A] cursor-not-allowed opacity-80" 
-                            : "bg-[#1E532E] hover:bg-[#153B21]"
-                        }`}
-                      >
-                        {payingOrderId === order.order_id ? (
-                          <span className="flex items-center gap-1.5 justify-center">
-                            <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                            </svg>
-                            Processing...
-                          </span>
-                        ) : (
-                          "Pay Now"
-                        )}
-                      </button>
-                    )}
-
-                    {/* View Details Outline Button */}
+                      )
+                    )}                    {/* View Details Outline Button */}
                     <Link 
                       href={`/orders/${order.order_id}`}
                       className="w-full md:max-w-[200px] border border-[#1E532E] hover:bg-[#1E532E]/5 text-[#1E532E] font-bold py-3.5 rounded-2xl transition-all duration-200 font-roboto text-sm flex items-center justify-center"
