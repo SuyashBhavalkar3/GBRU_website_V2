@@ -678,7 +678,7 @@ export default function UserProfile() {
                         </div>
                         {addr.is_primary === 1 && (
                           <span className="bg-emerald-50 text-[#0D9740] text-[9px] font-bold py-0.5 px-2 rounded">
-                            DEFAULT
+                            PRIMARY
                           </span>
                         )}
                         {addr.is_primary !== 1 && (
@@ -686,7 +686,7 @@ export default function UserProfile() {
                             onClick={() => handleMakePrimary(addr.name)}
                             className="bg-zinc-100 text-zinc-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors text-[9px] font-bold py-0.5 px-2 rounded"
                           >
-                            MAKE DEFAULT
+                            MAKE PRIMARY
                           </button>
                         )}
                       </div>

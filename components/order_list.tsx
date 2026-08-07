@@ -269,7 +269,7 @@ export default function OrderList() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-100 pb-5">
           <div className="text-left space-y-1">
             <div className="flex items-center gap-2">
-              <Link href="/profile" className="text-zinc-500 hover:text-[#1E532E] transition-colors">
+              <Link href="/user-profile" className="text-zinc-500 hover:text-[#1E532E] transition-colors">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>

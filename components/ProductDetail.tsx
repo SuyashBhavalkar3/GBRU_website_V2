@@ -665,6 +665,7 @@ function ProductDetailContent() {
 }
 
 export default function ProductDetail() {
+
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center">
