@@ -7,8 +7,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Tracking ID is required' }, { status: 400 });
     }
 
+    const INDIA_POST_BASE_URL = process.env.INDIA_POST_BASE_URL;
     // Step 1: Login to get Access Token
-    const loginRes = await fetch('https://app.indiapost.gov.in/beextcustomer/v1/access/login', {
+    const loginRes = await fetch(`${INDIA_POST_BASE_URL}/access/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
     }
 
     // Step 2: Query Tracking Bulk endpoint
-    const trackingRes = await fetch('https://app.indiapost.gov.in/beextcustomer/v1/tracking/bulk', {
+    const trackingRes = await fetch(`${INDIA_POST_BASE_URL}/tracking/bulk`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

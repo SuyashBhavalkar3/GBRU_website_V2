@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createB2CLead } from '@/lib/lead';
 
 export async function POST(request: Request) {
   try {
@@ -74,6 +75,14 @@ export async function POST(request: Request) {
         mobile_no,
         message: userData.message?.message || 'User not found' 
       });
+    }
+
+    // Call Lead Creation API for existing customers
+    try {
+      const leadName = dataObj.customer_name || dataObj.first_name || dataObj.user_id || 'Existing Customer';
+      await createB2CLead(leadName, mobile_no);
+    } catch (leadErr) {
+      console.error('Failed to trigger B2C lead creation during OTP verify:', leadErr);
     }
 
     return NextResponse.json({

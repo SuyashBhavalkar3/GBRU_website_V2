@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createB2CLead } from '@/lib/lead';
 
 export async function POST(request: Request) {
   try {
@@ -28,6 +29,16 @@ export async function POST(request: Request) {
     });
 
     const data = await response.json();
+
+    // Trigger B2C lead creation if registration succeeded
+    if (data?.message?.status) {
+      try {
+        await createB2CLead(name, mobile_no);
+      } catch (leadErr) {
+        console.error('Failed to trigger B2C lead creation during registration:', leadErr);
+      }
+    }
+
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error during short registration:', error);

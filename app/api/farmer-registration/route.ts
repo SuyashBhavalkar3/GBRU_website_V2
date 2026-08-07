@@ -4,7 +4,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const baseUrl = process.env.API_BASE_URL || "https://proderp.gbru.in";
+    const baseUrl = process.env.API_BASE_URL;
     const apiKey = process.env.API_KEY;
     const apiSecret = process.env.API_SECRET;
 
