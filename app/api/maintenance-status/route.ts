@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebaseAdmin';
+import { getDB } from '@/lib/firebaseAdmin';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    const db = getDB();
+    if (!db) {
+      return NextResponse.json({ maintenance: false, warning: "Database not initialized" });
+    }
     const docRef = db.collection('maintenance').doc('mode');
     const docSnap = await docRef.get();
     
