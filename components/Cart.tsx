@@ -368,13 +368,16 @@ export default function Cart() {
                   <div key={item.item} className="bg-white border border-zinc-200/80 rounded-[24px] p-6 flex flex-col md:flex-row items-stretch gap-6 relative shadow-sm">
 
                     {/* Product Image */}
-                    <div className="relative w-full md:w-[160px] h-[160px] rounded-[16px] overflow-hidden bg-zinc-50 border border-zinc-100 flex-shrink-0 flex items-center justify-center p-2">
+                    <Link
+                      href={`/products/view_product?item_code=${item.item}`}
+                      className="relative w-full md:w-[160px] h-[160px] rounded-[16px] overflow-hidden bg-zinc-50 border border-zinc-100 flex-shrink-0 flex items-center justify-center p-2 hover:opacity-95 transition-opacity"
+                    >
                       <img
                         src={itemImage}
                         alt={item.item_name}
                         className="max-h-full max-w-full object-contain"
                       />
-                    </div>
+                    </Link>
 
                     {/* Details */}
                     <div className="flex flex-col justify-between flex-1 py-1 text-left">
@@ -382,9 +385,14 @@ export default function Cart() {
                       {/* Info Header */}
                       <div className="flex justify-between items-start gap-4">
                         <div className="flex flex-col gap-1">
-                          <h3 className="font-bold text-[#0F291B] text-[18px] leading-snug">
-                            {item.item_name}
-                          </h3>
+                          <Link
+                            href={`/products/view_product?item_code=${item.item}`}
+                            className="hover:text-[#0D9740] transition-colors"
+                          >
+                            <h3 className="font-bold text-[#0F291B] text-[18px] leading-snug">
+                              {item.item_name}
+                            </h3>
+                          </Link>
                           <p className="text-xs text-[#6B7280]">
                             Brand: <span className="font-bold text-[#0D9740]">{item.brand || "GBRU"}</span>
                           </p>

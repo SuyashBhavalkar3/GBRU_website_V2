@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const { mobile_no } = await request.json();
@@ -41,12 +43,13 @@ export async function POST(request: Request) {
     const userApiSecret = userData.message.data.key_details.api_secret;
 
     // Step 2: Fetch cart details
-    const cartRes = await fetch(`${baseUrl}/api/method/shoption_api.cart.cart.get_cart?page=1&page_size=20`, {
+    const cartRes = await fetch(`${baseUrl}/api/method/shoption_api.cart.cart.get_cart?page=1&page_size=20&t=${Date.now()}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `token ${userApiKey}:${userApiSecret}`,
-      }
+      },
+      cache: 'no-store'
     });
 
     if (!cartRes.ok) {

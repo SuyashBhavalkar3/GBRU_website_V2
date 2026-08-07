@@ -20,6 +20,7 @@ export default function PopularItemsModal() {
 
       setAddedItemName(item_name || "Item");
       setPopularItems([]);
+      setAddedItemsState({});
       setIsOpen(true);
       setLoading(true);
 
@@ -31,7 +32,35 @@ export default function PopularItemsModal() {
           mobile_no = user.customer_id?.split("-")[1] || user.user_id || user.mobile_no || "";
         }
 
-        const res = await fetch("/api/products/popular", {
+        // Fetch active cart status to sync button states
+        if (mobile_no) {
+          try {
+            const resCart = await fetch(`/api/cart?t=${Date.now()}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ mobile_no }),
+              cache: "no-store"
+            });
+            if (resCart.ok) {
+              const jsonCart = await resCart.json();
+              const items = jsonCart.message?.data?.items || [];
+              const initialAddedState: { [key: string]: boolean } = {};
+              items.forEach((item: any) => {
+                if (item.item) {
+                  initialAddedState[String(item.item).trim().toLowerCase()] = true;
+                }
+              });
+              setAddedItemsState(initialAddedState);
+            }
+          } catch (e) {
+            console.error("Failed to sync cart status for popular items modal:", e);
+            setAddedItemsState({});
+          }
+        } else {
+          setAddedItemsState({});
+        }
+
+        const res = await fetch(`/api/products/popular?t=${Date.now()}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -40,6 +69,7 @@ export default function PopularItemsModal() {
             brand: brand || "175",
             mobile_no: mobile_no || null,
           }),
+          cache: "no-store"
         });
 
         const data = await res.json();
@@ -187,16 +217,16 @@ export default function PopularItemsModal() {
 
                   <button
                     onClick={() => handleAddPopularToCart(item)}
-                    disabled={addingCartItemCode === item.item_code || addedItemsState[item.item_code]}
+                    disabled={addingCartItemCode === item.item_code || addedItemsState[String(item.item_code).trim().toLowerCase()]}
                     className={`w-full mt-3 h-8 rounded-lg font-bold text-[11px] transition-all flex items-center justify-center gap-1 ${
-                      addedItemsState[item.item_code]
+                      addedItemsState[String(item.item_code).trim().toLowerCase()]
                         ? "bg-zinc-200 text-zinc-500 cursor-not-allowed"
                         : "bg-[#0D9740] hover:bg-[#0a7d34] text-white shadow-sm"
                     }`}
                   >
                     {addingCartItemCode === item.item_code ? (
                       <span className="animate-pulse">Adding...</span>
-                    ) : addedItemsState[item.item_code] ? (
+                    ) : addedItemsState[String(item.item_code).trim().toLowerCase()] ? (
                       "✓ Added to Cart"
                     ) : (
                       "+ Add to Cart"
