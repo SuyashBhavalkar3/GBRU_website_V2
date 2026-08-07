@@ -29,11 +29,11 @@ export default function OrderList() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  
+
   // User profile details
   const [userName, setUserName] = useState("Prakash");
   const [userMobile, setUserMobile] = useState("+91 98765 43210");
-  
+
   // Search query
   const [searchQuery, setSearchQuery] = useState("");
   const [payingOrderId, setPayingOrderId] = useState<string | null>(null);
@@ -84,7 +84,7 @@ export default function OrderList() {
         });
 
         const data = await res.json();
-        
+
         if (data?.message?.status && data?.message?.data?.data) {
           setOrders(data.message.data.data);
         } else {
@@ -170,7 +170,7 @@ export default function OrderList() {
       <Navbar />
 
       <main className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 py-8 flex-1 flex flex-col gap-8">
-        
+
         {/* 1. User Profile summary Header */}
         <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
@@ -193,8 +193,8 @@ export default function OrderList() {
             </div>
           </div>
 
-          <Link 
-            href="/user-profile" 
+          <Link
+            href="/user-profile"
             className="h-10 px-6 border border-[#0D9740]/60 hover:bg-[#0D9740]/[0.02] text-[#0D9740] font-bold text-xs rounded-[10px] shadow-sm transition-all flex items-center justify-center"
           >
             Edit Profile
@@ -207,10 +207,10 @@ export default function OrderList() {
             Account Shortcuts
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-            
+
             {/* Shortcut: My Orders */}
-            <Link 
-              href="/orders" 
+            <Link
+              href="/orders"
               className="bg-[#D3E7D9] border border-[#1E532E]/30 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer"
             >
               <div className="w-10 h-10 rounded-full bg-white text-emerald-700 flex items-center justify-center">
@@ -220,8 +220,8 @@ export default function OrderList() {
             </Link>
 
             {/* Shortcut: Addresses */}
-            <Link 
-              href="/user-profile" 
+            <Link
+              href="/user-profile"
               className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer"
             >
               <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center">
@@ -231,8 +231,8 @@ export default function OrderList() {
             </Link>
 
             {/* Shortcut: Payments */}
-            <Link 
-              href="/payments" 
+            <Link
+              href="/payments"
               className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer"
             >
               <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center">
@@ -242,8 +242,8 @@ export default function OrderList() {
             </Link>
 
             {/* Shortcut: Notifications */}
-            <Link 
-              href="/user-profile" 
+            <Link
+              href="/user-profile"
               className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer"
             >
               <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center">
@@ -253,8 +253,8 @@ export default function OrderList() {
             </Link>
 
             {/* Shortcut: Support */}
-            <Link 
-              href="/help-centre" 
+            <Link
+              href="/help-centre"
               className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer"
             >
               <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center">
@@ -282,9 +282,9 @@ export default function OrderList() {
 
           {/* Search Box */}
           <div className="relative w-full md:max-w-xs shrink-0">
-            <input 
-              type="text" 
-              placeholder="Search Order ID" 
+            <input
+              type="text"
+              placeholder="Search Order ID"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-white border border-zinc-200 rounded-xl py-3 pl-4 pr-10 text-sm focus:outline-none focus:border-[#1E532E] font-medium text-zinc-800 placeholder-zinc-400 shadow-sm"
@@ -338,12 +338,12 @@ export default function OrderList() {
           ) : (
             filteredOrders.map((order, idx) => {
               const pendingAmt = Number(order.pending_amount || 0);
-              const isFullPayment = order.payupreferedmode === "Full Payment" || String(order.payment_type).toLowerCase() === "full payment";
+              const isFullPayment = order.payupreferedmode === "Full Payment" || String(order.payupreferedmode).toLowerCase() === "full payment";
               const isBookingPaid = Number(order.received_amount || 0) >= Number(order.payupreferedamount || 0);
 
               return (
-                <div 
-                  key={order.order_id || idx} 
+                <div
+                  key={order.order_id || idx}
                   className="bg-white border border-[#CDE5D2] rounded-[32px] p-6 md:p-8 flex flex-col md:flex-row justify-between items-stretch gap-6 md:gap-0 shadow-sm"
                 >
                   {/* Column 1: Order Meta */}
@@ -375,7 +375,7 @@ export default function OrderList() {
                           <span>Book Now (COD)</span>
                         </div>
                       )}
-                      
+
                       <div className="text-zinc-500 text-xs font-medium">
                         Preferred Payment Mode: <span className="font-bold text-zinc-700">{order.payupreferedmode || "Online"}</span>
                       </div>
@@ -425,7 +425,7 @@ export default function OrderList() {
                     {!isFullPayment ? (
                       // For COD/Booking orders, only allow paying the booking deposit (if not already paid)
                       !isBookingPaid && Number(order.payupreferedamount || 0) > 0 && (
-                        <button 
+                        <button
                           disabled={payingOrderId === order.order_id}
                           onClick={() => handlePayNow(order.order_id, Number(order.payupreferedamount))}
                           className="w-full md:max-w-[200px] text-white bg-[#1E532E] hover:bg-[#153B21] font-bold py-2.5 rounded-xl transition-all duration-200 font-roboto text-xs flex items-center justify-center"
@@ -436,7 +436,7 @@ export default function OrderList() {
                     ) : (
                       // For Full Payment orders, allow paying the pending amount if it's > 0
                       pendingAmt > 0 && (
-                        <button 
+                        <button
                           disabled={payingOrderId === order.order_id}
                           onClick={() => handlePayNow(order.order_id, pendingAmt)}
                           className="w-full md:max-w-[200px] text-white bg-[#1E532E] hover:bg-[#153B21] font-bold py-3.5 rounded-2xl transition-all duration-200 font-roboto text-sm flex items-center justify-center"
@@ -455,7 +455,7 @@ export default function OrderList() {
                         </button>
                       )
                     )}                    {/* View Details Outline Button */}
-                    <Link 
+                    <Link
                       href={`/orders/${order.order_id}`}
                       className="w-full md:max-w-[200px] border border-[#1E532E] hover:bg-[#1E532E]/5 text-[#1E532E] font-bold py-3.5 rounded-2xl transition-all duration-200 font-roboto text-sm flex items-center justify-center"
                     >
@@ -463,8 +463,8 @@ export default function OrderList() {
                     </Link>
 
                     {/* Help Link */}
-                    <Link 
-                      href="/help-centre" 
+                    <Link
+                      href="/help-centre"
                       className="inline-flex items-center gap-1 text-[#1E532E] hover:text-[#153B21] transition-colors text-xs font-bold mt-1.5 md:mr-1"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">

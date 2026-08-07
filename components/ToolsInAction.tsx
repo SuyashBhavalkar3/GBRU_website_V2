@@ -35,7 +35,7 @@ export default function ToolsInAction() {
     {
       id: 4,
       title: "seeder in action",
-      thumbnail: "/assets/cat_seeders.png",
+      thumbnail: "/assets/seeder_in_action_thumb.png",
       videoUrl: "https://www.youtube.com/embed/fGxiAGA4uf0?autoplay=1",
     },
   ];
@@ -78,14 +78,14 @@ export default function ToolsInAction() {
                   <img
                     src={vid.thumbnail}
                     alt={vid.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className={`w-full h-full ${vid.id <= 3 ? "object-fill" : "object-cover"} transition-transform duration-500 group-hover:scale-105`}
                   />
                 ) : (
                   <Image
                     src={vid.thumbnail}
                     alt={vid.title}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className={`${vid.id <= 3 ? "object-fill" : "object-cover"} transition-transform duration-500 group-hover:scale-105`}
                   />
                 )}
                 

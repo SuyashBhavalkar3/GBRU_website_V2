@@ -45,6 +45,8 @@ export default function Products() {
   const [productsList, setProductsList] = useState<ERPProduct[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("all");
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("newest");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -106,6 +108,8 @@ export default function Products() {
     }
     loadSubcategories();
     setSelectedSubcategory("all"); // Reset selection on category change
+    setSearchQuery("");
+    setSearchInput("");
   }, [categoryId]);
 
   const handleAddToCart = (product: any) => {
@@ -113,14 +117,15 @@ export default function Products() {
     setShowPaymentModal(true);
   };
 
-  // Load products based on category and subcategory
+  // Load products based on category, subcategory, and search query
   useEffect(() => {
     async function loadCategoryProducts() {
       setLoading(true);
       setError("");
       try {
+        const searchParam = searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : "";
         const response = await fetch(
-          `/api/products?category_id=${categoryId}&subcategory_id=${selectedSubcategory}`
+          `/api/products?category_id=${categoryId}&subcategory_id=${selectedSubcategory}${searchParam}`
         );
         if (!response.ok) {
           throw new Error("Failed to load products for this category.");
@@ -146,7 +151,7 @@ export default function Products() {
     }
 
     loadCategoryProducts();
-  }, [categoryId, selectedSubcategory]);
+  }, [categoryId, selectedSubcategory, searchQuery]);
 
   // Format currency
   const formatPrice = (val: number) => {
@@ -223,6 +228,26 @@ export default function Products() {
               </div>
 
               <div className="mt-4 md:mt-0 flex flex-wrap items-center gap-4">
+
+                {/* Search Bar */}
+                <form 
+                  onSubmit={(e) => { e.preventDefault(); setSearchQuery(searchInput); }} 
+                  className="flex items-center"
+                >
+                  <input
+                    type="text"
+                    placeholder="Search in category..."
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    className="appearance-none bg-white border border-gray-300 text-[#1A1A1A] text-sm rounded-l-md pl-4 py-2 outline-none focus:border-[#006B21] focus:ring-1 focus:ring-[#006B21]"
+                  />
+                  <button 
+                    type="submit" 
+                    className="bg-[#006B21] text-white px-4 py-2 rounded-r-md text-sm font-semibold hover:bg-[#005a1b] transition-colors"
+                  >
+                    Search
+                  </button>
+                </form>
 
                 {/* Subcategory Dropdown Filter */}
                 {subcategories.length > 0 && (
