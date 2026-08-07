@@ -22,6 +22,7 @@ function ProductDetailContent() {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  const [isInCart, setIsInCart] = useState(false);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -49,6 +50,44 @@ function ProductDetailContent() {
     };
     if (itemCode) {
       fetchDetails();
+    }
+  }, [itemCode]);
+
+  useEffect(() => {
+    const checkCartStatus = async () => {
+      const user = localStorage.getItem("gbru_user");
+      if (!user) return;
+      try {
+        const parsed = JSON.parse(user);
+        const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+        if (!mobile_no) return;
+        const res = await fetch("/api/cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mobile_no })
+        });
+        if (res.ok) {
+          const json = await res.json();
+          const items = json.message?.data?.items || [];
+          const cartItem = items.find((i: any) => i.item === itemCode);
+          if (cartItem) {
+            setIsInCart(true);
+            setQuantity(cartItem.quantity);
+            if (cartItem.payment_type === "Cash On Delivery") {
+              setPaymentOption("booking");
+            } else {
+              setPaymentOption("full");
+            }
+          } else {
+            setIsInCart(false);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to check cart status:", e);
+      }
+    };
+    if (itemCode) {
+      checkCartStatus();
     }
   }, [itemCode]);
 
@@ -85,44 +124,58 @@ function ProductDetailContent() {
 
       setSubmitting(true);
 
-      const payload = {
-        mobile_no,
-        items: [
-          {
+      const endpoint = isInCart ? "/api/cart/update" : "/api/cart/add";
+      const payload = isInCart
+        ? {
+            mobile_no,
             item: product.item_code,
             quantity: quantity,
-            is_moq_applicable: 0,
             payment_type: paymentOption === "full" ? "Full Payment" : "Cash On Delivery",
             full_payment_amount: product.full_payment_amount || 0.0,
             full_payment_discount: product.full_payment_discount || 0.0,
-            cod_value: product.cod_value || product.COD_value || 0.0,
-            cod_display: product.cod_display || product.COD_Display || 0.0,
-            cod_discount: product.cod_discount || product.COD_discount || 0.0,
+            COD_value: product.cod_value || product.COD_value || 0.0,
+            COD_Display: product.cod_display || product.COD_Display || 0.0,
+            COD_discount: product.cod_discount || product.COD_discount || 0.0,
           }
-        ]
-      };
+        : {
+            mobile_no,
+            items: [
+              {
+                item: product.item_code,
+                quantity: quantity,
+                is_moq_applicable: 0,
+                payment_type: paymentOption === "full" ? "Full Payment" : "Cash On Delivery",
+                full_payment_amount: product.full_payment_amount || 0.0,
+                full_payment_discount: product.full_payment_discount || 0.0,
+                cod_value: product.cod_value || product.COD_value || 0.0,
+                cod_display: product.cod_display || product.COD_Display || 0.0,
+                cod_discount: product.cod_discount || product.COD_discount || 0.0,
+              }
+            ]
+          };
 
-      const res = await fetch("/api/cart/add", {
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const resJson = await res.json();
-      if (resJson.message?.status) {
+      if (resJson.message?.status || resJson.success) {
         window.dispatchEvent(new Event("cartUpdate"));
         setToastType("success");
-        setToastMessage(`${product.item_name} added to cart successfully!`);
+        setToastMessage(`${product.item_name} ${isInCart ? "updated in" : "added to"} cart successfully!`);
+        setIsInCart(true);
         setTimeout(() => setToastMessage(""), 3000);
       } else {
         setToastType("error");
-        setToastMessage(resJson.message?.message || "Failed to add product to cart.");
+        setToastMessage(resJson.message?.message || resJson.error || `Failed to ${isInCart ? "update" : "add"} product.`);
         setTimeout(() => setToastMessage(""), 3000);
       }
     } catch (err) {
-      console.error("Error in add to cart:", err);
+      console.error("Error in add/update cart:", err);
       setToastType("error");
-      setToastMessage("Failed to add product to cart.");
+      setToastMessage(`Failed to ${isInCart ? "update" : "add"} product.`);
       setTimeout(() => setToastMessage(""), 3000);
     } finally {
       setSubmitting(false);
@@ -378,12 +431,12 @@ function ProductDetailContent() {
                   <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3 pl-6">
                     <div className="flex justify-between">
                       <span>Grand Total</span>
-                      <span>₹{formatPrice(product.actual_rate || product.price)}</span>
+                      <span>₹{formatPrice((product.actual_rate || product.price) * quantity)}</span>
                     </div>
                     {product.full_payment_discount > 0 && (
                       <div className="flex justify-between text-[#0D9740]">
                         <span>Full Pay Discount</span>
-                        <span>- ₹{formatPrice(product.full_payment_discount)}</span>
+                        <span>- ₹{formatPrice(product.full_payment_discount * quantity)}</span>
                       </div>
                     )}
                   </div>
@@ -392,7 +445,7 @@ function ProductDetailContent() {
                 <div className="mt-6 border-t border-zinc-100 pt-3 pl-6">
                   <span className="text-[11px] font-medium text-[#6B7280]">Pay Now</span>
                   <div className="text-[20px] font-extrabold text-[#0f291b]">
-                    ₹{formatPrice(product.full_payment_amount || product.price)}
+                    ₹{formatPrice((product.full_payment_amount || product.price) * quantity)}
                   </div>
                 </div>
               </div>
@@ -419,9 +472,9 @@ function ProductDetailContent() {
                     <div className="flex items-center gap-2">
                       <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${paymentOption === "booking" ? "border-[#0d9740]" : "border-zinc-300"
                         }`}>
-                        {paymentOption === "booking" && (
-                          <div className="w-2.5 h-2.5 rounded-full bg-[#0d9740]" />
-                        )}
+                      {paymentOption === "booking" && (
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#0d9740]" />
+                      )}
                       </div>
                       <h4 className="font-bold text-[#0F291B] text-[14px]">COD PAYMENT</h4>
                     </div>
@@ -430,15 +483,15 @@ function ProductDetailContent() {
                     <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3 pl-6">
                       <div className="flex justify-between">
                         <span>Grand Total</span>
-                        <span>₹{formatPrice(product.actual_rate || product.price)}</span>
+                        <span>₹{formatPrice((product.actual_rate || product.price) * quantity)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Pay Now (Deposit)</span>
-                        <span>₹{formatPrice(product.COD_Display)}</span>
+                        <span>₹{formatPrice(product.COD_Display * quantity)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Pay on Delivery</span>
-                        <span>₹{formatPrice(product.COD_value)}</span>
+                        <span>₹{formatPrice(product.COD_value * quantity)}</span>
                       </div>
                     </div>
                   </div>
@@ -447,12 +500,12 @@ function ProductDetailContent() {
                     <div>
                       <span className="text-[11px] font-medium text-[#6B7280]">Pay Now (Deposit)</span>
                       <div className="text-[20px] font-extrabold text-[#0f291b]">
-                        ₹{formatPrice(product.COD_Display)}
+                        ₹{formatPrice(product.COD_Display * quantity)}
                       </div>
                     </div>
                     <div className="mt-1 text-[11px] text-zinc-500">
                       Pay on Delivery: <span className="font-bold text-[#0f291b]">
-                        ₹{formatPrice(product.COD_value)}
+                        ₹{formatPrice(product.COD_value * quantity)}
                       </span>
                     </div>
                   </div>
@@ -512,10 +565,10 @@ function ProductDetailContent() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    Adding to Cart...
+                    {isInCart ? "Updating Cart..." : "Adding to Cart..."}
                   </>
                 ) : (
-                  "Add to Cart"
+                  isInCart ? "Update Cart" : "Add to Cart"
                 )}
               </button>
 
