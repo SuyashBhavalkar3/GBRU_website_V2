@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 
 export default function GbRUOnField() {
+  const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
   const stats = [
     { value: "50+", label: "Exhibitions Attended" },
     { value: "2M+", label: "Farmers Reached" },
@@ -65,6 +66,7 @@ export default function GbRUOnField() {
         >
           {/* Card 1 – Featured Video (col 1-2, row 1-2) */}
           <div
+            onClick={() => setActiveVideoUrl("https://www.youtube.com/embed/w5p5uD50hxM?autoplay=1")}
             className="relative rounded-[20px] overflow-hidden shadow-xl cursor-pointer group"
             style={{ gridColumn: "1 / 3", gridRow: "1 / 3" }}
           >
@@ -219,6 +221,34 @@ export default function GbRUOnField() {
           ))}
         </div>
       </div>
+
+      {/* Video Lightbox Modal */}
+      {activeVideoUrl && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-[999] p-4 animate-fade-in"
+          onClick={() => setActiveVideoUrl(null)}
+        >
+          <div className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl">
+            <button 
+              className="absolute top-4 right-4 bg-white/20 hover:bg-white/40 transition-colors text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold z-10"
+              onClick={() => setActiveVideoUrl(null)}
+            >
+              ✕
+            </button>
+            <iframe 
+              width="100%" 
+              height="100%" 
+              src={activeVideoUrl} 
+              title="YouTube video player" 
+              frameBorder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowFullScreen
+              className="w-full h-full"
+            ></iframe>
+          </div>
+        </div>
+      )}
+
     </section>
   );
 }

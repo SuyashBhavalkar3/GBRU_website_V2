@@ -73,12 +73,12 @@ export default function AppDownloadBanner() {
           </div>
 
           {/* Hand Image (Popping out slightly at bottom and top) */}
-          <div className="absolute bottom-[-28px] right-2 lg:right-4 w-[200px] sm:w-[240px] lg:w-[290px] z-30 select-none pointer-events-none overflow-visible">
+          <div className="absolute bottom-[-16px] lg:bottom-[-24px] right-0 lg:-right-4 w-[240px] sm:w-[280px] lg:w-[350px] z-30 select-none pointer-events-none overflow-visible">
             <Image 
               src="/assets/holding_phone.png" 
               alt="Shoption App in hand" 
-              width={290} 
-              height={450} 
+              width={350} 
+              height={500} 
               className="object-contain w-full h-auto -scale-x-100" 
               priority
             />

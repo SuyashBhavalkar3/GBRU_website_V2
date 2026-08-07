@@ -89,6 +89,17 @@ const Login = () => {
         className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center relative"
         style={{ backgroundImage: "url('/assets/caroussel-2.jpg')" }}
       >
+        {/* Back Button */}
+        <Link 
+          href="/" 
+          className="absolute top-6 left-6 md:top-10 md:left-10 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all z-50 text-gray-800 hover:text-[#006B21]"
+          title="Back to Home"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </Link>
+
         <div className="flex flex-col md:flex-row w-full max-w-[1100px] bg-white rounded-xl shadow-2xl overflow-hidden min-h-[650px]">
           
           {/* Left Side (Green Gradient) */}
