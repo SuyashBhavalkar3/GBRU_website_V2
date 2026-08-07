@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Roboto, Manrope } from "next/font/google";
 import { ToastProvider } from "@/components/ToastContext";
 import PopularItemsModal from "@/components/PopularItemsModal";
+import MaintenanceGuard from "@/components/MaintenanceGuard";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -46,6 +47,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col" style={{ zoom: "1.1" }}>
         <ToastProvider>
+          <MaintenanceGuard />
           {children}
           <PopularItemsModal />
         </ToastProvider>
