@@ -385,7 +385,7 @@ export default function Cart() {
                             {item.item_name}
                           </h3>
                           <p className="text-xs text-[#6B7280]">
-                            Brand: <span className="font-bold text-[#0D9740]">{item.brand || "GBRU"}</span> | HSN: {item.gst_hsn_code}
+                            Brand: <span className="font-bold text-[#0D9740]">{item.brand || "GBRU"}</span>
                           </p>
 
                           {/* Payment Mode Badge */}
