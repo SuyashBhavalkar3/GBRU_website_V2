@@ -336,8 +336,8 @@ export default function OrderList() {
             <div className="text-center py-16 text-zinc-500 font-medium">No matching orders found.</div>
           ) : (
             filteredOrders.map((order, idx) => {
-              const pendingAmt = Number(order.pending_amount);
-              const isFullPayment = pendingAmt === 0;
+              const pendingAmt = Number(order.pending_amount || 0);
+              const isFullPayment = order.payupreferedmode === "Full Payment" || String(order.payment_type).toLowerCase() === "full payment";
               const isBookingPaid = Number(order.received_amount || 0) >= Number(order.payupreferedamount || 0);
 
               return (
@@ -363,10 +363,15 @@ export default function OrderList() {
                           <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]" />
                           <span>Full Payment</span>
                         </div>
+                      ) : isBookingPaid ? (
+                        <div className="inline-flex items-center gap-1.5 bg-[#E8F5E9] text-[#2E7D32] px-3 py-1 rounded-full text-xs font-extrabold w-fit uppercase">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]" />
+                          <span>Booked (COD)</span>
+                        </div>
                       ) : (
                         <div className="inline-flex items-center gap-1.5 bg-[#FFF3E0] text-[#E65100] px-3 py-1 rounded-full text-xs font-extrabold w-fit uppercase">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#E65100]" />
-                          <span>Book Now</span>
+                          <span>Book Now (COD)</span>
                         </div>
                       )}
                       
@@ -403,6 +408,13 @@ export default function OrderList() {
                       <span className={`text-lg font-extrabold ${pendingAmt > 0 ? "text-rose-600" : "text-zinc-800"}`}>
                         ₹{pendingAmt.toLocaleString('en-IN')}
                       </span>
+                    </div>
+
+                    {/* Unsettled Amount Row */}
+                    <div className="h-[1px] bg-zinc-100" />
+                    <div className="flex justify-between items-center">
+                      <span className="text-zinc-400 text-xs font-bold font-roboto">UNSETTLED AMOUNT</span>
+                      <span className="text-lg font-bold text-amber-600">₹{Number(order.unsettled_amount || 0).toLocaleString('en-IN')}</span>
                     </div>
                   </div>
 
