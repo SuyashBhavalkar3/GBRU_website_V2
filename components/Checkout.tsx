@@ -883,12 +883,7 @@ export default function Checkout() {
                             <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.discount_amount)}</span>
                           </div>
                         )}
-                        {Number(proceedData?.payment_summary?.full_payment?.discount_amount_without_gst || 0) > 0 && (
-                          <div className="flex justify-between text-zinc-500">
-                            <span>Discount (Excl. GST)</span>
-                            <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.discount_amount_without_gst)}</span>
-                          </div>
-                        )}
+
                         {Number(proceedData?.payment_summary?.full_payment?.coupen_discount || 0) > 0 && (
                           <div className="flex justify-between text-[#0D9740]">
                             <span>Coupon Discount ({proceedData?.payment_summary?.full_payment?.coupon_label || "Promo"})</span>
@@ -1399,12 +1394,7 @@ export default function Checkout() {
                         <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.discount_amount)}</span>
                       </div>
                     )}
-                    {Number(proceedData?.payment_summary?.full_payment?.discount_amount_without_gst || 0) > 0 && (
-                      <div className="flex justify-between text-zinc-500">
-                        <span>Discount (Excl. GST)</span>
-                        <span>- ₹{formatPrice(proceedData?.payment_summary?.full_payment?.discount_amount_without_gst)}</span>
-                      </div>
-                    )}
+
                     {Number(proceedData?.payment_summary?.full_payment?.coupen_discount || 0) > 0 && (
                       <div className="flex justify-between text-[#0d9740]">
                         <span>Coupon Discount ({proceedData?.payment_summary?.full_payment?.coupon_label || "Promo"})</span>
@@ -1423,12 +1413,7 @@ export default function Checkout() {
                         <span>- ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.discount_amount)}</span>
                       </div>
                     )}
-                    {Number(proceedData?.payment_summary?.cash_on_delivery?.discount_amount_without_gst || 0) > 0 && (
-                      <div className="flex justify-between text-zinc-500">
-                        <span>Discount (Excl. GST)</span>
-                        <span>- ₹{formatPrice(proceedData?.payment_summary?.cash_on_delivery?.discount_amount_without_gst)}</span>
-                      </div>
-                    )}
+
                     {Number(proceedData?.payment_summary?.cash_on_delivery?.coupen_discount || 0) > 0 && (
                       <div className="flex justify-between text-[#0d9740]">
                         <span>Coupon Discount ({proceedData?.payment_summary?.cash_on_delivery?.coupon_label || "Promo"})</span>
