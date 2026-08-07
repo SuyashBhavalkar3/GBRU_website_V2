@@ -197,11 +197,11 @@ export default function Checkout() {
           const json = await res.json();
           console.log("Shipping address check response:", json);
           if (json.message?.status && Array.isArray(json.message?.data)) {
-            // Intercept: If shipping address list is empty, redirect to location details form
+            // Intercept: If shipping address list is empty, open the add address form inline
             if (json.message.data.length === 0) {
-              console.log("Shipping addresses list is empty, redirecting to location details");
-              router.push("/location-details");
-              return;
+              console.log("Shipping addresses list is empty, showing add address form inline");
+              setIsAddingAddress(true);
+              setIsAddressSaved(false);
             }
 
             setSavedAddresses(json.message.data);
