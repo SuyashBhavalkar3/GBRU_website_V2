@@ -79,7 +79,7 @@ export async function POST(request: Request) {
 
     // Call Lead Creation API for existing customers
     try {
-      const leadName = dataObj.customer_name || dataObj.first_name || dataObj.user_id || 'Existing Customer';
+      const leadName = dataObj.customer_name || dataObj.Customer_name || dataObj.full_name || dataObj.first_name || 'Customer';
       await createB2CLead(leadName, mobile_no);
     } catch (leadErr) {
       
