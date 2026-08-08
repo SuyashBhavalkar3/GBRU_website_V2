@@ -48,9 +48,9 @@ export default function Testimonials() {
 
   return (
     <section className="w-full bg-white flex flex-col items-center lg:py-10 pt-10 pb-2 px-4 sm:px-6 lg:px-0 overflow-hidden">
-      {/* ── Top Testimonial Rounded Box ── */}
+      {/* ── Top Testimonial Rounded Box (Desktop Only) ── */}
       <div
-        className="relative w-full max-w-[1206px] rounded-[32px] lg:rounded-[47px] overflow-hidden border border-[#CDE5D2] flex flex-col items-center py-10 px-4 lg:px-6 bg-no-repeat transition-all duration-500"
+        className="hidden lg:flex relative w-full max-w-[1206px] rounded-[32px] lg:rounded-[47px] overflow-hidden border border-[#CDE5D2] flex-col items-center py-10 px-4 lg:px-6 bg-no-repeat transition-all duration-500"
         style={{
           background: "linear-gradient(135deg, #F0FAF2 0%, #DCEFE0 100%)",
           minHeight: "730px",
