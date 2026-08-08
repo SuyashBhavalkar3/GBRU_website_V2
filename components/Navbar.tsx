@@ -373,6 +373,7 @@ export default function Navbar() {
           localStorage.removeItem("gbru_user");
           setLoggedInUser(null);
           setIsProfileOpen(false);
+          window.location.href = '/';
         }}
       />
     </nav>

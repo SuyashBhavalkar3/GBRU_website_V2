@@ -240,6 +240,7 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
                       onLogout();
                     } else {
                       localStorage.removeItem("gbru_user");
+                      window.location.href = '/';
                     }
                     onClose();
                     setIsLoggingOut(false);
