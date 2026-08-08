@@ -55,8 +55,8 @@ export default function Home() {
 
         {/* Mobile order: WhyGBRU after Featured Products (BestSellingTools), then GbRUOnField */}
         <div className="block lg:hidden">
-          {!isLoggedIn && <WhyGBRU />}
-          {!isLoggedIn && <GbRUOnField />}
+          <WhyGBRU />
+          <GbRUOnField />
         </div>
 
         <Testimonials />

@@ -57,21 +57,22 @@ export default function GbRUOnField() {
           </p>
         </div>
 
-        {/* Video Grid Area (Total Height: 240.56px, Gap: 14.66px) */}
-        <div
-          className="grid grid-cols-2 w-full"
-          style={{
-            height: "240.56px",
-            gap: "14.66px"
+        {/* Video Grid Area (Flex Row) */}
+        <div 
+          className="flex w-full justify-between items-stretch" 
+          style={{ 
+            height: "240.56px", 
+            gap: "14.66px" 
           }}
         >
           {/* Column 1: Live Demo Highlights Video */}
           <div
             onClick={() => setActiveVideoUrl("https://www.youtube.com/embed/w5p5uD50hxM?autoplay=1")}
-            className="relative rounded-[12px] overflow-hidden shadow-lg cursor-pointer group bg-black/10"
+            className="relative rounded-[12px] overflow-hidden shadow-lg cursor-pointer group bg-black/10 flex-1"
             style={{
-              width: "172.21px",
               height: "240.56px",
+              width: "50%",
+              minWidth: "0",
             }}
           >
             <Image
@@ -96,12 +97,13 @@ export default function GbRUOnField() {
           </div>
 
           {/* Column 2: Stacked Subgrid layout */}
-          <div
-            className="flex flex-col justify-between"
-            style={{
-              width: "172.21px",
+          <div 
+            className="flex flex-col justify-between flex-1" 
+            style={{ 
               height: "240.56px",
-              gap: "12px"
+              gap: "12px",
+              width: "50%",
+              minWidth: "0",
             }}
           >
             {/* Row 1: 2 Mini Side-by-Side Videos */}
@@ -140,7 +142,7 @@ export default function GbRUOnField() {
             </div>
 
             {/* Row 2: Farmer Workshop 2024 Video */}
-            <div
+            <div 
               className="relative rounded-[10px] overflow-hidden bg-black/10"
               style={{ height: "128.56px" }}
             >
