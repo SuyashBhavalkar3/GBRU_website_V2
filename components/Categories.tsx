@@ -43,7 +43,7 @@ export default function Categories() {
 
 
   return (
-    <section className="w-full bg-[#EAF5EE] lg:h-[480px] py-[40px] lg:py-[30px] px-4 lg:px-[64px] flex flex-col items-center justify-between text-center">
+    <section className="w-full bg-[#EAF5EE] py-12 lg:py-16 px-4 sm:px-6 lg:px-[64px] flex flex-col items-center gap-8 lg:gap-12 text-center">
 
       {/* Title */}
       <h2 className="font-roboto font-bold text-[32px] md:text-[40px] lg:text-[48px] leading-[40px] lg:leading-[56px] tracking-[-0.96px] text-[#0F291B]">
@@ -51,13 +51,13 @@ export default function Categories() {
       </h2>
 
       {/* Categories Row */}
-      <div className="max-w-[1152px] w-full flex flex-wrap lg:flex-nowrap justify-center gap-[24px] my-6 lg:my-0">
+      <div className="max-w-[1152px] w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 justify-center gap-6 lg:gap-[24px]">
         {loading ? (
-          <div className="flex items-center justify-center w-full h-[251px]">
+          <div className="flex items-center justify-center w-full h-[251px] col-span-full">
             <div className="w-10 h-10 border-4 border-[#006B21] border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : error ? (
-          <div className="flex items-center justify-center w-full h-[251px] text-red-500">
+          <div className="flex items-center justify-center w-full h-[251px] text-red-500 col-span-full">
             Failed to load categories
           </div>
         ) : (
@@ -65,10 +65,10 @@ export default function Categories() {
             <Link
               key={idx}
               href={`/products?category_id=${cat.category_id}&category_name=${encodeURIComponent(cat.category_name)}`}
-              className="w-[211.2px] h-[251.2px] flex flex-col items-center justify-between group"
+              className="w-full flex flex-col items-center gap-4 group"
             >
               {/* White Square Card (211.2 x 211.2px, rounded 32px) */}
-              <div className="w-[211.2px] h-[211.2px] rounded-[32px] bg-white border border-[#0F291B]/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center justify-center p-[20px] relative overflow-hidden transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] cursor-pointer">
+              <div className="w-full aspect-square rounded-[24px] lg:rounded-[32px] bg-white border border-[#0F291B]/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center justify-center p-4 lg:p-[20px] relative overflow-hidden transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] cursor-pointer">
                 {cat.custom_image_path ? (
                   <div className="relative w-full h-full">
                     <img
@@ -92,15 +92,16 @@ export default function Categories() {
         )}
       </div>
 
-      {/* View All Categories Button */}
-      <Link href="/categories">
-        <button className="bg-[#0D9740] hover:bg-[#0b8036] text-white font-roboto font-bold text-[12px] tracking-wider w-[173px] h-[32px] rounded-full pt-[8px] pr-[24px] pb-[8px] pl-[24px] flex items-center justify-center transition-all duration-200 hover:scale-[1.02] cursor-pointer shadow-md">
-          View All categories
-        </button>
-      </Link>
+      {/* View All Categories Button Container */}
+      <div className="pt-2">
+        <Link href="/categories">
+          <button className="bg-[#0D9740] hover:bg-[#0b8036] text-white font-roboto font-bold text-[12px] tracking-wider w-[173px] h-[40px] rounded-full px-6 flex items-center justify-center transition-all duration-200 hover:scale-[1.02] cursor-pointer shadow-md">
+            View All categories
+          </button>
+        </Link>
+      </div>
 
     </section>
   );
 }
-
 

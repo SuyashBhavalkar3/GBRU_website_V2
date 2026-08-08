@@ -5,7 +5,7 @@ import Image from "next/image";
 const Footer = () => {
   return (
     <footer 
-      className="w-full text-white pt-16 pb-6 px-6 lg:px-12 font-roboto border-t border-white/10 mt-auto mt-24"
+      className="w-full text-white pt-16 pb-6 px-4 sm:px-6 lg:px-12 font-roboto border-t border-white/10 mt-auto mt-24 overflow-hidden"
       style={{ marginTop: '96px', background: 'linear-gradient(163.13deg, #0B5D3B 44.12%, #043321 96.94%)' }}
     >
       <style dangerouslySetInnerHTML={{__html: `
@@ -34,21 +34,21 @@ const Footer = () => {
           color: #FFB703;
         }
       `}} />
-      <div className="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
+      <div className="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8 mb-16">
         
         {/* Column 1: Stay Updated */}
         <div className="flex flex-col gap-6">
           <h3 className="footer-heading">Stay Updated</h3>
           <p className="footer-text">Get latest offers, new products and farming tips.</p>
-          <div className="flex w-full mt-2">
+            <div className="flex flex-col sm:flex-row w-full mt-2">
             <input 
               type="email" 
               placeholder="Enter your email" 
               className="flex-1 bg-[#2C5230] text-white placeholder-[#87A38D] px-4 py-3 rounded-l-md border-none outline-none focus:ring-1 focus:ring-[#FFB703] text-sm font-roboto"
             />
-            <button className="bg-[#FFB703] hover:bg-[#e6a500] text-black font-bold px-6 py-3 rounded-r-md transition-colors text-sm font-roboto whitespace-nowrap">
-              Subscribe
-            </button>
+              <button className="bg-[#FFB703] hover:bg-[#e6a500] text-black font-bold px-6 py-3 rounded-r-md sm:rounded-l-none transition-colors text-sm font-roboto whitespace-nowrap">
+                Subscribe
+              </button>
           </div>
         </div>
 
@@ -109,7 +109,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="max-w-[1280px] mx-auto border-t border-[#315636] pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[#87A38D] font-roboto">
+      <div className="max-w-[1280px] mx-auto border-t border-[#315636] pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[#87A38D] font-roboto text-center md:text-left">
         <p>© 2025 Shopion. All rights reserved.</p>
         <p className="flex items-center gap-1">Made with <span className="text-red-500">❤️</span> for Farmers</p>
       </div>

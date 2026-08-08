@@ -146,20 +146,83 @@ export default function FeaturedProducts() {
       <div className="max-w-[1280px] mx-auto px-4 lg:px-8 w-full">
       
       {/* Header controls */}
-      <div className="flex items-center justify-between mb-10">
+      <div className="flex items-center justify-between mb-6 lg:mb-10">
         <h2 className="text-2xl md:text-3xl font-extrabold text-[#0F291B] tracking-tight">
           Featured Products
         </h2>
         <Link 
           href="/products" 
-          className="text-sm font-bold text-[#006B21] hover:text-[#005a1b] transition-colors flex items-center gap-1.5"
+          className="text-sm font-bold text-[#006B21] hover:text-[#005a1b] transition-colors flex items-center gap-1.5 shrink-0"
         >
           View all products <span>→</span>
         </Link>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+      {/* Mobile horizontal scroller */}
+      <div className="lg:hidden -mx-4 px-4 overflow-x-auto pb-3">
+        <div className="flex flex-nowrap gap-4 min-w-max">
+          {products.map((product) => {
+            const itemImage = product.custom_image_1 && product.custom_image_1.startsWith("http")
+              ? product.custom_image_1
+              : "/assets/sprayer.png";
+
+            const mockRating = (3.8 + (parseInt(product.item_code) % 15) / 10).toFixed(1);
+            const mockReviews = 40 + (parseInt(product.item_code) % 95);
+
+            return (
+              <div
+                key={product.item_code}
+                className="bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col transition-all duration-300 relative p-4 group shadow-sm w-[210px] shrink-0"
+              >
+                {product.discount && product.discount > 0 ? (
+                  <div className="absolute top-4 left-4 px-2 py-0.5 text-[10px] font-bold rounded bg-[#FEF5D1] text-[#78350F] z-10 border border-[#FDF4CE]">
+                    {product.discount.toFixed(0)}% OFF
+                  </div>
+                ) : null}
+
+                <div className="relative w-full aspect-square bg-gray-50/50 rounded-xl overflow-hidden flex items-center justify-center p-3 mb-4">
+                  <img
+                    src={itemImage}
+                    alt={product.item_name}
+                    className="object-contain max-h-full max-w-full transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+
+                <div className="flex flex-col flex-1">
+                  <h3 className="font-bold text-xs text-[#1A1A1A] line-clamp-2 leading-snug min-h-[32px] mb-2 group-hover:text-[#0D9740] transition-colors">
+                    {product.item_name}
+                  </h3>
+
+                  <div className="flex items-center gap-1 mb-3 text-[10px] font-semibold text-zinc-500">
+                    <span className="text-amber-500 text-xs">★</span>
+                    <span className="text-[#1A1A1A]">{mockRating}</span>
+                    <span>({mockReviews})</span>
+                  </div>
+
+                  <div className="mt-auto">
+                    <div className="flex items-baseline gap-1.5 mb-4">
+                      <span className="text-sm font-extrabold text-[#0D9740]">₹{formatPrice(product.price)}</span>
+                      {product.mrp > product.price && (
+                        <span className="text-[10px] text-zinc-400 line-through">₹{formatPrice(product.mrp)}</span>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() => handleAddToCart(product.item_code)}
+                      className="w-full h-11 bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-sm rounded-xl shadow-sm transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.99]"
+                    >
+                      {cartItemCodes.includes(product.item_code) ? "Update Cart" : "Add to Cart"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Desktop Grid */}
+      <div className="hidden lg:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
         {products.map((product) => {
           const itemImage = product.custom_image_1 && product.custom_image_1.startsWith("http")
             ? product.custom_image_1

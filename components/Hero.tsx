@@ -69,7 +69,7 @@ export default function Hero() {
   ];
 
   return (
-    <section className="relative w-full overflow-hidden bg-cover bg-center h-[553px] flex items-center text-white"
+    <section className="relative w-full overflow-hidden bg-cover bg-center min-h-[553px] py-10 lg:py-0 flex items-center text-white"
       style={{ backgroundImage: "url('/assets/home_hero_bg.png')" }}
     >
       {/* Backdrop blur overlay for the background image */}
@@ -100,17 +100,17 @@ export default function Hero() {
       />
 
       {/* Main Container - width 1152px, centered */}
-      <div className="relative z-10 max-w-[1280px] w-full mx-auto px-4 lg:px-[64px]">
+      <div className="relative z-10 max-w-[1280px] w-full mx-auto px-4 sm:px-6 lg:px-[64px]">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center h-full">
 
           {/* Left Column (Hero Content) */}
-          <div className="lg:col-span-6 flex flex-col justify-between lg:h-[466px]">
+          <div className="lg:col-span-6 flex flex-col justify-between gap-8 lg:h-[466px]">
             {/* Top Text Content */}
             <div className="space-y-2.5 font-roboto">
               <h3 className="text-xl md:text-2xl lg:text-[28px] font-bold tracking-wide w-full lg:w-[564px] lg:max-w-[576px] lg:h-[56px] flex items-center gap-1.5 leading-tight">
                 <span className="text-[#2D722F]">गब्रू हो साथ</span> <span className="text-[#2D722F]">,</span> <span className="text-[#0F291B]">तो टेंशन की क्या बात !</span>
               </h3>
-              <h1 className="text-3xl md:text-4xl lg:text-[43.36px] font-semibold leading-none tracking-normal text-[#0F291B] font-roboto">
+              <h1 className="text-3xl sm:text-4xl lg:text-[43.36px] font-semibold leading-none tracking-normal text-[#0F291B] font-roboto">
                 Right tool.<br />
                 <span 
                   className="bg-clip-text text-transparent bg-cover font-semibold"
@@ -127,15 +127,15 @@ export default function Hero() {
             {/* Bottom Actions Content */}
             <div className="space-y-5 mt-6 lg:mt-0">
               {/* Buttons */}
-              <div className="flex flex-wrap gap-[16px]">
-                <Link href="/all_products" className="bg-[#0D9740] hover:bg-[#0b8036] text-white font-roboto font-bold text-[14px] leading-none w-[185px] h-[58px] min-h-[48px] rounded-[32px] pt-[16px] pr-[32px] pb-[16px] pl-[32px] flex items-center justify-center transition-all duration-200 hover:scale-[1.02] cursor-pointer shadow-lg">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-4">
+                <Link href="/all_products" className="bg-[#0D9740] hover:bg-[#0b8036] text-white font-roboto font-bold text-[14px] leading-none w-full sm:w-[185px] h-[52px] sm:h-[58px] min-h-[48px] rounded-[32px] px-8 flex items-center justify-center transition-all duration-200 hover:scale-[1.02] cursor-pointer shadow-lg">
                   Explore Products
                 </Link>
                 <a 
                   href="https://www.youtube.com/playlist?list=PLHXlLG4lLpM1RC3vTHQf8iDX5jAI707Jm"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-[7.99px] bg-white border border-[#2B7832] text-[#2B7832] font-roboto font-bold text-[14px] leading-none w-[185px] h-[58px] min-h-[48px] rounded-[32px] pt-[16px] pr-[32px] pb-[16px] pl-[32px] transition-all duration-200 cursor-pointer shadow-md"
+                  className="flex items-center justify-center gap-[7.99px] bg-white border border-[#2B7832] text-[#2B7832] font-roboto font-bold text-[14px] leading-none w-full sm:w-[185px] h-[52px] sm:h-[58px] min-h-[48px] rounded-[32px] px-8 transition-all duration-200 cursor-pointer shadow-md"
                 >
                   <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="10" stroke="#2B7832" strokeWidth="2.5" fill="none" />
@@ -146,11 +146,9 @@ export default function Hero() {
               </div>
 
               {/* Feature Pill Card (White pill bottom left) */}
-              <div
-                className="bg-white/95 backdrop-blur-md text-[#0F291B] rounded-[33px] shadow-2xl border border-white/20 w-full lg:w-[606px] lg:h-[82px] lg:ml-[-30px] flex flex-row gap-[15px] pt-[23px] pr-[14px] pb-[13px] pl-[17px] items-center justify-between"
-              >
+              <div className="bg-white/95 backdrop-blur-md text-[#0F291B] rounded-[33px] shadow-2xl border border-white/20 w-full lg:w-[606px] lg:h-[82px] lg:ml-[-30px] flex flex-col sm:flex-row gap-4 sm:gap-[15px] p-4 sm:pt-[23px] sm:pr-[14px] sm:pb-[13px] sm:pl-[17px] items-start sm:items-center justify-between">
                 {features.map((item, i) => (
-                  <div key={i} className="flex items-center space-x-1.5 min-w-0">
+                  <div key={i} className="flex items-center space-x-1.5 min-w-0 w-full sm:w-auto">
                     <div className="flex-shrink-0 p-1 bg-[#00A859]/10 rounded-full flex items-center justify-center">
                       {item.icon}
                     </div>
@@ -169,10 +167,10 @@ export default function Hero() {
           <div className="lg:col-span-6 flex flex-col items-center lg:items-end justify-center space-y-8">
 
             {/* Photo Carousel wrapper - Width 671px, Height 257px */}
-            <div className="relative w-full max-w-[671px] h-[320px] flex items-center justify-center overflow-visible">
+            <div className="relative w-full max-w-[671px] h-[250px] sm:h-[320px] flex items-center justify-center overflow-visible">
 
               {/* Carousel Track */}
-              <div className="relative w-full h-[288px] flex items-center justify-center">
+              <div className="relative w-full h-[220px] sm:h-[288px] flex items-center justify-center">
                 {carouselImages.map((imgUrl, idx) => {
                   const pos = getPositionClass(idx);
 
@@ -180,7 +178,7 @@ export default function Hero() {
                     return (
                       <div
                         key={idx}
-                        className="absolute z-20 w-[300px] sm:w-[420px] md:w-[512px] h-[180px] sm:h-[240px] md:h-[288px] transition-all duration-500 ease-in-out transform scale-100 opacity-100 shadow-2xl rounded-2xl overflow-hidden border-2 border-white/20"
+                        className="absolute z-20 w-[260px] sm:w-[420px] md:w-[512px] h-[160px] sm:h-[240px] md:h-[288px] transition-all duration-500 ease-in-out transform scale-100 opacity-100 shadow-2xl rounded-2xl overflow-hidden border-2 border-white/20"
                       >
                         <Image
                           src={imgUrl}

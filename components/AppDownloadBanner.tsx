@@ -5,10 +5,10 @@ import Image from "next/image";
 
 export default function AppDownloadBanner() {
   return (
-    <div className="w-full bg-[#E9F2EC] flex justify-center py-6 px-0 overflow-visible">
+    <div className="w-full bg-[#E9F2EC] flex justify-center py-6 px-4 sm:px-6 overflow-hidden">
       {/* Viewport Container (1280px wide, 266px tall) */}
       <div 
-        className="w-full max-w-[1280px] lg:h-[266px] bg-[#E9F2EC] relative flex flex-col lg:flex-row shadow-sm overflow-visible"
+        className="w-full max-w-[1280px] lg:h-[266px] bg-[#E9F2EC] relative flex flex-col lg:flex-row shadow-sm overflow-hidden rounded-[24px]"
       >
         
         {/* Left Side (Dark Green, 640px wide on desktop, 266px tall, full-bleed left) */}
@@ -63,7 +63,7 @@ export default function AppDownloadBanner() {
             Track Order, Warranty, Services& More.
           </p>
           
-          <div className="bg-white rounded-2xl py-3 px-5 flex gap-4 w-fit shadow-md relative z-20 mb-6 lg:mb-0 border border-gray-100">
+          <div className="bg-white rounded-2xl py-3 px-5 flex flex-col sm:flex-row gap-4 w-full sm:w-fit shadow-md relative z-20 mb-6 lg:mb-0 border border-gray-100">
             <a href="https://play.google.com/store/apps/details?id=com.shoption.app" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
               <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" className="h-[32px] w-auto" />
             </a>
@@ -73,7 +73,7 @@ export default function AppDownloadBanner() {
           </div>
 
           {/* Hand Image (Popping out slightly at bottom and top) */}
-          <div className="absolute bottom-[-16px] lg:bottom-[-24px] right-0 lg:-right-4 w-[240px] sm:w-[280px] lg:w-[350px] z-30 select-none pointer-events-none overflow-visible">
+          <div className="relative lg:absolute bottom-auto lg:bottom-[-24px] right-auto lg:right-[-4px] w-[240px] sm:w-[280px] lg:w-[350px] z-30 select-none pointer-events-none overflow-visible mx-auto lg:mx-0 mt-4 lg:mt-0">
             <Image 
               src="/assets/holding_phone.png" 
               alt="Shoption App in hand" 

@@ -57,41 +57,41 @@ export default function FieldExperiences() {
 
   return (
     <section
-      className="relative w-full bg-cover bg-no-repeat lg:h-[818px] pt-[18px] pr-[50px] pb-[18px] pl-[50px] flex flex-col items-center gap-[27px] overflow-hidden bg-white"
+      className="relative w-full bg-cover bg-no-repeat bg-white pt-4 pb-8 px-4 sm:px-6 lg:h-[818px] lg:pt-[18px] lg:pr-[50px] lg:pb-[18px] lg:pl-[50px] flex flex-col items-center gap-4 lg:gap-[27px] overflow-hidden"
       style={{
         backgroundImage: "url('/assets/field_experience_bg_drone.png')",
-        backgroundPosition: "center -275px"
+        backgroundPosition: "center bottom",
       }}
     >
 
       {/* Header Row */}
-      <div className="relative z-10 w-full lg:w-[1180px] lg:h-[80px] flex items-start justify-between">
-        <div className="text-left font-roboto">
-          <h2 className="text-[#0F291B] text-[32px] lg:text-[40px] font-bold leading-tight">
+      <div className="relative z-10 w-full max-w-[1180px] flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+        <div className="text-left font-roboto max-w-2xl">
+          <h2 className="text-[#0F291B] text-[28px] sm:text-[32px] lg:text-[40px] font-bold leading-tight">
             Field Experiences
           </h2>
-          <p className="text-zinc-700 text-sm lg:text-base font-medium mt-1">
+          <p className="text-zinc-700 text-sm lg:text-base font-medium mt-1 max-w-md">
             Watch our equipment transform traditional farming.
           </p>
         </div>
-        <button className="text-black font-roboto font-bold text-sm cursor-pointer hover:underline transition-colors duration-200">
+        <button className="text-black font-roboto font-bold text-sm cursor-pointer hover:underline transition-colors duration-200 self-start sm:self-auto">
           View All Videos
         </button>
       </div>
 
       {/* Main Console Box (Translucent green container overlaying outer background) */}
       <div
-        className="relative z-10 w-full lg:w-[1180px] lg:h-[653px] rounded-[34px] overflow-hidden backdrop-blur-[0.1px] pt-[113px] pr-[32px] pb-[32px] pl-[20px] shadow-2xl border border-white/20"
+        className="relative z-10 w-full max-w-[1180px] rounded-[24px] lg:rounded-[34px] overflow-hidden backdrop-blur-[0.1px] pt-6 pb-6 px-4 sm:px-5 lg:pt-[113px] lg:pr-[32px] lg:pb-[32px] lg:pl-[20px] shadow-2xl border border-white/20"
         style={{ background: "linear-gradient(180deg, rgba(0, 168, 62, 0.5) 0%, rgba(34, 197, 94, 0.5) 100%)" }}
       >
         {/* Content Container */}
-        <div className="relative z-10 w-full lg:h-[508px] flex flex-col lg:flex-row gap-[24px] items-start">
+        <div className="relative z-10 w-full flex flex-col lg:flex-row gap-6 lg:gap-[24px] items-start">
 
           {/* Left Column - Large Active Video Player */}
           <div className="w-full lg:w-[760px] flex flex-col justify-start items-start">
             {/* Player Card */}
             <div
-              className="relative w-full lg:w-[760px] lg:h-[428px] rounded-[34px] overflow-hidden shadow-2xl group cursor-pointer border border-white/10"
+              className="relative w-full h-[220px] sm:h-[320px] lg:w-[760px] lg:h-[428px] rounded-[24px] lg:rounded-[34px] overflow-hidden shadow-2xl group cursor-pointer border border-white/10"
               onClick={() => setActiveVideoUrl(activeVideo.videoUrl)}
               style={{ background: "linear-gradient(180deg, rgba(0, 168, 62, 0.5) 0%, rgba(34, 197, 94, 0.5) 100%)" }}
             >
@@ -99,7 +99,8 @@ export default function FieldExperiences() {
                 src={activeVideo.thumbnail}
                 alt={activeVideo.title}
                 fill
-                className="object-fill transition-transform duration-500 group-hover:scale-[1.03] rounded-[34px]"
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                style={{ objectPosition: "center 12%" }}
               />
               {/* Play Button Overlay */}
               <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/25 transition-colors duration-300">
@@ -116,7 +117,7 @@ export default function FieldExperiences() {
             </div>
 
             {/* Active Video Info */}
-            <div className="text-left text-white mt-[24px]">
+            <div className="text-left text-white mt-4 lg:mt-[24px]">
               <h3 className="font-roboto font-bold text-[20px] lg:text-[24px] leading-tight">
                 {activeVideo.subtitle}
               </h3>
@@ -127,22 +128,22 @@ export default function FieldExperiences() {
           </div>
 
           {/* Right Column - Playlist Selection */}
-          <div className="w-full lg:w-[368px] lg:h-[394px] flex flex-col gap-[16px] lg:gap-[40px] pb-[83.5px]">
+          <div className="w-full lg:w-[368px] flex flex-col gap-4 lg:gap-[40px] pb-0 lg:pb-[83.5px]">
             {playlist.map((video, idx) => {
               if (idx === activeIdx) return null; // Hide active video to keep exactly 3 items in the list
               return (
                 <div
                   key={idx}
                   onClick={() => handleSelectVideo(idx)}
-                  className="flex items-center gap-[16px] p-[6px] w-full lg:w-[368px] lg:h-[112px] rounded-[10px] transition-all duration-300 cursor-pointer border bg-white/10 hover:bg-white/15 border-white/20 shadow-md"
+                  className="flex items-center gap-3 sm:gap-[16px] p-2 sm:p-[6px] w-full lg:w-[368px] lg:h-[112px] rounded-[14px] lg:rounded-[10px] transition-all duration-300 cursor-pointer border bg-white/10 hover:bg-white/15 border-white/20 shadow-md"
                 >
                   {/* Small Thumbnail with Play Icon */}
-                  <div className="relative w-[182px] h-[100px] rounded-[8px] overflow-hidden flex-shrink-0 bg-black/20 border border-white/30 shadow-sm">
+                  <div className="relative w-[118px] sm:w-[150px] lg:w-[182px] h-[74px] sm:h-[84px] lg:h-[100px] rounded-[8px] overflow-hidden flex-shrink-0 bg-black/20 border border-white/30 shadow-sm">
                     <Image
                       src={video.thumbnail}
                       alt={video.title}
                       fill
-                      className="object-cover"
+                      className="object-cover object-bottom"
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/10">
                       <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-md">
@@ -155,7 +156,7 @@ export default function FieldExperiences() {
 
                   {/* Info */}
                   <div className="text-left min-w-0 flex flex-col justify-center">
-                    <h4 className="text-white font-bold text-[14px] leading-snug line-clamp-2">
+                    <h4 className="text-white font-bold text-[13px] sm:text-[14px] leading-snug line-clamp-2">
                       {video.title}
                     </h4>
                     <span className="text-white/80 text-[11px] font-medium mt-1">

@@ -5,28 +5,28 @@ import Image from "next/image";
 
 export default function AppDownload() {
   return (
-    <section className="relative w-full lg:h-[667px] pt-[13px] pb-[13px] px-[37px] flex items-center justify-center overflow-hidden bg-white">
+    <section className="relative w-full py-8 px-4 sm:px-6 lg:px-[37px] flex items-center justify-center overflow-hidden bg-white">
       {/* Inner Box (Container) */}
       <div
-        className="relative w-[1206px] h-[641px] rounded-[47px] overflow-hidden border border-[#CDE5D2] flex justify-between p-12 bg-no-repeat"
+        className="relative w-full max-w-[1206px] min-h-[641px] rounded-[28px] lg:rounded-[47px] overflow-hidden border border-[#CDE5D2] flex flex-col lg:flex-row justify-between p-6 sm:p-8 lg:p-12 bg-no-repeat"
         style={{
           background: "linear-gradient(135deg, #F0FAF2 0%, #DCEFE0 100%)"
         }}
       >
         {/* Soft Leaves Background Asset at Bottom */}
-        <div className="absolute left-0 right-0 top-0 bottom-[-465px] z-0 pointer-events-none opacity-40 mix-blend-multiply bg-bottom bg-no-repeat"
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-40 mix-blend-multiply bg-no-repeat"
           style={{
             backgroundImage: "url('/assets/green_leaves.jpg')",
             backgroundSize: "cover",
-            backgroundPosition: "bottom center"
+            backgroundPosition: "center bottom -400px"
           }}
         />
 
         {/* Left Column (Logo, Title, Features grid, Download buttons) */}
-        <div className="relative z-10 w-[450px] flex flex-col justify-between h-full text-left">
+        <div className="relative z-10 w-full lg:w-[450px] flex flex-col justify-between h-full text-left">
           {/* Logo & Title Header */}
           <div className="flex flex-col">
-            <div className="relative w-[180px] h-[50px] mb-6">
+            <div className="relative w-[160px] sm:w-[180px] h-[50px] mb-6">
               <Image
                 src="/assets/shoption_logo.png"
                 alt="Shoption Logo"
@@ -43,11 +43,10 @@ export default function AppDownload() {
           </div>
 
           {/* 2x2 Feature Cards Grid */}
-          <div className="grid grid-cols-2 gap-4 w-[364px] my-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full lg:w-[364px] my-6">
             {/* Card 1 */}
-            <div 
-              className="bg-white/90 backdrop-blur-sm flex items-center gap-2 shadow-sm border-zinc-200/60"
-              style={{ width: "174px", height: "65.88px", borderRadius: "7.6px", borderWidth: "0.84px", padding: "8px" }}
+            <div
+              className="bg-white/90 backdrop-blur-sm flex items-center gap-2 shadow-sm border-zinc-200/60 rounded-[7.6px] border px-2 py-2 min-h-[66px]"
             >
               <div className="w-8 h-8 rounded-full bg-[#E2F0E4] flex items-center justify-center flex-shrink-0">
                 <svg className="w-4.5 h-4.5 text-[#2D722F]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -62,9 +61,8 @@ export default function AppDownload() {
             </div>
 
             {/* Card 2 */}
-            <div 
-              className="bg-white/90 backdrop-blur-sm flex items-center gap-2 shadow-sm border-zinc-200/60"
-              style={{ width: "174px", height: "65.88px", borderRadius: "7.6px", borderWidth: "0.84px", padding: "8px" }}
+            <div
+              className="bg-white/90 backdrop-blur-sm flex items-center gap-2 shadow-sm border-zinc-200/60 rounded-[7.6px] border px-2 py-2 min-h-[66px]"
             >
               <div className="w-8 h-8 rounded-full bg-[#E2F0E4] flex items-center justify-center flex-shrink-0">
                 <svg className="w-4.5 h-4.5 text-[#2D722F]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -79,9 +77,8 @@ export default function AppDownload() {
             </div>
 
             {/* Card 3 */}
-            <div 
-              className="bg-white/90 backdrop-blur-sm flex items-center gap-2 shadow-sm border-zinc-200/60"
-              style={{ width: "174px", height: "65.88px", borderRadius: "7.6px", borderWidth: "0.84px", padding: "8px" }}
+            <div
+              className="bg-white/90 backdrop-blur-sm flex items-center gap-2 shadow-sm border-zinc-200/60 rounded-[7.6px] border px-2 py-2 min-h-[66px]"
             >
               <div className="w-8 h-8 rounded-full bg-[#E2F0E4] flex items-center justify-center flex-shrink-0">
                 <svg className="w-4.5 h-4.5 text-[#2D722F]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -95,9 +92,8 @@ export default function AppDownload() {
             </div>
 
             {/* Card 4 */}
-            <div 
-              className="bg-white/90 backdrop-blur-sm flex items-center gap-2 shadow-sm border-zinc-200/60"
-              style={{ width: "174px", height: "65.88px", borderRadius: "7.6px", borderWidth: "0.84px", padding: "8px" }}
+            <div
+              className="bg-white/90 backdrop-blur-sm flex items-center gap-2 shadow-sm border-zinc-200/60 rounded-[7.6px] border px-2 py-2 min-h-[66px]"
             >
               <div className="w-8 h-8 rounded-full bg-[#E2F0E4] flex items-center justify-center flex-shrink-0">
                 <svg className="w-4.5 h-4.5 text-[#2D722F]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -112,13 +108,13 @@ export default function AppDownload() {
           </div>
 
           {/* Download Badges */}
-          <div className="flex gap-4 items-center">
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
             {/* Google Play Store Badge */}
             <a
               href="https://play.google.com/store/apps/details?id=com.shoption.app"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-[14px] w-[145px] h-[48px] hover:bg-black/90 transition-all shadow-md"
+              className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-[14px] w-full sm:w-[145px] min-h-[48px] hover:bg-black/90 transition-all shadow-md"
             >
               {/* Play Store Colored Icon */}
               <svg className="w-6 h-6 flex-shrink-0" viewBox="0 0 466 511.98" fill="none">
@@ -138,7 +134,7 @@ export default function AppDownload() {
               href="https://apps.apple.com/in/app/shoption-for-irrigation-shops/id1544284156"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-[14px] w-[145px] h-[48px] hover:bg-black/90 transition-all shadow-md"
+              className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-[14px] w-full sm:w-[145px] min-h-[48px] hover:bg-black/90 transition-all shadow-md"
             >
               {/* Apple Icon */}
               <svg className="w-5 h-5 fill-white flex-shrink-0" viewBox="0 0 24 24">
@@ -153,10 +149,7 @@ export default function AppDownload() {
         </div>
 
         {/* Middle Column (Mockup Phone in Hand) */}
-        <div
-          className="absolute z-20 pointer-events-none"
-          style={{ width: "560px", height: "680px", top: "0px", left: "400px" }}
-        >
+        <div className="relative lg:absolute z-20 pointer-events-none w-full max-w-[360px] sm:max-w-[420px] lg:w-[560px] lg:h-[680px] lg:bottom-0 lg:top-auto lg:left-[440px] mx-auto mt-6 lg:mt-0">
           <Image
             src="/assets/phone_in_hand.png"
             alt="Phone Mockup in Hand"
@@ -167,10 +160,7 @@ export default function AppDownload() {
         </div>
 
         {/* Right Column (Specifications Card Panel) */}
-        <div 
-          className="absolute bg-white/70 backdrop-blur-md border border-white/40 p-6 flex flex-col justify-between shadow-lg z-10"
-          style={{ width: "259px", height: "543px", top: "49px", left: "857px", borderRadius: "11px" }}
-        >
+        <div className="relative lg:absolute bg-white/70 backdrop-blur-md border border-white/40 p-6 flex flex-col justify-between shadow-lg z-10 w-full lg:w-[259px] min-h-[543px] lg:h-[543px] lg:top-[49px] lg:left-[857px] rounded-[11px] mt-6 lg:mt-0">
           {/* Top Specifications Content */}
           <div className="flex flex-col text-left">
             <h3 className="font-roboto font-bold text-[#0F291B] text-[18px] lg:text-[20px] leading-tight mb-6">

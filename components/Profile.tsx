@@ -12,7 +12,7 @@ const Profile = () => {
       `}} />
       <Navbar />
       
-      <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 lg:px-8 py-8 md:py-12 flex flex-col lg:flex-row justify-between">
+      <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 flex flex-col lg:flex-row justify-between gap-8 overflow-hidden">
         
         {/* Left Side: Form */}
         <div className="w-full lg:w-[50%] flex flex-col justify-center">
@@ -24,7 +24,7 @@ const Profile = () => {
           </p>
 
           <form className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               {/* Name */}
               <div className="flex flex-col gap-2">
                 <label className="text-[#4A4A4A] font-semibold text-sm">Name</label>
@@ -154,7 +154,7 @@ const Profile = () => {
             <div className="pt-10 pb-20 flex justify-end">
               <button 
                 type="button"
-                className="bg-[#006B21] hover:bg-[#005a1b] text-white font-semibold text-lg py-3.5 px-12 rounded-full flex items-center gap-3 transition-colors shadow-lg"
+                className="bg-[#006B21] hover:bg-[#005a1b] text-white font-semibold text-base sm:text-lg py-3.5 px-8 sm:px-12 rounded-full flex items-center gap-3 transition-colors shadow-lg w-full sm:w-auto justify-center"
               >
                 Continue 
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
@@ -164,7 +164,7 @@ const Profile = () => {
         </div>
 
         {/* Right Side: Image with Glassmorphism Card */}
-        <div className="w-full lg:w-[40%] relative rounded-[32px] overflow-hidden min-h-[500px] lg:h-[650px] shadow-2xl self-start lg:mt-4">
+        <div className="w-full lg:w-[40%] relative rounded-[32px] overflow-hidden min-h-[360px] sm:min-h-[500px] lg:h-[650px] shadow-2xl self-start lg:mt-4">
           <Image 
             src="/assets/sprayer.png" 
             alt="Farmer spraying field" 
@@ -174,15 +174,15 @@ const Profile = () => {
           />
           
           {/* Glassmorphism Overlay Card */}
-          <div className="absolute bottom-6 left-6 right-6 lg:bottom-10 lg:left-10 lg:right-10 rounded-2xl overflow-hidden border border-white/40 shadow-xl"
+          <div className="absolute bottom-4 left-4 right-4 lg:bottom-10 lg:left-10 lg:right-10 rounded-2xl overflow-hidden border border-white/40 shadow-xl"
                style={{
                  background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%)',
                  backdropFilter: 'blur(12px)',
                  WebkitBackdropFilter: 'blur(12px)',
                }}>
-            <div className="p-6 flex items-center gap-5">
+            <div className="p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-5 text-center sm:text-left">
               {/* Map/Location Icon Container */}
-              <div className="w-[72px] h-[72px] rounded-full bg-[#E8F3EB] border-4 border-white/50 flex-shrink-0 overflow-hidden flex items-center justify-center p-2 shadow-inner">
+              <div className="w-[60px] h-[60px] sm:w-[72px] sm:h-[72px] rounded-full bg-[#E8F3EB] border-4 border-white/50 flex-shrink-0 overflow-hidden flex items-center justify-center p-2 shadow-inner">
                 {/* Simulated map graphic using SVG */}
                 <svg className="w-full h-full text-[#006B21] opacity-70" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />

@@ -47,10 +47,10 @@ export default function Testimonials() {
   const [visibleCount, setVisibleCount] = useState(3);
 
   return (
-    <section className="w-full bg-white flex flex-col items-center py-[44px] px-[37px] lg:px-0">
+    <section className="w-full bg-white flex flex-col items-center py-10 px-4 sm:px-6 lg:px-0 overflow-hidden">
       {/* ── Top Testimonial Rounded Box ── */}
       <div
-        className="relative w-full max-w-[1206px] rounded-[47px] overflow-hidden border border-[#CDE5D2] flex flex-col items-center py-10 px-4 lg:px-6 bg-no-repeat transition-all duration-500"
+        className="relative w-full max-w-[1206px] rounded-[32px] lg:rounded-[47px] overflow-hidden border border-[#CDE5D2] flex flex-col items-center py-10 px-4 lg:px-6 bg-no-repeat transition-all duration-500"
         style={{
           background: "linear-gradient(135deg, #F0FAF2 0%, #DCEFE0 100%)",
           minHeight: "730px",
@@ -71,29 +71,22 @@ export default function Testimonials() {
         <div className="relative z-10 flex flex-col items-center w-full">
           {/* Header */}
           <h2
-            className="font-roboto font-bold text-[#0F291B] text-[28px] leading-tight text-center flex items-center justify-center"
-            style={{ width: "254px", height: "32px", marginBottom: "12px" }}
+            className="font-roboto font-bold text-[#0F291B] text-[24px] sm:text-[28px] leading-tight text-center flex items-center justify-center mb-3"
           >
             Testimonial
           </h2>
           <p
-            className="font-roboto text-[#374151] text-[16px] text-center font-medium flex items-center justify-center"
-            style={{ width: "523px", height: "32px", marginBottom: "40px" }}
+            className="font-roboto text-[#374151] text-[14px] sm:text-[16px] text-center font-medium flex items-center justify-center max-w-xl mb-8"
           >
             Trusted by Farmers, Proven in the Field
           </p>
 
           {/* Flyers Row */}
-          <div className="flex flex-wrap justify-center gap-4 lg:gap-5 w-full max-w-[1152px] mb-10 transition-all duration-500">
+          <div className="hidden lg:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 w-full max-w-[1152px] mb-10 transition-all duration-500">
             {farmerReviews.slice(0, visibleCount).map((review, idx) => (
               <div
                 key={idx}
-                className="relative overflow-hidden shadow-lg border border-white/60 bg-white animate-in zoom-in-95 duration-500"
-                style={{
-                  width: "357px",
-                  height: "357px",
-                  borderRadius: "16px",
-                }}
+                className="relative overflow-hidden shadow-lg border border-white/60 bg-white animate-in zoom-in-95 duration-500 aspect-square rounded-[16px]"
               >
                 <Image
                   src={review.src}
@@ -105,20 +98,29 @@ export default function Testimonials() {
             ))}
           </div>
 
+          <div className="lg:hidden w-full -mx-4 px-4 overflow-x-auto pb-2 mb-8">
+            <div className="flex gap-4 w-max">
+              {farmerReviews.slice(0, visibleCount).map((review, idx) => (
+                <div
+                  key={idx}
+                  className="relative overflow-hidden shadow-lg border border-white/60 bg-white aspect-square rounded-[16px] min-w-[240px] max-w-[240px]"
+                >
+                  <Image
+                    src={review.src}
+                    alt={review.alt}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* View More Button */}
           {visibleCount < farmerReviews.length && (
             <button
               onClick={() => setVisibleCount((prev) => prev + 3)}
-              className="bg-[#0D9740] hover:bg-[#0a7d34] text-white font-roboto font-semibold text-[15px] shadow-md transition-all duration-300 hover:scale-105 active:scale-95"
-              style={{
-                width: "226px",
-                height: "64px",
-                borderRadius: "9999px",
-                paddingTop: "21px",
-                paddingBottom: "21px",
-                paddingLeft: "67px",
-                paddingRight: "67px",
-              }}
+              className="bg-[#0D9740] hover:bg-[#0a7d34] text-white font-roboto font-semibold text-[15px] shadow-md transition-all duration-300 hover:scale-105 active:scale-95 h-14 px-8 rounded-full"
             >
               Load More
             </button>
@@ -127,16 +129,50 @@ export default function Testimonials() {
       </div>
 
       {/* ── Bottom What Farmers Say Section ── */}
-      <div className="w-full max-w-[1206px] flex flex-col items-center mt-8 px-[37px] lg:px-0">
+      <div className="w-full max-w-[1206px] flex flex-col items-center mt-8 px-4 sm:px-6 lg:px-0">
         <h3 
-          className="font-roboto font-bold text-center flex items-center justify-center mb-10 whitespace-nowrap text-[#1F2937] text-[28px]"
-          style={{ height: "32px" }}
+          className="font-roboto font-bold text-center flex items-center justify-center mb-8 text-[#1F2937] text-[22px] sm:text-[28px]"
         >
           What Farmers Say
         </h3>
 
         {/* Reviews Horizontal Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+        <div className="lg:hidden w-full -mx-4 px-4 overflow-x-auto pb-3">
+          <div className="flex gap-4 w-max">
+            {reviews.map((review, idx) => (
+              <div
+                key={idx}
+                className="bg-white border border-[#E5E7EB] rounded-[16px] p-5 flex flex-col justify-between shadow-sm transition-all duration-300 min-w-[280px] max-w-[280px]"
+                style={{ minHeight: "180px" }}
+              >
+                <p className="font-roboto text-[#374151] text-[14px] leading-relaxed mb-6 font-normal">
+                  {review.quote}
+                </p>
+
+                <div className="flex items-center gap-3">
+                  <div className="relative w-10 h-10 rounded-full overflow-hidden border border-zinc-200">
+                    <Image
+                      src={review.avatar}
+                      alt={review.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-roboto font-bold text-[#0F291B] text-[14px]">
+                      {review.name}
+                    </span>
+                    <span className="font-roboto text-[#6B7280] text-[12px]">
+                      {review.loc}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
           {reviews.map((review, idx) => (
             <div
               key={idx}

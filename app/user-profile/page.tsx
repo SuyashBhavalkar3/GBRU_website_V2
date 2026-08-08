@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function UserProfilePage() {
-  return <UserProfile />;
+  return <div className="overflow-x-hidden"><UserProfile /></div>;
 }
