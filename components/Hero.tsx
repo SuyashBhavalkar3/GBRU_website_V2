@@ -1,18 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Hero() {
-  const [carouselIndex, setCarouselIndex] = useState(1); // 0, 1, 2
+  const [carouselIndex, setCarouselIndex] = useState(1); // 0, 1, 2 — desktop
+  const [mobileCarouselIndex, setMobileCarouselIndex] = useState(1); // 0, 1, 2 — mobile auto-slide
 
   const carouselImages = [
-    "/assets/caroussel-2.jpg", // Left
-    "/assets/caroussel-3.jpg", // Center (Product Poster)
-    "/assets/caroussel-1.jpg", // Right
+    "/assets/caroussel-2.jpg",
+    "/assets/caroussel-3.jpg",
+    "/assets/caroussel-1.jpg",
   ];
 
+  // Desktop handlers (manual)
   const handlePrev = () => {
     setCarouselIndex((prev) => (prev === 0 ? 2 : prev - 1));
   };
@@ -21,9 +23,34 @@ export default function Hero() {
     setCarouselIndex((prev) => (prev === 2 ? 0 : prev + 1));
   };
 
-  // Get index positions for left, center, right styling
+  // Mobile auto-slide — advances every 3 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setMobileCarouselIndex((prev) => (prev === 2 ? 0 : prev + 1));
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Mobile manual handlers
+  const handleMobilePrev = () => {
+    setMobileCarouselIndex((prev) => (prev === 0 ? 2 : prev - 1));
+  };
+
+  const handleMobileNext = () => {
+    setMobileCarouselIndex((prev) => (prev === 2 ? 0 : prev + 1));
+  };
+
+  // Desktop: get position class
   const getPositionClass = (idx: number) => {
     const relativeIndex = (idx - carouselIndex + 3) % 3;
+    if (relativeIndex === 0) return "left";
+    if (relativeIndex === 1) return "center";
+    return "right";
+  };
+
+  // Mobile: get position class (uses independent index)
+  const getMobilePositionClass = (idx: number) => {
+    const relativeIndex = (idx - mobileCarouselIndex + 3) % 3;
     if (relativeIndex === 0) return "left";
     if (relativeIndex === 1) return "center";
     return "right";
@@ -322,10 +349,10 @@ export default function Hero() {
           </h1>
         </div>
 
-        {/* Full-Width Carousel */}
+        {/* Full-Width Carousel — auto-sliding on mobile */}
         <div className="relative w-full h-[220px] flex items-center justify-center overflow-hidden">
           {carouselImages.map((imgUrl, idx) => {
-            const pos = getPositionClass(idx);
+            const pos = getMobilePositionClass(idx);
             if (pos === "center") {
               return (
                 <div
@@ -347,17 +374,16 @@ export default function Hero() {
             return (
               <div
                 key={idx}
-                className={`absolute z-10 w-[55px] h-[140px] transition-all duration-500 ease-in-out rounded-xl overflow-hidden opacity-40 border border-white/10 ${isLeft ? "left-1" : "right-1"
-                  }`}
+                className={`absolute z-10 w-[55px] h-[140px] transition-all duration-500 ease-in-out rounded-xl overflow-hidden opacity-40 border border-white/10 ${isLeft ? "left-1" : "right-1"}`}
               >
                 <Image src={imgUrl} alt="Carousel Side" fill className="object-cover" sizes="55px" />
               </div>
             );
           })}
 
-          {/* Left Arrow */}
+          {/* Left Arrow — still works manually */}
           <button
-            onClick={handlePrev}
+            onClick={handleMobilePrev}
             className="absolute left-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/50 text-white border border-white/20 shadow-md"
             aria-label="Previous image"
           >
@@ -366,9 +392,9 @@ export default function Hero() {
             </svg>
           </button>
 
-          {/* Right Arrow */}
+          {/* Right Arrow — still works manually */}
           <button
-            onClick={handleNext}
+            onClick={handleMobileNext}
             className="absolute right-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/50 text-white border border-white/20 shadow-md"
             aria-label="Next image"
           >
