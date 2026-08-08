@@ -103,7 +103,8 @@ export default function WhyGBRU() {
               key={idx}
               className="flex items-start bg-white border border-[#E5E7EB] relative text-left shadow-[0_2px_10px_rgba(0,0,0,0.02)]"
               style={{
-                width: "166px",
+                width: "100%",
+                minWidth: "0",
                 height: "110px", 
                 borderRadius: "15.28px",
                 borderWidth: "0.48px",
