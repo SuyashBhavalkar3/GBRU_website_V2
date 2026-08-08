@@ -364,9 +364,9 @@ const OtpContent = () => {
           </div>
 
           {/* Right Side (OTP Form) */}
-          <div className="w-full md:w-[55%] p-8 sm:p-12 md:p-16 flex flex-col justify-center bg-white min-h-[500px]">
+          <div className="w-full md:w-[55%] p-6 sm:p-12 md:p-16 flex flex-col justify-center bg-white min-h-[500px]">
             {/* Logo on Mobile only */}
-            <div className="flex md:hidden justify-center mb-8">
+            <div className="flex md:hidden justify-center mb-6">
               <div className="bg-[#006B21] py-3 px-6 rounded-2xl shadow-md">
                 <Image 
                   src="/assets/gbru_header_logo.png" 
@@ -391,7 +391,7 @@ const OtpContent = () => {
             </h2>
 
             <p
-              className="text-[#4A4A4A] mb-1"
+              className="text-[#4A4A4A] mb-1 text-center md:text-left"
               style={{
                 fontFamily: 'Roboto, sans-serif',
                 fontWeight: 400,
@@ -403,11 +403,9 @@ const OtpContent = () => {
             </p>
 
             <button
-              className="text-[#006B21] text-left hover:underline mb-10 w-fit"
+              className="text-[#006B21] text-center md:text-left hover:underline mb-8 mx-auto md:mx-0 w-fit block font-semibold text-sm"
               style={{
-                fontFamily: 'Roboto, sans-serif',
-                fontWeight: 600,
-                fontSize: '14px'
+                fontFamily: 'Roboto, sans-serif'
               }}
             >
               Edit Number
@@ -415,7 +413,7 @@ const OtpContent = () => {
 
             <form className="flex flex-col">
               {/* OTP Input Fields */}
-              <div className="flex gap-3 md:gap-4 mb-8">
+              <div className="flex gap-2.5 mb-8 w-full justify-center max-w-[340px] mx-auto">
                 {otp.map((digit, index) => (
                   <input
                     key={index}
@@ -425,7 +423,7 @@ const OtpContent = () => {
                     value={digit}
                     onChange={(e) => handleChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
-                    className="w-12 h-14 md:w-[54px] md:h-[60px] text-center text-xl font-semibold border rounded-lg outline-none transition-all focus:border-[#006B21] focus:ring-1 focus:ring-[#006B21] text-[#1A1A1A]"
+                    className="flex-1 max-w-[44px] h-12 sm:max-w-[48px] sm:h-14 md:w-[54px] md:h-[60px] text-center text-xl font-semibold border rounded-lg outline-none transition-all focus:border-[#006B21] focus:ring-1 focus:ring-[#006B21] text-[#1A1A1A]"
                     style={{
                       borderColor: digit ? '#006B21' : '#E5E5E5',
                       backgroundColor: '#F9F9F9',
