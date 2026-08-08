@@ -88,7 +88,7 @@ export default function Navbar() {
       className="w-full text-white border-b border-white/10 sticky top-0 z-50 shadow-lg"
       style={{ background: "linear-gradient(90deg, #204123 0%, #185A46 49.52%, #204123 100%)" }}
     >
-      <div className="max-w-[1280px] w-full mx-auto pl-[21px] pr-[47px]">
+      <div className="max-w-[1280px] w-full mx-auto pl-[21px] pr-4 sm:pr-6 lg:pr-[47px]">
         <div className="flex items-center justify-between lg:justify-start h-[72px]">
 
           {/* Logo Section */}
