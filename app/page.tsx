@@ -59,17 +59,11 @@ export default function Home() {
           {!isLoggedIn && <GbRUOnField />}
         </div>
 
-        {/* Show Testimonials on desktop always, but on mobile only if logged in */}
+        <Testimonials />
         <div className="hidden lg:block">
-          <Testimonials />
+          <HelpSupportBanner />
+          <AppDownloadBanner />
         </div>
-        {isLoggedIn && (
-          <div className="block lg:hidden">
-            <Testimonials />
-          </div>
-        )}
-        <HelpSupportBanner />
-        <AppDownloadBanner />
       </main>
       <Footer />
     </div>

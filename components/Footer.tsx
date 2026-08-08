@@ -11,11 +11,12 @@ const Footer = () => {
   };
 
   return (
-    <footer 
-      className="w-full text-white pt-12 pb-8 lg:pt-16 lg:pb-6 px-6 lg:px-12 font-roboto border-t border-white/10 mt-auto overflow-hidden"
-      style={{ marginTop: '96px', background: 'linear-gradient(163.13deg, #0B5D3B 44.12%, #043321 96.94%)' }}
+    <footer
+      className="w-full text-white pt-12 pb-8 lg:pt-16 lg:pb-6 px-6 lg:px-12 font-roboto border-t border-white/10 mt-8 lg:mt-24 overflow-hidden"
+      style={{ background: 'linear-gradient(163.13deg, #0B5D3B 44.12%, #043321 96.94%)' }}
     >
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
         .footer-heading {
           font-family: 'Nimbus Sans', sans-serif;
@@ -52,9 +53,9 @@ const Footer = () => {
             <h3 className="footer-heading">Stay Updated</h3>
             <p className="footer-text">Get latest offers, new products and farming tips.</p>
             <div className="flex w-full mt-2">
-              <input 
-                type="email" 
-                placeholder="Enter your email" 
+              <input
+                type="email"
+                placeholder="Enter your email"
                 className="flex-1 bg-[#2C5230] text-white placeholder-[#87A38D] px-4 py-3 rounded-l-md border-none outline-none focus:ring-1 focus:ring-[#FFB703] text-sm font-roboto"
               />
               <button className="bg-[#FFB703] hover:bg-[#e6a500] text-black font-bold px-6 py-3 rounded-r-md transition-colors text-sm font-roboto whitespace-nowrap">
@@ -129,7 +130,15 @@ const Footer = () => {
       <div className="block lg:hidden max-w-[480px] mx-auto flex flex-col gap-8 text-left">
         {/* Brand Header */}
         <div className="flex flex-col gap-3">
-          <h1 className="font-sans font-extrabold text-[32px] tracking-tight leading-none text-white">GBRU</h1>
+          <div className="relative w-[160px] h-[68px] flex-shrink-0">
+            <Image
+              src="/assets/gbru_header_logo.png"
+              alt="GBRU Logo"
+              fill
+              className="object-contain object-left"
+              priority
+            />
+          </div>
           <p className="text-zinc-200 text-sm font-roboto font-normal leading-relaxed opacity-90 max-w-[340px]">
             Cultivating innovation since 1984. The reliable partner for the modern Indian farmer.
           </p>
@@ -139,9 +148,9 @@ const Footer = () => {
         <div className="flex flex-col gap-3">
           <span className="text-[11px] font-bold tracking-[1.5px] text-zinc-300 font-sans uppercase">JOIN OUR NEWSLETTER</span>
           <div className="flex items-center w-full bg-[#165034]/70 border border-[#2D7351] rounded-2xl p-1.5 min-h-[56px] shadow-inner">
-            <input 
-              type="email" 
-              placeholder="Enter your email" 
+            <input
+              type="email"
+              placeholder="Enter your email"
               className="flex-1 bg-transparent text-white placeholder-zinc-400/80 px-3 py-2 outline-none border-none text-sm font-roboto"
             />
             <button className="bg-[#FFB703] hover:bg-[#e6a500] text-[#0F291B] font-bold text-xs px-5 py-2.5 rounded-xl transition-all shadow-md">
@@ -157,13 +166,13 @@ const Footer = () => {
         <div className="flex flex-col w-full">
           {/* Quick Links Accordion */}
           <div className="border-b border-white/10 py-4">
-            <button 
+            <button
               onClick={() => toggleSection("quick")}
               className="w-full flex justify-between items-center text-sm font-bold text-white uppercase tracking-wider font-sans focus:outline-none"
             >
               <span>Quick Links</span>
-              <svg 
-                className={`w-4 h-4 text-zinc-300 transition-transform duration-200 ${openSection === "quick" ? "rotate-180" : ""}`} 
+              <svg
+                className={`w-4 h-4 text-zinc-300 transition-transform duration-200 ${openSection === "quick" ? "rotate-180" : ""}`}
                 fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -182,13 +191,13 @@ const Footer = () => {
 
           {/* Support Accordion */}
           <div className="border-b border-white/10 py-4">
-            <button 
+            <button
               onClick={() => toggleSection("support")}
               className="w-full flex justify-between items-center text-sm font-bold text-white uppercase tracking-wider font-sans focus:outline-none"
             >
               <span>Support</span>
-              <svg 
-                className={`w-4 h-4 text-zinc-300 transition-transform duration-200 ${openSection === "support" ? "rotate-180" : ""}`} 
+              <svg
+                className={`w-4 h-4 text-zinc-300 transition-transform duration-200 ${openSection === "support" ? "rotate-180" : ""}`}
                 fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -207,13 +216,13 @@ const Footer = () => {
 
           {/* Contact Accordion */}
           <div className="border-b border-white/10 py-4">
-            <button 
+            <button
               onClick={() => toggleSection("contact")}
               className="w-full flex justify-between items-center text-sm font-bold text-white uppercase tracking-wider font-sans focus:outline-none"
             >
               <span>Contact</span>
-              <svg 
-                className={`w-4 h-4 text-zinc-300 transition-transform duration-200 ${openSection === "contact" ? "rotate-180" : ""}`} 
+              <svg
+                className={`w-4 h-4 text-zinc-300 transition-transform duration-200 ${openSection === "contact" ? "rotate-180" : ""}`}
                 fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -228,7 +237,7 @@ const Footer = () => {
                   <span className="font-bold text-white">Email:</span> contact@Shoption.in
                 </li>
                 <li className="flex flex-col gap-1.5 pt-1">
-                  <span className="font-bold text-white">Corporate:</span> 
+                  <span className="font-bold text-white">Corporate:</span>
                   <span>City Vista, A Wing, 7th Fl, Office 10-12A, Kharadi, Pune 411014.</span>
                 </li>
               </ul>
@@ -247,7 +256,7 @@ const Footer = () => {
           {/* YouTube Icon */}
           <a href="#" className="text-zinc-200 hover:text-white transition-colors">
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M23.498 6.163a3.003 3.003 0 00-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 00-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 002.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 002.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              <path d="M23.498 6.163a3.003 3.003 0 00-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.517 0-9.388.508a3.003 3.003 0 00-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 002.11 2.11c1.871.508 9.388.508 9.388.508s7.517 0 9.388-.508a3.003 3.003 0 002.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
             </svg>
           </a>
           {/* Photo/Gallery Icon */}

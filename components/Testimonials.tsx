@@ -47,7 +47,7 @@ export default function Testimonials() {
   const [visibleCount, setVisibleCount] = useState(3);
 
   return (
-    <section className="w-full bg-white flex flex-col items-center py-10 px-4 sm:px-6 lg:px-0 overflow-hidden">
+    <section className="w-full bg-white flex flex-col items-center lg:py-10 pt-10 pb-2 px-4 sm:px-6 lg:px-0 overflow-hidden">
       {/* ── Top Testimonial Rounded Box ── */}
       <div
         className="relative w-full max-w-[1206px] rounded-[32px] lg:rounded-[47px] overflow-hidden border border-[#CDE5D2] flex flex-col items-center py-10 px-4 lg:px-6 bg-no-repeat transition-all duration-500"
@@ -129,44 +129,84 @@ export default function Testimonials() {
 
       {/* ── Bottom What Farmers Say Section ── */}
       <div className="w-full max-w-[1206px] flex flex-col items-center mt-8 px-4 sm:px-6 lg:px-0">
-        <h3 
+        <h3
           className="font-roboto font-bold text-center flex items-center justify-center mb-8 text-[#1F2937] text-[22px] sm:text-[28px]"
         >
           What Farmers Say
         </h3>
 
         {/* Reviews Horizontal Row */}
-        <div className="lg:hidden w-full -mx-4 px-4 overflow-x-auto pb-3">
-          <div className="flex gap-4 w-max">
-            {reviews.map((review, idx) => (
-              <div
-                key={idx}
-                className="bg-white border border-[#E5E7EB] rounded-[16px] p-5 flex flex-col justify-between shadow-sm transition-all duration-300 min-w-[280px] max-w-[280px]"
-                style={{ minHeight: "180px" }}
-              >
-                <p className="font-roboto text-[#374151] text-[14px] leading-relaxed mb-6 font-normal">
-                  {review.quote}
-                </p>
+        <div className="lg:hidden w-full relative">
+          <div
+            className="w-full -mx-4 px-4 overflow-x-auto pb-3 snap-x snap-mandatory scroll-smooth scrollbar-none"
+            onScroll={(e) => {
+              const target = e.currentTarget;
+              const scrollLeft = target.scrollLeft;
+              const width = target.clientWidth - 32; // adjusted for padding
+              const newIndex = Math.round(scrollLeft / width);
+              if (newIndex >= 0 && newIndex < reviews.length) {
+                // We use a small local state for current slide tracking
+                const activeDot = document.getElementById(`review-dot-${newIndex}`);
+                if (activeDot) {
+                  reviews.forEach((_, i) => {
+                    const dot = document.getElementById(`review-dot-${i}`);
+                    if (dot) {
+                      dot.style.width = i === newIndex ? "24px" : "8px";
+                      dot.style.backgroundColor = i === newIndex ? "#006B21" : "#CDE5D2";
+                    }
+                  });
+                }
+              }
+            }}
+          >
+            <div className="flex gap-4 w-max">
+              {reviews.map((review, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white border border-[#E5E7EB] rounded-[16px] p-5 flex flex-col justify-between shadow-sm transition-all duration-300 min-w-[280px] max-w-[280px] snap-center"
+                  style={{ minHeight: "180px" }}
+                >
+                  <p className="font-roboto text-[#374151] text-[14px] leading-relaxed mb-6 font-normal">
+                    {review.quote}
+                  </p>
 
-                <div className="flex items-center gap-3">
-                  <div className="relative w-10 h-10 rounded-full overflow-hidden border border-zinc-200">
-                    <Image
-                      src={review.avatar}
-                      alt={review.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-roboto font-bold text-[#0F291B] text-[14px]">
-                      {review.name}
-                    </span>
-                    <span className="font-roboto text-[#6B7280] text-[12px]">
-                      {review.loc}
-                    </span>
+                  <div className="flex items-center gap-3">
+                    <div className="relative w-10 h-10 rounded-full overflow-hidden border border-zinc-200">
+                      <Image
+                        src={review.avatar}
+                        alt={review.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-roboto font-bold text-[#0F291B] text-[14px]">
+                        {review.name}
+                      </span>
+                      <span className="font-roboto text-[#6B7280] text-[12px]">
+                        {review.loc}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Dot Indicators */}
+          <div className="flex items-center justify-center gap-2 mt-18 pb-2">
+            {reviews.map((_, i) => (
+              <div
+                key={i}
+                id={`review-dot-${i}`}
+                className="transition-all duration-300"
+                style={{
+                  width: i === 0 ? "24px" : "8px",
+                  height: "8px",
+                  borderRadius: "9999px",
+                  backgroundColor: i === 0 ? "#006B21" : "#CDE5D2",
+                }}
+              />
             ))}
           </div>
         </div>
