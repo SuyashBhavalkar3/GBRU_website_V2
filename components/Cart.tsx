@@ -455,25 +455,39 @@ export default function Cart() {
 
               {/* Trust Badges */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex items-center gap-3 shadow-sm text-left">
-                  <div className="w-10 h-10 rounded-full bg-[#EBF5EE] flex items-center justify-center text-[18px]">🛡️</div>
+                <div className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex items-center gap-3.5 shadow-sm text-left">
+                  <div className="w-11 h-11 rounded-[12px] bg-[#ECFDF3] flex items-center justify-center shrink-0">
+                    <svg className="w-5 h-5 text-[#22C55E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
                   <div className="flex flex-col">
-                    <span className="font-bold text-xs text-[#0F291B]">Secure Transaction</span>
-                    <span className="text-[10px] text-zinc-500">100% Safe Payment</span>
+                    <span className="font-bold text-[13px] text-[#1A1A1A]">Secure Transaction</span>
+                    <span className="text-[11px] text-[#6B7280]">100% Safe Payment</span>
                   </div>
                 </div>
-                <div className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex items-center gap-3 shadow-sm text-left">
-                  <div className="w-10 h-10 rounded-full bg-[#EBF5EE] flex items-center justify-center text-[18px]">🚚</div>
+                
+                <div className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex items-center gap-3.5 shadow-sm text-left">
+                  <div className="w-11 h-11 rounded-[12px] bg-[#FFF9EA] flex items-center justify-center shrink-0">
+                    <svg className="w-5 h-5 text-[#D9A320]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+                    </svg>
+                  </div>
                   <div className="flex flex-col">
-                    <span className="font-bold text-xs text-[#0F291B]">Fast Delivery</span>
-                    <span className="text-[10px] text-zinc-500">3-5 Days Delivery</span>
+                    <span className="font-bold text-[13px] text-[#1A1A1A]">Fast Delivery</span>
+                    <span className="text-[11px] text-[#6B7280]">3-5 Days</span>
                   </div>
                 </div>
-                <div className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex items-center gap-3 shadow-sm text-left">
-                  <div className="w-10 h-10 rounded-full bg-[#EBF5EE] flex items-center justify-center text-[18px]">📞</div>
+
+                <div className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex items-center gap-3.5 shadow-sm text-left">
+                  <div className="w-11 h-11 rounded-[12px] bg-[#EDF2EF] flex items-center justify-center shrink-0">
+                    <svg className="w-5 h-5 text-[#0D4E2F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.89-1.46-5.366-3.936-6.826-6.826l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                    </svg>
+                  </div>
                   <div className="flex flex-col">
-                    <span className="font-bold text-xs text-[#0F291B]">Expert Support</span>
-                    <span className="text-[10px] text-zinc-500">24/7 Helpline Available</span>
+                    <span className="font-bold text-[13px] text-[#1A1A1A]">Expert Support</span>
+                    <span className="text-[11px] text-[#6B7280]">24/7 Available</span>
                   </div>
                 </div>
               </div>
@@ -530,7 +544,7 @@ export default function Cart() {
                 {/* Checkout CTA */}
                 <button 
                   onClick={handleProceedToCheckout} 
-                  className="w-full h-14 rounded-[14px] bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm mt-2 cursor-pointer active:scale-[0.98]"
+                  className="w-full h-14 rounded-[14px] bg-[#1A4D2E] hover:bg-[#133c23] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm mt-2 cursor-pointer active:scale-[0.98]"
                 >
                   Proceed to Checkout
                   <span className="text-[18px]">→</span>

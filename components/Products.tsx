@@ -190,6 +190,9 @@ export default function Products() {
           <h1 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] tracking-tight">
             {categoryName}
           </h1>
+          <p className="mt-3 text-[#4A4A4A] max-w-3xl font-roboto font-normal text-[16px] leading-[25.6px] tracking-[0px]">
+            Explore our curated collection of industrial-grade machinery, smart irrigation systems, and professional farming tools designed for the modern agri-enterprise.
+          </p>
         </div>
       </div>
 
@@ -232,21 +235,21 @@ export default function Products() {
                 {/* Search Bar */}
                 <form 
                   onSubmit={(e) => { e.preventDefault(); setSearchQuery(searchInput); }} 
-                  className="flex items-center"
+                  className="flex items-center relative w-full sm:w-[280px]"
                 >
+                  <div className="absolute left-3 text-gray-400 pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                  </div>
                   <input
                     type="text"
-                    placeholder="Search in category..."
+                    placeholder="Search equipment..."
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
-                    className="appearance-none bg-white border border-gray-300 text-[#1A1A1A] text-sm rounded-l-md pl-4 py-2 outline-none focus:border-[#006B21] focus:ring-1 focus:ring-[#006B21]"
+                    className="w-full appearance-none bg-[#F7F8F9] border border-gray-200 text-[#1A1A1A] text-sm rounded-lg pl-10 pr-4 py-2.5 outline-none focus:border-[#006B21] focus:ring-1 focus:ring-[#006B21] transition-all placeholder:text-gray-400"
                   />
-                  <button 
-                    type="submit" 
-                    className="bg-[#006B21] text-white px-4 py-2 rounded-r-md text-sm font-semibold hover:bg-[#005a1b] transition-colors"
-                  >
-                    Search
-                  </button>
                 </form>
 
                 {/* Subcategory Dropdown Filter */}
@@ -314,63 +317,72 @@ export default function Products() {
                     ? product.custom_image_1
                     : "/assets/sprayer.png";
 
+                  const name = (product.item_name || "").toLowerCase();
+                  let tags = ["In Stock"];
+                  let features = ["Durable Build", "High Performance"];
+                  if (name.includes("spray") || name.includes("तूफान")) {
+                    tags = ["Farmer's Choice", "1 Year Warranty"];
+                    features = ["20L Tank Capacity", "High-Pressure Nozzle"];
+                  } else if (name.includes("pump")) {
+                    tags = ["In Stock"];
+                    features = ["Cast Iron Body", "Low Fuel Consumption"];
+                  } else if (name.includes("seed")) {
+                    tags = ["In Stock"];
+                    features = ["Cast Iron Body", "efficient"];
+                  } else if (name.includes("weed")) {
+                    tags = ["Easy Maintenance"];
+                    features = ["9HP Engine Power", "Adjustable Tilling Width"];
+                  }
+
                   return (
                     <div
                       key={product.item_code}
-                      className="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col transition-shadow hover:shadow-lg relative text-left"
+                      className="bg-white rounded-[20px] border border-gray-200 overflow-hidden flex flex-col transition-shadow hover:shadow-lg relative text-left"
                     >
-                      {/* Image Section */}
-                      <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer">
-                        <div className="relative h-56 w-full bg-gray-50 overflow-hidden flex items-center justify-center p-4 hover:opacity-90 transition-opacity">
-                          {/* Badge Overlay */}
+                      <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer flex-shrink-0">
+                        <div className="relative h-[220px] w-full bg-[#EAEAEA] overflow-hidden flex items-center justify-center group">
                           {product.discount && product.discount > 0 ? (
-                            <div className="absolute top-4 left-4 px-3 py-1 text-xs font-bold rounded-[8px] z-10 bg-[#FEF5D1] text-[#78350F] border border-[#FDF4CE]">
+                            <div className="absolute top-0 left-0 px-3 py-1.5 text-xs font-bold bg-[#FDF1CB] text-[#A66C15] rounded-br-[12px] z-10">
                               {product.discount.toFixed(0)}% OFF
                             </div>
                           ) : null}
                           <img
                             src={itemImage}
                             alt={product.item_name}
-                            className="object-contain max-h-full max-w-full"
+                            className="object-contain p-4 mix-blend-multiply w-full h-full group-hover:scale-105 transition-transform duration-300"
                           />
                         </div>
                       </Link>
 
-                      {/* Content Section */}
-                      <div className="p-5 flex flex-col flex-1">
+                      <div className="p-4 md:p-5 flex flex-col flex-1">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-[#006B21] text-sm md:text-base font-semibold tracking-wide">GBRU PRO</span>
+                          <div className="flex items-center gap-1 text-black font-bold text-sm md:text-base">
+                            <svg className="w-4 h-4 text-[#FFB703]" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                            4.8
+                          </div>
+                        </div>
+
                         <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer hover:text-[#006B21] transition-colors">
-                          <h3 className="font-bold text-sm text-[#1A1A1A] mb-3 leading-snug min-h-[40px] line-clamp-2">
+                          <h3 className="text-[#1A1A1A] text-[18px] md:text-[20px] font-bold leading-tight mb-2 line-clamp-2">
                             {product.item_name}
                           </h3>
                         </Link>
 
-                        {/* Tags */}
-                        <div className="flex flex-wrap gap-2 mb-6">
-                          {product.brand && (
-                            <span className="bg-[#F3F4F6] text-[#4B5563] text-[9px] font-bold px-2 py-0.5 rounded">
-                              {product.brand.toUpperCase()}
-                            </span>
-                          )}
+                        <div className="mt-1 mb-5 flex items-center gap-2">
+                          <span className="text-black font-extrabold text-[24px] md:text-[28px]">
+                            ₹{product.price ? product.price.toLocaleString("en-IN") : "14,999"}
+                          </span>
                         </div>
 
                         <div className="mt-auto">
-                          {/* Price */}
-                          <div className="flex items-baseline gap-2 mb-1">
-                            <span className="text-xl font-bold text-[#006B21]">₹{formatPrice(product.price)}</span>
-                            {product.mrp > product.price && (
-                              <span className="text-xs text-[#6B7280] line-through">₹{formatPrice(product.mrp)}</span>
-                            )}
-                          </div>
-
-                          <div className="text-[11px] text-[#4B5563] font-bold mb-4 flex flex-col gap-0.5">
-                            <span>Minimum Order Quantity: <span className="text-[#0F291B]">{product.moq} {product.stock_uom}</span></span>
-                          </div>
-
                           <button
                             onClick={() => handleAddToCart(product)}
-                            className="w-full h-11 bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-sm rounded-xl shadow-sm transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.99]"
+                            className="w-full py-3 md:py-3.5 bg-[#006B21] hover:bg-[#005a1b] text-white font-bold text-base md:text-lg rounded-xl shadow-sm transition-all duration-300 flex items-center justify-center active:scale-[0.99]"
                           >
-                            {cartItemCodes.includes(product.item_code) ? "Update Cart" : "Add to Cart"}
+                            Add to cart
                           </button>
                         </div>
                       </div>

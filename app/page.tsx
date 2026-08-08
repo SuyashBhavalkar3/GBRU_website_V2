@@ -34,13 +34,12 @@ export default function Home() {
         <Categories />
         {!isLoggedIn && <FieldExperiences />}
         <BestSellingTools />
-        <ToolsInAction />
-        {!isLoggedIn && <AppDownload />}
+        {isLoggedIn ? <ToolsInAction /> : <AppDownload />}
         {!isLoggedIn && <GbRUOnField />}
         {!isLoggedIn && <WhyGBRU />}
         <Testimonials />
-        <HelpSupportBanner />
-        <AppDownloadBanner />
+        {isLoggedIn && <HelpSupportBanner />}
+        {isLoggedIn && <AppDownloadBanner />}
       </main>
       <Footer />
     </div>

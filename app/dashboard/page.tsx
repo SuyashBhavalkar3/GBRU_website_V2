@@ -7,6 +7,7 @@ import ToolsInAction from "@/components/ToolsInAction";
 import Testimonials from "@/components/Testimonials";
 import HelpSupportBanner from "@/components/HelpSupportBanner";
 import Footer from "@/components/Footer";
+import AppDownloadBanner from "@/components/AppDownloadBanner";
 
 export const metadata = {
   title: "Dashboard - GBRU",
@@ -24,6 +25,7 @@ export default function DashboardPage() {
         <ToolsInAction />
         <Testimonials />
         <HelpSupportBanner />
+        <AppDownloadBanner />
       </main>
       <Footer />
     </div>

@@ -53,7 +53,6 @@ export default function Testimonials() {
         className="relative w-full max-w-[1206px] rounded-[32px] lg:rounded-[47px] overflow-hidden border border-[#CDE5D2] flex flex-col items-center py-10 px-4 lg:px-6 bg-no-repeat transition-all duration-500"
         style={{
           background: "linear-gradient(135deg, #F0FAF2 0%, #DCEFE0 100%)",
-          minHeight: "730px",
         }}
       >
         {/* Background grass pattern with higher opacity to show rich green tones */}
@@ -71,12 +70,28 @@ export default function Testimonials() {
         <div className="relative z-10 flex flex-col items-center w-full">
           {/* Header */}
           <h2
-            className="font-roboto font-bold text-[#0F291B] text-[24px] sm:text-[28px] leading-tight text-center flex items-center justify-center mb-3"
+            className="text-[#0F291B] flex items-center justify-center mb-3"
+            style={{
+              fontFamily: "Roboto, sans-serif",
+              fontWeight: 700,
+              fontSize: "48px",
+              lineHeight: "32px",
+              letterSpacing: "0px",
+              textAlign: "center"
+            }}
           >
             Testimonial
           </h2>
           <p
-            className="font-roboto text-[#374151] text-[14px] sm:text-[16px] text-center font-medium flex items-center justify-center max-w-xl mb-8"
+            className="text-[#374151] flex items-center justify-center max-w-xl mb-8"
+            style={{
+              fontFamily: "Roboto, sans-serif",
+              fontWeight: 500,
+              fontSize: "30px",
+              lineHeight: "32px",
+              letterSpacing: "0px",
+              textAlign: "center"
+            }}
           >
             Trusted by Farmers, Proven in the Field
           </p>
@@ -121,7 +136,7 @@ export default function Testimonials() {
               onClick={() => setVisibleCount((prev) => prev + 3)}
               className="bg-[#0D9740] hover:bg-[#0a7d34] text-white font-roboto font-semibold text-[15px] shadow-md transition-all duration-300 hover:scale-105 active:scale-95 h-14 px-8 rounded-full"
             >
-              Load More
+              View More
             </button>
           )}
         </div>

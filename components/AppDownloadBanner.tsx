@@ -5,10 +5,10 @@ import Image from "next/image";
 
 export default function AppDownloadBanner() {
   return (
-    <div className="w-full bg-[#E9F2EC] flex justify-center py-6 px-4 sm:px-6 overflow-hidden">
+    <div className="w-full bg-[#E9F2EC] flex justify-center py-0 px-4 sm:px-6 overflow-hidden">
       {/* Viewport Container (1280px wide, 266px tall) */}
       <div 
-        className="w-full max-w-[1280px] lg:h-[266px] bg-[#E9F2EC] relative flex flex-col lg:flex-row shadow-sm overflow-hidden rounded-[24px]"
+        className="w-full max-w-[1280px] lg:h-[266px] bg-[#E9F2EC] relative flex flex-col lg:flex-row shadow-sm"
       >
         
         {/* Left Side (Dark Green, 640px wide on desktop, 266px tall, full-bleed left) */}
@@ -56,14 +56,14 @@ export default function AppDownloadBanner() {
         <div 
           className="w-full lg:w-[721px] lg:h-[266px] lg:absolute lg:left-[559px] lg:top-0 lg:z-10 py-6 px-6 lg:pl-[100px] lg:pr-10 flex flex-col justify-center text-left overflow-visible"
         >
-          <h2 className="text-[#1A1A1A] text-lg lg:text-[22px] font-bold mb-2 leading-tight max-w-md relative z-10 font-roboto">
-            Track, Manage, Grow With Shoption App
+          <h2 className="text-[#1A1A1A] text-lg lg:text-[22px] font-bold mb-2 leading-tight max-w-md relative z-10 font-roboto -mt-4 lg:-mt-6">
+            Track, Manage, Grow With<br/>Shoption App
           </h2>
-          <p className="text-[#4A4A4A] font-semibold text-xs lg:text-sm mb-4 relative z-10">
-            Track Order, Warranty, Services& More.
+          <p className="text-[#4A4A4A] font-semibold text-xs lg:text-sm mb-4 mt-2 relative z-10">
+            Track Order, Warranty, Services & More.
           </p>
           
-          <div className="bg-white rounded-2xl py-3 px-5 flex flex-col sm:flex-row gap-4 w-full sm:w-fit shadow-md relative z-20 mb-6 lg:mb-0 border border-gray-100">
+          <div className="bg-white rounded-2xl py-3 px-5 flex flex-col sm:flex-row gap-4 w-full sm:w-fit shadow-md relative z-20 mb-6 lg:mb-0 border border-gray-100 mt-10">
             <a href="https://play.google.com/store/apps/details?id=com.shoption.app" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
               <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" className="h-[32px] w-auto" />
             </a>
@@ -73,7 +73,7 @@ export default function AppDownloadBanner() {
           </div>
 
           {/* Hand Image (Popping out slightly at bottom and top) */}
-          <div className="relative lg:absolute bottom-auto lg:bottom-[-24px] right-auto lg:right-[-4px] w-[240px] sm:w-[280px] lg:w-[350px] z-30 select-none pointer-events-none overflow-visible mx-auto lg:mx-0 mt-4 lg:mt-0">
+          <div className="relative lg:absolute bottom-auto lg:bottom-[-36px] right-auto lg:right-[-4px] w-[240px] sm:w-[300px] lg:w-[400px] z-30 select-none pointer-events-none overflow-visible mx-auto lg:mx-0 mt-4 lg:mt-0">
             <Image 
               src="/assets/holding_phone.png" 
               alt="Shoption App in hand" 

@@ -7,8 +7,8 @@ export default function FieldExperiences() {
   const playlist = [
     {
       title: "GBRU Spray Pumps",
-      subtitle: "spray pump in action",
-      desc: "See our battery operated knapsack sprayer pumps in action",
+      subtitle: "Our Farmer Review",
+      desc: "See what our Gbru user are saying",
       duration: "03:41",
       category: "Information",
       thumbnail: "/assets/thumb_spray_pumps.png",
@@ -57,10 +57,11 @@ export default function FieldExperiences() {
 
   return (
     <section
-      className="relative w-full bg-cover bg-no-repeat bg-white pt-4 pb-8 px-4 sm:px-6 lg:h-[818px] lg:pt-[18px] lg:pr-[50px] lg:pb-[18px] lg:pl-[50px] flex flex-col items-center gap-4 lg:gap-[27px] overflow-hidden"
+      className="relative w-full bg-no-repeat bg-white pt-4 pb-8 px-4 sm:px-6 lg:h-[818px] lg:pt-[18px] lg:pr-[50px] lg:pb-[18px] lg:pl-[50px] flex flex-col items-center gap-4 lg:gap-[27px] overflow-hidden"
       style={{
         backgroundImage: "url('/assets/field_experience_bg_drone.png')",
-        backgroundPosition: "center bottom",
+        backgroundPosition: "center -280px",
+        backgroundSize: "100% auto"
       }}
     >
 
@@ -118,10 +119,29 @@ export default function FieldExperiences() {
 
             {/* Active Video Info */}
             <div className="text-left text-white mt-4 lg:mt-[24px]">
-              <h3 className="font-roboto font-bold text-[20px] lg:text-[24px] leading-tight">
+              <h3 
+                style={{
+                  fontFamily: 'Roboto, sans-serif',
+                  fontWeight: 700,
+                  fontSize: '32px',
+                  lineHeight: '32px',
+                  letterSpacing: '-0.24px',
+                  verticalAlign: 'middle',
+                }}
+              >
                 {activeVideo.subtitle}
               </h3>
-              <p className="text-white/80 font-roboto text-sm lg:text-base mt-1.5 font-medium">
+              <p 
+                style={{
+                  fontFamily: 'Roboto, sans-serif',
+                  fontWeight: 700,
+                  fontSize: '24px',
+                  lineHeight: '24px',
+                  letterSpacing: '0px',
+                  verticalAlign: 'middle',
+                }}
+                className="text-white mt-[8px]"
+              >
                 {activeVideo.desc}
               </p>
             </div>

@@ -172,15 +172,15 @@ export default function FeaturedProducts() {
             return (
               <div
                 key={product.item_code}
-                className="bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col transition-all duration-300 relative p-4 group shadow-sm w-[210px] shrink-0"
+                className="bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col transition-all duration-300 relative p-4 group shadow-sm w-[260px] shrink-0"
               >
-                {product.discount && product.discount > 0 ? (
-                  <div className="absolute top-4 left-4 px-2 py-0.5 text-[10px] font-bold rounded bg-[#FEF5D1] text-[#78350F] z-10 border border-[#FDF4CE]">
-                    {product.discount.toFixed(0)}% OFF
-                  </div>
-                ) : null}
-
-                <div className="relative w-full aspect-square bg-gray-50/50 rounded-xl overflow-hidden flex items-center justify-center p-3 mb-4">
+                {/* Image box with embedded badge */}
+                <div className="relative w-full aspect-square bg-[#E8F3EB] rounded-xl overflow-hidden flex items-center justify-center p-3 mb-4">
+                  {product.discount && product.discount > 0 ? (
+                    <div className="absolute top-0 left-0 px-3 py-1.5 text-[13px] font-medium bg-[#FFD700] text-[#1F2937] z-10 rounded-br-xl">
+                      {product.discount.toFixed(0)}% OFF
+                    </div>
+                  ) : null}
                   <img
                     src={itemImage}
                     alt={product.item_name}
@@ -189,28 +189,29 @@ export default function FeaturedProducts() {
                 </div>
 
                 <div className="flex flex-col flex-1">
-                  <h3 className="font-bold text-xs text-[#1A1A1A] line-clamp-2 leading-snug min-h-[32px] mb-2 group-hover:text-[#0D9740] transition-colors">
+                  <h3 className="font-normal text-[18px] text-[#1A1A1A] line-clamp-2 leading-snug min-h-[48px] mb-2 transition-colors">
                     {product.item_name}
                   </h3>
 
-                  <div className="flex items-center gap-1 mb-3 text-[10px] font-semibold text-zinc-500">
-                    <span className="text-amber-500 text-xs">★</span>
-                    <span className="text-[#1A1A1A]">{mockRating}</span>
-                    <span>({mockReviews})</span>
+                  <div className="flex items-center gap-1.5 mb-3 text-[14px]">
+                    <span className="text-[#FBBF24] text-lg leading-none">★</span>
+                    <span className="text-[#FBBF24] font-medium">{mockRating}</span>
+                    <span className="text-gray-400">({mockReviews})</span>
                   </div>
 
                   <div className="mt-auto">
-                    <div className="flex items-baseline gap-1.5 mb-4">
-                      <span className="text-sm font-extrabold text-[#0D9740]">₹{formatPrice(product.price)}</span>
+                    <div className="flex items-center gap-2 mb-5">
+                      <span className="text-[26px] font-medium text-[#1A1A1A]">₹{formatPrice(product.price)}</span>
                       {product.mrp > product.price && (
-                        <span className="text-[10px] text-zinc-400 line-through">₹{formatPrice(product.mrp)}</span>
+                        <span className="text-[15px] text-gray-400 line-through">₹{formatPrice(product.mrp)}</span>
                       )}
                     </div>
 
                     <button
                       onClick={() => handleAddToCart(product.item_code)}
-                      className="w-full h-11 bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-sm rounded-xl shadow-sm transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.99]"
+                      className="w-full h-12 bg-[#276342] hover:bg-[#1e4d33] text-white font-medium text-[16px] rounded-xl flex items-center justify-center gap-2 transition-colors active:scale-[0.99]"
                     >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                       {cartItemCodes.includes(product.item_code) ? "Update Cart" : "Add to Cart"}
                     </button>
                   </div>
@@ -235,17 +236,15 @@ export default function FeaturedProducts() {
           return (
             <div 
               key={product.item_code}
-              className="bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col transition-all duration-300 hover:shadow-lg relative p-4 group"
+              className="bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col transition-all duration-300 hover:shadow-lg relative p-4 group"
             >
-              {/* Discount Sticker */}
-              {product.discount && product.discount > 0 ? (
-                <div className="absolute top-4 left-4 px-2 py-0.5 text-[10px] font-bold rounded bg-[#FEF5D1] text-[#78350F] z-10 border border-[#FDF4CE]">
-                  {product.discount.toFixed(0)}% OFF
-                </div>
-              ) : null}
-
-              {/* Image box */}
-              <div className="relative w-full aspect-square bg-gray-50/50 rounded-xl overflow-hidden flex items-center justify-center p-3 mb-4">
+              {/* Image box with embedded badge */}
+              <div className="relative w-full aspect-square bg-[#E8F3EB] rounded-xl overflow-hidden flex items-center justify-center p-3 mb-4">
+                {product.discount && product.discount > 0 ? (
+                  <div className="absolute top-0 left-0 px-3 py-1.5 text-[13px] font-medium bg-[#FFD700] text-[#1F2937] z-10 rounded-br-xl">
+                    {product.discount.toFixed(0)}% OFF
+                  </div>
+                ) : null}
                 <img 
                   src={itemImage} 
                   alt={product.item_name}
@@ -255,31 +254,32 @@ export default function FeaturedProducts() {
 
               {/* Content */}
               <div className="flex flex-col flex-1">
-                <h3 className="font-bold text-xs text-[#1A1A1A] line-clamp-2 leading-snug min-h-[32px] mb-2 group-hover:text-[#0D9740] transition-colors">
+                <h3 className="font-normal text-[18px] text-[#1A1A1A] line-clamp-2 leading-snug min-h-[48px] mb-2 transition-colors">
                   {product.item_name}
                 </h3>
 
                 {/* Rating */}
-                <div className="flex items-center gap-1 mb-3 text-[10px] font-semibold text-zinc-500">
-                  <span className="text-amber-500 text-xs">★</span>
-                  <span className="text-[#1A1A1A]">{mockRating}</span>
-                  <span>({mockReviews})</span>
+                <div className="flex items-center gap-1.5 mb-3 text-[14px]">
+                  <span className="text-[#FBBF24] text-lg leading-none">★</span>
+                  <span className="text-[#FBBF24] font-medium">{mockRating}</span>
+                  <span className="text-gray-400">({mockReviews})</span>
                 </div>
 
                 <div className="mt-auto">
                   {/* Prices */}
-                  <div className="flex items-baseline gap-1.5 mb-4">
-                    <span className="text-sm font-extrabold text-[#0D9740]">₹{formatPrice(product.price)}</span>
+                  <div className="flex items-center gap-2 mb-5">
+                    <span className="text-[26px] font-medium text-[#1A1A1A]">₹{formatPrice(product.price)}</span>
                     {product.mrp > product.price && (
-                      <span className="text-[10px] text-zinc-400 line-through">₹{formatPrice(product.mrp)}</span>
+                      <span className="text-[15px] text-gray-400 line-through">₹{formatPrice(product.mrp)}</span>
                     )}
                   </div>
 
                   {/* Add to Cart button */}
                   <button 
                     onClick={() => handleAddToCart(product.item_code)}
-                    className="w-full h-11 bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-sm rounded-xl shadow-sm transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.99]"
+                    className="w-full h-12 bg-[#276342] hover:bg-[#1e4d33] text-white font-medium text-[16px] rounded-xl flex items-center justify-center gap-2 transition-colors active:scale-[0.99]"
                   >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     {cartItemCodes.includes(product.item_code) ? "Update Cart" : "Add to Cart"}
                   </button>
                 </div>

@@ -13,13 +13,13 @@ const Footer = () => {
   return (
     <footer 
       className="w-full text-white pt-12 pb-8 lg:pt-16 lg:pb-6 px-6 lg:px-12 font-roboto border-t border-white/10 mt-auto overflow-hidden"
-      style={{ marginTop: '96px', background: 'linear-gradient(163.13deg, #0B5D3B 44.12%, #043321 96.94%)' }}
+      style={{ background: 'linear-gradient(163.13deg, #0B5D3B 44.12%, #043321 96.94%)' }}
     >
       <style dangerouslySetInnerHTML={{__html: `
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
         .footer-heading {
-          font-family: 'Nimbus Sans', sans-serif;
-          font-weight: 700;
+          font-family: 'Roboto', sans-serif;
+          font-weight: 400;
           font-size: 18px;
           line-height: 28px;
           letter-spacing: 0px;
@@ -50,7 +50,7 @@ const Footer = () => {
           {/* Column 1: Stay Updated */}
           <div className="flex flex-col gap-6">
             <h3 className="footer-heading">Stay Updated</h3>
-            <p className="footer-text">Get latest offers, new products and farming tips.</p>
+            <p className="footer-text whitespace-nowrap">Get latest offers, new products and farming tips.</p>
             <div className="flex w-full mt-2">
               <input 
                 type="email" 
