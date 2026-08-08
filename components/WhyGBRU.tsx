@@ -65,24 +65,14 @@ const features = [
 export default function WhyGBRU() {
   return (
     <section
-      className="relative w-full bg-white flex items-center justify-center"
+      className="relative w-full bg-white flex items-center justify-center py-0 lg:py-[44px]"
       style={{
-        height: "648px",
-        paddingTop: "44px",
-        paddingBottom: "44px",
+        minHeight: "auto",
       }}
     >
       {/* Inner Div */}
       <div
-        className="flex flex-col items-center w-full"
-        style={{
-          maxWidth: "1280px",
-          height: "560px",
-          paddingLeft: "64px",
-          paddingRight: "64px",
-          gap: "64px",
-        }}
-
+        className="flex flex-col items-center w-full max-w-[1280px] h-auto lg:h-[560px] px-4 lg:px-[64px] gap-8 lg:gap-[64px]"
       >
         {/* Header */}
         <div className="flex flex-col items-center gap-3">

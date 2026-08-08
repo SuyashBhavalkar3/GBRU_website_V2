@@ -41,10 +41,24 @@ export default function Home() {
           <Categories />
         </div>
         <BestSellingTools />
-        <ToolsInAction />
-        {!isLoggedIn && <AppDownload />}
-        {!isLoggedIn && <GbRUOnField />}
-        {!isLoggedIn && <WhyGBRU />}
+        <div className="hidden lg:block">
+          <ToolsInAction />
+        </div>
+        <div className="hidden lg:block">
+          {!isLoggedIn && <AppDownload />}
+        </div>
+        {/* Desktop order: GbRUOnField then WhyGBRU */}
+        <div className="hidden lg:block">
+          {!isLoggedIn && <GbRUOnField />}
+          {!isLoggedIn && <WhyGBRU />}
+        </div>
+
+        {/* Mobile order: WhyGBRU after Featured Products (BestSellingTools), then GbRUOnField */}
+        <div className="block lg:hidden">
+          {!isLoggedIn && <WhyGBRU />}
+          {!isLoggedIn && <GbRUOnField />}
+        </div>
+
         <Testimonials />
         <HelpSupportBanner />
         <AppDownloadBanner />

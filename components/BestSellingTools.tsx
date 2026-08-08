@@ -96,7 +96,7 @@ export default function BestSellingTools() {
   }
 
   return (
-    <section className="relative w-full bg-white pt-10 pb-12 px-4 lg:px-[64px] flex flex-col items-center justify-start overflow-hidden">
+    <section className="relative w-full bg-white pt-10 lg:pb-12 pb-2 px-4 lg:px-[64px] flex flex-col items-center justify-start overflow-hidden">
       {/* Header Container */}
       <div className="relative z-10 w-full lg:w-[1152px] flex items-center justify-between">
         <h2 
