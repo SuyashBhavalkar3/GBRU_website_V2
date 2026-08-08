@@ -85,8 +85,11 @@ const Login = () => {
         </div>
       )}
 
+      {/* ========================================================================= */}
+      {/* DESKTOP VIEW LAYOUT (Unchanged) */}
+      {/* ========================================================================= */}
       <div 
-        className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center relative"
+        className="hidden md:flex min-h-screen items-center justify-center p-4 bg-cover bg-center relative"
         style={{ backgroundImage: "url('/assets/caroussel-2.jpg')" }}
       >
         {/* Back Button */}
@@ -101,9 +104,8 @@ const Login = () => {
         </Link>
 
         <div className="flex flex-col md:flex-row w-full max-w-[1100px] bg-white rounded-xl shadow-2xl overflow-hidden min-h-[650px]">
-          
-          {/* Left Side (Green Gradient) - Hidden on Mobile */}
-          <div className="hidden md:flex w-full md:w-[45%] relative p-10 flex flex-col bg-gradient-to-b from-[#2E6F18] via-[#4F8D14] to-[#C99C15] overflow-hidden">
+          {/* Left Side (Green Gradient) */}
+          <div className="w-[45%] relative p-10 flex flex-col bg-gradient-to-b from-[#2E6F18] via-[#4F8D14] to-[#C99C15] overflow-hidden">
             {/* Logo */}
             <div className="mb-10 relative z-10">
               <Image 
@@ -169,22 +171,9 @@ const Login = () => {
           </div>
 
           {/* Right Side (Form) */}
-          <div className="w-full md:w-[55%] p-8 sm:p-12 md:p-16 flex flex-col justify-center bg-white min-h-[500px]">
-            {/* Logo on Mobile only */}
-            <div className="flex md:hidden justify-center mb-8">
-              <div className="bg-[#006B21] py-3 px-6 rounded-2xl shadow-md">
-                <Image 
-                  src="/assets/gbru_header_logo.png" 
-                  alt="GBRU Logo" 
-                  width={110} 
-                  height={45} 
-                  className="object-contain"
-                />
-              </div>
-            </div>
-
+          <div className="w-[55%] p-16 flex flex-col justify-center bg-white min-h-[500px]">
             <h2 
-              className="text-[#1A1A1A] mb-3 text-center md:text-left"
+              className="text-[#1A1A1A] mb-3"
               style={{
                 fontFamily: 'Roboto, sans-serif',
                 fontWeight: 600,
@@ -288,7 +277,141 @@ const Login = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
+      {/* ========================================================================= */}
+      {/* MOBILE VIEW LAYOUT (Figma Redesign) */}
+      {/* ========================================================================= */}
+      <div 
+        className="md:hidden min-h-screen flex flex-col items-center px-6 pt-3 pb-8 relative overflow-y-auto"
+        style={{ background: 'linear-gradient(135deg, #006B21 0%, #EAB308 100%)' }}
+      >
+        {/* Back Button */}
+        <Link 
+          href="/" 
+          className="absolute top-6 left-6 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center backdrop-blur-md transition-all z-50 text-white"
+          title="Back to Home"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </Link>
+
+        {/* Top Header Logo */}
+        <div className="mt-2 mb-6 flex justify-center w-full">
+          <div className="relative w-[160px] h-[68px]">
+            <Image 
+              src="/assets/gbru_header_logo.png" 
+              alt="GBRU Logo" 
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+        </div>
+
+        {/* Farmer Image Card */}
+        <div 
+          className="relative rounded-[32px] overflow-hidden shadow-2xl border border-white/10 mt-0 mb-6 bg-black/10 flex-shrink-0"
+          style={{
+            width: "262px",
+            height: "237px",
+            maxWidth: "320px",
+          }}
+        >
+          <Image 
+            src="/assets/farmer.png" 
+            alt="GBRU Farmer" 
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+
+        {/* Main Content Area */}
+        <div className="w-full max-w-[340px] flex flex-col text-left">
+          <h2 
+            className="text-white mb-2 font-bold text-[24px]"
+            style={{ fontFamily: 'Roboto, sans-serif' }}
+          >
+            Login to your account
+          </h2>
+          <p 
+            className="text-white/95 text-[12px] leading-relaxed mb-6 font-normal"
+            style={{ fontFamily: 'Roboto, sans-serif' }}
+          >
+            Access your dashboard, machinery status, and irrigation tools.
+          </p>
+
+          <form className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-2">
+              <label 
+                className="text-white/90 text-[10px] font-bold tracking-wider"
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                MOBILE NUMBER
+              </label>
+              
+              <div className="flex items-center bg-[#F9F9F9] rounded-[14px] overflow-hidden h-[52px] border border-white/20 shadow-inner">
+                <div className="flex items-center justify-center px-4 border-r border-[#E5E5E5] h-full text-zinc-800">
+                  <span className="font-semibold text-sm">+91</span>
+                  <svg className="w-3.5 h-3.5 ml-1.5 text-zinc-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <input 
+                  type="tel" 
+                  placeholder="Enter 10 digit number" 
+                  className="flex-1 px-4 py-2 outline-none text-sm bg-transparent text-zinc-800 placeholder-zinc-400 font-medium"
+                  maxLength={10}
+                  value={mobileNumber}
+                  onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))}
+                />
+              </div>
+            </div>
+
+            <button 
+              type="button"
+              onClick={handleGetOtp}
+              disabled={loading}
+              className={`w-full text-white rounded-[14px] transition-all active:scale-[0.98] font-bold text-base flex items-center justify-center ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+              style={{
+                height: '48px',
+                background: '#006B21',
+                fontFamily: 'Roboto, sans-serif',
+              }}
+            >
+              {loading ? 'Sending OTP...' : 'Get OTP'}
+            </button>
+
+            <div className="text-center w-full pt-1">
+              <p 
+                className="text-white/80 text-[11px]"
+                style={{ fontFamily: 'Roboto, sans-serif' }}
+              >
+                We'll send a 6-digit code to verify your number.
+              </p>
+            </div>
+          </form>
+
+          {/* Bottom Divider */}
+          <div className="w-full border-t border-white/20 mt-8 pt-6 flex flex-col items-center space-y-3">
+            <Link 
+              href="/help-centre" 
+              className="text-white/90 hover:text-white transition-colors text-xs font-semibold" 
+              style={{ fontFamily: 'Roboto, sans-serif' }}
+            >
+              Help Center
+            </Link>
+            <a 
+              href="#" 
+              className="text-white/85 hover:text-white transition-colors text-[11px] font-medium" 
+              style={{ fontFamily: 'Roboto, sans-serif' }}
+            >
+              Privacy Policy & Terms
+            </a>
+          </div>
         </div>
       </div>
     </>
