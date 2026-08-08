@@ -99,12 +99,14 @@ export default function Hero() {
         }}
       />
 
-      {/* Main Container - width 1152px, centered */}
-      <div className="relative z-10 max-w-[1280px] w-full mx-auto px-4 sm:px-6 lg:px-[64px]">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center h-full">
+      {/* ========================================================================= */}
+      {/* DESKTOP LAYOUT (Unchanged for Web/Desktop viewports) */}
+      {/* ========================================================================= */}
+      <div className="hidden lg:block relative z-10 max-w-[1280px] w-full mx-auto px-4 sm:px-6 lg:px-[64px]">
+        <div className="grid grid-cols-12 gap-8 items-center h-full">
 
           {/* Left Column (Hero Content) */}
-          <div className="lg:col-span-6 flex flex-col justify-between gap-8 lg:h-[466px]">
+          <div className="col-span-6 flex flex-col justify-between gap-8 h-[466px]">
             {/* Top Text Content */}
             <div className="space-y-2.5 font-roboto">
               <h3 className="text-xl md:text-2xl lg:text-[28px] font-bold tracking-wide w-full lg:w-[564px] lg:max-w-[576px] lg:h-[56px] flex items-center gap-1.5 leading-tight">
@@ -164,11 +166,10 @@ export default function Hero() {
           </div>
 
           {/* Right Column (Carousel & YouTube Video Box) */}
-          <div className="lg:col-span-6 flex flex-col items-center lg:items-end justify-center space-y-8">
+          <div className="col-span-6 flex flex-col items-center lg:items-end justify-center space-y-8">
 
-            {/* Photo Carousel wrapper - Width 671px, Height 257px */}
+            {/* Photo Carousel wrapper */}
             <div className="relative w-full max-w-[671px] h-[250px] sm:h-[320px] flex items-center justify-center overflow-visible">
-
               {/* Carousel Track */}
               <div className="relative w-full h-[220px] sm:h-[288px] flex items-center justify-center">
                 {carouselImages.map((imgUrl, idx) => {
@@ -236,7 +237,7 @@ export default function Hero() {
             </div>
 
             {/* YouTube Video Box properties - Flex row of 3 cards */}
-            <div className="flex flex-wrap lg:flex-nowrap justify-center gap-3 w-full max-w-[500px]">
+            <div className="flex justify-center gap-3 w-full max-w-[500px]">
               {[
                 {
                   url: "https://www.youtube.com/watch?v=GTNiviig9Z0&list=PLHXlLG4lLpM1nsq-u5QYMel-p24VXjyUw&index=1",
@@ -264,7 +265,6 @@ export default function Hero() {
                   key={i}
                   className="relative group w-[154.6px] h-[131.01px] max-w-[169.77px] rounded-[11.32px] overflow-hidden border-[0.71px] border-white/10 p-[11.32px] flex flex-col gap-[2.69px] bg-neutral-800/80 backdrop-blur-md shadow-xl transition-transform duration-300 hover:scale-[1.03] text-left"
                 >
-                  {/* Video Thumbnail Wrapper (132x75, rounded 6px) */}
                   <div className="relative w-[132px] h-[75px] rounded-[6px] overflow-hidden bg-black flex-shrink-0 z-10">
                     {video.thumbnail.startsWith('http') ? (
                       <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover z-0" />
@@ -276,7 +276,6 @@ export default function Hero() {
                         className="object-cover z-0"
                       />
                     )}
-                    {/* Play Button Icon Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/10 group-hover:bg-black/25 transition-colors">
                       <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110 cursor-pointer">
                         <svg className="w-2.5 h-2.5 fill-[#0F291B] ml-0.5" viewBox="0 0 24 24">
@@ -286,7 +285,6 @@ export default function Hero() {
                     </div>
                   </div>
 
-                  {/* Info text at the bottom left */}
                   <div className="relative z-20 font-roboto text-left flex flex-col justify-center min-w-0 mt-0.5">
                     <span className="block text-[8px] text-white/50 uppercase tracking-wider font-semibold leading-none">{video.subtitle}</span>
                     <span className="block text-[10px] text-white font-bold leading-tight mt-0.5 truncate">{video.title}</span>
@@ -296,7 +294,180 @@ export default function Hero() {
             </div>
 
           </div>
+        </div>
+      </div>
 
+      {/* ========================================================================= */}
+      {/* MOBILE LAYOUT (Figma Mockup Snapshot 1) */}
+      {/* ========================================================================= */}
+      <div className="block lg:hidden relative z-10 w-full px-4 flex flex-col gap-6 text-center max-w-[480px] mx-auto">
+        {/* Title / Hero Header */}
+        <div className="flex flex-col items-center pt-2">
+          <h3 className="text-lg font-bold leading-tight mb-1">
+            <span className="text-[#2D722F]">गब्रू हो साथ</span> <span className="text-[#2D722F]">,</span> <span className="text-[#0F291B]">तो टेंशन की क्या बात !</span>
+          </h3>
+          <h1 className="text-2xl font-bold leading-tight">
+            <span className="text-[#0F291B]">Right tool.</span>{" "}
+            <span 
+              className="bg-clip-text text-transparent bg-cover font-bold"
+              style={{ backgroundImage: "linear-gradient(90deg, #2D722F 0%, #768F0F 100%)" }}
+            >
+              Better Farming.
+            </span>
+          </h1>
+        </div>
+
+        {/* Carousel Slider */}
+        <div className="relative w-full h-[180px] flex items-center justify-center overflow-visible">
+          {/* Carousel Track */}
+          <div className="relative w-full h-[150px] flex items-center justify-center">
+            {carouselImages.map((imgUrl, idx) => {
+              const pos = getPositionClass(idx);
+
+              if (pos === "center") {
+                return (
+                  <div
+                    key={idx}
+                    className="absolute z-20 w-[210px] h-[130px] transition-all duration-500 ease-in-out transform scale-100 opacity-100 shadow-xl rounded-2xl overflow-hidden border-2 border-white/20"
+                  >
+                    <Image
+                      src={imgUrl}
+                      alt="Machinery Carousel Center"
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                  </div>
+                );
+              }
+
+              const isLeft = pos === "left";
+              return (
+                <div
+                  key={idx}
+                  className={`absolute z-10 w-[70px] h-[90px] transition-all duration-500 ease-in-out transform opacity-50 overflow-hidden rounded-xl border border-white/10 ${isLeft
+                    ? "translate-x-[-120px]"
+                    : "translate-x-[120px]"
+                    }`}
+                >
+                  <Image
+                    src={imgUrl}
+                    alt="Machinery Carousel Side"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Navigation Arrows */}
+          <button
+            onClick={handlePrev}
+            className="absolute left-1 z-30 flex items-center justify-center w-7 h-7 rounded-full bg-black/45 text-white"
+            aria-label="Previous image"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <button
+            onClick={handleNext}
+            className="absolute right-1 z-30 flex items-center justify-center w-7 h-7 rounded-full bg-black/45 text-white"
+            aria-label="Next image"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Action Buttons (side-by-side) */}
+        <div className="flex gap-4 w-full justify-center px-1">
+          <Link href="/all_products" className="flex-1 bg-[#0D9740] hover:bg-[#0b8036] text-white font-roboto font-bold text-[13px] h-[46px] rounded-full flex items-center justify-center shadow-md">
+            Explore Products
+          </Link>
+          <a 
+            href="https://www.youtube.com/playlist?list=PLHXlLG4lLpM1RC3vTHQf8iDX5jAI707Jm"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-1.5 bg-white border border-[#2B7832] text-[#2B7832] font-roboto font-bold text-[13px] h-[46px] rounded-full shadow-sm"
+          >
+            <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="#2B7832" strokeWidth="2.5" />
+              <path d="M10 8.5V15.5L15.5 12L10 8.5Z" fill="#2B7832" />
+            </svg>
+            Watch Demo
+          </a>
+        </div>
+
+        {/* Translucent Video Cards (3 items side-by-side) */}
+        <div className="flex gap-3 overflow-x-auto py-2 w-full snap-x justify-center scrollbar-none">
+          {[
+            {
+              url: "https://www.youtube.com/watch?v=GTNiviig9Z0&list=PLHXlLG4lLpM1nsq-u5QYMel-p24VXjyUw&index=1",
+              thumbnail: "https://img.youtube.com/vi/GTNiviig9Z0/maxresdefault.jpg",
+              subtitle: "watch our",
+              title: "Kisan Expo 2025"
+            },
+            {
+              url: "https://www.youtube.com/shorts/l6gdhNhF0mc",
+              thumbnail: "/assets/drone-sprayer-thumbnail.png",
+              subtitle: "watch our",
+              title: "Kisan Expo 2025"
+            },
+            {
+              url: "https://www.youtube.com/watch?v=ismU9cWjqJE&list=PLHXlLG4lLpM3M2gek-b4RVCJV3hBecrf8&index=1",
+              thumbnail: "https://img.youtube.com/vi/ismU9cWjqJE/maxresdefault.jpg",
+              subtitle: "watch our",
+              title: "Kisan Expo 2025"
+            }
+          ].map((video, i) => (
+            <a
+              href={video.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              key={i}
+              className="relative group w-[105px] h-[95px] rounded-xl overflow-hidden border border-white/20 p-2 flex flex-col gap-1 bg-white/25 backdrop-blur-md shadow-lg text-left snap-start flex-shrink-0"
+            >
+              <div className="relative w-full h-[52px] rounded-lg overflow-hidden bg-black flex-shrink-0">
+                {video.thumbnail.startsWith('http') ? (
+                  <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
+                ) : (
+                  <Image src={video.thumbnail} alt="Thumbnail" fill className="object-cover" />
+                )}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                  <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-md">
+                    <svg className="w-2 h-2 fill-[#0F291B] ml-0.5" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col text-[7px] text-white">
+                <span className="opacity-60 uppercase font-semibold leading-none">{video.subtitle}</span>
+                <span className="font-bold leading-tight mt-0.5 truncate">{video.title}</span>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        {/* 2x2 Features Grid (Banner style at the bottom) */}
+        <div className="w-full bg-[#E5E7EB]/90 backdrop-blur-md py-4 px-5 rounded-2xl mt-2 text-left">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+            {features.map((item, i) => (
+              <div key={i} className="flex items-center space-x-2 min-w-0">
+                <div className="flex-shrink-0 p-1 bg-[#00A859]/10 rounded-full flex items-center justify-center">
+                  {item.icon}
+                </div>
+                <div className="min-w-0 flex flex-col justify-center">
+                  <h4 className="text-[10px] font-bold text-[#0F291B] truncate leading-tight">{item.title}</h4>
+                  <p className="text-[8px] text-black/60 font-semibold leading-none truncate mt-0.5">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
