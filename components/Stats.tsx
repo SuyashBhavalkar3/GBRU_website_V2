@@ -19,7 +19,7 @@ export default function Stats() {
   return (
     <>
       {/* ── MOBILE: horizontal scroll strip (Figma exact) ── */}
-      <section className="block lg:hidden w-full bg-[#F5F8F6] px-3 py-3 border-b border-[#0F291B]/5">
+      <section className="block lg:hidden w-full bg-white px-3.5 pt-8 pb-3">
         <div className="flex gap-2 overflow-x-auto scrollbar-none snap-x snap-mandatory">
           {mobileStatItems.map((item, idx) => (
             <div

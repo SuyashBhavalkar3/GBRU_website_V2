@@ -31,8 +31,15 @@ export default function Home() {
       <main className="flex-1">
         <Hero />
         <Stats />
-        <Categories />
+        {/* Desktop order: Categories then FieldExperiences */}
+        <div className="hidden lg:block">
+          <Categories />
+        </div>
         {!isLoggedIn && <FieldExperiences />}
+        {/* Mobile order: Categories after FieldExperiences */}
+        <div className="block lg:hidden">
+          <Categories />
+        </div>
         <BestSellingTools />
         <ToolsInAction />
         {!isLoggedIn && <AppDownload />}

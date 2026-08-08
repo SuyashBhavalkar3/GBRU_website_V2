@@ -69,11 +69,9 @@ export default function FieldExperiences() {
       {/* MOBILE LAYOUT — Figma Exact                   */}
       {/* ══════════════════════════════════════════════ */}
       <section
-        className="flex lg:hidden flex-col relative w-full bg-cover bg-no-repeat overflow-hidden"
+        className="flex lg:hidden flex-col relative w-full bg-white overflow-hidden"
         style={{
-          backgroundImage: "url('/assets/field_experience_bg_drone.png')",
-          backgroundPosition: "center bottom",
-          paddingTop: "5px",
+          paddingTop: "20px",
           paddingLeft: "20px",
           paddingRight: "20px",
           paddingBottom: "20px",
