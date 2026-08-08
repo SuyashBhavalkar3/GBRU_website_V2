@@ -297,8 +297,8 @@ const OtpContent = () => {
 
         <div className="flex flex-col md:flex-row w-full max-w-[1100px] bg-white rounded-xl shadow-2xl overflow-hidden min-h-[650px]">
 
-          {/* Left Side (Green Gradient) - Exactly same as Login */}
-          <div className="w-full md:w-[45%] relative p-10 flex flex-col bg-gradient-to-b from-[#2E6F18] via-[#4F8D14] to-[#C99C15] overflow-hidden">
+          {/* Left Side (Green Gradient) - Hidden on Mobile */}
+          <div className="hidden md:flex w-full md:w-[45%] relative p-10 flex flex-col bg-gradient-to-b from-[#2E6F18] via-[#4F8D14] to-[#C99C15] overflow-hidden">
             {/* Logo */}
             <div className="mb-10 relative z-10">
               <Image
@@ -364,9 +364,22 @@ const OtpContent = () => {
           </div>
 
           {/* Right Side (OTP Form) */}
-          <div className="w-full md:w-[55%] p-10 md:p-16 flex flex-col justify-center bg-white">
+          <div className="w-full md:w-[55%] p-8 sm:p-12 md:p-16 flex flex-col justify-center bg-white min-h-[500px]">
+            {/* Logo on Mobile only */}
+            <div className="flex md:hidden justify-center mb-8">
+              <div className="bg-[#006B21] py-3 px-6 rounded-2xl shadow-md">
+                <Image 
+                  src="/assets/gbru_header_logo.png" 
+                  alt="GBRU Logo" 
+                  width={110} 
+                  height={45} 
+                  className="object-contain"
+                />
+              </div>
+            </div>
+
             <h2
-              className="text-[#1A1A1A] mb-3"
+              className="text-[#1A1A1A] mb-3 text-center md:text-left"
               style={{
                 fontFamily: 'Roboto, sans-serif',
                 fontWeight: 600,
