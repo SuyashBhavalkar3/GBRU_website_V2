@@ -64,6 +64,8 @@ const OtpContent = () => {
       if (!pendingItemStr) {
         if (userObj?.role?.toLowerCase() === 'farmer') {
           router.push('/dashboard');
+        } else if (userObj?.role?.toLowerCase() === 'dealer') {
+          router.push('/dealer_profile');
         } else {
           router.push('/profile');
         }
@@ -118,16 +120,19 @@ const OtpContent = () => {
       if (data.success) {
         if (data.isNewUser) {
           setShowRegistrationPopup(true);
+        } else if (data.user?.role?.toLowerCase() === 'dealer') {
+          // Do not save user session for dealers, redirect directly
+          router.replace('/dealer_profile');
         } else {
-          // Save user details securely in localStorage
+          // Save user details securely in localStorage for farmers/others
           const userToSave = { ...data.user, mobile_no: mobileNo };
           localStorage.setItem('gbru_user', JSON.stringify(userToSave));
 
           // Redirect based on role
           if (data.user?.role?.toLowerCase() === 'farmer') {
-            router.push('/dashboard');
+            router.replace('/dashboard');
           } else {
-            router.push('/profile');
+            router.replace('/profile');
           }
         }
       } else {
