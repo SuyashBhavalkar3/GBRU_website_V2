@@ -28,8 +28,8 @@ const DealerProfile = () => {
 
         <div className="w-full max-w-[1000px] bg-white rounded-xl shadow-2xl flex flex-col md:flex-row overflow-hidden md:h-[580px] max-h-[95dvh]">
           
-          {/* Left Side (Green Gradient) */}
-          <div className="w-full md:w-[45%] relative p-8 flex flex-col bg-gradient-to-b from-[#2E6F18] via-[#4F8D14] to-[#C99C15] overflow-hidden">
+          {/* Left Side (Green Gradient) - Hidden on Mobile */}
+          <div className="hidden md:flex w-full md:w-[45%] relative p-8 flex flex-col bg-gradient-to-b from-[#2E6F18] via-[#4F8D14] to-[#C99C15] overflow-hidden">
             {/* Logo */}
             <div className="mb-8 relative z-10">
               <Image 
@@ -95,15 +95,27 @@ const DealerProfile = () => {
           </div>
 
           {/* Right Pane (Content) */}
-          <div className="w-full md:w-[55%] p-8 md:p-10 flex flex-col justify-center bg-white overflow-y-auto">
+          <div className="w-full md:w-[55%] p-6 sm:p-10 flex flex-col justify-center bg-white overflow-y-auto min-h-[500px]">
+            {/* Logo on Mobile only */}
+            <div className="flex md:hidden justify-center mb-6">
+              <div className="bg-[#006B21] py-3 px-6 rounded-2xl shadow-md">
+                <Image 
+                  src="/assets/gbru_header_logo.png" 
+                  alt="GBRU Logo" 
+                  width={110} 
+                  height={45} 
+                  className="object-contain"
+                />
+              </div>
+            </div>
             
-            <div className="bg-[#e4efe8] text-[#34784a] text-[10px] font-bold px-3 py-1.5 rounded-full w-fit flex items-center gap-1.5 mb-3 uppercase tracking-wide">
+            <div className="bg-[#e4efe8] text-[#34784a] text-[10px] font-bold px-3 py-1.5 rounded-full w-fit flex items-center gap-1.5 mb-3 uppercase tracking-wide mx-auto md:mx-0">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
               Dealer Profile
             </div>
             
             <h2 
-              className="text-[#1A1A1A] mb-2"
+              className="text-[#1A1A1A] mb-2 text-center md:text-left"
               style={{
                 fontFamily: 'Roboto, sans-serif',
                 fontWeight: 600,
@@ -114,12 +126,12 @@ const DealerProfile = () => {
               Dealer Account Detected
             </h2>
             
-            <p className="text-[#0e7c37] font-semibold text-[14px] mb-3">
+            <p className="text-[#0e7c37] font-semibold text-[14px] mb-3 text-center md:text-left">
               This platform is for farmers.
             </p>
             
             <p 
-              className="text-[#666666] mb-8 leading-[1.5]"
+              className="text-[#666666] mb-8 leading-[1.5] text-center md:text-left"
               style={{
                 fontFamily: 'Roboto, sans-serif',
                 fontWeight: 400,
