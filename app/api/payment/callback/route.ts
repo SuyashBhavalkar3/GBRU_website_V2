@@ -5,7 +5,7 @@ export async function POST(request: Request) {
     // Redirect the user to https://uaterp.gbru.in/app using 303 See Other, forcing browser to do a GET request
     return NextResponse.redirect('https://uaterp.gbru.in/app', 303);
   } catch (error) {
-    console.error('Error handling payment callback:', error);
+    
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

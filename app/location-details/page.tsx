@@ -72,7 +72,7 @@ export default function LocationDetailsPage() {
           }
         }
       } catch (err) {
-        console.error("Failed to load states:", err);
+        
       }
     }
 
@@ -107,7 +107,7 @@ export default function LocationDetailsPage() {
           }
         }
       } catch (err) {
-        console.error("Failed to load proceed details:", err);
+        
       }
     }
 
@@ -136,7 +136,7 @@ export default function LocationDetailsPage() {
           }
         }
       } catch (err) {
-        console.error("Failed to load districts:", err);
+        
       }
     }
     loadDistricts();
@@ -163,7 +163,7 @@ export default function LocationDetailsPage() {
           }
         }
       } catch (err) {
-        console.error("Failed to load tahsils:", err);
+        
       }
     }
     loadTahsils();
@@ -190,7 +190,7 @@ export default function LocationDetailsPage() {
           }
         }
       } catch (err) {
-        console.error("Failed to load marketplaces:", err);
+        
       }
     }
     loadMarketplaces();
@@ -224,17 +224,17 @@ export default function LocationDetailsPage() {
         });
         if (leadRes.ok) {
           const leadJson = await leadRes.json();
-          console.log("Lead creation/fetch response:", leadJson);
+          
           if (leadJson.message?.status && leadJson.message.lead) {
             actualLeadId = leadJson.message.lead;
           }
         }
       } catch (err) {
-        console.error("Failed to run lead creation step:", err);
+        
       }
 
       if (!actualLeadId) {
-        console.log("No lead ID found, trying fallback from mount state:", fromDocument);
+        
         actualLeadId = fromDocument;
       }
 
@@ -262,7 +262,7 @@ export default function LocationDetailsPage() {
       });
 
       const json = await res.json();
-      console.log("Farmer registration API response:", json);
+      
       if (res.ok && !json.error && (json.message?.status || json.message)) {
         // Also update local user status to ACTIVE
         const updatedUser = { ...user, status: "ACTIVE", is_completed: true };
@@ -278,7 +278,7 @@ export default function LocationDetailsPage() {
         setErrorMsg(json.message?.message || json.error || "Failed to save details. Please try again.");
       }
     } catch (err) {
-      console.error("Failed to submit location details:", err);
+      
       setErrorMsg("An unexpected error occurred. Please try again.");
     } finally {
       setSubmitting(false);

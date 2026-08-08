@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const apiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !apiKey || !apiSecret) {
-      console.error('Missing API credentials in environment variables.');
+      
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -56,18 +56,18 @@ export async function POST(request: Request) {
       }),
     });
 
-    console.log("proceed fetch status:", proceedRes.status);
+    
     if (!proceedRes.ok) {
       const errText = await proceedRes.text();
-      console.error("proceed failed:", errText);
+      
       return NextResponse.json({ error: 'Failed to proceed with order details', details: errText }, { status: proceedRes.status });
     }
 
     const proceedData = await proceedRes.json();
-    console.log("proceed success data:", proceedData);
+    
     return NextResponse.json(proceedData);
   } catch (error: any) {
-    console.error('Error in proceed API proxy:', error);
+    
     return NextResponse.json({ error: 'Failed to proceed with order details', msg: error.message }, { status: 500 });
   }
 }

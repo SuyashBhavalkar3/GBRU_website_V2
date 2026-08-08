@@ -80,7 +80,7 @@ export default function SupportHelpPage() {
             fetchTickets(mobile);
           }
         } catch (e) {
-          console.error("Error reading gbru_user storage:", e);
+          
         }
       }
     }
@@ -115,7 +115,7 @@ export default function SupportHelpPage() {
         setOrders(orderList);
       }
     } catch (err) {
-      console.error("Error loading complaint masters:", err);
+      
     } finally {
       setIsLoadingMasters(false);
     }
@@ -138,7 +138,7 @@ export default function SupportHelpPage() {
         setTickets(ticketList);
       }
     } catch (err) {
-      console.error("Error loading ticket list:", err);
+      
     } finally {
       setIsLoadingTickets(false);
     }
@@ -192,7 +192,7 @@ export default function SupportHelpPage() {
         setErrorMessage(data?.message?.message || "Failed to submit your complaint. Please try again.");
       }
     } catch (err) {
-      console.error(err);
+      
       setErrorMessage("An unexpected error occurred. Please try again later.");
     } finally {
       setIsSubmitting(false);

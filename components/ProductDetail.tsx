@@ -44,7 +44,7 @@ function ProductDetailContent() {
           setError(data?.message?.message || "Failed to load product details.");
         }
       } catch (err: any) {
-        console.error("Error loading product details:", err);
+        
         setError("Error loading product details.");
       } finally {
         setLoading(false);
@@ -85,7 +85,7 @@ function ProductDetailContent() {
           }
         }
       } catch (e) {
-        console.error("Failed to check cart status:", e);
+        
       }
     };
     if (itemCode) {
@@ -114,7 +114,7 @@ function ProductDetailContent() {
           setSimilarItems(filtered);
         }
       } catch (err) {
-        console.error("Failed to load similar products:", err);
+        
       } finally {
         setLoadingSimilar(false);
       }
@@ -212,7 +212,7 @@ function ProductDetailContent() {
         setTimeout(() => setToastMessage(""), 3000);
       }
     } catch (err) {
-      console.error("Error in add/update cart:", err);
+      
       setToastType("error");
       setToastMessage(`Failed to ${isInCart ? "update" : "add"} product.`);
       setTimeout(() => setToastMessage(""), 3000);

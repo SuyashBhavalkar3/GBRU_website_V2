@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const apiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !apiKey || !apiSecret) {
-      console.error('Missing API credentials in environment variables.');
+      
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -49,18 +49,18 @@ export async function POST(request: Request) {
       }
     });
 
-    console.log("checkout_details fetch status:", checkoutRes.status);
+    
     if (!checkoutRes.ok) {
       const errText = await checkoutRes.text();
-      console.error("checkout_details failed:", errText);
+      
       return NextResponse.json({ error: 'Failed to fetch checkout details', details: errText }, { status: checkoutRes.status });
     }
 
     const checkoutData = await checkoutRes.json();
-    console.log("checkout_details success data:", checkoutData);
+    
     return NextResponse.json(checkoutData);
   } catch (error: any) {
-    console.error('Error fetching checkout details:', error);
+    
     return NextResponse.json({ error: 'Failed to fetch checkout details', msg: error.message }, { status: 500 });
   }
 }

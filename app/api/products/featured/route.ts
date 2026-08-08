@@ -7,7 +7,7 @@ export async function POST() {
     const systemApiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !systemApiKey || !systemApiSecret) {
-      console.error('Missing API credentials or base URL in environment variables.');
+      
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -27,7 +27,7 @@ export async function POST() {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error: any) {
-    console.error('Error fetching featured products:', error);
+    
     return NextResponse.json({ error: 'Failed to fetch featured products', msg: error.message }, { status: 500 });
   }
 }

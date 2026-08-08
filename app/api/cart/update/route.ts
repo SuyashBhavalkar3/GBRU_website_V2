@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const apiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !apiKey || !apiSecret) {
-      console.error('Missing API credentials in environment variables.');
+      
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -59,18 +59,18 @@ export async function POST(request: Request) {
       }),
     });
 
-    console.log("update_cart_item fetch status:", updateRes.status);
+    
     if (!updateRes.ok) {
       const errText = await updateRes.text();
-      console.error("update_cart_item failed:", errText);
+      
       return NextResponse.json({ error: 'Failed to update cart item quantity', details: errText }, { status: updateRes.status });
     }
 
     const updateData = await updateRes.json();
-    console.log("update_cart_item success data:", updateData);
+    
     return NextResponse.json(updateData);
   } catch (error: any) {
-    console.error('Error updating cart item quantity:', error);
+    
     return NextResponse.json({ error: 'Failed to update cart item quantity', msg: error.message }, { status: 500 });
   }
 }

@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     const trackingData = await trackingRes.json();
     return NextResponse.json(trackingData);
   } catch (err: any) {
-    console.error("Indian Post Tracking error:", err);
+    
     return NextResponse.json({ error: 'Tracking lookup failed', message: err.message }, { status: 500 });
   }
 }

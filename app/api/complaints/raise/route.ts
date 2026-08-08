@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       const file = incomingFormData.get(fileKey);
       if (file && file instanceof File) {
         erpFormData.append(fileKey, file, file.name);
-        console.log(`attachment_${i}:`, file.name);
+        
       }
     }
 
@@ -66,10 +66,10 @@ export async function POST(request: Request) {
     });
 
     const data = await response.json();
-    console.log("ERP raise_complaint response:", JSON.stringify(data, null, 2));
+    
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error raising complaint:', error);
+    
     return NextResponse.json({ error: 'An error occurred while submitting your complaint' }, { status: 500 });
   }
 }

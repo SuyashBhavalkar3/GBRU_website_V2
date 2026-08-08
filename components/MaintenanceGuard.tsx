@@ -29,7 +29,7 @@ export default function MaintenanceGuard() {
           }
         }
       } catch (err) {
-        console.error("Maintenance check failed:", err);
+        
       }
     };
 

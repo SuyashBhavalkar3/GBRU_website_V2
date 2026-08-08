@@ -52,7 +52,7 @@ export default function Navbar() {
                 setCartCount(data.message.data.count || 0);
               }
             } catch (err) {
-              console.error("Error fetching cart count:", err);
+              
             }
           };
 
@@ -67,7 +67,7 @@ export default function Navbar() {
             window.removeEventListener("cartUpdate", handleCartUpdate);
           };
         } catch (e) {
-          console.error(e);
+          
         }
       }
     }

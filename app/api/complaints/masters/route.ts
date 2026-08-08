@@ -8,7 +8,7 @@ export async function POST(request: Request) {
       const body = await request.json();
       mobile_no = body.mobile_no || "";
     } catch (e) {
-      console.warn("Empty or invalid JSON body received in complaints masters route");
+      
     }
 
     if (!mobile_no) {
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error fetching complaint masters:', error);
+    
     return NextResponse.json({ error: 'An error occurred while fetching complaint masters' }, { status: 500 });
   }
 }

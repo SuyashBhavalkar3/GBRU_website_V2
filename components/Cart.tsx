@@ -63,7 +63,7 @@ export default function Cart() {
           setError(data?.message?.message || "Failed to load cart.");
         }
       } catch (err: any) {
-        console.error("Error loading cart details:", err);
+        
         setError("Error loading cart details.");
       } finally {
         setLoading(false);
@@ -110,7 +110,7 @@ export default function Cart() {
       });
 
       const resJson = await res.json();
-      console.log("update_cart_item response payload:", resJson);
+      
       if (resJson?.message?.status) {
         window.dispatchEvent(new Event("cartUpdate"));
         
@@ -139,10 +139,10 @@ export default function Cart() {
           }
         }
       } else {
-        console.error("Failed to sync quantity update:", resJson);
+        
       }
     } catch (e) {
-      console.error("Failed to sync quantity update to ERP:", e);
+      
     }
   };
 
@@ -196,10 +196,10 @@ export default function Cart() {
           }
         }
       } else {
-        console.error("Failed to delete cart item:", resJson);
+        
       }
     } catch (e) {
-      console.error("Failed to delete cart item:", e);
+      
     }
   };
 
@@ -239,7 +239,7 @@ export default function Cart() {
           return;
         }
       } catch (err) {
-        console.error("Failed to check shipping address in cart handler:", err);
+        
       }
     }
     router.push("/proceed-to-checkout");

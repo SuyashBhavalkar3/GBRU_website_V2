@@ -77,7 +77,7 @@ export default function PaymentsPage() {
           showToast("Failed to load payment data from server", "error");
         }
       } catch (err) {
-        console.error("Error fetching payments", err);
+        
         showToast("Error loading payment data", "error");
       } finally {
         setLoading(false);
@@ -134,7 +134,7 @@ export default function PaymentsPage() {
         showToast(data.error || data.message || "Failed to initiate payment.", "error");
       }
     } catch (err) {
-      console.error(err);
+      
       showToast("An error occurred while initiating payment.", "error");
     } finally {
       setPayingOrderId(null);

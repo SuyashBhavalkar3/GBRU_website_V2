@@ -20,7 +20,7 @@ export async function GET() {
     
     return NextResponse.json({ maintenance: false });
   } catch (error: any) {
-    console.error('Error checking maintenance status:', error);
+    
     // Safe fallback so website keeps working if Firestore is temporarily down or credentials fail
     return NextResponse.json({ maintenance: false, error: error.message });
   }

@@ -12,7 +12,7 @@ export async function POST(request: Request) {
       page_size = body.page_size || 50;
       page = body.page || 1;
     } catch (e) {
-      console.warn("Empty or invalid JSON body received in complaints list route");
+      
     }
 
     if (!mobile_no) {
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error fetching complaint list:', error);
+    
     return NextResponse.json({ error: 'An error occurred while fetching complaints' }, { status: 500 });
   }
 }

@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const apiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !apiKey || !apiSecret) {
-      console.error('Missing API credentials in environment variables.');
+      
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error fetching user details:', error);
+    
     return NextResponse.json({ error: 'Failed to fetch user details' }, { status: 500 });
   }
 }

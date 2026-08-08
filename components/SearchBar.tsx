@@ -52,7 +52,7 @@ export default function SearchBar({
           setResults([]);
         }
       } catch (error) {
-        console.error("Search error:", error);
+        
         setResults([]);
       } finally {
         setIsLoading(false);

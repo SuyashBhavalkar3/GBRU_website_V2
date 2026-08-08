@@ -87,7 +87,7 @@ export default function UserProfile() {
           try {
             data = JSON.parse(text);
           } catch (e) {
-            console.error("Failed to parse user details JSON:", text);
+            
           }
         }
 
@@ -119,7 +119,7 @@ export default function UserProfile() {
               setSavedAddresses(json.message.data);
             }
           } catch (e) {
-            console.error("Failed to parse addresses JSON:", text);
+            
           }
         }
 
@@ -170,10 +170,10 @@ export default function UserProfile() {
             }
           }
         } catch (err) {
-          console.error("Error fetching orders count:", err);
+          
         }
       } catch (err) {
-        console.error("Error fetching user details or addresses", err);
+        
       } finally {
         setLoading(false);
       }
@@ -199,11 +199,11 @@ export default function UserProfile() {
               setStates(uniqueStates);
             }
           } catch (e) {
-            console.error("Failed to parse states JSON:", text);
+            
           }
         }
       } catch (e) {
-        console.error("Failed to fetch states", e);
+        
       }
     }
     fetchStates();
@@ -231,11 +231,11 @@ export default function UserProfile() {
               setDistricts(uniqueDistricts);
             }
           } catch (e) {
-            console.error("Failed to parse districts JSON:", text);
+            
           }
         }
       } catch (e) {
-        console.error("Failed to fetch districts", e);
+        
       }
     }
     fetchDistricts();
@@ -263,11 +263,11 @@ export default function UserProfile() {
               setTahsils(uniqueTahsils);
             }
           } catch (e) {
-            console.error("Failed to parse tahsils JSON:", text);
+            
           }
         }
       } catch (e) {
-        console.error("Failed to fetch tahsils", e);
+        
       }
     }
     fetchTahsils();
@@ -295,11 +295,11 @@ export default function UserProfile() {
               setMarketplaces(uniqueMarketplaces);
             }
           } catch (e) {
-            console.error("Failed to parse marketplaces JSON:", text);
+            
           }
         }
       } catch (e) {
-        console.error("Failed to fetch marketplaces", e);
+        
       }
     }
     fetchMarketplaces();
@@ -342,7 +342,7 @@ export default function UserProfile() {
         }
       }
     } catch (err) {
-      console.error("Error uploading image to server:", err);
+      
     }
   };
 
@@ -401,7 +401,7 @@ export default function UserProfile() {
       try {
         json = JSON.parse(text_json);
       } catch (e) {
-        console.error("Failed to parse JSON:", text_json);
+        
         json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
       }
       if (res.ok && json.message?.status) {
@@ -438,7 +438,7 @@ export default function UserProfile() {
         showToast(errorMessage, "error");
       }
     } catch (e) {
-      console.error(e);
+      
       showToast("Error saving address", "error");
     } finally {
       setIsSavingAddress(false);
@@ -476,7 +476,7 @@ export default function UserProfile() {
       try {
         json = JSON.parse(text_json);
       } catch (e) {
-        console.error("Failed to parse JSON:", text_json);
+        
         json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
       }
       if (!res.ok || !json.message?.status) {
@@ -486,7 +486,7 @@ export default function UserProfile() {
         showToast("Address deleted successfully", "success");
       }
     } catch (e) {
-      console.error(e);
+      
       setSavedAddresses(previousAddresses);
       showToast("Error deleting address", "error");
     }
@@ -524,7 +524,7 @@ export default function UserProfile() {
       try {
         json = JSON.parse(text_json);
       } catch (e) {
-        console.error("Failed to parse JSON:", text_json);
+        
         json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
       }
       if (!res.ok || !json.message?.status) {
@@ -534,7 +534,7 @@ export default function UserProfile() {
         showToast("Primary address updated", "success");
       }
     } catch (e) {
-      console.error(e);
+      
       setSavedAddresses(previousAddresses);
       showToast("Error setting primary address", "error");
     }

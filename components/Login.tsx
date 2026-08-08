@@ -45,7 +45,7 @@ const Login = () => {
         setTimeout(() => setToastMessage(""), 2500);
       }
     } catch (error) {
-      console.error('Error sending OTP:', error);
+      
       setToastType("error");
       setToastMessage('An error occurred. Please try again.');
       setTimeout(() => setToastMessage(""), 2500);

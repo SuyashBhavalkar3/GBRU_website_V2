@@ -47,7 +47,7 @@ export default function PaymentOptionModal({
           }
         }
       } catch (err) {
-        console.error("Error fetching product details for modal:", err);
+        
       } finally {
         setLoading(false);
       }
@@ -88,7 +88,7 @@ export default function PaymentOptionModal({
           }
         }
       } catch (e) {
-        console.error("Failed to check cart status in modal:", e);
+        
       }
     };
 
@@ -208,7 +208,7 @@ export default function PaymentOptionModal({
         setTimeout(() => setToastMessage(""), 3000);
       }
     } catch (err) {
-      console.error("Error in add/update cart modal:", err);
+      
       setToastType("error");
       setToastMessage(`Failed to ${isInCart ? "update" : "add"} product.`);
       setTimeout(() => setToastMessage(""), 3000);

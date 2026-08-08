@@ -74,7 +74,7 @@ export default function Products() {
           setCartItemCodes(items.map((i: any) => i.item));
         }
       } catch (e) {
-        console.error("Failed to fetch cart status:", e);
+        
       }
     };
 
@@ -99,11 +99,11 @@ export default function Products() {
               setSubcategories([]);
             }
           } catch (e) {
-            console.error("Failed to parse subcategories JSON:", text);
+            
           }
         }
       } catch (err) {
-        console.error("Failed to load subcategories:", err);
+        
       }
     }
     loadSubcategories();
@@ -135,7 +135,7 @@ export default function Products() {
         try {
           json = JSON.parse(text);
         } catch (e) {
-          console.error("Failed to parse products JSON:", text);
+          
           throw new Error("Failed to parse products data");
         }
         if (json?.message?.status && Array.isArray(json.message.data?.data)) {

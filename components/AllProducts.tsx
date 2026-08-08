@@ -35,7 +35,7 @@ function AllProductsContent() {
           setCartItemCodes(items.map((i: any) => i.item));
         }
       } catch (e) {
-        console.error("Failed to fetch cart status:", e);
+        
       }
     };
 
@@ -62,7 +62,7 @@ function AllProductsContent() {
         try {
           data = JSON.parse(text);
         } catch(e) {
-          console.error("Failed to parse AllProducts JSON:", text);
+          
           throw new Error("Invalid JSON");
         }
         
@@ -76,7 +76,7 @@ function AllProductsContent() {
           }
         }
       } catch (e) {
-        console.error("Error loading featured products:", e);
+        
       } finally {
         setLoading(false);
       }

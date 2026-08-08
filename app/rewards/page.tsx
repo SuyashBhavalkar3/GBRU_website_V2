@@ -52,7 +52,7 @@ export default function RewardsPage() {
           }
         }
       } catch (err) {
-        console.error("Error fetching orders for rewards", err);
+        
       } finally {
         setLoading(false);
       }

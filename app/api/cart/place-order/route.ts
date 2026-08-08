@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const apiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !apiKey || !apiSecret) {
-      console.error('Missing API credentials in environment variables.');
+      
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
 
     if (!placeOrderRes.ok) {
       const errText = await placeOrderRes.text();
-      console.error("place_order failed:", errText);
+      
       return NextResponse.json({ error: 'Failed to place order in ERP', details: errText }, { status: placeOrderRes.status });
     }
 
@@ -118,7 +118,7 @@ export async function POST(request: Request) {
       actionUrl: 'https://pg.shoption.in/Payment/StartPayment'
     });
   } catch (error: any) {
-    console.error('Error placing order:', error);
+    
     return NextResponse.json({ error: 'Internal server error', msg: error.message }, { status: 500 });
   }
 }

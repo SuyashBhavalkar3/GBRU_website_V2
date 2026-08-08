@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const systemApiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !systemApiKey || !systemApiSecret) {
-      console.error('Missing API credentials or base URL in environment variables.');
+      
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
       actionUrl: 'https://pg.shoption.in/Payment/StartPayment'
     });
   } catch (error: any) {
-    console.error('Error generating pay-now token:', error);
+    
     return NextResponse.json({ error: 'Failed to generate payment token', msg: error.message }, { status: 500 });
   }
 }

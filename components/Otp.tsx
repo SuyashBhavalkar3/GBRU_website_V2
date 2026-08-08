@@ -96,7 +96,7 @@ const OtpContent = () => {
           setTimeout(() => setToastMessage(""), 3000);
         }
       } catch (e) {
-        console.error("Error adding pending item to cart:", e);
+        
       } finally {
         localStorage.removeItem("gbru_pending_cart_item");
         router.push('/cart');
@@ -136,7 +136,7 @@ const OtpContent = () => {
         setTimeout(() => setToastMessage(""), 3000);
       }
     } catch (error) {
-      console.error('Error verifying OTP:', error);
+      
       setToastType("error");
       setToastMessage('An error occurred during verification. Please try again.');
       setTimeout(() => setToastMessage(""), 3000);
@@ -198,7 +198,7 @@ const OtpContent = () => {
               setTimeout(() => setToastMessage(""), 3000);
             }
           } catch (err) {
-            console.error("Error adding pending item to cart:", err);
+            
           } finally {
             localStorage.removeItem("gbru_pending_cart_item");
             router.push('/cart');
@@ -212,7 +212,7 @@ const OtpContent = () => {
         setTimeout(() => setToastMessage(""), 3000);
       }
     } catch (err) {
-      console.error("Error in short registration:", err);
+      
       setToastType("error");
       setToastMessage("An error occurred during registration. Please try again.");
       setTimeout(() => setToastMessage(""), 3000);
@@ -241,7 +241,7 @@ const OtpContent = () => {
         setTimeout(() => setToastMessage(''), 3000);
       }
     } catch (error) {
-      console.error('Error resending OTP:', error);
+      
       setToastType("error");
       setToastMessage('An error occurred. Please try again.');
       setTimeout(() => setToastMessage(''), 3000);

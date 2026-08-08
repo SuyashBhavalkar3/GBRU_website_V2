@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     const apiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !apiKey || !apiSecret) {
-      console.error('Missing API credentials in environment variables.');
+      
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -92,13 +92,13 @@ export async function POST(request: Request) {
     const erpUrl = `${baseUrl}/api/method/shoption_api.cart.cart.validate_brand_ambassador`;
     const token = `token ${userApiKey}:${userApiSecret}`;
     
-    console.log("validating brand ambassador code with GET + Body...");
+    
     const validateData = await getWithBody(erpUrl, token, { brand_ambassador });
-    console.log("validate_brand_ambassador success data:", validateData);
+    
     
     return NextResponse.json(validateData);
   } catch (error: any) {
-    console.error('Error validating brand ambassador code:', error);
+    
     return NextResponse.json({ error: 'Failed to validate brand ambassador', msg: error.message }, { status: 500 });
   }
 }

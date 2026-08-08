@@ -53,7 +53,7 @@ export default function PopularItemsModal() {
               setAddedItemsState(initialAddedState);
             }
           } catch (e) {
-            console.error("Failed to sync cart status for popular items modal:", e);
+            
             setAddedItemsState({});
           }
         } else {
@@ -77,7 +77,7 @@ export default function PopularItemsModal() {
           setPopularItems(data.message.data.data.slice(0, 2));
         }
       } catch (err) {
-        console.error("Failed to load popular items for popup:", err);
+        
       } finally {
         setLoading(false);
       }
@@ -128,7 +128,7 @@ export default function PopularItemsModal() {
         window.dispatchEvent(new Event("cartUpdate"));
       }
     } catch (err) {
-      console.error("Failed to add popular item to cart:", err);
+      
     } finally {
       setAddingCartItemCode(null);
     }

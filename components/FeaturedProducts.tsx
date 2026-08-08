@@ -55,7 +55,7 @@ export default function FeaturedProducts() {
           setCartItemCodes(items.map((i: any) => i.item));
         }
       } catch (e) {
-        console.error("Failed to fetch cart status:", e);
+        
       }
     };
 
@@ -76,7 +76,7 @@ export default function FeaturedProducts() {
         try {
           json = JSON.parse(text);
         } catch (e) {
-          console.error("Failed to parse featured JSON:", text);
+          
           throw new Error("Invalid JSON from featured endpoint");
         }
         if (json?.message?.status && Array.isArray(json.message.data?.data)) {
@@ -84,7 +84,7 @@ export default function FeaturedProducts() {
           setProducts(json.message.data.data.slice(0, 10));
         }
       } catch (err) {
-        console.error("Failed to load featured products:", err);
+        
       } finally {
         setLoading(false);
       }

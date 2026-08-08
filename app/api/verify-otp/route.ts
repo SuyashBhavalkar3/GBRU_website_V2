@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     const apiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !apiKey || !apiSecret) {
-      console.error('Missing API credentials in environment variables.');
+      
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     });
 
     const userData = await userResponse.json();
-    console.log("get_user_details response:", JSON.stringify(userData));
+    
 
     const status = userData.message?.status;
     const dataObj = userData.message?.data;
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
       const leadName = dataObj.customer_name || dataObj.first_name || dataObj.user_id || 'Existing Customer';
       await createB2CLead(leadName, mobile_no);
     } catch (leadErr) {
-      console.error('Failed to trigger B2C lead creation during OTP verify:', leadErr);
+      
     }
 
     return NextResponse.json({
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
       ispopup: userData.message.ispopup
     });
   } catch (error) {
-    console.error('Error verifying OTP or fetching user:', error);
+    
     return NextResponse.json({ error: 'An error occurred during verification' }, { status: 500 });
   }
 }

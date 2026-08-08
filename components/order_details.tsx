@@ -84,7 +84,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
             }
           }
         } catch (e) {
-          console.error("Error fetching list order data:", e);
+          
         }
 
         if (data?.message?.status && data?.message?.data) {
@@ -93,7 +93,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
           setError("Failed to fetch order details");
         }
       } catch (err) {
-        console.error(err);
+        
         setError("Something went wrong");
       } finally {
         setLoading(false);
@@ -144,7 +144,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         setTimeout(() => setShowCancelToast(false), 3000);
       }
     } catch (err) {
-      console.error(err);
+      
       setToastType("error");
       setToastMessage("Something went wrong while cancelling the order.");
       setShowCancelToast(true);
@@ -199,7 +199,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         setTimeout(() => setShowCancelToast(false), 3000);
       }
     } catch (err) {
-      console.error(err);
+      
       setToastType("error");
       setToastMessage("An error occurred while initiating payment.");
       setShowCancelToast(true);
@@ -411,7 +411,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         setTrackingError(resData.message || "Failed to retrieve tracking data from Indian Post.");
       }
     } catch (err) {
-      console.error(err);
+      
       setTrackingError("Failed to fetch tracking details. Please try again.");
     } finally {
       setTrackingLoading(false);
@@ -445,7 +445,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         }));
       }
     } catch (err) {
-      console.error(err);
+      
       setIndividualTrackingData(prev => ({
         ...prev,
         [stickerCode]: { error: "Failed to fetch tracking details.", loading: false }

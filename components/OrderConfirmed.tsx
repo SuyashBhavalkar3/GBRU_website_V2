@@ -47,7 +47,7 @@ export default function OrderConfirmed() {
           setOrderDetails(data.message.data);
         }
       } catch (err) {
-        console.error("Failed to load order details:", err);
+        
       } finally {
         setLoading(false);
       }

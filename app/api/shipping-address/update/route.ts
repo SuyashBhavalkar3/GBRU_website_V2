@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const systemApiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !systemApiKey || !systemApiSecret) {
-      console.error('Missing API credentials in environment variables.');
+      
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       const userDetailsData = await userDetailsRes.json();
       
       if (!userDetailsData?.message?.status || !userDetailsData?.message?.data) {
-        console.error("Failed to retrieve user data", userDetailsData);
+        
         return NextResponse.json({ error: 'Failed to retrieve user data', details: userDetailsData, attempted_mobile_no: mobile_no }, { status: 400 });
       }
 
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
       userApiSecret = dataObj.key_details?.api_secret || dataObj.api_secret;
 
       if (!userApiKey || !userApiSecret) {
-        console.error("Failed to retrieve user keys from data", dataObj);
+        
         return NextResponse.json({ error: 'Failed to retrieve user keys', details: dataObj }, { status: 400 });
       }
     }
@@ -69,13 +69,13 @@ export async function POST(request: Request) {
     try {
       data = JSON.parse(responseText);
     } catch (e) {
-      console.error("Failed to parse response:", responseText);
+      
       return NextResponse.json({ error: 'Invalid response from server' }, { status: 500 });
     }
 
     return NextResponse.json(data, { status: response.status });
   } catch (error: any) {
-    console.error('Error updating shipping address:', error);
+    
     return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 });
   }
 }

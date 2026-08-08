@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const systemApiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !systemApiKey || !systemApiSecret) {
-      console.error('Missing API_BASE_URL or system credentials in environment variables.');
+      
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       const userDetailsData = await userDetailsRes.json();
 
       if (!userDetailsData?.message?.status || !userDetailsData?.message?.data) {
-        console.error("Failed to retrieve user data", userDetailsData);
+        
         return NextResponse.json({ error: 'Failed to retrieve user data', details: userDetailsData, attempted_mobile_no: mobile_no }, { status: 400 });
       }
 
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       userApiSecret = dataObj.key_details?.api_secret || dataObj.api_secret;
 
       if (!userApiKey || !userApiSecret) {
-        console.error("Failed to retrieve user keys from data", dataObj);
+        
         return NextResponse.json({ error: 'Failed to retrieve user keys', details: dataObj }, { status: 400 });
       }
     }
@@ -67,10 +67,10 @@ export async function POST(request: Request) {
       data = { rawText: text, error: "Failed to parse JSON from Frappe" };
     }
 
-    console.log("add_cart status:", response.status, "response:", JSON.stringify(data));
+    
     return NextResponse.json(data, { status: response.status });
   } catch (error: any) {
-    console.error('Error adding to cart:', error);
+    
     return NextResponse.json({ error: 'Failed to add to cart', msg: error.message }, { status: 500 });
   }
 }

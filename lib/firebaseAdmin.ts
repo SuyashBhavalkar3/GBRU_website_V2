@@ -18,7 +18,7 @@ if (firebasePrivateKey) {
 function getFirebaseAdminDB() {
   if (getApps().length === 0) {
     if (!firebaseProjectID || !firebaseClientEmail || !firebasePrivateKey) {
-      console.warn("Firebase Admin credentials missing. Maintenance check will default to inactive.");
+      
       return null;
     }
     try {
@@ -30,14 +30,14 @@ function getFirebaseAdminDB() {
         }),
       });
     } catch (error) {
-      console.error('Firebase admin initialization error:', error);
+      
       return null;
     }
   }
   try {
     return getFirestore();
   } catch (err) {
-    console.error('Failed to get Firestore instance:', err);
+    
     return null;
   }
 }

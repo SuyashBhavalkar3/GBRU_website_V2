@@ -72,7 +72,7 @@ export default function OrderList() {
             }
           }
         } catch (e) {
-          console.error("Error loading user profile details:", e);
+          
         }
 
         // Fetch orders list
@@ -92,7 +92,7 @@ export default function OrderList() {
           setError("Failed to fetch orders");
         }
       } catch (err) {
-        console.error(err);
+        
         setError("Something went wrong");
       } finally {
         setLoading(false);
@@ -152,7 +152,7 @@ export default function OrderList() {
         setTimeout(() => setToastMessage(""), 3000);
       }
     } catch (err) {
-      console.error(err);
+      
       setToastType("error");
       setToastMessage("An error occurred while initiating payment.");
       setTimeout(() => setToastMessage(""), 3000);

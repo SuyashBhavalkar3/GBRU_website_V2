@@ -2,11 +2,9 @@ export async function addToCartUtil(itemCode: string, quantity: number = 1): Pro
   try {
     const userStr = localStorage.getItem("gbru_user");
     if (!itemCode) {
-      console.error("No item code provided");
       return false;
     }
     if (!userStr) {
-      console.error("User not found in local storage");
       return false;
     }
 
@@ -20,7 +18,6 @@ export async function addToCartUtil(itemCode: string, quantity: number = 1): Pro
     const api_secret = user.key_details?.api_secret || user.api_secret;
 
     if (!mobile_no && (!api_key || !api_secret)) {
-      console.error("User mobile number and API keys not found");
       return false;
     }
 
@@ -51,11 +48,9 @@ export async function addToCartUtil(itemCode: string, quantity: number = 1): Pro
       localStorage.setItem("gbru_cart_items", JSON.stringify(data.message.data));
       return true;
     } else {
-      console.error("Failed to add to cart. Status:", response.status, "Data:", JSON.stringify(data));
       return false;
     }
   } catch (error) {
-    console.error("Error in addToCartUtil:", error);
     return false;
   }
 }

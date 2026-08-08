@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     const systemApiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !systemApiKey || !systemApiSecret) {
-      console.error('Missing API credentials in environment variables.');
+      
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -28,13 +28,13 @@ export async function POST(request: Request) {
     try {
       data = JSON.parse(responseText);
     } catch (e) {
-      console.error("Failed to parse response:", responseText);
+      
       return NextResponse.json({ error: 'Invalid response from server' }, { status: 500 });
     }
 
     return NextResponse.json(data, { status: response.status });
   } catch (error: any) {
-    console.error('Error fetching districts:', error);
+    
     return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 });
   }
 }

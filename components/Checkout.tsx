@@ -122,7 +122,7 @@ export default function Checkout() {
         }
       }
     } catch (e) {
-      console.error("Failed to load proceed details:", e);
+      
     }
   };
 
@@ -139,7 +139,7 @@ export default function Checkout() {
               setAmbassadorApplied(true);
             }
           } catch (e) {
-            console.error(e);
+            
           }
         }
         const userStr = localStorage.getItem("gbru_user");
@@ -180,7 +180,7 @@ export default function Checkout() {
             }
           }
         } catch (e) {
-          console.error("Failed to check user status via API:", e);
+          
         }
 
         const api_key = user.key_details?.api_key || user.api_key;
@@ -195,11 +195,11 @@ export default function Checkout() {
 
         if (res.ok) {
           const json = await res.json();
-          console.log("Shipping address check response:", json);
+          
           if (json.message?.status && Array.isArray(json.message?.data)) {
             // Intercept: If shipping address list is empty, open the add address form inline
             if (json.message.data.length === 0) {
-              console.log("Shipping addresses list is empty, showing add address form inline");
+              
               setIsAddingAddress(true);
               setIsAddressSaved(false);
             }
@@ -209,11 +209,11 @@ export default function Checkout() {
             const primaryIdx = json.message.data.findIndex((a: any) => a.is_primary === 1);
             if (primaryIdx !== -1) setSelectedAddressIndex(primaryIdx);
           } else {
-            console.log("Shipping address fetch status is false or data is not array. Allowing page load.");
+            
             setIsAddingAddress(true);
           }
         } else {
-          console.log("Shipping address fetch failed with status:", res.status);
+          
           setIsAddingAddress(true);
         }
 
@@ -230,7 +230,7 @@ export default function Checkout() {
           try {
             checkoutJson = JSON.parse(text_checkoutJson);
           } catch (e) {
-            console.error("Failed to parse JSON:", text_checkoutJson);
+            
             checkoutJson = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
           }
           if (checkoutJson.message?.status && checkoutJson.message.data) {
@@ -309,7 +309,7 @@ export default function Checkout() {
           }
         }
       } catch (e) {
-        console.error("Failed to fetch addresses and checkout:", e);
+        
         setIsAddingAddress(true);
       } finally {
         setLoadingAddresses(false);
@@ -329,7 +329,7 @@ export default function Checkout() {
           try {
             json = JSON.parse(text_json);
           } catch (e) {
-            console.error("Failed to parse JSON:", text_json);
+            
             json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
           }
           if (json.message?.status && Array.isArray(json.message?.data)) {
@@ -337,7 +337,7 @@ export default function Checkout() {
           }
         }
       } catch (e) {
-        console.error("Failed to fetch states", e);
+        
       }
     }
 
@@ -378,7 +378,7 @@ export default function Checkout() {
           try {
             json = JSON.parse(text_json);
           } catch (e) {
-            console.error("Failed to parse JSON:", text_json);
+            
             json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
           }
           if (json.message?.status && Array.isArray(json.message?.data)) {
@@ -386,7 +386,7 @@ export default function Checkout() {
           }
         }
       } catch (e) {
-        console.error("Failed to fetch districts", e);
+        
       }
     }
     fetchDistricts();
@@ -411,7 +411,7 @@ export default function Checkout() {
           try {
             json = JSON.parse(text_json);
           } catch (e) {
-            console.error("Failed to parse JSON:", text_json);
+            
             json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
           }
           if (json.message?.status && Array.isArray(json.message?.data)) {
@@ -419,7 +419,7 @@ export default function Checkout() {
           }
         }
       } catch (e) {
-        console.error("Failed to fetch tahsils", e);
+        
       }
     }
     fetchTahsils();
@@ -444,7 +444,7 @@ export default function Checkout() {
           try {
             json = JSON.parse(text_json);
           } catch (e) {
-            console.error("Failed to parse JSON:", text_json);
+            
             json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
           }
           if (json.message?.status && Array.isArray(json.message?.data)) {
@@ -452,7 +452,7 @@ export default function Checkout() {
           }
         }
       } catch (e) {
-        console.error("Failed to fetch marketplaces", e);
+        
       }
     }
     fetchMarketplaces();
@@ -502,7 +502,7 @@ export default function Checkout() {
       try {
         json = JSON.parse(text_json);
       } catch (e) {
-        console.error("Failed to parse JSON:", text_json);
+        
         json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
       }
       if (!res.ok || !json.message?.status) {
@@ -529,7 +529,7 @@ export default function Checkout() {
         showToast(errorMsg, "error");
       }
     } catch (e) {
-      console.error(e);
+      
       // Revert optimistic update
       setSavedAddresses(previousAddresses);
       setSelectedAddressIndex(previousIndex);
@@ -569,7 +569,7 @@ export default function Checkout() {
       try {
         json = JSON.parse(text_json);
       } catch (e) {
-        console.error("Failed to parse JSON:", text_json);
+        
         json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
       }
       if (!res.ok || !json.message?.status) {
@@ -591,7 +591,7 @@ export default function Checkout() {
         showToast(errorMsg, "error");
       }
     } catch (e) {
-      console.error(e);
+      
       // Revert optimistic update
       setSavedAddresses(previousAddresses);
       showToast("Error setting primary address", "error");
@@ -653,7 +653,7 @@ export default function Checkout() {
       try {
         json = JSON.parse(text_json);
       } catch (e) {
-        console.error("Failed to parse JSON:", text_json);
+        
         json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
       }
       if (res.ok && json.message?.status) {
@@ -691,14 +691,14 @@ export default function Checkout() {
               }
             }
           } catch (e) {
-            console.error("Could not parse server messages", e);
+            
           }
         }
 
         showAlert(errorMsg, "Error Saving Address");
       }
     } catch (e) {
-      console.error(e);
+      
       showToast("Error saving address", "error");
     } finally {
       setIsSavingAddress(false);
@@ -771,7 +771,7 @@ export default function Checkout() {
         showToast(errorMsg, "error");
       }
     } catch (err: any) {
-      console.error("Error validating ambassador code:", err);
+      
       setAmbassadorError("Failed to validate ambassador code");
       showToast("Failed to validate ambassador code", "error");
     }
@@ -840,7 +840,7 @@ export default function Checkout() {
       try {
         data = JSON.parse(text_data);
       } catch (e) {
-        console.error("Failed to parse JSON:", text_data);
+        
         data = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
       }
       if (data.status && data.token && data.actionUrl) {
@@ -870,7 +870,7 @@ export default function Checkout() {
         });
       }
     } catch (e: any) {
-      console.error("Error placing order:", e);
+      
       setModalConfig({
         isOpen: true,
         title: "Error",

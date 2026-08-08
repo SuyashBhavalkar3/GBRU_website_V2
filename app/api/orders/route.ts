@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const systemApiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !systemApiKey || !systemApiSecret) {
-      console.error('Missing API credentials or base URL in environment variables.');
+      
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -29,10 +29,10 @@ export async function POST(request: Request) {
     });
 
     const userDetailsData = await userDetailsRes.json();
-    console.log("userDetailsData: ", JSON.stringify(userDetailsData, null, 2));
+    
     
     if (!userDetailsData?.message?.status || !userDetailsData?.message?.data?.key_details) {
-      console.error("Failed to retrieve user key details", userDetailsData);
+      
       return NextResponse.json({ error: 'Failed to retrieve user key details', details: userDetailsData }, { status: 400 });
     }
 
@@ -56,10 +56,10 @@ export async function POST(request: Request) {
     });
 
     const data = await response.json();
-    console.log("ordersData: ", JSON.stringify(data, null, 2));
+    
     return NextResponse.json(data);
   } catch (error: any) {
-    console.error('Error fetching orders:', error);
+    
     return NextResponse.json({ error: 'Failed to fetch orders', msg: error.message }, { status: 500 });
   }
 }

@@ -30,7 +30,7 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
           const parsed = JSON.parse(stored);
           mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id;
         } catch (e) {
-          console.error(e);
+          
         }
       }
 
@@ -48,7 +48,7 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
           setLoading(false);
         })
         .catch(err => {
-          console.error("Error fetching user details:", err);
+          
           setLoading(false);
         });
     }
