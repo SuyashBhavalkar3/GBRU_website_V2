@@ -59,12 +59,27 @@ export default function Navbar() {
 
   const changeLanguage = (langCode: string) => {
     const cookieVal = `/en/${langCode}`;
+    // Clear potential duplicate/conflicting cookies first
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname};`;
+
+    // Set new cookie paths
     document.cookie = `googtrans=${cookieVal}; path=/;`;
     document.cookie = `googtrans=${cookieVal}; path=/; domain=.${window.location.hostname};`;
     localStorage.setItem("gbru_selected_lang", langCode);
     setActiveLang(langCode);
     setShowLangDropdown(false);
-    window.location.reload();
+
+    // Dispatch select option changes to Google Translate element if rendered
+    const selectElem = document.querySelector(".goog-te-combo") as HTMLSelectElement;
+    if (selectElem) {
+      selectElem.value = langCode;
+      selectElem.dispatchEvent(new Event("change"));
+    }
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 150);
   };
 
   useEffect(() => {
