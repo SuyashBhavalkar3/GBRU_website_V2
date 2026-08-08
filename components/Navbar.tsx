@@ -58,49 +58,10 @@ export default function Navbar() {
   }, []);
 
   const changeLanguage = (langCode: string) => {
-    const cookieVal = `/en/${langCode}`;
-    const hostname = window.location.hostname;
-    const parts = hostname.split('.');
-    const domains = [
-      "",
-      hostname,
-      `.${hostname}`
-    ];
-    
-    // Add parent domains if it is a subdomain
-    if (parts.length > 2) {
-      const parentDomain = parts.slice(-2).join('.');
-      domains.push(parentDomain);
-      domains.push(`.${parentDomain}`);
-    }
-
-    // Explicitly delete googtrans cookie across all possible domain levels
-    domains.forEach(dom => {
-      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;${dom ? ` domain=${dom};` : ""}`;
-    });
-
-    // Set new cookie across all domains to guarantee override
-    document.cookie = `googtrans=${cookieVal}; path=/;`;
-    domains.forEach(dom => {
-      if (dom) {
-        document.cookie = `googtrans=${cookieVal}; path=/; domain=${dom};`;
-      }
-    });
-
     localStorage.setItem("gbru_selected_lang", langCode);
     setActiveLang(langCode);
     setShowLangDropdown(false);
-
-    // Dispatch selection change directly to the Google Translate frame if present
-    const selectElem = document.querySelector(".goog-te-combo") as HTMLSelectElement;
-    if (selectElem) {
-      selectElem.value = langCode;
-      selectElem.dispatchEvent(new Event("change"));
-    }
-
-    setTimeout(() => {
-      window.location.reload();
-    }, 150);
+    window.location.reload();
   };
 
   useEffect(() => {

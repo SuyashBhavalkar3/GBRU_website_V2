@@ -46,6 +46,23 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${roboto.variable} ${manrope.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          id="google-translate-sync"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var lang = localStorage.getItem("gbru_selected_lang") || "en";
+                  var cookieVal = "/en/" + lang;
+                  document.cookie = "googtrans=" + cookieVal + "; path=/;";
+                  document.cookie = "googtrans=" + cookieVal + "; path=/; domain=." + window.location.hostname + ";";
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col overflow-x-hidden">
         <Script id="google-translate-config" strategy="afterInteractive">
           {`
