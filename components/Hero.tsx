@@ -69,7 +69,7 @@ export default function Hero() {
   ];
 
   return (
-    <section className="relative w-full overflow-hidden bg-cover bg-center min-h-[553px] py-10 lg:py-0 flex items-center text-white"
+    <section className="relative w-full overflow-hidden bg-cover bg-center lg:min-h-[553px] lg:py-0 flex items-center text-white"
       style={{ backgroundImage: "url('/assets/home_hero_bg.png')" }}
     >
       {/* Backdrop blur overlay for the background image */}
@@ -77,11 +77,18 @@ export default function Hero() {
         className="absolute inset-0 z-0 pointer-events-none"
         style={{ backdropFilter: "blur(0.1px)" }}
       />
-      {/* Soft white overlay descending from left to right */}
+      {/* Soft white overlay descending from left to right — desktop only */}
       <div
-        className="absolute inset-0 z-0 pointer-events-none"
+        className="hidden lg:block absolute inset-0 z-0 pointer-events-none"
         style={{
           background: "linear-gradient(90deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0.1) 100%)"
+        }}
+      />
+      {/* Subtle white overlay — mobile only (reduced opacity) */}
+      <div
+        className="block lg:hidden absolute inset-0 z-0 pointer-events-none"
+        style={{
+          background: "rgba(255, 255, 255, 0.50)"
         }}
       />
 
@@ -114,7 +121,7 @@ export default function Hero() {
               </h3>
               <h1 className="text-3xl sm:text-4xl lg:text-[43.36px] font-semibold leading-none tracking-normal text-[#0F291B] font-roboto">
                 Right tool.<br />
-                <span 
+                <span
                   className="bg-clip-text text-transparent bg-cover font-semibold"
                   style={{ backgroundImage: "linear-gradient(90deg, #2D722F 0%, #768F0F 100%)" }}
                 >
@@ -133,7 +140,7 @@ export default function Hero() {
                 <Link href="/all_products" className="bg-[#0D9740] hover:bg-[#0b8036] text-white font-roboto font-bold text-[14px] leading-none w-full sm:w-[185px] h-[52px] sm:h-[58px] min-h-[48px] rounded-[32px] px-8 flex items-center justify-center transition-all duration-200 hover:scale-[1.02] cursor-pointer shadow-lg">
                   Explore Products
                 </Link>
-                <a 
+                <a
                   href="https://www.youtube.com/playlist?list=PLHXlLG4lLpM1RC3vTHQf8iDX5jAI707Jm"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -298,73 +305,60 @@ export default function Hero() {
       </div>
 
       {/* ========================================================================= */}
-      {/* MOBILE LAYOUT (Figma Mockup Snapshot 1) */}
+      {/* MOBILE LAYOUT (Figma Mockup — Guest/Not Logged In) */}
       {/* ========================================================================= */}
-      <div className="block lg:hidden relative z-10 w-full px-4 flex flex-col gap-6 text-center max-w-[480px] mx-auto">
-        {/* Title / Hero Header */}
-        <div className="flex flex-col items-center pt-2">
-          <h3 className="text-lg font-bold leading-tight mb-1">
-            <span className="text-[#2D722F]">गब्रू हो साथ</span> <span className="text-[#2D722F]">,</span> <span className="text-[#0F291B]">तो टेंशन की क्या बात !</span>
+      <div className="block lg:hidden relative z-10 w-full flex flex-col text-left">
+
+        {/* Title Block — left aligned */}
+        <div className="px-5 pt-6 pb-4">
+          <h3 className="text-[16px] font-bold leading-snug mb-1">
+            <span className="text-black">गब्रू हो साथ, तो टेंशन की क्या बात !</span>
           </h3>
-          <h1 className="text-2xl font-bold leading-tight">
-            <span className="text-[#0F291B]">Right tool.</span>{" "}
-            <span 
-              className="bg-clip-text text-transparent bg-cover font-bold"
-              style={{ backgroundImage: "linear-gradient(90deg, #2D722F 0%, #768F0F 100%)" }}
-            >
-              Better Farming.
-            </span>
+          <h1
+            className="text-[22px] font-bold leading-tight bg-clip-text text-transparent"
+            style={{ backgroundImage: "linear-gradient(90deg, #2D722F 0%, #768F0F 100%)" }}
+          >
+            Right tool. Better Farming.
           </h1>
         </div>
 
-        {/* Carousel Slider */}
-        <div className="relative w-full h-[180px] flex items-center justify-center overflow-visible">
-          {/* Carousel Track */}
-          <div className="relative w-full h-[150px] flex items-center justify-center">
-            {carouselImages.map((imgUrl, idx) => {
-              const pos = getPositionClass(idx);
-
-              if (pos === "center") {
-                return (
-                  <div
-                    key={idx}
-                    className="absolute z-20 w-[210px] h-[130px] transition-all duration-500 ease-in-out transform scale-100 opacity-100 shadow-xl rounded-2xl overflow-hidden border-2 border-white/20"
-                  >
-                    <Image
-                      src={imgUrl}
-                      alt="Machinery Carousel Center"
-                      fill
-                      className="object-cover"
-                      priority
-                    />
-                  </div>
-                );
-              }
-
-              const isLeft = pos === "left";
+        {/* Full-Width Carousel */}
+        <div className="relative w-full h-[220px] flex items-center justify-center overflow-hidden">
+          {carouselImages.map((imgUrl, idx) => {
+            const pos = getPositionClass(idx);
+            if (pos === "center") {
               return (
                 <div
                   key={idx}
-                  className={`absolute z-10 w-[70px] h-[90px] transition-all duration-500 ease-in-out transform opacity-50 overflow-hidden rounded-xl border border-white/10 ${isLeft
-                    ? "translate-x-[-120px]"
-                    : "translate-x-[120px]"
-                    }`}
+                  className="absolute z-20 w-[88%] h-[200px] transition-all duration-500 ease-in-out rounded-2xl overflow-hidden shadow-xl border border-white/20"
                 >
                   <Image
                     src={imgUrl}
-                    alt="Machinery Carousel Side"
+                    alt="Carousel Center"
                     fill
                     className="object-cover"
+                    priority
+                    sizes="90vw"
                   />
                 </div>
               );
-            })}
-          </div>
+            }
+            const isLeft = pos === "left";
+            return (
+              <div
+                key={idx}
+                className={`absolute z-10 w-[55px] h-[140px] transition-all duration-500 ease-in-out rounded-xl overflow-hidden opacity-40 border border-white/10 ${isLeft ? "left-1" : "right-1"
+                  }`}
+              >
+                <Image src={imgUrl} alt="Carousel Side" fill className="object-cover" sizes="55px" />
+              </div>
+            );
+          })}
 
-          {/* Navigation Arrows */}
+          {/* Left Arrow */}
           <button
             onClick={handlePrev}
-            className="absolute left-1 z-30 flex items-center justify-center w-7 h-7 rounded-full bg-black/45 text-white"
+            className="absolute left-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/50 text-white border border-white/20 shadow-md"
             aria-label="Previous image"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -372,9 +366,10 @@ export default function Hero() {
             </svg>
           </button>
 
+          {/* Right Arrow */}
           <button
             onClick={handleNext}
-            className="absolute right-1 z-30 flex items-center justify-center w-7 h-7 rounded-full bg-black/45 text-white"
+            className="absolute right-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/50 text-white border border-white/20 shadow-md"
             aria-label="Next image"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -383,18 +378,21 @@ export default function Hero() {
           </button>
         </div>
 
-        {/* Action Buttons (side-by-side) */}
-        <div className="flex gap-4 w-full justify-center px-1">
-          <Link href="/all_products" className="flex-1 bg-[#0D9740] hover:bg-[#0b8036] text-white font-roboto font-bold text-[13px] h-[46px] rounded-full flex items-center justify-center shadow-md">
+        {/* CTA Buttons — side by side */}
+        <div className="flex gap-3 px-5 mt-5">
+          <Link
+            href="/all_products"
+            className="flex-1 bg-[#0D9740] text-white font-roboto font-bold text-[14px] h-[50px] rounded-full flex items-center justify-center shadow-lg"
+          >
             Explore Products
           </Link>
-          <a 
+          <a
             href="https://www.youtube.com/playlist?list=PLHXlLG4lLpM1RC3vTHQf8iDX5jAI707Jm"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-1.5 bg-white border border-[#2B7832] text-[#2B7832] font-roboto font-bold text-[13px] h-[46px] rounded-full shadow-sm"
+            className="flex-1 flex items-center justify-center gap-2 bg-white border-2 border-[#2B7832] text-[#2B7832] font-roboto font-bold text-[14px] h-[50px] rounded-full shadow-sm"
           >
-            <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none">
+            <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="12" r="10" stroke="#2B7832" strokeWidth="2.5" />
               <path d="M10 8.5V15.5L15.5 12L10 8.5Z" fill="#2B7832" />
             </svg>
@@ -402,73 +400,79 @@ export default function Hero() {
           </a>
         </div>
 
-        {/* Translucent Video Cards (3 items side-by-side) */}
-        <div className="flex gap-3 overflow-x-auto py-2 w-full snap-x justify-center scrollbar-none">
+        {/* Video Cards — full width 3-column grid (no scroll) */}
+        <div className="grid grid-cols-3 gap-2 px-3 mt-5">
           {[
             {
               url: "https://www.youtube.com/watch?v=GTNiviig9Z0&list=PLHXlLG4lLpM1nsq-u5QYMel-p24VXjyUw&index=1",
               thumbnail: "https://img.youtube.com/vi/GTNiviig9Z0/maxresdefault.jpg",
-              subtitle: "watch our",
-              title: "Kisan Expo 2025"
+              subtitle: "WATCH OUR",
+              title: "Kisan Expo 2025",
             },
             {
               url: "https://www.youtube.com/shorts/l6gdhNhF0mc",
               thumbnail: "/assets/drone-sprayer-thumbnail.png",
-              subtitle: "watch our",
-              title: "Kisan Expo 2025"
+              subtitle: "WATCH OUR",
+              title: "Kisan Expo 2025",
             },
             {
               url: "https://www.youtube.com/watch?v=ismU9cWjqJE&list=PLHXlLG4lLpM3M2gek-b4RVCJV3hBecrf8&index=1",
               thumbnail: "https://img.youtube.com/vi/ismU9cWjqJE/maxresdefault.jpg",
-              subtitle: "watch our",
-              title: "Kisan Expo 2025"
-            }
+              subtitle: "WATCH OUR",
+              title: "Kisan Expo 2025",
+            },
           ].map((video, i) => (
             <a
               href={video.url}
               target="_blank"
               rel="noopener noreferrer"
               key={i}
-              className="relative group w-[105px] h-[95px] rounded-xl overflow-hidden border border-white/20 p-2 flex flex-col gap-1 bg-white/25 backdrop-blur-md shadow-lg text-left snap-start flex-shrink-0"
+              className="relative group rounded-xl overflow-hidden flex flex-col bg-white/10 backdrop-blur-sm border border-white/15 shadow-md"
             >
-              <div className="relative w-full h-[52px] rounded-lg overflow-hidden bg-black flex-shrink-0">
-                {video.thumbnail.startsWith('http') ? (
+              {/* Thumbnail */}
+              <div className="relative w-full h-[90px] overflow-hidden bg-black">
+                {video.thumbnail.startsWith("http") ? (
                   <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
                 ) : (
-                  <Image src={video.thumbnail} alt="Thumbnail" fill className="object-cover" />
+                  <Image src={video.thumbnail} alt="Thumbnail" fill className="object-cover" sizes="33vw" />
                 )}
-                <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-                  <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-md">
-                    <svg className="w-2 h-2 fill-[#0F291B] ml-0.5" viewBox="0 0 24 24">
+                {/* Duration badge */}
+                <span className="absolute bottom-1.5 right-1.5 text-[9px] text-white font-bold bg-black/75 rounded px-1 py-0.5 leading-none">1:30</span>
+                {/* Play button */}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/15">
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-xl">
+                    <svg className="w-4 h-4 fill-black ml-0.5" viewBox="0 0 24 24">
                       <path d="M8 5v14l11-7z" />
                     </svg>
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col text-[7px] text-white">
-                <span className="opacity-60 uppercase font-semibold leading-none">{video.subtitle}</span>
-                <span className="font-bold leading-tight mt-0.5 truncate">{video.title}</span>
+              {/* Label */}
+              <div className="px-2 py-2">
+                <span className="block text-[8px] text-white/60 uppercase font-semibold tracking-wide leading-none">{video.subtitle}</span>
+                <span className="block text-[11px] text-white font-bold leading-tight mt-1">{video.title}</span>
               </div>
             </a>
           ))}
         </div>
 
-        {/* 2x2 Features Grid (Banner style at the bottom) */}
-        <div className="w-full bg-[#E5E7EB]/90 backdrop-blur-md py-4 px-5 rounded-2xl mt-2 text-left">
-          <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+        {/* 2×2 Features Grid Card — edge-to-edge, Figma style */}
+        <div className="w-full mt-5 bg-white/90 backdrop-blur-md py-5 px-5 shadow-md">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-5">
             {features.map((item, i) => (
-              <div key={i} className="flex items-center space-x-2 min-w-0">
-                <div className="flex-shrink-0 p-1 bg-[#00A859]/10 rounded-full flex items-center justify-center">
+              <div key={i} className="flex items-start gap-3">
+                <div className="flex-shrink-0 mt-0.5 p-2 bg-[#1E3A8A]/10 rounded-full" style={{ color: "#1E3A8A" }}>
                   {item.icon}
                 </div>
-                <div className="min-w-0 flex flex-col justify-center">
-                  <h4 className="text-[10px] font-bold text-[#0F291B] truncate leading-tight">{item.title}</h4>
-                  <p className="text-[8px] text-black/60 font-semibold leading-none truncate mt-0.5">{item.desc}</p>
+                <div className="flex flex-col min-w-0">
+                  <h4 className="text-[12px] font-bold text-[#0F291B] leading-tight">{item.title}</h4>
+                  <p className="text-[10px] text-[#4B5563] font-medium leading-snug mt-0.5">{item.desc}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
+
       </div>
     </section>
   );
