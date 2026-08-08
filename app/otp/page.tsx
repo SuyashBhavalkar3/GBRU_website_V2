@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function OtpPage() {
   return (
-    <main style={{ zoom: "0.909" }}>
+    <main>
       <Otp />
     </main>
   );

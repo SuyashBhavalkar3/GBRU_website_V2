@@ -285,8 +285,11 @@ const OtpContent = () => {
         </div>
       )}
 
+      {/* ========================================================================= */}
+      {/* DESKTOP VIEW LAYOUT (Unchanged) */}
+      {/* ========================================================================= */}
       <div
-        className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center relative"
+        className="hidden md:flex min-h-screen items-center justify-center p-4 bg-cover bg-center relative"
         style={{ backgroundImage: "url('/assets/caroussel-2.jpg')" }}
       >
         {/* Back Button */}
@@ -301,9 +304,8 @@ const OtpContent = () => {
         </Link>
 
         <div className="flex flex-col md:flex-row w-full max-w-[1100px] bg-white rounded-xl shadow-2xl overflow-hidden min-h-[650px]">
-
-          {/* Left Side (Green Gradient) - Hidden on Mobile */}
-          <div className="hidden md:flex w-full md:w-[45%] relative p-10 flex flex-col bg-gradient-to-b from-[#2E6F18] via-[#4F8D14] to-[#C99C15] overflow-hidden">
+          {/* Left Side (Green Gradient) */}
+          <div className="w-[45%] relative p-10 flex flex-col bg-gradient-to-b from-[#2E6F18] via-[#4F8D14] to-[#C99C15] overflow-hidden">
             {/* Logo */}
             <div className="mb-10 relative z-10">
               <Image
@@ -369,22 +371,9 @@ const OtpContent = () => {
           </div>
 
           {/* Right Side (OTP Form) */}
-          <div className="w-full md:w-[55%] p-6 sm:p-12 md:p-16 flex flex-col justify-center bg-white min-h-[500px]">
-            {/* Logo on Mobile only */}
-            <div className="flex md:hidden justify-center mb-6">
-              <div className="bg-[#006B21] py-3 px-6 rounded-2xl shadow-md">
-                <Image 
-                  src="/assets/gbru_header_logo.png" 
-                  alt="GBRU Logo" 
-                  width={110} 
-                  height={45} 
-                  className="object-contain"
-                />
-              </div>
-            </div>
-
+          <div className="w-[55%] p-16 flex flex-col justify-center bg-white min-h-[500px]">
             <h2
-              className="text-[#1A1A1A] mb-3 text-center md:text-left"
+              className="text-[#1A1A1A] mb-3"
               style={{
                 fontFamily: 'Roboto, sans-serif',
                 fontWeight: 600,
@@ -396,7 +385,7 @@ const OtpContent = () => {
             </h2>
 
             <p
-              className="text-[#4A4A4A] mb-1 text-center md:text-left"
+              className="text-[#4A4A4A] mb-1"
               style={{
                 fontFamily: 'Roboto, sans-serif',
                 fontWeight: 400,
@@ -408,7 +397,8 @@ const OtpContent = () => {
             </p>
 
             <button
-              className="text-[#006B21] text-center md:text-left hover:underline mb-8 mx-auto md:mx-0 w-fit block font-semibold text-sm"
+              onClick={() => router.back()}
+              className="text-[#006B21] hover:underline mb-8 w-fit block font-semibold text-sm"
               style={{
                 fontFamily: 'Roboto, sans-serif'
               }}
@@ -509,7 +499,144 @@ const OtpContent = () => {
               </Link>
             </div>
           </div>
+        </div>
+      </div>
 
+      {/* ========================================================================= */}
+      {/* MOBILE VIEW LAYOUT (Figma Redesign) */}
+      {/* ========================================================================= */}
+      <div 
+        className="md:hidden min-h-screen flex flex-col items-center px-6 pt-3 pb-8 relative overflow-y-auto"
+        style={{ background: 'linear-gradient(135deg, #006B21 0%, #EAB308 100%)' }}
+      >
+        {/* Back Button */}
+        <Link 
+          href="/login" 
+          className="absolute top-6 left-6 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center backdrop-blur-md transition-all z-50 text-white"
+          title="Back to Login"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </Link>
+
+        {/* Top Header Logo */}
+        <div className="mt-2 mb-6 flex justify-center w-full">
+          <div className="relative w-[160px] h-[68px]">
+            <Image 
+              src="/assets/gbru_header_logo.png" 
+              alt="GBRU Logo" 
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+        </div>
+
+        {/* Farmer Image Card */}
+        <div 
+          className="relative rounded-[32px] overflow-hidden shadow-2xl border border-white/10 mt-0 mb-6 bg-black/10 flex-shrink-0"
+          style={{
+            width: "262px",
+            height: "237px",
+            maxWidth: "320px",
+          }}
+        >
+          <Image 
+            src="/assets/farmer.png" 
+            alt="GBRU Farmer" 
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+
+        {/* Main Content Area */}
+        <div className="w-full max-w-[340px] flex flex-col text-left">
+          <h2 
+            className="text-white mb-2 font-bold text-[24px]"
+            style={{ fontFamily: 'Roboto, sans-serif' }}
+          >
+            Verify Your Number
+          </h2>
+          <p 
+            className="text-white/95 text-[12px] leading-relaxed mb-1 font-normal"
+            style={{ fontFamily: 'Roboto, sans-serif' }}
+          >
+            Enter the 6-digit code sent to <span className="font-semibold text-white">{mobileNo ? `+91 ${mobileNo}` : '+91 98765 43210'}</span>
+          </p>
+
+          <button
+            onClick={() => router.back()}
+            className="text-white hover:underline mb-6 w-fit block font-semibold text-xs opacity-90"
+            style={{ fontFamily: 'Roboto, sans-serif' }}
+          >
+            Edit Number
+          </button>
+
+          <form className="flex flex-col space-y-4">
+            {/* OTP Inputs */}
+            <div className="flex gap-2 mb-4 w-full justify-between">
+              {otp.map((digit, index) => (
+                <input
+                  key={index}
+                  ref={(el) => { inputRefs.current[index] = el; }}
+                  type="text"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  className="w-[42px] h-[48px] text-center text-lg font-semibold border rounded-[10px] outline-none transition-all text-zinc-800"
+                  style={{
+                    borderColor: digit ? '#006B21' : '#E5E5E5',
+                    backgroundColor: '#F9F9F9',
+                    borderWidth: digit ? '2px' : '1px'
+                  }}
+                />
+              ))}
+            </div>
+
+            <button 
+              type="button"
+              onClick={handleVerify}
+              disabled={loading}
+              className={`w-full text-white rounded-[14px] transition-all active:scale-[0.98] font-bold text-base flex items-center justify-center ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+              style={{
+                height: '48px',
+                background: '#006B21',
+                fontFamily: 'Roboto, sans-serif',
+              }}
+            >
+              {loading ? 'Verifying...' : 'Verify & Login'}
+            </button>
+
+            <div className="flex items-center justify-between w-full pt-1 text-[11px] text-white/90">
+              <span>OTP valid for 10 min</span>
+              
+              {timeLeft > 0 ? (
+                <span>Resend in 00:{timeLeft.toString().padStart(2, '0')}</span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
+                  className="font-bold underline hover:text-white"
+                >
+                  Resend OTP
+                </button>
+              )}
+            </div>
+          </form>
+
+          {/* Bottom Divider */}
+          <div className="w-full border-t border-white/20 mt-8 pt-6 flex flex-col items-center">
+            <Link 
+              href="/help-centre" 
+              className="text-white/90 hover:text-white transition-colors text-xs font-semibold" 
+              style={{ fontFamily: 'Roboto, sans-serif' }}
+            >
+              Help Center
+            </Link>
+          </div>
         </div>
       </div>
 
