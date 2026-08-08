@@ -96,12 +96,66 @@ export default function WhyGBRU() {
           </p>
         </div>
 
-        {/* Cards Grid */}
+        {/* MOBILE: 2x3 grid card layout (Figma Exact) */}
+        <div className="grid grid-cols-2 lg:hidden w-full px-3 justify-center animate-fade-in" style={{ gap: "11.46px" }}>
+          {features.map((feature, idx) => (
+            <div
+              key={idx}
+              className="flex items-start bg-white border border-[#E5E7EB] relative text-left shadow-[0_2px_10px_rgba(0,0,0,0.02)]"
+              style={{
+                width: "166px",
+                height: "110px", 
+                borderRadius: "15.28px",
+                borderWidth: "0.48px",
+                padding: "12px 10px",
+                gap: "8.5px",
+              }}
+            >
+              {/* Icon Box */}
+              <div
+                className="flex-shrink-0 flex items-center justify-center rounded-[8px] bg-[#E8F5EE]"
+                style={{ width: "32px", height: "32px" }}
+              >
+                {feature.icon}
+              </div>
+
+              {/* Text */}
+              <div className="flex flex-col min-w-0 justify-center">
+                <span 
+                  className="font-roboto text-[#1E3A2F]"
+                  style={{
+                    fontFamily: "Roboto",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                    lineHeight: "14.33px",
+                    letterSpacing: "-0.11px",
+                  }}
+                >
+                  {feature.title}
+                </span>
+                <span 
+                  className="font-roboto text-[#6B7280] mt-1"
+                  style={{
+                    fontFamily: "Roboto",
+                    fontWeight: 400,
+                    fontSize: "9.64px",
+                    lineHeight: "11.46px",
+                    letterSpacing: "0px",
+                  }}
+                >
+                  {feature.desc}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* DESKTOP: Original Grid (3x2 layout - Unchanged) */}
         <div
+          className="hidden lg:grid"
           style={{
             width: "1152px",
             height: "376px",
-            display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",
             gridTemplateRows: "repeat(2, 1fr)",
             rowGap: "24px",
