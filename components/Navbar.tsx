@@ -58,6 +58,30 @@ export default function Navbar() {
   }, []);
 
   const changeLanguage = (langCode: string) => {
+    const cookieVal = `/en/${langCode}`;
+    const host = window.location.hostname;
+    const parts = host.split('.');
+    const expired = "expires=Thu, 01 Jan 1970 00:00:00 UTC";
+    const domains = ["", host, `.${host}`];
+    if (parts.length > 2) {
+      const parent = parts.slice(-2).join('.');
+      domains.push(parent);
+      domains.push(`.${parent}`);
+    }
+
+    // Delete ALL existing googtrans cookies across every domain scope first
+    domains.forEach(dom => {
+      document.cookie = `googtrans=; ${expired}; path=/;${dom ? ` domain=${dom};` : ""}`;
+    });
+
+    // Write the single correct cookie
+    document.cookie = `googtrans=${cookieVal}; path=/;`;
+    document.cookie = `googtrans=${cookieVal}; path=/; domain=.${host};`;
+    if (parts.length > 2) {
+      const parentDomain = parts.slice(-2).join('.');
+      document.cookie = `googtrans=${cookieVal}; path=/; domain=.${parentDomain};`;
+    }
+
     localStorage.setItem("gbru_selected_lang", langCode);
     setActiveLang(langCode);
     setShowLangDropdown(false);

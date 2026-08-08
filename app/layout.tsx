@@ -55,8 +55,27 @@ export default function RootLayout({
                 try {
                   var lang = localStorage.getItem("gbru_selected_lang") || "en";
                   var cookieVal = "/en/" + lang;
+                  var host = window.location.hostname;
+                  var parts = host.split('.');
+                  var expired = "expires=Thu, 01 Jan 1970 00:00:00 UTC";
+                  var domains = ["", host, "." + host];
+                  if (parts.length > 2) {
+                    var parent = parts.slice(-2).join('.');
+                    domains.push(parent);
+                    domains.push("." + parent);
+                  }
+                  // First clear ALL existing googtrans cookies across every domain scope
+                  for (var i = 0; i < domains.length; i++) {
+                    var dom = domains[i];
+                    document.cookie = "googtrans=; " + expired + "; path=/;" + (dom ? " domain=" + dom + ";" : "");
+                  }
+                  // Then write the single correct cookie
                   document.cookie = "googtrans=" + cookieVal + "; path=/;";
-                  document.cookie = "googtrans=" + cookieVal + "; path=/; domain=." + window.location.hostname + ";";
+                  document.cookie = "googtrans=" + cookieVal + "; path=/; domain=." + host + ";";
+                  if (parts.length > 2) {
+                    var parentDomain = parts.slice(-2).join('.');
+                    document.cookie = "googtrans=" + cookieVal + "; path=/; domain=." + parentDomain + ";";
+                  }
                 } catch(e) {}
               })();
             `,
