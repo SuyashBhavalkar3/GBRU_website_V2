@@ -15,6 +15,58 @@ export default function Navbar() {
   const pathname = usePathname() || "/";
   const [currentHash, setCurrentHash] = useState("");
 
+  const [showLangDropdown, setShowLangDropdown] = useState(false);
+  const [showMobileLang, setShowMobileLang] = useState(false);
+  const [activeLang, setActiveLang] = useState("en");
+
+  const LANGUAGES = [
+    { code: "en", name: "English" },
+    { code: "hi", name: "हिन्दी (Hindi)" },
+    { code: "mr", name: "मराठी (Marathi)" },
+    { code: "bn", name: "বাংলা (Bengali)" },
+    { code: "te", name: "తెలుగు (Telugu)" },
+    { code: "ta", name: "தமிழ் (Tamil)" },
+    { code: "gu", name: "ગુજરાતી (Gujarati)" },
+    { code: "kn", name: "ಕನ್ನಡ (Kannada)" },
+    { code: "ml", name: "മലയാളം (Malayalam)" },
+    { code: "pa", name: "ਪੰਜਾਬੀ (Punjabi)" },
+    { code: "ur", name: "اردو (Urdu)" },
+    { code: "or", name: "ଓଡ଼ିଆ (Odia)" },
+    { code: "as", name: "অসমীয়া (Assamese)" },
+    { code: "mai", name: "मैथिली (Maithili)" },
+    { code: "gom", name: "कोंकणी (Konkani)" },
+    { code: "ne", name: "नेपाली (Nepali)" },
+    { code: "sd", name: "सिंधी (Sindhi)" },
+    { code: "doi", name: "डोगरी (Dogri)" },
+    { code: "mni", name: "মণিপুরী (Manipuri)" },
+    { code: "brx", name: "बोडो (Bodo)" },
+    { code: "sa", name: "संस्कृतम् (Sanskrit)" }
+  ];
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("gbru_selected_lang");
+      if (stored) {
+        setActiveLang(stored);
+      } else {
+        const match = document.cookie.match(/googtrans=\/en\/([^;]+)/);
+        if (match && match[1]) {
+          setActiveLang(match[1]);
+        }
+      }
+    }
+  }, []);
+
+  const changeLanguage = (langCode: string) => {
+    const cookieVal = `/en/${langCode}`;
+    document.cookie = `googtrans=${cookieVal}; path=/;`;
+    document.cookie = `googtrans=${cookieVal}; path=/; domain=.${window.location.hostname};`;
+    localStorage.setItem("gbru_selected_lang", langCode);
+    setActiveLang(langCode);
+    setShowLangDropdown(false);
+    window.location.reload();
+  };
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       setCurrentHash(window.location.hash);
@@ -129,24 +181,51 @@ export default function Navbar() {
 
           {/* Desktop Action Buttons */}
           <div className="hidden lg:flex items-center">
-            {/* Language Selector */}
-            <button className="flex items-center justify-center gap-[3.99px] w-[45.99px] h-[24px] font-roboto font-semibold text-[12px] leading-none hover:text-[#FFC700] transition-colors duration-200 cursor-pointer mr-[31px]">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+            {/* Language Selector Dropdown */}
+            <div className="relative mr-[31px]">
+              <button
+                onClick={() => setShowLangDropdown(!showLangDropdown)}
+                className="flex items-center justify-center gap-1 font-roboto font-semibold text-[12px] leading-none hover:text-[#FFC700] transition-colors duration-200 cursor-pointer text-white"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                />
-              </svg>
-              <span>EN</span>
-            </button>
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                  />
+                </svg>
+                <span className="uppercase">{activeLang}</span>
+              </button>
+
+              {showLangDropdown && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40 cursor-default"
+                    onClick={() => setShowLangDropdown(false)}
+                  />
+                  <div className="absolute right-0 mt-2 w-48 bg-[#0A331E]/95 backdrop-blur-md border border-white/10 rounded-lg shadow-xl py-2 z-50 max-h-[300px] overflow-y-auto">
+                    {LANGUAGES.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => changeLanguage(lang.code)}
+                        className={`w-full text-left px-4 py-2 text-xs font-semibold hover:bg-white/10 hover:text-[#FFC700] transition-colors ${
+                          activeLang === lang.code ? "text-[#FFC700] bg-white/5" : "text-white/90"
+                        }`}
+                      >
+                        {lang.name}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
 
             {/* Sign Up / User Profile Button */}
             {loggedInUser ? (
@@ -298,22 +377,58 @@ export default function Navbar() {
 
           <div className="border-t border-white/10 my-4 pt-4 flex flex-col gap-4">
             {/* Language Selection Mobile */}
-            <button className="flex items-center space-x-2 px-3 py-1.5 text-base font-semibold hover:text-[#FFC700] transition-colors duration-200 w-fit cursor-pointer">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            <div className="w-full">
+              <button
+                onClick={() => setShowMobileLang(!showMobileLang)}
+                className="flex items-center justify-between w-full px-3 py-2 text-base font-semibold hover:text-[#FFC700] transition-colors duration-200 cursor-pointer"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                />
-              </svg>
-              <span>English (EN)</span>
-            </button>
+                <div className="flex items-center space-x-2">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                    />
+                  </svg>
+                  <span>
+                    Language: {LANGUAGES.find((l) => l.code === activeLang)?.name || "English"}
+                  </span>
+                </div>
+                <svg
+                  className={`w-4 h-4 transition-transform duration-200 ${showMobileLang ? "rotate-180" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {showMobileLang && (
+                <div className="mt-2 ml-4 pl-3 border-l border-white/10 flex flex-col gap-1.5 max-h-[220px] overflow-y-auto">
+                  {LANGUAGES.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        changeLanguage(lang.code);
+                        setIsOpen(false);
+                      }}
+                      className={`text-left py-2 text-sm font-medium hover:text-[#FFC700] transition-colors ${
+                        activeLang === lang.code ? "text-[#FFC700]" : "text-white/70"
+                      }`}
+                    >
+                      {lang.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Sign Up Mobile */}
             {loggedInUser ? (
