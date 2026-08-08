@@ -98,22 +98,21 @@ export default function Testimonials() {
             ))}
           </div>
 
-          <div className="lg:hidden w-full -mx-4 px-4 overflow-x-auto pb-2 mb-8">
-            <div className="flex gap-4 w-max">
-              {farmerReviews.slice(0, visibleCount).map((review, idx) => (
-                <div
-                  key={idx}
-                  className="relative overflow-hidden shadow-lg border border-white/60 bg-white aspect-square rounded-[16px] min-w-[240px] max-w-[240px]"
-                >
-                  <Image
-                    src={review.src}
-                    alt={review.alt}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
+          {/* Mobile Testimonials (Spacious single column stack) */}
+          <div className="lg:hidden flex flex-col gap-6 w-full max-w-[340px] mb-10 px-4">
+            {farmerReviews.slice(0, visibleCount).map((review, idx) => (
+              <div
+                key={idx}
+                className="relative overflow-hidden shadow-lg border border-white/60 bg-white aspect-square rounded-[24px] w-full"
+              >
+                <Image
+                  src={review.src}
+                  alt={review.alt}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            ))}
           </div>
 
           {/* View More Button */}
