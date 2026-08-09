@@ -306,8 +306,7 @@ export default function Products() {
                 </p>
               </div>
             ) : (
-              /* Product grid rendering */
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-16">
                 {sortedProducts.map((product) => {
                   const discountText = product.discount > 0 ? `${product.discount.toFixed(0)}% OFF` : "SPECIAL PRICE";
                   const itemImage = product.custom_image_1 && product.custom_image_1.startsWith("http")
@@ -317,14 +316,14 @@ export default function Products() {
                   return (
                     <div
                       key={product.item_code}
-                      className="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col transition-shadow hover:shadow-lg relative text-left"
+                      className="bg-white rounded-[18px] border border-gray-200 overflow-hidden flex flex-col transition-shadow hover:shadow-lg relative text-left pb-3"
                     >
                       {/* Image Section */}
                       <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer">
-                        <div className="relative h-56 w-full bg-gray-50 overflow-hidden flex items-center justify-center p-4 hover:opacity-90 transition-opacity">
+                        <div className="relative h-36 md:h-56 w-full bg-gray-50 overflow-hidden flex items-center justify-center p-3 hover:opacity-90 transition-opacity border-b border-gray-100">
                           {/* Badge Overlay */}
                           {product.discount && product.discount > 0 ? (
-                            <div className="absolute top-4 left-4 px-3 py-1 text-xs font-bold rounded-[8px] z-10 bg-[#FEF5D1] text-[#78350F] border border-[#FDF4CE]">
+                            <div className="absolute top-2 left-2 px-2 py-0.5 text-[9px] font-bold rounded-[6px] z-10 bg-[#FEF5D1] text-[#78350F] border border-[#FDF4CE]">
                               {product.discount.toFixed(0)}% OFF
                             </div>
                           ) : null}
@@ -337,38 +336,45 @@ export default function Products() {
                       </Link>
 
                       {/* Content Section */}
-                      <div className="p-5 flex flex-col flex-1">
+                      <div className="p-3 md:p-5 flex flex-col flex-1">
                         <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer hover:text-[#006B21] transition-colors">
-                          <h3 className="font-bold text-sm text-[#1A1A1A] mb-3 leading-snug min-h-[40px] line-clamp-2">
+                          <h3 className="font-roboto font-bold text-[12px] md:text-sm text-[#1A1A1A] mb-2 leading-snug min-h-[34px] md:min-h-[40px] line-clamp-2">
                             {product.item_name}
                           </h3>
                         </Link>
 
                         {/* Tags */}
-                        <div className="flex flex-wrap gap-2 mb-6">
+                        <div className="flex flex-wrap gap-2 mb-4">
                           {product.brand && (
-                            <span className="bg-[#F3F4F6] text-[#4B5563] text-[9px] font-bold px-2 py-0.5 rounded">
+                            <span className="bg-[#F3F4F6] text-[#4B5563] text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 rounded">
                               {product.brand.toUpperCase()}
                             </span>
                           )}
                         </div>
 
                         <div className="mt-auto">
-                          {/* Price */}
+                          {/* Price - color set to #006B21 */}
                           <div className="flex items-baseline gap-2 mb-1">
-                            <span className="text-xl font-bold text-[#006B21]">₹{formatPrice(product.price)}</span>
+                            <span 
+                              className="text-[15px] md:text-xl font-bold"
+                              style={{ color: "#006B21" }}
+                            >
+                              ₹{formatPrice(product.price)}
+                            </span>
                             {product.mrp > product.price && (
-                              <span className="text-xs text-[#6B7280] line-through">₹{formatPrice(product.mrp)}</span>
+                              <span className="text-[10px] md:text-xs text-[#6B7280] line-through">₹{formatPrice(product.mrp)}</span>
                             )}
                           </div>
 
-                          <div className="text-[11px] text-[#4B5563] font-bold mb-4 flex flex-col gap-0.5">
-                            <span>Minimum Order Quantity: <span className="text-[#0F291B]">{product.moq} {product.stock_uom}</span></span>
+                          <div className="text-[9px] md:text-[11px] text-[#4B5563] font-bold mb-3 flex flex-col gap-0.5">
+                            <span>MOQ: <span className="text-[#0F291B]">{product.moq} {product.stock_uom}</span></span>
                           </div>
 
+                          {/* Add to Cart button - background set to #006B21 */}
                           <button
                             onClick={() => handleAddToCart(product)}
-                            className="w-full h-11 bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-sm rounded-xl shadow-sm transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.99]"
+                            className="w-full h-9 md:h-11 text-white font-roboto font-bold text-[11px] md:text-sm rounded-[8px] md:rounded-xl shadow-sm transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.99]"
+                            style={{ backgroundColor: "#006B21" }}
                           >
                             {cartItemCodes.includes(product.item_code) ? "Update Cart" : "Add to Cart"}
                           </button>
