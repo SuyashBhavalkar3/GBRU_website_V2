@@ -7,6 +7,7 @@ import ToolsInAction from "@/components/ToolsInAction";
 import Testimonials from "@/components/Testimonials";
 import HelpSupportBanner from "@/components/HelpSupportBanner";
 import Stats from "@/components/Stats";
+import AppDownloadBanner from "@/components/AppDownloadBanner";
 import Footer from "@/components/Footer";
 
 export const metadata = {
@@ -26,6 +27,7 @@ export default function DashboardPage() {
         <Testimonials />
         <HelpSupportBanner />
         <Stats />
+        <AppDownloadBanner />
       </main>
       <Footer />
     </div>

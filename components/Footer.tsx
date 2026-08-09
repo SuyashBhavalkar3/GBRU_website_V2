@@ -12,7 +12,7 @@ const Footer = () => {
 
   return (
     <footer
-      className="w-full text-white pt-12 pb-8 lg:pt-16 lg:pb-6 px-6 lg:px-12 font-roboto border-t border-white/10 mt-8 lg:mt-24 overflow-hidden"
+      className="w-full text-white pt-12 pb-8 lg:pt-16 lg:pb-6 px-6 lg:px-12 font-roboto border-t border-white/10 mt-0 lg:mt-24 overflow-hidden"
       style={{ background: 'linear-gradient(163.13deg, #0B5D3B 44.12%, #043321 96.94%)' }}
     >
       <style dangerouslySetInnerHTML={{
