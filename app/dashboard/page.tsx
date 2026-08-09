@@ -9,6 +9,7 @@ import FeaturedProducts from "@/components/FeaturedProducts";
 import ToolsInAction from "@/components/ToolsInAction";
 import Testimonials from "@/components/Testimonials";
 import HelpSupportBanner from "@/components/HelpSupportBanner";
+import Stats from "@/components/Stats";
 import AppDownloadBanner from "@/components/AppDownloadBanner";
 import Footer from "@/components/Footer";
 
@@ -41,6 +42,13 @@ export default function DashboardPage() {
         <ToolsInAction />
         <Testimonials />
         <HelpSupportBanner />
+
+        {/* ── MOBILE ONLY: Stats (Our Impact In Numbers) — logged-in users only ── */}
+        {/* Stats already self-guards desktop with hidden lg:flex, wrapping in block lg:hidden ensures only mobile renders */}
+        <div className="block lg:hidden">
+          <Stats />
+        </div>
+
         <AppDownloadBanner />
       </main>
       <Footer />

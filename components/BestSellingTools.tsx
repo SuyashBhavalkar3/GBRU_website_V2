@@ -99,8 +99,24 @@ export default function BestSellingTools() {
     <section className="relative w-full bg-white pt-10 lg:pb-12 pb-2 px-4 lg:px-[64px] flex flex-col items-center justify-start overflow-hidden">
       {/* Header Container */}
       <div className="relative z-10 w-full lg:w-[1152px] flex items-center justify-between">
+
+        {/* MOBILE heading — smaller font, mobile only */}
         <h2
-          className="text-[#0F291B]"
+          className="block lg:hidden text-[#0F291B]"
+          style={{
+            fontFamily: "Roboto, sans-serif",
+            fontWeight: 700,
+            fontSize: "22px",
+            lineHeight: "28px",
+            letterSpacing: "-0.44px",
+          }}
+        >
+          Best Selling Tools
+        </h2>
+
+        {/* DESKTOP heading — original size, untouched */}
+        <h2
+          className="hidden lg:block text-[#0F291B]"
           style={{
             fontFamily: "Roboto, sans-serif",
             fontWeight: 700,
@@ -112,6 +128,7 @@ export default function BestSellingTools() {
         >
           Best Selling Tools
         </h2>
+
         <Link href="/all_products">
           <button className="w-[100px] h-[32px] bg-[#0D9740] hover:bg-[#0a7d34] text-white font-roboto font-bold text-[12px] rounded-full flex items-center justify-center transition-all duration-300 shadow-md">
             View All
