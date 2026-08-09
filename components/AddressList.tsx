@@ -1,0 +1,483 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import {
+  Package, MapPin, Banknote, Bell, Headphones, Phone,
+  Home, Plus, Edit3, Trash2, Loader2, ChevronDown,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+
+export default function AddressList() {
+  const router = useRouter();
+
+  const [userName, setUserName] = useState("Loading...");
+  const [userPhone, setUserPhone] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingAddressName, setEditingAddressName] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
+
+  const showToast = (msg: string, type: "success" | "error" = "success") => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const [formData, setFormData] = useState({
+    fullName: "", mobile: "", pin: "", village: "", city: "",
+    district: "", state: "", address1: "", address2: "",
+  });
+
+  const [states, setStates] = useState<any[]>([]);
+  const [districts, setDistricts] = useState<any[]>([]);
+  const [tahsils, setTahsils] = useState<any[]>([]);
+  const [marketplaces, setMarketplaces] = useState<any[]>([]);
+
+  // Redirect desktop to /user-profile
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+      router.replace("/user-profile");
+    }
+  }, [router]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const stored = localStorage.getItem("gbru_user");
+        if (!stored) { setLoading(false); return; }
+        const parsed = JSON.parse(stored);
+        let mobile_no = parsed.customer_id?.split("-")[1] || parsed.user_id || parsed.mobile_no;
+        if (mobile_no?.includes("@")) mobile_no = mobile_no.split("@")[0];
+
+        try {
+          const res = await fetch("/api/user-details", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mobile_no }),
+          });
+          const data = await res.json();
+          if (data?.message?.status && data?.message?.data) {
+            const ud = data.message.data;
+            setUserName(ud.Customer_name ? ud.Customer_name.split(" ")[0] : "User");
+            const phone = ud.customer_id?.split("-")[1] || mobile_no;
+            setUserPhone(`+91 ${phone}`);
+          }
+        } catch (_) {}
+
+        const api_key = parsed.key_details?.api_key || parsed.api_key;
+        const api_secret = parsed.key_details?.api_secret || parsed.api_secret;
+        const addrRes = await fetch("/api/shipping-address", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mobile_no, api_key, api_secret }),
+        });
+        if (addrRes.ok) {
+          const json = await addrRes.json();
+          if (json.message?.status && Array.isArray(json.message?.data)) {
+            setSavedAddresses(json.message.data);
+          }
+        }
+      } catch (_) {}
+      finally { setLoading(false); }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/states", { method: "POST", headers: { "Content-Type": "application/json" } })
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.message?.status && Array.isArray(json.message?.data)) {
+          const unique = Array.from(new Map(json.message.data.map((i: any) => [i.name, i])).values());
+          setStates(unique as any[]);
+        }
+      }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!formData.state) { setDistricts([]); setTahsils([]); setMarketplaces([]); return; }
+    fetch("/api/districts", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ state: formData.state }),
+    }).then((r) => r.json()).then((json) => {
+      if (json.message?.status && Array.isArray(json.message?.data)) {
+        const unique = Array.from(new Map(json.message.data.map((i: any) => [i.name, i])).values());
+        setDistricts(unique as any[]);
+      }
+    }).catch(() => {});
+    setFormData((p) => ({ ...p, district: "", city: "", village: "" }));
+  }, [formData.state]);
+
+  useEffect(() => {
+    if (!formData.district) { setTahsils([]); setMarketplaces([]); return; }
+    fetch("/api/tahsils", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ district: formData.district }),
+    }).then((r) => r.json()).then((json) => {
+      if (json.message?.status && Array.isArray(json.message?.data)) {
+        const unique = Array.from(new Map(json.message.data.map((i: any) => [i.name, i])).values());
+        setTahsils(unique as any[]);
+      }
+    }).catch(() => {});
+    setFormData((p) => ({ ...p, city: "", village: "" }));
+  }, [formData.district]);
+
+  useEffect(() => {
+    if (!formData.city) { setMarketplaces([]); return; }
+    fetch("/api/marketplaces", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tahsil: formData.city }),
+    }).then((r) => r.json()).then((json) => {
+      if (json.message?.status && Array.isArray(json.message?.data)) {
+        setMarketplaces(json.message.data);
+      }
+    }).catch(() => {});
+    setFormData((p) => ({ ...p, village: "" }));
+  }, [formData.city]);
+
+  const openAddModal = () => {
+    setEditingAddressName(null);
+    setFormData({ fullName: "", mobile: "", pin: "", village: "", city: "", district: "", state: "", address1: "", address2: "" });
+    setShowAddModal(true);
+  };
+
+  const openEditModal = (addr: any) => {
+    setEditingAddressName(addr.name);
+    setFormData({
+      fullName: addr.address_title || "", mobile: addr.phone || "",
+      pin: addr.pincode || "", village: addr.marketplace || "",
+      city: addr.tahsil || "", district: addr.district || "",
+      state: addr.state || "", address1: addr.address_line1 || "",
+      address2: addr.address_line2 || "",
+    });
+    setShowAddModal(true);
+  };
+
+  const handleSaveAddress = async () => {
+    if (!formData.fullName || !formData.address1 || !formData.state || !formData.district || !formData.pin || !formData.mobile) {
+      showToast("Please fill all required fields", "error"); return;
+    }
+    setIsSaving(true);
+    try {
+      const stored = localStorage.getItem("gbru_user");
+      if (!stored) return;
+      const user = JSON.parse(stored);
+      let mobile_no = user.customer_id?.split("-")[1] || user.user_id || user.mobile_no;
+      if (mobile_no?.includes("@")) mobile_no = mobile_no.split("@")[0];
+      const api_key = user.key_details?.api_key || user.api_key;
+      const api_secret = user.key_details?.api_secret || user.api_secret;
+      const email_id = user.user_id?.includes("@") ? user.user_id : (user.email || "");
+
+      const address_data: any = {
+        address_title: formData.fullName, address_line1: formData.address1,
+        address_line2: formData.address2 || "", marketplace: formData.village,
+        tahsil: formData.city, district: formData.district, state: formData.state,
+        pincode: formData.pin, country: "India", email_id, phone: formData.mobile,
+      };
+      if (editingAddressName) address_data.name = editingAddressName;
+
+      const endpoint = editingAddressName ? "/api/shipping-address/update" : "/api/shipping-address/add";
+      const res = await fetch(endpoint, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile_no, api_key, api_secret, address_data }),
+      });
+      const json = await res.json();
+      if (res.ok && json.message?.status) {
+        const returned = json.message.data;
+        if (editingAddressName) {
+          setSavedAddresses((prev) => prev.map((a) => (a.name === editingAddressName ? returned : a)));
+        } else {
+          setSavedAddresses((prev) => [...prev, returned]);
+        }
+        setShowAddModal(false);
+        showToast(editingAddressName ? "Address updated successfully" : "Address saved successfully", "success");
+      } else {
+        showToast(json.error || json.message?.message || "Failed to save address", "error");
+      }
+    } catch (_) {
+      showToast("Error saving address", "error");
+    } finally { setIsSaving(false); }
+  };
+
+  const handleDelete = async (name: string) => {
+    if (!confirm("Are you sure you want to delete this address?")) return;
+    const prev = [...savedAddresses];
+    setSavedAddresses((a) => a.filter((x) => x.name !== name));
+    try {
+      const stored = localStorage.getItem("gbru_user");
+      if (!stored) return;
+      const user = JSON.parse(stored);
+      let mobile_no = user.mobile_no || user.user_id || user.customer_id;
+      if (mobile_no?.includes("@")) mobile_no = mobile_no.split("@")[0];
+      const api_key = user.key_details?.api_key || user.api_key;
+      const api_secret = user.key_details?.api_secret || user.api_secret;
+      const res = await fetch("/api/shipping-address/delete", {
+        method: "DELETE", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile_no, api_key, api_secret, name }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.message?.status) {
+        setSavedAddresses(prev);
+        showToast(json.error || "Failed to delete address", "error");
+      } else {
+        showToast("Address deleted successfully", "success");
+      }
+    } catch (_) {
+      setSavedAddresses(prev);
+      showToast("Error deleting address", "error");
+    }
+  };
+
+  const handleMakePrimary = async (name: string) => {
+    const prev = [...savedAddresses];
+    setSavedAddresses((a) => a.map((x) => ({ ...x, is_primary: x.name === name ? 1 : 0 })));
+    try {
+      const stored = localStorage.getItem("gbru_user");
+      if (!stored) return;
+      const user = JSON.parse(stored);
+      let mobile_no = user.mobile_no || user.user_id || user.customer_id;
+      if (mobile_no?.includes("@")) mobile_no = mobile_no.split("@")[0];
+      const api_key = user.key_details?.api_key || user.api_key;
+      const api_secret = user.key_details?.api_secret || user.api_secret;
+      const res = await fetch("/api/shipping-address/make-primary", {
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile_no, api_key, api_secret, name }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.message?.status) {
+        setSavedAddresses(prev);
+        showToast("Failed to set primary address", "error");
+      } else {
+        showToast("Primary address updated", "success");
+      }
+    } catch (_) {
+      setSavedAddresses(prev);
+      showToast("Error setting primary address", "error");
+    }
+  };
+
+  const inputCls = "w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm text-[#374151] focus:outline-none focus:ring-2 focus:ring-[#0D9740]/30 focus:border-[#0D9740] bg-white";
+  const selectCls = `${inputCls} appearance-none`;
+
+  return (
+    <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col">
+      <Navbar />
+
+      {toast && (
+        <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-5 py-3 rounded-xl shadow-lg text-sm font-semibold text-white transition-all ${toast.type === "success" ? "bg-[#0D9740]" : "bg-red-500"}`}>
+          {toast.msg}
+        </div>
+      )}
+
+      <main className="max-w-[1280px] w-full mx-auto flex-1 flex flex-col">
+
+        {/* Mobile header + shortcuts */}
+        <div className="block lg:hidden w-full" style={{ padding: "12px 20px 16px 20px" }}>
+          <div className="flex items-center gap-4">
+            <div className="relative w-20 h-20 flex-shrink-0">
+              <div className="w-20 h-20 rounded-full border border-emerald-200 bg-emerald-100 text-emerald-700 flex items-center justify-center overflow-hidden shadow-sm">
+                <span className="text-3xl font-bold uppercase">
+                  {userName && userName !== "Loading..." ? userName.charAt(0) : "U"}
+                </span>
+              </div>
+              <div className="absolute bottom-[2px] right-[2px] bg-[#0D8534] text-white w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-white z-10 shadow-sm">
+                <span className="text-[11px] font-bold">✓</span>
+              </div>
+            </div>
+            <div className="flex flex-col text-left">
+              <h1 className="text-[22px] font-bold text-[#1F2937] leading-tight flex items-center gap-1.5">
+                Hello, {userName} <span className="inline-block animate-bounce">👋</span>
+              </h1>
+              <p className="text-[12px] text-zinc-500 font-medium leading-tight mt-0.5">
+                Manage your account and orders easily
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between mt-4">
+            <span className="text-[14px] text-[#374151] font-semibold flex items-center gap-1.5">
+              <Phone className="w-4 h-4 text-zinc-600" /> {userPhone}
+            </span>
+            <Link href="/user-profile" className="h-9 px-5 border border-[#0D9740] text-[#0D9740] font-bold text-xs rounded-lg transition-all">
+              Edit Profile
+            </Link>
+          </div>
+
+          {/* Shortcuts — Addresses active */}
+          <div className="mt-4 flex gap-2 overflow-x-auto pb-2 scrollbar-none w-full justify-between">
+            <Link href="/orders" className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]">
+              <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center"><Package className="w-4 h-4" /></div>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">My Orders</span>
+            </Link>
+            {/* Active: Addresses */}
+            <div className="bg-[#E8F3EB] border border-[#0D9740]/20 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]">
+              <div className="w-8 h-8 rounded-full bg-white text-[#0D9740] flex items-center justify-center"><MapPin className="w-4 h-4" /></div>
+              <span className="font-semibold text-[9px] text-[#0D9740] whitespace-nowrap">Addresses</span>
+            </div>
+            <Link href="/payments" className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]">
+              <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center"><Banknote className="w-4 h-4" /></div>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Payments</span>
+            </Link>
+            <Link href="/notifications" className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]">
+              <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center"><Bell className="w-4 h-4" /></div>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Notifications</span>
+            </Link>
+            <Link href="/help-centre" className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]">
+              <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center"><Headphones className="w-4 h-4" /></div>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Support</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Addresses content */}
+        <div className="px-5 pb-10 flex flex-col gap-4">
+          <div className="flex items-center justify-between pt-2">
+            <h2 className="font-bold text-[#1F2937] text-[18px] tracking-tight">Saved Addresses</h2>
+            <button onClick={openAddModal} className="flex items-center gap-1.5 h-9 px-4 bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-xs rounded-lg shadow-sm transition-all">
+              <Plus className="w-3.5 h-3.5" /> Add New
+            </button>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="w-8 h-8 text-[#0D9740] animate-spin" />
+            </div>
+          ) : savedAddresses.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
+              <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center">
+                <MapPin className="w-8 h-8 text-[#0D9740]" />
+              </div>
+              <p className="text-[#374151] font-semibold text-sm">No saved addresses yet</p>
+              <p className="text-zinc-400 text-xs">Add your first delivery address to get started</p>
+              <button onClick={openAddModal} className="mt-2 h-10 px-6 bg-[#0D9740] text-white font-bold text-xs rounded-xl shadow-sm">
+                + Add Address
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {savedAddresses.map((addr) => (
+                <div key={addr.name} className="border border-[#0D9740]/40 bg-white rounded-2xl p-4 flex flex-col gap-3 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-emerald-50 text-[#0D9740] flex items-center justify-center flex-shrink-0">
+                        <Home className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="font-bold text-sm text-[#0F291B]">{addr.address_title}</span>
+                    </div>
+                    {addr.is_primary === 1 ? (
+                      <span className="bg-emerald-50 text-[#0D9740] text-[9px] font-bold py-0.5 px-2 rounded border border-[#0D9740]/20">PRIMARY</span>
+                    ) : (
+                      <button onClick={() => handleMakePrimary(addr.name)} className="bg-zinc-100 text-zinc-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors text-[9px] font-bold py-0.5 px-2 rounded">
+                        MAKE PRIMARY
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-xs text-[#374151] leading-relaxed pl-9">
+                    {addr.address_line1}{addr.address_line2 ? `, ${addr.address_line2}` : ""}<br />
+                    {addr.marketplace && `${addr.marketplace}, `}{addr.tahsil}, {addr.district}, {addr.state} — {addr.pincode}
+                    <br />
+                    <span className="text-zinc-500 font-medium mt-0.5 block">📞 {addr.phone}</span>
+                  </p>
+                  <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-wider border-t border-zinc-100 pt-3 pl-1">
+                    <button onClick={() => openEditModal(addr)} className="text-zinc-500 hover:text-[#0D9740] flex items-center gap-1 transition-colors">
+                      <Edit3 className="w-3.5 h-3.5" /> Edit
+                    </button>
+                    <button onClick={() => handleDelete(addr.name)} className="text-red-400 hover:text-red-600 flex items-center gap-1 transition-colors">
+                      <Trash2 className="w-3.5 h-3.5" /> Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <Footer />
+      </main>
+
+      {/* Add/Edit Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center backdrop-blur-sm">
+          <div className="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 flex flex-col gap-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-[#0F291B] text-lg">{editingAddressName ? "Edit Address" : "Add New Address"}</h3>
+              <button onClick={() => setShowAddModal(false)} className="text-zinc-400 hover:text-zinc-600 text-2xl leading-none">×</button>
+            </div>
+            <div className="flex flex-col gap-3">
+              <div>
+                <label className="text-xs font-semibold text-zinc-500 mb-1 block">Full Name *</label>
+                <input className={inputCls} placeholder="e.g. Home, Farm, Office" value={formData.fullName} onChange={(e) => setFormData((p) => ({ ...p, fullName: e.target.value }))} />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-zinc-500 mb-1 block">Mobile Number *</label>
+                <input className={inputCls} placeholder="+91 XXXXX XXXXX" value={formData.mobile} onChange={(e) => setFormData((p) => ({ ...p, mobile: e.target.value }))} />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-zinc-500 mb-1 block">Address Line 1 *</label>
+                <input className={inputCls} placeholder="House / Plot / Street" value={formData.address1} onChange={(e) => setFormData((p) => ({ ...p, address1: e.target.value }))} />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-zinc-500 mb-1 block">Address Line 2</label>
+                <input className={inputCls} placeholder="Landmark (optional)" value={formData.address2} onChange={(e) => setFormData((p) => ({ ...p, address2: e.target.value }))} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-zinc-500 mb-1 block">State *</label>
+                  <div className="relative">
+                    <select className={selectCls} value={formData.state} onChange={(e) => setFormData((p) => ({ ...p, state: e.target.value }))}>
+                      <option value="">Select</option>
+                      {states.map((s: any) => <option key={s.name} value={s.name}>{s.name}</option>)}
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-zinc-500 mb-1 block">District *</label>
+                  <div className="relative">
+                    <select className={selectCls} value={formData.district} onChange={(e) => setFormData((p) => ({ ...p, district: e.target.value }))} disabled={!districts.length}>
+                      <option value="">Select</option>
+                      {districts.map((d: any) => <option key={d.name} value={d.name}>{d.name}</option>)}
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-zinc-500 mb-1 block">Tahsil</label>
+                  <div className="relative">
+                    <select className={selectCls} value={formData.city} onChange={(e) => setFormData((p) => ({ ...p, city: e.target.value }))} disabled={!tahsils.length}>
+                      <option value="">Select</option>
+                      {tahsils.map((t: any) => <option key={t.name} value={t.name}>{t.name}</option>)}
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-zinc-500 mb-1 block">Village</label>
+                  <div className="relative">
+                    <select className={selectCls} value={formData.village} onChange={(e) => setFormData((p) => ({ ...p, village: e.target.value }))} disabled={!marketplaces.length}>
+                      <option value="">Select</option>
+                      {marketplaces.map((m: any) => <option key={m.name} value={m.name}>{m.name}</option>)}
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-zinc-500 mb-1 block">PIN Code *</label>
+                <input className={inputCls} placeholder="6-digit PIN" maxLength={6} value={formData.pin} onChange={(e) => setFormData((p) => ({ ...p, pin: e.target.value.replace(/\D/g, "") }))} />
+              </div>
+            </div>
+            <button onClick={handleSaveAddress} disabled={isSaving} className="w-full h-12 bg-[#0D9740] hover:bg-[#0a7d34] disabled:opacity-60 text-white font-bold text-sm rounded-xl shadow transition-all flex items-center justify-center gap-2 mt-1">
+              {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
+              {isSaving ? "Saving..." : editingAddressName ? "Update Address" : "Save Address"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

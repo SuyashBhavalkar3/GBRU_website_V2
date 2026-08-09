@@ -628,18 +628,15 @@ export default function UserProfile() {
               </div>
               <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">My Orders</span>
             </Link>
-            <div
-              onClick={() => {
-                const el = document.getElementById("saved-addresses");
-                if (el) el.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px] cursor-pointer"
+            <Link
+              href="/addresses"
+              className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]"
             >
               <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center">
                 <MapPin className="w-4 h-4" />
               </div>
               <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Addresses</span>
-            </div>
+            </Link>
             <Link
               href="/payments"
               className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]"
