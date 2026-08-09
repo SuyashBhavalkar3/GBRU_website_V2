@@ -97,7 +97,7 @@ export default function UserProfile() {
           try {
             data = JSON.parse(text);
           } catch (e) {
-            
+
           }
         }
 
@@ -129,7 +129,7 @@ export default function UserProfile() {
               setSavedAddresses(json.message.data);
             }
           } catch (e) {
-            
+
           }
         }
 
@@ -138,12 +138,12 @@ export default function UserProfile() {
           const ordersRes = await fetch("/api/orders", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-              mobile_no, 
+            body: JSON.stringify({
+              mobile_no,
               from_date: "2020-01-01",
               to_date: new Date().toISOString().split('T')[0],
-              page_size: 200, 
-              page: 1 
+              page_size: 200,
+              page: 1
             })
           });
           if (ordersRes.ok) {
@@ -180,10 +180,10 @@ export default function UserProfile() {
             }
           }
         } catch (err) {
-          
+
         }
       } catch (err) {
-        
+
       } finally {
         setLoading(false);
       }
@@ -209,11 +209,11 @@ export default function UserProfile() {
               setStates(uniqueStates);
             }
           } catch (e) {
-            
+
           }
         }
       } catch (e) {
-        
+
       }
     }
     fetchStates();
@@ -241,11 +241,11 @@ export default function UserProfile() {
               setDistricts(uniqueDistricts);
             }
           } catch (e) {
-            
+
           }
         }
       } catch (e) {
-        
+
       }
     }
     fetchDistricts();
@@ -273,11 +273,11 @@ export default function UserProfile() {
               setTahsils(uniqueTahsils);
             }
           } catch (e) {
-            
+
           }
         }
       } catch (e) {
-        
+
       }
     }
     fetchTahsils();
@@ -305,11 +305,11 @@ export default function UserProfile() {
               setMarketplaces(uniqueMarketplaces);
             }
           } catch (e) {
-            
+
           }
         }
       } catch (e) {
-        
+
       }
     }
     fetchMarketplaces();
@@ -352,7 +352,7 @@ export default function UserProfile() {
         }
       }
     } catch (err) {
-      
+
     }
   };
 
@@ -411,7 +411,7 @@ export default function UserProfile() {
       try {
         json = JSON.parse(text_json);
       } catch (e) {
-        
+
         json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
       }
       if (res.ok && json.message?.status) {
@@ -448,7 +448,7 @@ export default function UserProfile() {
         showToast(errorMessage, "error");
       }
     } catch (e) {
-      
+
       showToast("Error saving address", "error");
     } finally {
       setIsSavingAddress(false);
@@ -486,7 +486,7 @@ export default function UserProfile() {
       try {
         json = JSON.parse(text_json);
       } catch (e) {
-        
+
         json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
       }
       if (!res.ok || !json.message?.status) {
@@ -496,7 +496,7 @@ export default function UserProfile() {
         showToast("Address deleted successfully", "success");
       }
     } catch (e) {
-      
+
       setSavedAddresses(previousAddresses);
       showToast("Error deleting address", "error");
     }
@@ -534,7 +534,7 @@ export default function UserProfile() {
       try {
         json = JSON.parse(text_json);
       } catch (e) {
-        
+
         json = { message: { status: false, message: "Invalid JSON response" }, error: "Invalid JSON response" };
       }
       if (!res.ok || !json.message?.status) {
@@ -544,7 +544,7 @@ export default function UserProfile() {
         showToast("Primary address updated", "success");
       }
     } catch (e) {
-      
+
       setSavedAddresses(previousAddresses);
       showToast("Error setting primary address", "error");
     }
@@ -649,7 +649,7 @@ export default function UserProfile() {
               </div>
               <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Payments</span>
             </Link>
-            <Link
+            {/* <Link
               href="/notifications"
               className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]"
             >
@@ -657,7 +657,7 @@ export default function UserProfile() {
                 <Bell className="w-4 h-4" />
               </div>
               <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Notifications</span>
-            </Link>
+            </Link> */}
             <Link
               href="/help-centre"
               className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]"
@@ -905,7 +905,7 @@ export default function UserProfile() {
             {/* Mobile Redesigned Help & Support section */}
             <div className="block lg:hidden w-full bg-[#FDFDFD] pb-8" style={{ paddingTop: "12px", paddingRight: "20px", paddingLeft: "20px", gap: "16px" }}>
               <h3 className="font-bold text-[#1F2937] text-[20px] text-left mb-4 tracking-tight">Help & Support</h3>
-              
+
               <div className="bg-white border border-zinc-200/80 rounded-2xl overflow-hidden flex flex-col w-full" style={{ minHeight: "172px" }}>
                 {/* Visit FAQs */}
                 <Link
@@ -920,8 +920,8 @@ export default function UserProfile() {
                 </Link>
 
                 {/* Contact Support */}
-                <Link 
-                  href="/help-centre" 
+                <Link
+                  href="/help-centre"
                   className="flex items-center justify-between p-4 border-b border-zinc-150 hover:bg-zinc-50 transition-colors w-full text-left"
                   style={{ height: "57px" }}
                 >

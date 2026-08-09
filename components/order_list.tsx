@@ -41,6 +41,15 @@ export default function OrderList() {
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "error">("success");
 
+  // Mobile detection
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -170,10 +179,102 @@ export default function OrderList() {
     <div className="min-h-screen bg-[#F9FBF9] font-roboto flex flex-col">
       <Navbar />
 
-      <main className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 py-8 flex-1 flex flex-col gap-8">
+      <main className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 py-4 lg:py-8 flex-1 flex flex-col gap-4 lg:gap-8">
 
+        {/* ============================================ */}
+        {/* MOBILE HEADER — visible only on mobile       */}
+        {/* ============================================ */}
+        <div className="block lg:hidden w-full" style={{ padding: "12px 20px 16px 20px" }}>
+          {/* Header row: avatar + name */}
+          <div className="flex items-center gap-4">
+            <div className="relative w-20 h-20 flex-shrink-0">
+              <div className="w-20 h-20 rounded-full border border-emerald-200 bg-emerald-100 text-emerald-700 flex items-center justify-center overflow-hidden shadow-sm">
+                <span className="text-3xl font-bold uppercase">
+                  {userName && userName !== "Loading..." ? userName.charAt(0) : "U"}
+                </span>
+              </div>
+              <div className="absolute bottom-[2px] right-[2px] bg-[#0D8534] text-white w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-white z-10 shadow-sm">
+                <span className="text-[11px] font-bold">✓</span>
+              </div>
+            </div>
+            <div className="flex flex-col text-left">
+              <h1 className="text-[22px] font-bold text-[#1F2937] leading-tight flex items-center gap-1.5">
+                Hello, {userName} <span className="inline-block animate-bounce">👋</span>
+              </h1>
+              <p className="text-[12px] text-zinc-500 font-medium leading-tight mt-0.5">
+                Manage your account and orders easily
+              </p>
+            </div>
+          </div>
+
+          {/* Subheader: phone + edit button */}
+          <div className="flex items-center justify-between mt-4">
+            <span className="text-[14px] text-[#374151] font-semibold flex items-center gap-1.5">
+              <Phone className="w-4 h-4 text-zinc-600" /> {userMobile}
+            </span>
+            <Link
+              href="/user-profile"
+              className="h-9 px-5 border border-[#0D9740] hover:bg-[#0D9740]/[0.02] text-[#0D9740] font-bold text-xs rounded-lg transition-all"
+            >
+              Edit Profile
+            </Link>
+          </div>
+
+          {/* Mobile Account Shortcuts — small icon row */}
+          <div className="mt-4 flex gap-2 overflow-x-auto pb-2 scrollbar-none w-full justify-between">
+            <Link
+              href="/orders"
+              className="bg-[#E8F3EB] border border-[#0D9740]/20 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]"
+            >
+              <div className="w-8 h-8 rounded-full bg-white text-[#0D9740] flex items-center justify-center">
+                <Package className="w-4 h-4" />
+              </div>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">My Orders</span>
+            </Link>
+            <Link
+              href="/user-profile"
+              className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]"
+            >
+              <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center">
+                <MapPin className="w-4 h-4" />
+              </div>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Addresses</span>
+            </Link>
+            <Link
+              href="/payments"
+              className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]"
+            >
+              <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center">
+                <Banknote className="w-4 h-4" />
+              </div>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Payments</span>
+            </Link>
+            <Link
+              href="/user-profile"
+              className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]"
+            >
+              <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center">
+                <Bell className="w-4 h-4" />
+              </div>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Notifications</span>
+            </Link>
+            <Link
+              href="/help-centre"
+              className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]"
+            >
+              <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center">
+                <Headphones className="w-4 h-4" />
+              </div>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Support</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* ============================================ */}
+        {/* DESKTOP HEADER + SHORTCUTS — lg and above   */}
+        {/* ============================================ */}
         {/* 1. User Profile summary Header */}
-        <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="hidden lg:flex bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="relative w-16 h-16 rounded-full border border-emerald-200 bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 text-2xl font-bold uppercase shadow-sm">
               {userName && userName !== "Loading..." ? userName.charAt(0) : "U"}
@@ -202,8 +303,8 @@ export default function OrderList() {
           </Link>
         </div>
 
-        {/* 2. Account Shortcuts Grid */}
-        <div className="flex flex-col gap-4">
+        {/* 2. Account Shortcuts Grid — desktop only */}
+        <div className="hidden lg:flex flex-col gap-4">
           <h3 className="font-bold text-[#0F291B] text-sm tracking-wide uppercase">
             Account Shortcuts
           </h3>
