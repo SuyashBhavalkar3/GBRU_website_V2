@@ -140,8 +140,8 @@ function AllProductsContent() {
               </span>
             </div>
 
-            {/* Product Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {/* Product Grid — 2 cols mobile, 4 cols desktop */}
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-12">
               {productsList.map((product) => {
                 const discountVal = product.discount || 0;
                 const itemImage = product.custom_image_1 || product.image || "/assets/sprayer.png";
@@ -150,42 +150,42 @@ function AllProductsContent() {
                   <div key={product.item_code} className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow flex flex-col">
                     {/* Product Image */}
                     <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer">
-                      <div className="relative h-48 bg-gray-50 p-4 flex items-center justify-center hover:opacity-90 transition-opacity">
+                      <div className="relative h-28 sm:h-48 bg-gray-50 p-2 sm:p-4 flex items-center justify-center hover:opacity-90 transition-opacity">
                         {discountVal > 0 && (
-                          <div className="absolute top-4 left-4 bg-[#FEF5D1] text-[#78350F] text-[10px] font-bold px-2 py-1 rounded border border-[#FDF4CE]">
+                          <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-[#FEF5D1] text-[#78350F] text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded border border-[#FDF4CE]">
                             {discountVal.toFixed(0)}% OFF
                           </div>
                         )}
                         <img
                           src={itemImage}
                           alt={product.item_name}
-                          className="object-contain max-h-full max-w-full p-4"
+                          className="object-contain max-h-full max-w-full p-1 sm:p-4"
                         />
                       </div>
                     </Link>
 
                     {/* Product Info */}
-                    <div className="p-5 flex flex-col flex-1 text-left">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-[#006B21] text-xs font-bold tracking-wide uppercase">{product.brand || "GBRU"}</span>
+                    <div className="p-2.5 sm:p-5 flex flex-col flex-1 text-left">
+                      <div className="flex justify-between items-center mb-1 sm:mb-2">
+                        <span className="text-[#006B21] text-[9px] sm:text-xs font-bold tracking-wide uppercase">{product.brand || "GBRU"}</span>
                       </div>
 
                       <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer hover:text-[#006B21] transition-colors">
-                        <h3 className="text-[#1A1A1A] font-bold mb-3 line-clamp-2 leading-snug min-h-[40px]">
+                        <h3 className="text-[#1A1A1A] font-bold mb-1.5 sm:mb-3 line-clamp-2 leading-snug min-h-[32px] sm:min-h-[40px] text-[11px] sm:text-base">
                           {product.item_name}
                         </h3>
                       </Link>
 
                       <div className="mt-auto">
-                        <div className="flex items-baseline gap-2 mb-4">
-                          <span className="text-xl font-bold text-[#006B21]">₹{formatPrice(product.price)}</span>
+                        <div className="flex items-baseline gap-1 sm:gap-2 mb-2 sm:mb-4 flex-wrap">
+                          <span className="text-sm sm:text-xl font-bold text-[#006B21]">₹{formatPrice(product.price)}</span>
                           {product.mrp > product.price && (
-                            <span className="text-xs text-[#6B7280] line-through">₹{formatPrice(product.mrp)}</span>
+                            <span className="text-[9px] sm:text-xs text-[#6B7280] line-through">₹{formatPrice(product.mrp)}</span>
                           )}
                         </div>
                         <button
                           onClick={() => handleAddToCart(product)}
-                          className="w-full h-11 bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-sm rounded-xl shadow-sm transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.99]"
+                          className="w-full h-8 sm:h-11 bg-[#006B21] hover:bg-[#005a1b] text-white font-bold text-[10px] sm:text-sm rounded-xl shadow-sm transition-all duration-300 flex items-center justify-center gap-1 sm:gap-2 active:scale-[0.99]"
                         >
                           {cartItemCodes.includes(product.item_code) ? "Update Cart" : "Add to Cart"}
                         </button>
