@@ -54,7 +54,7 @@ export default function Testimonials() {
   }, []);
 
   return (
-    <section className="w-full bg-white flex flex-col items-center lg:py-10 pt-0 mt-[-40px] pb-2 px-2 sm:px-6 lg:px-0 overflow-hidden">
+    <section className="w-full bg-white flex flex-col items-center lg:py-10 lg:mt-0 mt-[20px] pb-2 px-2 sm:px-6 lg:px-0 overflow-hidden">
       {/* ========================================================================= */}
       {/* TESTIMONIAL IMAGES GRID FOR LOGGED IN MOBILE USER */}
       {/* ========================================================================= */}

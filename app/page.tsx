@@ -30,7 +30,10 @@ export default function Home() {
       <Navbar />
       <main className="flex-1">
         <Hero />
-        <Stats />
+        {/* Desktop only: Stats at top */}
+        <div className="hidden lg:block">
+          <Stats />
+        </div>
         {/* Desktop order: Categories then FieldExperiences */}
         <div className="hidden lg:block">
           <Categories />
@@ -41,9 +44,16 @@ export default function Home() {
           <Categories />
         </div>
         <BestSellingTools />
+        {/* Desktop order: ToolsInAction */}
         <div className="hidden lg:block">
           <ToolsInAction />
         </div>
+        {/* Mobile order: ToolsInAction (See tools in action) after Featured Products (BestSellingTools) ONLY when logged in */}
+        {isLoggedIn && (
+          <div className="block lg:hidden">
+            <ToolsInAction />
+          </div>
+        )}
         <div className="hidden lg:block">
           {!isLoggedIn && <AppDownload />}
         </div>
@@ -53,13 +63,24 @@ export default function Home() {
           {!isLoggedIn && <WhyGBRU />}
         </div>
 
-        {/* Mobile order: WhyGBRU after Featured Products (BestSellingTools), then GbRUOnField */}
-        <div className="block lg:hidden">
-          <WhyGBRU />
-          <GbRUOnField />
-        </div>
+        {/* Mobile order: WhyGBRU after Featured Products (BestSellingTools), then GbRUOnField ONLY when logged out */}
+        {!isLoggedIn && (
+          <div className="block lg:hidden">
+            <WhyGBRU />
+            <GbRUOnField />
+          </div>
+        )}
 
         <Testimonials />
+
+        {/* Mobile only layout order below Testimonials */}
+        <div className="block lg:hidden">
+          <HelpSupportBanner />
+          <Stats />
+          <AppDownloadBanner />
+        </div>
+
+        {/* Desktop only layout order below Testimonials */}
         <div className="hidden lg:block">
           <HelpSupportBanner />
           <AppDownloadBanner />
