@@ -127,7 +127,7 @@ export default function ToolsInAction() {
 
         {/* Scroll Container */}
         <div className="w-full overflow-x-auto -mx-4 px-4 pb-4 scrollbar-none snap-x snap-mandatory">
-          <div className="flex gap-4 w-max">
+          <div className="flex gap-4 w-max pr-10">
             
             {/* See Tools in Action Green Card */}
             <div 

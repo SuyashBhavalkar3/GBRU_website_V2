@@ -65,7 +65,7 @@ export default function Testimonials() {
             className="relative rounded-[24px] border-none overflow-hidden mx-auto"
             style={{
               width: "278px",
-              height: "219px",
+              height: "239px",
               background: "linear-gradient(180deg, rgba(255, 255, 255, 0.51) 46.48%, rgba(73, 144, 2, 0.408) 100%)"
             }}
           >
