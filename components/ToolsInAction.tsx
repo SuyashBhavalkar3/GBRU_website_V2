@@ -52,7 +52,7 @@ export default function ToolsInAction() {
             <h2 className="text-2xl lg:text-3xl font-bold font-roboto leading-tight mb-3">
               See Tools in Action
             </h2>
-            <p className="text-xs lg:text-sm text-white/95 leading-relaxed font-medium">
+            <p className="text-base lg:text-lg text-white/95 leading-relaxed font-medium">
               Watch real farmers using GBRU tools in their fields.
             </p>
           </div>

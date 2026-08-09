@@ -19,19 +19,19 @@ const advantages = [
     id: 1,
     title: 'Certified Quality',
     desc: 'Every machine and tool undergoes rigorous stress testing for heavy-duty field use.',
-    icon: '/assets/gbru_green.png'
+    icon: '/assets/icon5.png'
   },
   {
     id: 2,
     title: 'Expert Installation',
     desc: 'On-site setup and technical training by our team across India.',
-    icon: '/assets/gbru_green.png'
+    icon: '/assets/logo7.png'
   },
   {
     id: 3,
     title: 'Lifetime Support',
     desc: 'Access to 24/7 technical assistance for the life of your equipment.',
-    icon: '/assets/gbru_green.png'
+    icon: '/assets/icon2.png'
   }
 ];
 
@@ -239,10 +239,10 @@ export default function CategoriesPage() {
           {/* ── DESKTOP VIEW: Grid Layout (Unchanged) ── */}
           <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-8">
             {advantages.map((adv) => (
-              <div key={adv.id} className="bg-white rounded-2xl p-8 flex flex-col items-center text-center hover:shadow-md transition-shadow">
+              <div key={adv.id} className="bg-[#F3F4F5] rounded-2xl p-8 flex flex-col items-center text-center hover:shadow-md transition-shadow">
                 {/* Icon Container */}
                 <div className="w-16 h-16 mb-6 flex items-center justify-center rounded-full overflow-hidden relative bg-[#D4E8DC]">
-                  <Image src={adv.icon} alt={adv.title} fill className="object-cover scale-[1.35]" />
+                  <Image src={adv.icon} alt={adv.title} fill className="object-contain p-5" />
                 </div>
 
                 <h3 className="text-xl font-bold text-[#1A1A1A] mb-3">

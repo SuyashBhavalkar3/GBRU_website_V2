@@ -190,6 +190,9 @@ export default function Products() {
           <h1 className="text-2xl md:text-5xl font-bold text-[#1A1A1A] tracking-tight">
             {categoryName}
           </h1>
+          <p className="mt-3 text-[#4A4A4A] max-w-3xl font-roboto font-normal text-[16px] leading-[25.6px] tracking-[0px]">
+            Explore our curated collection of industrial-grade machinery, smart irrigation systems, and professional farming tools designed for the modern agri-enterprise.
+          </p>
         </div>
       </div>
 
@@ -301,21 +304,21 @@ export default function Products() {
                 {/* Search Bar */}
                 <form 
                   onSubmit={(e) => { e.preventDefault(); setSearchQuery(searchInput); }} 
-                  className="flex items-center"
+                  className="flex items-center relative w-full sm:w-[280px]"
                 >
+                  <div className="absolute left-3 text-gray-400 pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                  </div>
                   <input
                     type="text"
-                    placeholder="Search in category..."
+                    placeholder="Search equipment..."
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
-                    className="appearance-none bg-white border border-gray-300 text-[#1A1A1A] text-sm rounded-l-md pl-4 py-2 outline-none focus:border-[#006B21] focus:ring-1 focus:ring-[#006B21]"
+                    className="w-full appearance-none bg-[#F7F8F9] border border-gray-200 text-[#1A1A1A] text-sm rounded-lg pl-10 pr-4 py-2.5 outline-none focus:border-[#006B21] focus:ring-1 focus:ring-[#006B21] transition-all placeholder:text-gray-400"
                   />
-                  <button 
-                    type="submit" 
-                    className="bg-[#006B21] text-white px-4 py-2 rounded-r-md text-sm font-semibold hover:bg-[#005a1b] transition-colors"
-                  >
-                    Search
-                  </button>
                 </form>
 
                 {/* Subcategory Dropdown Filter */}
@@ -380,6 +383,23 @@ export default function Products() {
                   const itemImage = product.custom_image_1 && product.custom_image_1.startsWith("http")
                     ? product.custom_image_1
                     : "/assets/sprayer.png";
+
+                  const name = (product.item_name || "").toLowerCase();
+                  let tags = ["In Stock"];
+                  let features = ["Durable Build", "High Performance"];
+                  if (name.includes("spray") || name.includes("तूफान")) {
+                    tags = ["Farmer's Choice", "1 Year Warranty"];
+                    features = ["20L Tank Capacity", "High-Pressure Nozzle"];
+                  } else if (name.includes("pump")) {
+                    tags = ["In Stock"];
+                    features = ["Cast Iron Body", "Low Fuel Consumption"];
+                  } else if (name.includes("seed")) {
+                    tags = ["In Stock"];
+                    features = ["Cast Iron Body", "efficient"];
+                  } else if (name.includes("weed")) {
+                    tags = ["Easy Maintenance"];
+                    features = ["9HP Engine Power", "Adjustable Tilling Width"];
+                  }
 
                   return (
                     <div

@@ -26,15 +26,15 @@ export default function BestSellingTools() {
         let data;
         try {
           data = JSON.parse(text);
-        } catch(e) {
-          
+        } catch (e) {
+
           throw new Error("Invalid JSON");
         }
         if (data?.message?.status && Array.isArray(data.message.data?.data)) {
           setProducts(data.message.data.data.slice(0, 4));
         }
       } catch (e) {
-        
+
       } finally {
         setLoading(false);
       }
@@ -61,7 +61,7 @@ export default function BestSellingTools() {
           setCartItemCodes(items.map((i: any) => i.item));
         }
       } catch (e) {
-        
+
       }
     };
 
@@ -99,17 +99,18 @@ export default function BestSellingTools() {
     <section className="relative w-full bg-white pt-10 lg:pb-12 pb-2 px-4 lg:px-[64px] flex flex-col items-center justify-start overflow-hidden">
       {/* Header Container */}
       <div className="relative z-10 w-full lg:w-[1152px] flex items-center justify-between">
-        <h2 
+        <h2
           className="text-[#0F291B]"
           style={{
-            fontFamily: "Roboto",
-            fontWeight: 500,
-            fontSize: "24px",
-            lineHeight: "32px",
-            letterSpacing: "0px"
+            fontFamily: "Roboto, sans-serif",
+            fontWeight: 700,
+            fontSize: "48px",
+            lineHeight: "56px",
+            letterSpacing: "-0.96px",
+            verticalAlign: "middle"
           }}
         >
-          Featured Products
+          Best Selling Tools
         </h2>
         <Link href="/all_products">
           <button className="w-[100px] h-[32px] bg-[#0D9740] hover:bg-[#0a7d34] text-white font-roboto font-bold text-[12px] rounded-full flex items-center justify-center transition-all duration-300 shadow-md">
@@ -125,6 +126,23 @@ export default function BestSellingTools() {
             const discountVal = product.discount || 0;
             const itemImage = product.custom_image_1 || product.image || "/assets/sprayer.png";
 
+            const name = (product.item_name || "").toLowerCase();
+            let tags = ["In Stock"];
+            let features = ["Durable Build", "High Performance"];
+            if (name.includes("spray") || name.includes("तूफान")) {
+              tags = ["Farmer's Choice", "1 Year Warranty"];
+              features = ["20L Tank Capacity", "High-Pressure Nozzle"];
+            } else if (name.includes("pump")) {
+              tags = ["In Stock"];
+              features = ["Cast Iron Body", "Low Fuel Consumption"];
+            } else if (name.includes("seed")) {
+              tags = ["In Stock"];
+              features = ["Cast Iron Body", "efficient"];
+            } else if (name.includes("weed")) {
+              tags = ["Easy Maintenance"];
+              features = ["9HP Engine Power", "Adjustable Tilling Width"];
+            }
+
             return (
               <div
                 key={product.item_code}
@@ -139,7 +157,7 @@ export default function BestSellingTools() {
                 }}
               >
                 {/* Product Image Section */}
-                <div 
+                <div
                   className="relative overflow-hidden flex items-center justify-center bg-[#EAF5EE] rounded-[14px]"
                   style={{
                     width: "170px",
@@ -175,27 +193,36 @@ export default function BestSellingTools() {
                       {product.item_name}
                     </h3>
 
-                    {/* Sub-features list */}
-                    <div className="mt-2 text-[10px] text-[#4B5563] space-y-1">
-                      <div className="flex items-center gap-1">
-                        <span className="text-[#0D9740]">✓</span>
-                        <span>20L Tank Capacity</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <span className="text-[#0D9740]">✓</span>
-                        <span>High-Pressure Nozzle</span>
-                      </div>
-                    </div>
-                  </div>
+                    <ul className="flex flex-col gap-1.5 mb-6 text-[#4B5563]">
+                      {features.map((feat, i) => (
+                        <li
+                          key={i}
+                          className="flex items-center gap-1.5"
+                          style={{
+                            fontFamily: 'Roboto, sans-serif',
+                            fontWeight: 400,
+                            fontSize: '11.84px',
+                            lineHeight: '17.76px',
+                            letterSpacing: '0px',
+                            verticalAlign: 'middle',
+                          }}
+                        >
+                          <svg className="w-3.5 h-3.5 text-[#374151] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          {feat}
+                        </li>
+                      ))}
+                    </ul>
 
-                  <div className="mt-auto pt-2">
-                    {/* Button */}
-                    <button
-                      onClick={() => handleAddToCart(product)}
-                      className="w-full h-[40px] bg-[#0D9740] hover:bg-[#0a7d34] text-white font-roboto font-bold text-[13px] rounded-full shadow-sm transition-all duration-300 flex items-center justify-center gap-2"
-                    >
-                      Get best Price
-                    </button>
+                    <div className="mt-auto pt-1">
+                      <button
+                        onClick={() => handleAddToCart(product)}
+                        className="w-full h-[40px] bg-[#006B21] hover:bg-[#005a1b] text-white font-bold text-[13px] rounded-full shadow-sm transition-all duration-300 flex items-center justify-center active:scale-[0.99]"
+                      >
+                        Add to Cart
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -206,72 +233,106 @@ export default function BestSellingTools() {
 
       {/* Desktop Grid Container */}
       <div className="hidden lg:grid relative z-10 w-full lg:w-[1152px] mt-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[20.85px] items-stretch">
-        {products.map((product) => {
-          const discountVal = product.discount || 0;
-          const itemImage = product.custom_image_1 || product.image || "/assets/sprayer.png";
+          {products.map((product) => {
+            const discountVal = product.discount || 0;
+            const itemImage = product.custom_image_1 || product.image || "/assets/sprayer.png";
 
-          return (
-            <div
-              key={product.item_code}
-              className="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col transition-shadow hover:shadow-lg relative text-left"
-            >
-              {/* Image Section */}
-              <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer">
-                <div className="relative h-56 w-full bg-gray-50 overflow-hidden flex items-center justify-center p-4 hover:opacity-90 transition-opacity">
-                  {discountVal > 0 ? (
-                    <div className="absolute top-4 left-4 px-3 py-1 text-xs font-bold rounded-[8px] z-10 bg-[#FEF5D1] text-[#78350F] border border-[#FDF4CE]">
-                      {discountVal.toFixed(0)}% OFF
-                    </div>
-                  ) : null}
-                  <img
-                    src={itemImage}
-                    alt={product.item_name}
-                    className="object-contain max-h-full max-w-full"
-                  />
-                </div>
-              </Link>
+            const name = (product.item_name || "").toLowerCase();
+            let tags = ["In Stock"];
+            let features = ["Durable Build", "High Performance"];
+            if (name.includes("spray") || name.includes("तूफान")) {
+              tags = ["Farmer's Choice", "1 Year Warranty"];
+              features = ["20L Tank Capacity", "High-Pressure Nozzle"];
+            } else if (name.includes("pump")) {
+              tags = ["In Stock"];
+              features = ["Cast Iron Body", "Low Fuel Consumption"];
+            } else if (name.includes("seed")) {
+              tags = ["In Stock"];
+              features = ["Cast Iron Body", "efficient"];
+            } else if (name.includes("weed")) {
+              tags = ["Easy Maintenance"];
+              features = ["9HP Engine Power", "Adjustable Tilling Width"];
+            }
 
-              {/* Content Section */}
-              <div className="p-5 flex flex-col flex-1">
-                <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer hover:text-[#006B21] transition-colors">
-                  <h3 className="font-bold text-sm text-[#1A1A1A] mb-3 leading-snug min-h-[40px] line-clamp-2">
-                    {product.item_name}
-                  </h3>
+            return (
+              <div
+                key={product.item_code}
+                className="bg-white rounded-[24px] border border-gray-100 overflow-hidden flex flex-col transition-shadow hover:shadow-lg relative text-left p-3"
+              >
+                <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer flex-shrink-0">
+                  <div className="relative h-[220px] w-full bg-[#EAF0E7] rounded-[16px] overflow-hidden flex items-center justify-center p-4 hover:opacity-90 transition-opacity">
+                    {discountVal > 0 ? (
+                      <div className="absolute top-3 left-3 px-2 py-0.5 text-[10px] font-bold rounded-md z-10 bg-[#FEF5D1] text-[#78350F] border border-[#FDF4CE]">
+                        {discountVal.toFixed(0)}% OFF
+                      </div>
+                    ) : null}
+                    <img
+                      src={itemImage}
+                      alt={product.item_name}
+                      className="object-contain max-h-full max-w-full mix-blend-multiply"
+                    />
+                  </div>
                 </Link>
 
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {product.brand && (
-                    <span className="bg-[#F3F4F6] text-[#4B5563] text-[9px] font-bold px-2 py-0.5 rounded">
-                      {product.brand.toUpperCase()}
-                    </span>
-                  )}
-                </div>
-
-                <div className="mt-auto">
-                  {/* Price */}
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="text-xl font-bold text-[#006B21]">₹{formatPrice(product.price)}</span>
-                    {product.mrp > product.price && (
-                      <span className="text-xs text-[#6B7280] line-through">₹{formatPrice(product.mrp)}</span>
-                    )}
+                <div className="pt-4 flex flex-col flex-1 px-1">
+                  <div className="flex flex-wrap gap-1.5 mb-2.5">
+                    {tags.map((tag, i) => (
+                      <span key={i} className="bg-[#FFD100] text-[#111] text-[9px] font-bold px-2 py-0.5 rounded-full">
+                        {tag}
+                      </span>
+                    ))}
                   </div>
 
-                  <div className="text-[11px] text-[#4B5563] font-bold mb-4 flex flex-col gap-0.5">
-                    <span>Minimum Order Quantity: <span className="text-[#0F291B]">{product.moq} {product.stock_uom}</span></span>
-                  </div>
+                  <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer hover:text-[#006B21] transition-colors">
+                    <h3
+                      style={{
+                        fontFamily: 'Roboto, sans-serif',
+                        fontWeight: 700,
+                        fontSize: '17.76px',
+                        lineHeight: '23.68px',
+                        letterSpacing: '-0.18px',
+                        verticalAlign: 'middle',
+                      }}
+                      className="text-[#1A1A1A] mb-3 line-clamp-2"
+                    >
+                      {product.item_name}
+                    </h3>
+                  </Link>
 
-                  <button
-                    onClick={() => handleAddToCart(product)}
-                    className="w-full h-11 bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-sm rounded-xl shadow-sm transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.99]"
-                  >
-                    {cartItemCodes.includes(product.item_code) ? "Update Cart" : "Add to Cart"}
-                  </button>
+                  <ul className="flex flex-col gap-1.5 mb-6 text-[#4B5563]">
+                    {features.map((feat, i) => (
+                      <li
+                        key={i}
+                        className="flex items-center gap-1.5"
+                        style={{
+                          fontFamily: 'Roboto, sans-serif',
+                          fontWeight: 400,
+                          fontSize: '11.84px',
+                          lineHeight: '17.76px',
+                          letterSpacing: '0px',
+                          verticalAlign: 'middle',
+                        }}
+                      >
+                        <svg className="w-3.5 h-3.5 text-[#374151] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {feat}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-auto pt-1">
+                    <button
+                      onClick={() => handleAddToCart(product)}
+                      className="w-full h-[42px] bg-[#2E6B4A] hover:bg-[#235339] text-white font-bold text-[14px] rounded-full shadow-sm transition-all duration-300 flex items-center justify-center active:scale-[0.99]"
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
 
       <LoginPrompt

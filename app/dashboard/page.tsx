@@ -8,7 +8,6 @@ import FeaturedProducts from "@/components/FeaturedProducts";
 import ToolsInAction from "@/components/ToolsInAction";
 import Testimonials from "@/components/Testimonials";
 import HelpSupportBanner from "@/components/HelpSupportBanner";
-import Stats from "@/components/Stats";
 import AppDownloadBanner from "@/components/AppDownloadBanner";
 import Footer from "@/components/Footer";
 
@@ -30,22 +29,8 @@ export default function DashboardPage() {
         <FeaturedProducts />
         <ToolsInAction />
         <Testimonials />
-        
-        {/* Mobile View: Render these sections only when logged in */}
-        {isLoggedIn ? (
-          <div className="block lg:hidden">
-            <HelpSupportBanner />
-            <Stats />
-            <AppDownloadBanner />
-          </div>
-        ) : null}
-
-        {/* Desktop View: Keep original layouts unchanged */}
-        <div className="hidden lg:block">
-          <HelpSupportBanner />
-          <Stats />
-          <AppDownloadBanner />
-        </div>
+        <HelpSupportBanner />
+        <AppDownloadBanner />
       </main>
       <Footer />
     </div>

@@ -7,8 +7,8 @@ export default function FieldExperiences() {
   const playlist = [
     {
       title: "GBRU Spray Pumps",
-      subtitle: "spray pump in action",
-      desc: "See our battery operated knapsack sprayer pumps in action",
+      subtitle: "Our Farmer Review",
+      desc: "See what our Gbru user are saying",
       duration: "03:41",
       category: "Information",
       thumbnail: "/assets/thumb_spray_pumps.png",
@@ -78,103 +78,124 @@ export default function FieldExperiences() {
           gap: "32px",
         }}
       >
-        {/* Header */}
-        <div className="flex items-start justify-between w-full">
-          <div>
-            <h2 className="text-[#0F291B] text-[22px] font-bold leading-tight font-roboto">
+        {/* Header Row */}
+        <div className="relative z-10 w-full max-w-[1180px] flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+          <div className="text-left font-roboto max-w-2xl">
+            <h2 className="text-[#0F291B] text-[28px] sm:text-[32px] lg:text-[40px] font-bold leading-tight">
               Field Experiences
             </h2>
-            <p className="text-zinc-700 text-[12px] font-medium mt-0.5">
+            <p className="text-zinc-700 text-sm lg:text-base font-medium mt-1 max-w-md">
               Watch our equipment transform traditional farming.
             </p>
           </div>
-          <button className="text-black font-roboto font-bold text-[12px] cursor-pointer hover:underline whitespace-nowrap mt-1">
+          <button className="text-black font-roboto font-bold text-sm cursor-pointer hover:underline transition-colors duration-200 self-start sm:self-auto">
             View All Videos
           </button>
         </div>
 
-        {/* Inner Green Card — 358×346, border-radius 12px */}
+        {/* Main Console Box (Translucent green container overlaying outer background) */}
         <div
-          className="w-full overflow-hidden shadow-xl"
-          style={{
-            borderRadius: "12px",
-            background: "linear-gradient(180deg, rgba(0, 190, 106, 0.85) 0%, rgba(0, 117, 43, 0.92) 100%)",
-            minHeight: "346px",
-            padding: "12px",
-          }}
+          className="relative z-10 w-full max-w-[1180px] rounded-[24px] lg:rounded-[34px] overflow-hidden backdrop-blur-[0.1px] pt-6 pb-6 px-4 sm:px-5 lg:pt-[113px] lg:pr-[32px] lg:pb-[32px] lg:pl-[20px] shadow-2xl border border-white/20"
+          style={{ background: "linear-gradient(180deg, rgba(0, 168, 62, 0.5) 0%, rgba(34, 197, 94, 0.5) 100%)" }}
         >
-          {/* Main Video */}
-          <div
-            className="relative w-full overflow-hidden cursor-pointer group"
-            style={{ borderRadius: "10px", height: "170px" }}
-            onClick={() => setActiveVideoUrl(mobileMainVideo.videoUrl)}
-          >
-            <img
-              src={mobileMainVideo.thumbnail}
-              alt={mobileMainVideo.title}
-              className="w-full h-full object-cover"
-            />
-            {/* Play button */}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
-              <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-xl">
-                <svg className="w-5 h-5 fill-[#2D722F] ml-0.5" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              </div>
+          {/* Header */}
+          <div className="flex items-start justify-between w-full">
+            <div>
+              <h2 className="text-[#0F291B] text-[22px] font-bold leading-tight font-roboto">
+                Field Experiences
+              </h2>
+              <p className="text-zinc-700 text-[12px] font-medium mt-0.5">
+                Watch our equipment transform traditional farming.
+              </p>
             </div>
-            {/* Duration badge */}
-            <span className="absolute bottom-2 right-2 bg-black/75 text-white text-[10px] font-bold px-2 py-0.5 rounded">
-              {mobileMainVideo.duration}
-            </span>
+            <button className="text-black font-roboto font-bold text-[12px] cursor-pointer hover:underline whitespace-nowrap mt-1">
+              View All Videos
+            </button>
           </div>
 
-          {/* Main video label */}
-          <div className="mt-2 mb-3 px-1">
-            <h3 className="text-white font-bold text-[15px] leading-tight font-roboto">
-              {mobileMainVideo.title}
-            </h3>
-            <p className="text-white/80 text-[11px] font-medium mt-0.5">
-              {mobileMainVideo.subtitle}
-            </p>
-          </div>
-
-          {/* 3 Mini Videos row */}
-          <div className="grid grid-cols-3 gap-2">
-            {mobileMiniVideos.map((video, i) => (
-              <div
-                key={i}
-                className="flex flex-col rounded-[8px] overflow-hidden cursor-pointer bg-white/10 border border-white/20"
-                onClick={() => setActiveVideoUrl(video.videoUrl)}
-              >
-                {/* Thumbnail */}
-                <div className="relative w-full overflow-hidden" style={{ height: "62px" }}>
-                  <Image
-                    src={video.thumbnail}
-                    alt={video.title}
-                    fill
-                    className="object-cover"
-                    sizes="33vw"
-                  />
-                  {/* Mini play button */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/15">
-                    <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-md">
-                      <svg className="w-2.5 h-2.5 fill-[#2D722F] ml-0.5" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </div>
-                  </div>
-                  {/* Duration badge */}
-                  <span className="absolute bottom-1 right-1 bg-black/70 text-white text-[8px] font-bold px-1 rounded leading-tight">
-                    {video.duration}
-                  </span>
-                </div>
-                {/* Mini video info */}
-                <div className="px-1.5 py-1.5">
-                  <p className="text-white font-bold text-[9px] leading-tight line-clamp-1">{video.title}</p>
-                  <p className="text-white/75 text-[8px] mt-0.5">{video.duration} • {video.category}</p>
+          {/* Inner Green Card — 358×346, border-radius 12px */}
+          <div
+            className="w-full overflow-hidden shadow-xl"
+            style={{
+              borderRadius: "12px",
+              background: "linear-gradient(180deg, rgba(0, 190, 106, 0.85) 0%, rgba(0, 117, 43, 0.92) 100%)",
+              minHeight: "346px",
+              padding: "12px",
+            }}
+          >
+            {/* Main Video */}
+            <div
+              className="relative w-full overflow-hidden cursor-pointer group"
+              style={{ borderRadius: "10px", height: "170px" }}
+              onClick={() => setActiveVideoUrl(mobileMainVideo.videoUrl)}
+            >
+              <img
+                src={mobileMainVideo.thumbnail}
+                alt={mobileMainVideo.title}
+                className="w-full h-full object-cover"
+              />
+              {/* Play button */}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
+                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-xl">
+                  <svg className="w-5 h-5 fill-[#2D722F] ml-0.5" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
                 </div>
               </div>
-            ))}
+              {/* Duration badge */}
+              <span className="absolute bottom-2 right-2 bg-black/75 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                {mobileMainVideo.duration}
+              </span>
+            </div>
+
+            {/* Main video label */}
+            <div className="mt-2 mb-3 px-1">
+              <h3 className="text-white font-bold text-[15px] leading-tight font-roboto">
+                {mobileMainVideo.title}
+              </h3>
+              <p className="text-white/80 text-[11px] font-medium mt-0.5">
+                {mobileMainVideo.subtitle}
+              </p>
+            </div>
+
+            {/* 3 Mini Videos row */}
+            <div className="grid grid-cols-3 gap-2">
+              {mobileMiniVideos.map((video, i) => (
+                <div
+                  key={i}
+                  className="flex flex-col rounded-[8px] overflow-hidden cursor-pointer bg-white/10 border border-white/20"
+                  onClick={() => setActiveVideoUrl(video.videoUrl)}
+                >
+                  {/* Thumbnail */}
+                  <div className="relative w-full overflow-hidden" style={{ height: "62px" }}>
+                    <Image
+                      src={video.thumbnail}
+                      alt={video.title}
+                      fill
+                      className="object-cover"
+                      sizes="33vw"
+                    />
+                    {/* Mini play button */}
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/15">
+                      <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-md">
+                        <svg className="w-2.5 h-2.5 fill-[#2D722F] ml-0.5" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
+                    </div>
+                    {/* Duration badge */}
+                    <span className="absolute bottom-1 right-1 bg-black/70 text-white text-[8px] font-bold px-1 rounded leading-tight">
+                      {video.duration}
+                    </span>
+                  </div>
+                  {/* Mini video info */}
+                  <div className="px-1.5 py-1.5">
+                    <p className="text-white font-bold text-[9px] leading-tight line-clamp-1">{video.title}</p>
+                    <p className="text-white/75 text-[8px] mt-0.5">{video.duration} • {video.category}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

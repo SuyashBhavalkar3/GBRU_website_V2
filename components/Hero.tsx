@@ -61,36 +61,28 @@ export default function Hero() {
       title: "Durable Build",
       desc: "Long lasting performance",
       icon: (
-        <svg className="w-4 h-4 text-[#00A859]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#162A5A] w-6 h-6 flex-shrink-0"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
       ),
     },
     {
       title: "High Performance",
       desc: "More efficiency, better output",
       icon: (
-        <svg className="w-4 h-4 text-[#00A859]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#162A5A] w-6 h-6 flex-shrink-0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
       ),
     },
     {
       title: "Easy Maintenance",
       desc: "Simple servicing, low maintenance",
       icon: (
-        <svg className="w-4 h-4 text-[#00A859]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#162A5A] w-6 h-6 flex-shrink-0"><line x1="21" y1="8" x2="14" y2="8"></line><line x1="10" y1="8" x2="3" y2="8"></line><line x1="21" y1="16" x2="12" y2="16"></line><line x1="8" y1="16" x2="3" y2="16"></line><line x1="14" y1="5" x2="14" y2="11"></line><line x1="8" y1="13" x2="8" y2="19"></line></svg>
       ),
     },
     {
       title: "Farmer Trusted",
       desc: "Used by thousands of happy farmers",
       icon: (
-        <svg className="w-4 h-4 text-[#00A859]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#162A5A] w-6 h-6 flex-shrink-0"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
       ),
     },
   ];
@@ -102,13 +94,13 @@ export default function Hero() {
       {/* Backdrop blur overlay for the background image */}
       <div
         className="absolute inset-0 z-0 pointer-events-none"
-        style={{ backdropFilter: "blur(0.1px)" }}
+        style={{ backdropFilter: "blur(6px)" }}
       />
       {/* Soft white overlay descending from left to right — desktop only */}
       <div
         className="hidden lg:block absolute inset-0 z-0 pointer-events-none"
         style={{
-          background: "linear-gradient(90deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0.1) 100%)"
+          background: "linear-gradient(90deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.05) 100%)"
         }}
       />
       {/* Subtle white overlay — mobile only (reduced opacity) */}
@@ -127,8 +119,8 @@ export default function Hero() {
           height: "650px",
           top: "-50px",
           left: "-150px",
-          background: "radial-gradient(circle at 40% 50%, rgba(248, 240, 218, 0.95) 0%, rgba(227, 209, 179, 0.45) 55%, rgba(255, 255, 255, 0) 100%)",
-          opacity: 0.95,
+          background: "radial-gradient(circle at 40% 50%, rgba(248, 240, 218, 0.7) 0%, rgba(227, 209, 179, 0.3) 55%, rgba(255, 255, 255, 0) 100%)",
+          opacity: 0.6,
           filter: "blur(60px)",
         }}
       />
@@ -143,20 +135,30 @@ export default function Hero() {
           <div className="col-span-6 flex flex-col justify-between gap-8 h-[466px]">
             {/* Top Text Content */}
             <div className="space-y-2.5 font-roboto">
-              <h3 className="text-xl md:text-2xl lg:text-[28px] font-bold tracking-wide w-full lg:w-[564px] lg:max-w-[576px] lg:h-[56px] flex items-center gap-1.5 leading-tight">
-                <span className="text-[#2D722F]">गब्रू हो साथ</span> <span className="text-[#2D722F]">,</span> <span className="text-[#0F291B]">तो टेंशन की क्या बात !</span>
+              <h3
+                className="w-full lg:w-[564px] lg:max-w-[576px] flex items-center flex-wrap gap-1.5"
+                style={{
+                  fontFamily: 'Roboto, sans-serif',
+                  fontWeight: 700,
+                  fontSize: '40px',
+                  lineHeight: '56px',
+                  letterSpacing: '-0.96px',
+                  verticalAlign: 'middle'
+                }}
+              >
+                <span className="text-[#2D722F]">गब्रू हो साथ</span> <span className="text-[#2D722F]">,</span> <span className="text-white">तो टेंशन की क्या बात !</span>
               </h3>
-              <h1 className="text-3xl sm:text-4xl lg:text-[43.36px] font-semibold leading-none tracking-normal text-[#0F291B] font-roboto">
+              <h1 className="text-3xl sm:text-4xl lg:text-[43.36px] font-semibold leading-tight tracking-normal text-[#0F291B] font-roboto">
                 Right tool.<br />
                 <span
-                  className="bg-clip-text text-transparent bg-cover font-semibold"
+                  className="bg-clip-text text-transparent bg-cover font-semibold inline-block mt-1"
                   style={{ backgroundImage: "linear-gradient(90deg, #2D722F 0%, #768F0F 100%)" }}
                 >
                   Better Farming.
                 </span>
               </h1>
               <p className="text-[#0F291B]/80 max-w-lg font-roboto font-normal text-[15px] lg:text-[18px] leading-[22px] lg:leading-[28px] tracking-normal">
-                High-performance machinery designed for the modern farmer. Durable, efficient, and backed by pan-India support.
+                High-performance machinery designed for the modern<br />farmer. Durable, efficient, and backed by pan-India support.
               </p>
             </div>
 
@@ -181,16 +183,42 @@ export default function Hero() {
                 </a>
               </div>
 
-              {/* Feature Pill Card (White pill bottom left) */}
-              <div className="bg-white/95 backdrop-blur-md text-[#0F291B] rounded-[33px] shadow-2xl border border-white/20 w-full lg:w-[606px] lg:h-[82px] lg:ml-[-30px] flex flex-col sm:flex-row gap-4 sm:gap-[15px] p-4 sm:pt-[23px] sm:pr-[14px] sm:pb-[13px] sm:pl-[17px] items-start sm:items-center justify-between">
+              {/* Feature Pill Card (Capsule bottom left) */}
+              <div className="bg-[#EAE8E0] text-[#162A5A] rounded-[50px] shadow-lg w-full lg:w-[620px] lg:ml-[-20px] flex flex-col sm:flex-row gap-4 sm:gap-4 lg:gap-[18px] px-5 py-4 lg:px-6 lg:py-5 items-start sm:items-center justify-between z-20 relative">
                 {features.map((item, i) => (
-                  <div key={i} className="flex items-center space-x-1.5 min-w-0 w-full sm:w-auto">
-                    <div className="flex-shrink-0 p-1 bg-[#00A859]/10 rounded-full flex items-center justify-center">
+                  <div key={i} className="flex items-start space-x-3 min-w-0 w-full sm:w-auto">
+                    <div className="flex-shrink-0 flex items-center justify-center mt-0.5">
                       {item.icon}
                     </div>
                     <div className="min-w-0 flex flex-col justify-center">
-                      <h4 className="text-[10px] font-bold text-[#0F291B] truncate leading-none">{item.title}</h4>
-                      <p className="text-[8px] text-black/60 font-semibold leading-none truncate mt-1">{item.desc}</p>
+                      <h4
+                        style={{
+                          fontFamily: 'Roboto, sans-serif',
+                          fontWeight: 400,
+                          fontSize: '12px',
+                          lineHeight: '16px',
+                          letterSpacing: '0px',
+                          verticalAlign: 'middle',
+                          color: '#011F4A'
+                        }}
+                        className="whitespace-nowrap"
+                      >
+                        {item.title}
+                      </h4>
+                      <p
+                        style={{
+                          fontFamily: 'Roboto, sans-serif',
+                          fontWeight: 400,
+                          fontSize: '10px',
+                          lineHeight: '15px',
+                          letterSpacing: '0px',
+                          verticalAlign: 'middle',
+                          color: '#00130B'
+                        }}
+                        className="max-w-[145px] mt-[2px]"
+                      >
+                        {item.desc}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -297,7 +325,7 @@ export default function Hero() {
                   target="_blank"
                   rel="noopener noreferrer"
                   key={i}
-                  className="relative group w-[154.6px] h-[131.01px] max-w-[169.77px] rounded-[11.32px] overflow-hidden border-[0.71px] border-white/10 p-[11.32px] flex flex-col gap-[2.69px] bg-neutral-800/80 backdrop-blur-md shadow-xl transition-transform duration-300 hover:scale-[1.03] text-left"
+                  className="relative group w-[154.6px] h-[131.01px] max-w-[169.77px] rounded-[11.32px] overflow-hidden border-[0.71px] border-white/20 p-[11.32px] flex flex-col gap-[2.69px] bg-white/10 backdrop-blur-lg shadow-xl transition-transform duration-300 hover:scale-[1.03] text-left"
                 >
                   <div className="relative w-[132px] h-[75px] rounded-[6px] overflow-hidden bg-black flex-shrink-0 z-10">
                     {video.thumbnail.startsWith('http') ? (
@@ -334,18 +362,30 @@ export default function Hero() {
       {/* ========================================================================= */}
       {/* MOBILE LAYOUT (Figma Mockup — Guest/Not Logged In) */}
       {/* ========================================================================= */}
-      <div className="block lg:hidden relative z-10 w-full flex flex-col text-left">
-
-        {/* Title Block — left aligned */}
-        <div className="px-5 pt-6 pb-4">
-          <h3 className="text-[16px] font-bold leading-snug mb-1">
-            <span className="text-black">गब्रू हो साथ, तो टेंशन की क्या बात !</span>
-          </h3>
-          <h1
-            className="text-[22px] font-bold leading-tight bg-clip-text text-transparent"
-            style={{ backgroundImage: "linear-gradient(90deg, #2D722F 0%, #768F0F 100%)" }}
+      <div className="block lg:hidden relative z-10 w-full px-4 flex flex-col gap-6 text-center max-w-[480px] mx-auto">
+        {/* Title / Hero Header */}
+        <div className="flex flex-col items-center pt-2">
+          <h3
+            className="mb-2 text-center"
+            style={{
+              fontFamily: 'Roboto, sans-serif',
+              fontWeight: 700,
+              fontSize: '24px',
+              lineHeight: '32px',
+              letterSpacing: '-0.48px',
+              verticalAlign: 'middle'
+            }}
           >
-            Right tool. Better Farming.
+            <span className="text-[#2D722F]">गब्रू हो साथ</span> <span className="text-[#2D722F]">,</span> <span className="text-white">तो टेंशन की क्या बात !</span>
+          </h3>
+          <h1 className="text-2xl font-bold leading-snug">
+            <span className="text-[#0F291B]">Right tool.</span>{" "}
+            <span
+              className="bg-clip-text text-transparent bg-cover font-bold"
+              style={{ backgroundImage: "linear-gradient(90deg, #2D722F 0%, #768F0F 100%)" }}
+            >
+              Better Farming.
+            </span>
           </h1>
         </div>
 
@@ -381,7 +421,7 @@ export default function Hero() {
             );
           })}
 
-          {/* Left Arrow — still works manually */}
+          {/* Left Arrow */}
           <button
             onClick={handleMobilePrev}
             className="absolute left-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/50 text-white border border-white/20 shadow-md"
@@ -392,7 +432,7 @@ export default function Hero() {
             </svg>
           </button>
 
-          {/* Right Arrow — still works manually */}
+          {/* Right Arrow */}
           <button
             onClick={handleMobileNext}
             className="absolute right-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/50 text-white border border-white/20 shadow-md"
@@ -426,7 +466,7 @@ export default function Hero() {
           </a>
         </div>
 
-        {/* Video Cards — full width 3-column grid (no scroll) */}
+        {/* Video Cards — full width 3-column grid */}
         <div className="grid grid-cols-3 gap-2 px-3 mt-5">
           {[
             {
@@ -439,13 +479,13 @@ export default function Hero() {
               url: "https://www.youtube.com/shorts/l6gdhNhF0mc",
               thumbnail: "/assets/drone-sprayer-thumbnail.png",
               subtitle: "WATCH OUR",
-              title: "Kisan Expo 2025",
+              title: "Drone Sprayer",
             },
             {
               url: "https://www.youtube.com/watch?v=ismU9cWjqJE&list=PLHXlLG4lLpM3M2gek-b4RVCJV3hBecrf8&index=1",
               thumbnail: "https://img.youtube.com/vi/ismU9cWjqJE/maxresdefault.jpg",
               subtitle: "WATCH OUR",
-              title: "Kisan Expo 2025",
+              title: "Field Demo",
             },
           ].map((video, i) => (
             <a
@@ -462,9 +502,7 @@ export default function Hero() {
                 ) : (
                   <Image src={video.thumbnail} alt="Thumbnail" fill className="object-cover" sizes="33vw" />
                 )}
-                {/* Duration badge */}
                 <span className="absolute bottom-1.5 right-1.5 text-[9px] text-white font-bold bg-black/75 rounded px-1 py-0.5 leading-none">1:30</span>
-                {/* Play button */}
                 <div className="absolute inset-0 flex items-center justify-center bg-black/15">
                   <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-xl">
                     <svg className="w-4 h-4 fill-black ml-0.5" viewBox="0 0 24 24">
@@ -482,15 +520,15 @@ export default function Hero() {
           ))}
         </div>
 
-        {/* 2×2 Features Grid Card — edge-to-edge, Figma style */}
-        <div className="w-full mt-5 bg-white/90 backdrop-blur-md py-5 px-5 shadow-md">
+        {/* 2×2 Features Grid Card — edge-to-edge, no side margin on mobile */}
+        <div className="w-full mt-5 bg-white/90 backdrop-blur-md py-5 px-5 shadow-md -mx-4" style={{ width: "calc(100% + 2rem)" }}>
           <div className="grid grid-cols-2 gap-x-4 gap-y-5">
             {features.map((item, i) => (
               <div key={i} className="flex items-start gap-3">
                 <div className="flex-shrink-0 mt-0.5 p-2 bg-[#1E3A8A]/10 rounded-full" style={{ color: "#1E3A8A" }}>
                   {item.icon}
                 </div>
-                <div className="flex flex-col min-w-0">
+                <div className="flex flex-col min-w-0 text-left">
                   <h4 className="text-[12px] font-bold text-[#0F291B] leading-tight">{item.title}</h4>
                   <p className="text-[10px] text-[#4B5563] font-medium leading-snug mt-0.5">{item.desc}</p>
                 </div>

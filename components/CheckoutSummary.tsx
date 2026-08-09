@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 
@@ -531,8 +532,9 @@ export default function CheckoutSummary() {
                   onClick={() => setIsOffersOpen(!isOffersOpen)}
                   className="w-full bg-[#F8F9FA] px-4 py-3 flex items-center justify-between text-xs font-bold text-[#0F291B]"
                 >
-                  <span className="flex items-center gap-2">
-                    🏷️ Offers & Coupons
+                  <span className="flex items-center gap-1.5">
+                    <Image src="/assets/coupon.png" alt="Coupon" width={20} height={20} className="shrink-0" />
+                    Offers & Coupons
                   </span>
                   <span>{isOffersOpen ? "▲" : "▼"}</span>
                 </button>
@@ -611,7 +613,11 @@ export default function CheckoutSummary() {
 
               {/* Secure Checkout CTA */}
               <button className="w-full h-14 rounded-[14px] bg-gradient-to-r from-[#1A4D2E] to-[#2A6F45] hover:opacity-90 active:scale-[0.99] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm mt-2">
-                🔒 Place Order Securely
+                <div className="flex flex-col items-center justify-center w-5 h-5 shrink-0">
+                  <div className="w-[8px] h-[6px] border-[2px] border-b-0 border-white rounded-t-[4px]" />
+                  <div className="w-[12px] h-[10px] border-[2px] border-white rounded-[3px] -mt-[2px]" />
+                </div>
+                <span>Place Order Securely</span>
               </button>
 
               <span className="text-[11px] text-zinc-500 text-center block">

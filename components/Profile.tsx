@@ -2,6 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import Navbar from "./Navbar";
+import Footer from "./Footer";
 
 const Profile = () => {
   return (
@@ -151,10 +152,10 @@ const Profile = () => {
             </div>
 
             {/* Submit Button */}
-            <div className="pt-10 pb-20 flex justify-end">
+            <div className="pt-10 pb-6 flex justify-end">
               <button 
                 type="button"
-                className="bg-[#006B21] hover:bg-[#005a1b] text-white font-semibold text-base sm:text-lg py-3.5 px-8 sm:px-12 rounded-full flex items-center gap-3 transition-colors shadow-lg w-full sm:w-auto justify-center"
+                className="bg-[#006B21] hover:bg-[#005a1b] text-white font-semibold text-base sm:text-lg py-3.5 px-8 sm:px-12 rounded-full flex items-center gap-3 transition-colors shadow-lg w-full sm:w-auto justify-center transform translate-x-12 sm:translate-x-20 lg:translate-x-24"
               >
                 Continue 
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
@@ -202,6 +203,7 @@ const Profile = () => {
         </div>
 
       </main>
+      <Footer />
     </div>
   );
 };

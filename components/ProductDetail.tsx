@@ -25,6 +25,7 @@ function ProductDetailContent() {
   const [isInCart, setIsInCart] = useState(false);
   const [similarItems, setSimilarItems] = useState<any[]>([]);
   const [loadingSimilar, setLoadingSimilar] = useState(false);
+  const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -436,56 +437,71 @@ function ProductDetailContent() {
             </div>
 
             {/* Option Cards Row */}
-            <div className="flex flex-col sm:flex-row gap-4 items-stretch">
+            <div className="flex flex-col sm:flex-row gap-3 items-stretch">
 
               {/* Card 1: Full Payment */}
               <div
                 onClick={() => setPaymentOption("full")}
-                className={`relative flex-1 p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${paymentOption === "full"
-                  ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
-                  : "border-zinc-200 bg-white"
+                className={`relative flex-1 p-3.5 rounded-[16px] border-2 cursor-pointer transition-all flex flex-col justify-between ${paymentOption === "full"
+                  ? "border-[#0d9740] bg-[#F5F5F5]"
+                  : "border-transparent bg-[#F5F5F5] hover:border-zinc-200"
                   }`}
               >
                 {paymentOption === "full" && (
-                  <div className="absolute top-[-10px] right-[-10px] bg-[#0d9740] text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md text-xs">
+                  <div className="absolute top-[-8px] right-[-8px] bg-[#0d9740] text-white w-5 h-5 rounded-full flex items-center justify-center shadow-md text-xs">
                     ✓
                   </div>
                 )}
-
+                
                 <div>
-                  <div className="bg-[#DFB33F] text-white text-[9px] font-bold py-1 px-2 rounded-[6px] inline-block mb-3">
-                    MOST PREFERRED
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${paymentOption === "full" ? "border-[#0d9740]" : "border-zinc-300"
-                      }`}>
-                      {paymentOption === "full" && (
-                        <div className="w-2.5 h-2.5 rounded-full bg-[#0d9740]" />
-                      )}
+                  <div className="flex justify-center mb-3">
+                    <div className="bg-[#DFB33F] text-white text-[10px] font-bold py-1 px-3 rounded-full flex items-center gap-1.5">
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                      MOST PREFERRED
                     </div>
-                    <h4 className="font-bold text-[#0F291B] text-[14px]">FULL PAYMENT</h4>
                   </div>
-                  <p className="text-[11px] text-[#6B7280] mt-1.5 pl-6">Pay complete amount today</p>
+                  
+                  <div className="text-left mb-3">
+                    <h4 className="font-bold text-[#6B7280] text-[13px]">FULL PAYMENT</h4>
+                    <p className="text-[11px] text-[#6B7280] mt-0.5">Pay complete amount today</p>
+                  </div>
+                  
+                  <div className="h-[1px] bg-zinc-200 w-full mb-3"></div>
 
-                  <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3 pl-6">
-                    <div className="flex justify-between">
-                      <span>Grand Total</span>
+                  <div className="flex flex-col gap-1.5">
+                    <div className="flex justify-between items-center text-[14px] text-[#4A4A4A]">
+                      <span>Order Total</span>
                       <span>₹{formatPrice((product.actual_rate || product.price) * quantity)}</span>
                     </div>
-                    {product.full_payment_discount > 0 && (
-                      <div className="flex justify-between text-[#0D9740]">
-                        <span>Full Pay Discount</span>
-                        <span>- ₹{formatPrice(product.full_payment_discount * quantity)}</span>
+                    {((product.actual_rate || product.price) - (product.full_payment_amount || product.price)) > 0 && (
+                      <div className="flex justify-between items-center text-[14px] text-[#0D9740]">
+                        <span>Instant Discount</span>
+                        <span>- ₹{formatPrice(((product.actual_rate || product.price) - (product.full_payment_amount || product.price)) * quantity)}</span>
                       </div>
                     )}
+                    <div className="flex justify-between items-center mt-1">
+                      <span className="text-[18px] font-bold text-black">Pay Now</span>
+                      <span className="text-[18px] font-bold text-black">₹{formatPrice((product.full_payment_amount || product.price) * quantity)}</span>
+                    </div>
+                  </div>
+
+                  <div className="h-[1px] bg-zinc-200 w-full my-3"></div>
+
+                  <div className="flex flex-col gap-2">
+                    {["Priority Dispatch", "Fastest Delivery", "Full Warranty Benefits", "Dedicated Support"].map(feat => (
+                      <div key={feat} className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-[#22C55E] rounded-full flex items-center justify-center text-white text-[9px]">✓</div>
+                        <span className="text-[13px] text-black font-medium">{feat}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                <div className="mt-6 border-t border-zinc-100 pt-3 pl-6">
-                  <span className="text-[11px] font-medium text-[#6B7280]">Pay Now</span>
-                  <div className="text-[20px] font-extrabold text-[#0f291b]">
-                    ₹{formatPrice((product.full_payment_amount || product.price) * quantity)}
-                  </div>
+                <div className="mt-4">
+                  <div className="h-[1px] bg-zinc-200 w-full mb-3"></div>
+                  <p className="text-[11px] text-[#6B7280] leading-tight">
+                    Most farmers choose full payment for faster processing.
+                  </p>
                 </div>
               </div>
 
@@ -493,74 +509,69 @@ function ProductDetailContent() {
               {hasCod && (
                 <div
                   onClick={() => setPaymentOption("booking")}
-                  className={`relative flex-1 p-5 rounded-[20px] border-2 cursor-pointer transition-all flex flex-col justify-between ${paymentOption === "booking"
-                    ? "border-[#0d9740] bg-[#0d9740]/[0.02]"
+                  className={`relative flex-1 p-3.5 rounded-[16px] border-2 cursor-pointer transition-all flex flex-col justify-between ${paymentOption === "booking"
+                    ? "border-[#0d9740] bg-white"
                     : "border-zinc-200 bg-white"
                     }`}
                 >
                   {paymentOption === "booking" && (
-                    <div className="absolute top-[-10px] right-[-10px] bg-[#0d9740] text-white w-6 h-6 rounded-full flex items-center justify-center shadow-md text-xs">
+                    <div className="absolute top-[-8px] right-[-8px] bg-[#0d9740] text-white w-5 h-5 rounded-full flex items-center justify-center shadow-md text-xs">
                       ✓
                     </div>
                   )}
 
                   <div>
-                    <div className="text-[9px] font-bold py-1 px-2 rounded-[6px] inline-block mb-3 border border-zinc-300 text-zinc-500 bg-zinc-50">
-                      CASH ON DELIVERY
+                    <div className="text-center mt-1 mb-3">
+                      <h4 className="font-bold text-[#6B7280] text-[13px] uppercase tracking-wide">BOOK PRODUCT</h4>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${paymentOption === "booking" ? "border-[#0d9740]" : "border-zinc-300"
-                        }`}>
-                      {paymentOption === "booking" && (
-                        <div className="w-2.5 h-2.5 rounded-full bg-[#0d9740]" />
-                      )}
+                    
+                    <div className="bg-[#F5F9F7] rounded-xl p-3 flex flex-col gap-1.5">
+                      <div className="flex justify-between items-center text-[13px] text-[#4A4A4A]">
+                        <span>Total Product Price</span>
+                        <span className="font-bold text-[#1A1A1A]">₹{formatPrice((product.actual_rate || product.price) * quantity)}</span>
                       </div>
-                      <h4 className="font-bold text-[#0F291B] text-[14px]">COD PAYMENT</h4>
-                    </div>
-                    <p className="text-[11px] text-[#6B7280] mt-1.5 pl-6">Pay deposit & balance on delivery</p>
+                      <div className="h-[1px] bg-zinc-200 w-full my-0.5"></div>
+                      <div className="flex justify-between items-center text-[12px] text-[#0D9740]">
+                        <span>Instant Discount</span>
+                        <span>- ₹{formatPrice(((product.actual_rate || product.price) - product.price) * quantity)}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[12px] bg-[#D4E8DC] px-2 py-1 rounded text-[#0F291B] mt-0.5">
+                        <span>Effective Total</span>
+                        <span>₹{formatPrice(product.price * quantity)}</span>
+                      </div>
+                      <div className="flex justify-between items-center mt-1">
+                        <span className="font-bold text-black text-[13px]">Pay Now (Booking)</span>
+                        <span className="font-bold text-[#0D9740] text-[14px]">₹{formatPrice(product.COD_Display * quantity)}</span>
+                      </div>
 
-                    <div className="mt-4 flex flex-col gap-1.5 text-xs text-[#374151] border-t border-zinc-100 pt-3 pl-6">
-                      <div className="flex justify-between">
-                        <span>Grand Total</span>
-                        <span>₹{formatPrice((product.actual_rate || product.price) * quantity)}</span>
+                      <div className="mt-2 pt-2 border-t border-zinc-200 flex justify-between items-center">
+                        <span className="font-bold text-[#6B7280] text-[13px]">Pay on Delivery</span>
+                        <span className="font-bold text-black text-[14px]">₹{formatPrice(product.COD_value * quantity)}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span>Pay Now (Deposit)</span>
-                        <span>₹{formatPrice(product.COD_Display * quantity)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Pay on Delivery</span>
-                        <span>₹{formatPrice(product.COD_value * quantity)}</span>
-                      </div>
+                    </div>
+
+                    <div className="h-[1px] bg-zinc-100 w-full my-3"></div>
+
+                    <div className="flex flex-col gap-2">
+                      {["Secure Your Product Today", "Balance Payable on Delivery", "Human Confirmation Support", "Easy Reservation Process"].map(feat => (
+                        <div key={feat} className="flex items-center gap-2">
+                          <div className="w-4 h-4 bg-[#EAEAEA] rounded-full flex items-center justify-center text-[#0d9740] text-[9px] font-bold">✓</div>
+                          <span className="text-[13px] text-black font-medium">{feat}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
 
-                  <div className="mt-6 border-t border-zinc-100 pt-3 flex flex-col pl-6">
-                    <div>
-                      <span className="text-[11px] font-medium text-[#6B7280]">Pay Now (Deposit)</span>
-                      <div className="text-[20px] font-extrabold text-[#0f291b]">
-                        ₹{formatPrice(product.COD_Display * quantity)}
-                      </div>
-                    </div>
-                    <div className="mt-1 text-[11px] text-zinc-500">
-                      Pay on Delivery: <span className="font-bold text-[#0f291b]">
-                        ₹{formatPrice(product.COD_value * quantity)}
-                      </span>
-                    </div>
+                  <div className="mt-4">
+                    <div className="h-[1px] bg-zinc-100 w-full mb-3"></div>
+                    <p className="text-[11px] text-[#6B7280] leading-tight">
+                      Only ₹{formatPrice(product.COD_Display)} required to reserve this product today. Remaining balance can be paid on delivery.
+                    </p>
                   </div>
                 </div>
               )}
 
             </div>
-
-            {/* helper text */}
-            {hasCod && (
-              <p className="text-[11px] text-[#6B7280] leading-relaxed text-center px-4">
-                {paymentOption === "full"
-                  ? "Most farmers choose full payment for faster processing."
-                  : `Only ₹${formatPrice(product.COD_Display)} required to reserve this product today. Remaining balance can be paid on delivery.`}
-              </p>
-            )}
 
             {/* Quantity Selector */}
             <div className="flex items-center justify-between py-3 px-4 bg-zinc-50 border border-zinc-100 rounded-[14px] mt-2 mb-1">
@@ -620,19 +631,38 @@ function ProductDetailContent() {
             </div>
 
             {/* Trust Badges */}
-            <div className="grid grid-cols-2 gap-4 border-t border-zinc-200/80 pt-6">
-              <div className="flex items-center gap-2 text-xs text-zinc-600 font-medium">
-                <span className="text-emerald-600 text-[18px]">📍</span> PAN India
+            <div className="grid grid-cols-2 gap-y-4 gap-x-2 pt-6">
+              <div className="flex items-center gap-2.5 text-sm text-[#4A4A4A] font-medium">
+                <svg className="w-4 h-4 text-[#0F291B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                PAN India
               </div>
-              <div className="flex items-center gap-2 text-xs text-zinc-600 font-medium">
-                <span className="text-emerald-600 text-[18px]">⚙️</span> Genuine Parts
+              <div className="flex items-center gap-2.5 text-sm text-[#4A4A4A] font-medium">
+                <svg className="w-4 h-4 text-[#0F291B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                Genuine Parts
               </div>
-              <div className="flex items-center gap-2 text-xs text-zinc-600 font-medium">
-                <span className="text-emerald-600 text-[18px]">🔧</span> Every 12 KM
+              <div className="flex items-center gap-2.5 text-sm text-[#4A4A4A] font-medium">
+                <svg className="w-4 h-4 text-[#0F291B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Every 12 KM
               </div>
-              <div className="flex items-center gap-2 text-xs text-zinc-600 font-medium">
-                <span className="text-emerald-600 text-[18px]">🛡️</span> Secure Payment
+              <div className="flex items-center gap-2.5 text-sm text-[#4A4A4A] font-medium">
+                <svg className="w-4 h-4 text-[#0F291B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                Secure Payment
               </div>
+            </div>
+
+            <div className="mt-5 bg-[#F6F8F6] border border-zinc-100 rounded-2xl p-4 flex items-center justify-center gap-2">
+              <span className="text-[18px]">🏆</span>
+              <span className="text-[#0F291B] font-bold text-[15px]">Trusted by 3,524 Farmers across India</span>
             </div>
 
           </div>
@@ -640,6 +670,68 @@ function ProductDetailContent() {
         </div>
 
       </main>
+
+      {/* ── Trust Banner Section ── */}
+      <section 
+        className="w-full py-12 border-t border-zinc-200 mt-8"
+        style={{ background: 'linear-gradient(135deg, #1A4D2E 0%, #1E4F30 7.14%, #235233 14.29%, #275435 21.43%, #2A5738 28.57%, #2E593B 35.71%, #325B3D 42.86%, #365E40 50%, #396042 57.14%, #3D6345 64.29%, #416547 71.43%, #44684A 78.57%, #486A4D 85.71%, #4B6D4F 92.86%, #4F6F52 100%)' }}
+      >
+        <div className="max-w-[1280px] mx-auto px-4 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6 text-center text-white">
+            <div className="flex flex-col items-center">
+              <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-4 shadow-sm border border-white/5">
+                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <h4 className="font-bold text-[15px] mb-1">PAN India Support</h4>
+              <p className="text-[12px] text-white/80">Service in 18,000+ locations</p>
+            </div>
+            
+            <div className="flex flex-col items-center">
+              <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-4 shadow-sm border border-white/5">
+                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </div>
+              <h4 className="font-bold text-[15px] mb-1">Spare Parts Available</h4>
+              <p className="text-[12px] text-white/80">24/7 availability guarantee</p>
+            </div>
+            
+            <div className="flex flex-col items-center">
+              <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-4 shadow-sm border border-white/5">
+                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <h4 className="font-bold text-[15px] mb-1">Presence Every 12 KM</h4>
+              <p className="text-[12px] text-white/80">Quick service access</p>
+            </div>
+            
+            <div className="flex flex-col items-center">
+              <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-4 shadow-sm border border-white/5">
+                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h4 className="font-bold text-[15px] mb-1">Fast Service</h4>
+              <p className="text-[12px] text-white/80">Same day response</p>
+            </div>
+            
+            <div className="flex flex-col items-center">
+              <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-4 shadow-sm border border-white/5">
+                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <h4 className="font-bold text-[15px] mb-1">Secure Payment</h4>
+              <p className="text-[12px] text-white/80">100% safe & encrypted</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ── Interactive Tabs & Technical Specifications ── */}
       <section className="w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-12">
@@ -723,6 +815,107 @@ function ProductDetailContent() {
         </div>
       </section>
 
+      {/* ── See It in Action Section ── */}
+      <section className="w-full bg-[#F6F8F6] py-12">
+        <div className="max-w-[1280px] mx-auto px-4 lg:px-8">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-[#0F291B]">See It in Action</h2>
+            <p className="text-sm text-zinc-500 mt-1">Real farmers, real results from across India</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Video 1 */}
+            <div 
+              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-zinc-100 group"
+              onClick={() => setActiveVideoUrl("https://www.youtube.com/embed/3rhBieQevLA?autoplay=1")}
+            >
+              <div className="relative aspect-video">
+                <img src="https://img.youtube.com/vi/3rhBieQevLA/hqdefault.jpg" alt="Farmer Success Story" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
+                    <svg className="w-6 h-6 text-[#0F291B] ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                  </div>
+                </div>
+                <div className="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">
+                  3:24
+                </div>
+              </div>
+              <div className="p-4">
+                <h4 className="font-bold text-[#0F291B] text-[14px]">Farmer Success Story</h4>
+                <p className="text-[12px] text-zinc-500 mt-1">Ramesh Kumar from Punjab</p>
+              </div>
+            </div>
+
+            {/* Video 2 */}
+            <div 
+              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-zinc-100 group"
+              onClick={() => setActiveVideoUrl("https://www.youtube.com/embed/7gGJHSmBGOM?autoplay=1")}
+            >
+              <div className="relative aspect-video">
+                <img src="https://img.youtube.com/vi/7gGJHSmBGOM/hqdefault.jpg" alt="Field Demo" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
+                    <svg className="w-6 h-6 text-[#0F291B] ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                  </div>
+                </div>
+                <div className="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">
+                  5:12
+                </div>
+              </div>
+              <div className="p-4">
+                <h4 className="font-bold text-[#0F291B] text-[14px]">Field Demo</h4>
+                <p className="text-[12px] text-zinc-500 mt-1">Ploughing Performance</p>
+              </div>
+            </div>
+
+            {/* Video 3 */}
+            <div 
+              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-zinc-100 group"
+              onClick={() => setActiveVideoUrl("https://www.youtube.com/embed/DX5_nQpXYjA?autoplay=1")}
+            >
+              <div className="relative aspect-video">
+                <img src="https://img.youtube.com/vi/DX5_nQpXYjA/hqdefault.jpg" alt="Installation Guide" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
+                    <svg className="w-6 h-6 text-[#0F291B] ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                  </div>
+                </div>
+                <div className="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">
+                  2:45
+                </div>
+              </div>
+              <div className="p-4">
+                <h4 className="font-bold text-[#0F291B] text-[14px]">Installation Guide</h4>
+                <p className="text-[12px] text-zinc-500 mt-1">Setup in 20 Minutes</p>
+              </div>
+            </div>
+
+            {/* Video 4 */}
+            <div 
+              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-zinc-100 group"
+              onClick={() => setActiveVideoUrl("https://www.youtube.com/embed/fGxiAGA4uf0?autoplay=1")}
+            >
+              <div className="relative aspect-video">
+                <img src="https://img.youtube.com/vi/fGxiAGA4uf0/hqdefault.jpg" alt="Exhibition Highlights" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
+                    <svg className="w-6 h-6 text-[#0F291B] ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                  </div>
+                </div>
+                <div className="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">
+                  4:18
+                </div>
+              </div>
+              <div className="p-4">
+                <h4 className="font-bold text-[#0F291B] text-[14px]">Exhibition Highlights</h4>
+                <p className="text-[12px] text-zinc-500 mt-1">India Agri Expo 2026</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* Similar Products Section */}
       {similarItems.length > 0 && (
         <section className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 pb-16 mt-8">
@@ -796,6 +989,28 @@ function ProductDetailContent() {
         isOpen={showLoginPrompt}
         onClose={() => setShowLoginPrompt(false)}
       />
+
+      {/* Video Modal */}
+      {activeVideoUrl && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4">
+          <button 
+            className="absolute top-6 right-6 text-white hover:text-gray-300 z-50 p-2"
+            onClick={() => setActiveVideoUrl(null)}
+          >
+            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+          <div className="relative w-full max-w-5xl aspect-video rounded-2xl overflow-hidden shadow-2xl bg-black">
+            <iframe 
+              className="absolute inset-0 w-full h-full" 
+              src={activeVideoUrl} 
+              title="YouTube video player" 
+              frameBorder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

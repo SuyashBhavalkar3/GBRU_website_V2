@@ -30,40 +30,48 @@ export default function Home() {
       <Navbar />
       <main className="flex-1">
         <Hero />
-        {/* Desktop only: Stats at top */}
+
+        {/* ── DESKTOP ONLY: Stats at top ── */}
         <div className="hidden lg:block">
           <Stats />
         </div>
-        {/* Desktop order: Categories then FieldExperiences */}
+
+        {/* ── DESKTOP ONLY: Categories ── */}
         <div className="hidden lg:block">
           <Categories />
         </div>
+
+        {/* ── FieldExperiences (guest only) — self-guards mobile/desktop internally ── */}
         {!isLoggedIn && <FieldExperiences />}
-        {/* Mobile order: Categories after FieldExperiences */}
+
+        {/* ── MOBILE ONLY: Categories (after FieldExperiences on mobile) ── */}
         <div className="block lg:hidden">
           <Categories />
         </div>
+
+        {/* ── BestSellingTools — self-guards mobile/desktop internally ── */}
         <BestSellingTools />
-        {/* Desktop order: ToolsInAction */}
+
+        {/* ── DESKTOP ONLY: ToolsInAction ── */}
         <div className="hidden lg:block">
           <ToolsInAction />
         </div>
-        {/* Mobile order: ToolsInAction (See tools in action) after Featured Products (BestSellingTools) ONLY when logged in */}
+
+        {/* ── MOBILE ONLY: ToolsInAction (only when logged in) ── */}
         {isLoggedIn && (
           <div className="block lg:hidden">
             <ToolsInAction />
           </div>
         )}
+
+        {/* ── DESKTOP ONLY: AppDownload, GbRUOnField, WhyGBRU (guest only) ── */}
         <div className="hidden lg:block">
           {!isLoggedIn && <AppDownload />}
-        </div>
-        {/* Desktop order: GbRUOnField then WhyGBRU */}
-        <div className="hidden lg:block">
           {!isLoggedIn && <GbRUOnField />}
           {!isLoggedIn && <WhyGBRU />}
         </div>
 
-        {/* Mobile order: WhyGBRU after Featured Products (BestSellingTools), then GbRUOnField ONLY when logged out */}
+        {/* ── MOBILE ONLY: WhyGBRU + GbRUOnField (guest only) ── */}
         {!isLoggedIn && (
           <div className="block lg:hidden">
             <WhyGBRU />
@@ -71,9 +79,10 @@ export default function Home() {
           </div>
         )}
 
+        {/* ── Testimonials — self-guards mobile/desktop internally ── */}
         <Testimonials />
 
-        {/* Mobile only layout order below Testimonials - ONLY when logged in */}
+        {/* ── MOBILE ONLY: HelpSupportBanner + Stats + AppDownloadBanner (logged in only) ── */}
         {isLoggedIn && (
           <div className="block lg:hidden">
             <HelpSupportBanner />
@@ -82,7 +91,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* Desktop only layout order below Testimonials */}
+        {/* ── DESKTOP ONLY: HelpSupportBanner + AppDownloadBanner ── */}
         <div className="hidden lg:block">
           <HelpSupportBanner />
           <AppDownloadBanner />

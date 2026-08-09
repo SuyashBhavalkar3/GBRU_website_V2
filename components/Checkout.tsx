@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastContext";
@@ -1285,7 +1286,14 @@ export default function Checkout() {
                   {/* Service Pincode Checker */}
                   <form onSubmit={checkPincode} className="bg-[#F8F9FA] rounded-[16px] p-4 flex flex-col md:flex-row items-center justify-between gap-4 border border-zinc-100">
                     <div className="flex items-center gap-3">
-                      <span className="text-[20px] text-[#0D9740]">📍</span>
+                      <div className="flex items-center justify-center w-7 h-7 shrink-0 mr-1 relative">
+                        <div 
+                          className="w-[20px] h-[20px] border-[2.5px] border-[#0F291B] rounded-tl-full rounded-tr-full rounded-bl-full rotate-45 flex items-center justify-center bg-transparent relative top-[-2px]"
+                          style={{ borderBottomRightRadius: '3px' }}
+                        >
+                          <div className="w-1.5 h-1.5 bg-[#0F291B] rounded-full" />
+                        </div>
+                      </div>
                       <div className="flex flex-col">
                         <span className="font-bold text-xs text-[#0F291B]">Service Availability</span>
                         <span className="text-[10px] text-zinc-500">Check if we deliver to your village or area.</span>
@@ -1484,7 +1492,10 @@ export default function Checkout() {
 
               {/* Offers & Coupons Section */}
               <div className="flex flex-col gap-3">
-                <span className="text-xs font-semibold text-[#0F291B] block">🏷️ Offers & Coupons</span>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Image src="/assets/coupon.png" alt="Coupon" width={20} height={20} className="shrink-0" />
+                  <span className="text-xs font-semibold text-[#0F291B] block">Offers & Coupons</span>
+                </div>
                 <span className="text-[10px] text-zinc-500 block -mt-1">Tap to apply coupon code. Use "GBRU10" to save ₹500.</span>
                 <div className="flex gap-2">
                   <input
@@ -1643,7 +1654,17 @@ export default function Checkout() {
                 disabled={placingOrder}
                 className={`w-full h-14 rounded-[14px] ${placingOrder ? 'bg-zinc-400' : 'bg-gradient-to-r from-[#1A4D2E] to-[#2A6F45] hover:opacity-90 active:scale-[0.99]'} text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm mt-2`}
               >
-                {placingOrder ? "Placing Order..." : "🔒 Place Order Securely"}
+                {placingOrder ? (
+                  "Placing Order..."
+                ) : (
+                  <>
+                    <div className="flex flex-col items-center justify-center w-5 h-5 shrink-0">
+                      <div className="w-[8px] h-[6px] border-[2px] border-b-0 border-white rounded-t-[4px]" />
+                      <div className="w-[12px] h-[10px] border-[2px] border-white rounded-[3px] -mt-[2px]" />
+                    </div>
+                    <span>Place Order Securely</span>
+                  </>
+                )}
               </button>
 
               <span className="text-[11px] text-zinc-500 text-center block">

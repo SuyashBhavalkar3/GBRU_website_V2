@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import { Package, Phone, Wrench, Shield } from "lucide-react";
 
 export default function OrderConfirmed() {
   const [orderId, setOrderId] = useState<string | null>(null);
@@ -98,8 +99,8 @@ export default function OrderConfirmed() {
         
         {/* Success Icon, Heading, and Order ID */}
         <div className="flex flex-col items-center text-center gap-3">
-          <div className="w-20 h-20 bg-[#0FA84D] rounded-full flex items-center justify-center text-white text-[44px] shadow-md border-4 border-white">
-            ✓
+          <div className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-md border-4 border-white">
+            <Image src="/assets/order_confirm.png" alt="Order Confirmed" width={80} height={80} className="object-cover" />
           </div>
           <h1 className="text-[36px] font-extrabold text-[#0F291B] tracking-tight">
             Order Confirmed!
@@ -162,13 +163,24 @@ export default function OrderConfirmed() {
             Continue Shopping
           </Link>
           <button className="h-12 bg-[#0FA84D] hover:bg-[#0b8a3d] text-white font-bold text-sm rounded-[14px] flex items-center justify-center gap-2 shadow-sm transition-all">
-            📞 Contact Support
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 shrink-0">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.896-1.596-5.275-3.975-6.871-6.871l1.293-.97c.362-.271.527-.733.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+            </svg>
+            Contact Support
           </button>
           <Link
             href="/orders"
             className="h-12 bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-sm rounded-[14px] flex items-center justify-center gap-2 shadow-sm transition-all"
           >
-            📍 Track Order
+            <div className="flex items-center justify-center w-5 h-5 shrink-0 relative">
+              <div 
+                className="w-[16px] h-[16px] border-[2px] border-white rounded-tl-full rounded-tr-full rounded-bl-full rotate-45 flex items-center justify-center bg-transparent relative top-[-1px]"
+                style={{ borderBottomRightRadius: '2px' }}
+              >
+                <div className="w-[5px] h-[5px] bg-white rounded-full" />
+              </div>
+            </div>
+            Track Order
           </Link>
         </div>
 
@@ -180,8 +192,10 @@ export default function OrderConfirmed() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Step 1 */}
-            <div className="flex flex-col gap-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg">📦</div>
+            <div className="flex items-start gap-3">
+              <div className="w-12 h-12 rounded-[14px] bg-[#EEF2EF] flex items-center justify-center shrink-0">
+                <Package className="w-6 h-6 text-[#163625]" strokeWidth={2.5} />
+              </div>
               <div className="flex flex-col gap-0.5">
                 <span className="font-bold text-xs text-[#0F291B]">Order Processing</span>
                 <span className="text-[10px] text-zinc-500 leading-normal">
@@ -191,8 +205,10 @@ export default function OrderConfirmed() {
             </div>
 
             {/* Step 2 */}
-            <div className="flex flex-col gap-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg">📞</div>
+            <div className="flex items-start gap-3">
+              <div className="w-12 h-12 rounded-[14px] bg-[#FDF8EB] flex items-center justify-center shrink-0">
+                <Phone className="w-6 h-6 text-[#D89B2B]" strokeWidth={2.5} />
+              </div>
               <div className="flex flex-col gap-0.5">
                 <span className="font-bold text-xs text-[#0F291B]">Expert Call</span>
                 <span className="text-[10px] text-zinc-500 leading-normal">
@@ -202,8 +218,10 @@ export default function OrderConfirmed() {
             </div>
 
             {/* Step 3 */}
-            <div className="flex flex-col gap-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg">🔧</div>
+            <div className="flex items-start gap-3">
+              <div className="w-12 h-12 rounded-[14px] bg-[#EEF2EF] flex items-center justify-center shrink-0">
+                <Wrench className="w-6 h-6 text-[#385341]" strokeWidth={2.5} />
+              </div>
               <div className="flex flex-col gap-0.5">
                 <span className="font-bold text-xs text-[#0F291B]">Free Installation</span>
                 <span className="text-[10px] text-zinc-500 leading-normal">
@@ -213,8 +231,10 @@ export default function OrderConfirmed() {
             </div>
 
             {/* Step 4 */}
-            <div className="flex flex-col gap-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg">🛡️</div>
+            <div className="flex items-start gap-3">
+              <div className="w-12 h-12 rounded-[14px] bg-[#E8F8ED] flex items-center justify-center shrink-0">
+                <Shield className="w-6 h-6 text-[#1FA652]" strokeWidth={2.5} />
+              </div>
               <div className="flex flex-col gap-0.5">
                 <span className="font-bold text-xs text-[#0F291B]">Warranty Activation</span>
                 <span className="text-[10px] text-zinc-500 leading-normal">
@@ -226,7 +246,10 @@ export default function OrderConfirmed() {
         </div>
 
         {/* Manage with Shoption App Card */}
-        <div className="max-w-[800px] w-full bg-[#0F2F20] text-white rounded-[24px] overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 p-8 shadow-sm relative mt-4">
+        <div 
+          className="max-w-[800px] w-full text-white rounded-[24px] overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 p-8 shadow-sm relative mt-4"
+          style={{ background: 'linear-gradient(343.13deg, #0B5D3B 3.06%, #043321 55.88%)' }}
+        >
           <div className="flex flex-col gap-5 flex-1 z-10">
             <h3 className="font-bold text-[22px] leading-tight max-w-sm">
               Manage with Shoption App
@@ -263,7 +286,7 @@ export default function OrderConfirmed() {
               src="/assets/mobile-screen-mockup.png"
               alt="Shoption App Mockup"
               fill
-              className="object-contain -scale-x-100"
+              className="object-contain"
             />
           </div>
         </div>
