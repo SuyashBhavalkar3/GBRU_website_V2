@@ -165,16 +165,79 @@ export default function CategoriesPage() {
       </main>
 
       {/* GBRU Advantage Section */}
-      <div className="w-full bg-[#F8F9FA] pt-12 pb-24">
+      <div className="w-full bg-[#F9FAFB] pt-10 pb-16">
         <div className="max-w-[1280px] mx-auto px-4 lg:px-8">
-          <div className="flex flex-col items-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-bold text-[#1A1A1A] mb-4">
+          
+          {/* Section Header */}
+          <div className="flex flex-col items-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-roboto font-bold text-[#1A1A1A] mb-3">
               The GBRU Advantage
             </h2>
-            <div className="w-12 h-1 bg-[#006B21] rounded-full"></div>
+            <div className="w-12 h-1 bg-[#006B21] rounded-full hidden md:block"></div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* ── MOBILE VIEW: List Layout (Horizontal Split Cards) ── */}
+          <div className="block md:hidden flex flex-col gap-4">
+            
+            {/* Card 1: Certified Quality */}
+            <div className="w-full bg-[#F3F4F6]/50 rounded-[18px] p-5 flex items-start gap-4 border border-[#E5E7EB]">
+              {/* Icon box container */}
+              <div className="w-12 h-12 bg-[#E1EFEB] rounded-[10px] flex items-center justify-center shrink-0">
+                <svg className="w-6 h-6 text-[#006B21] fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="2.2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <div className="flex flex-col text-left">
+                <h3 className="font-roboto font-bold text-[#111827] text-[15px] mb-1">
+                  Certified Quality
+                </h3>
+                <p className="font-roboto font-normal text-[#4B5563] text-[13px] leading-relaxed">
+                  Every machine and tool undergoes rigorous stress testing for heavy-duty field use.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 2: Expert Installation */}
+            <div className="w-full bg-[#F3F4F6]/50 rounded-[18px] p-5 flex items-start gap-4 border border-[#E5E7EB]">
+              {/* Icon box container */}
+              <div className="w-12 h-12 bg-[#E1EFEB] rounded-[10px] flex items-center justify-center shrink-0">
+                <svg className="w-6 h-6 text-[#006B21] fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="2.2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <div className="flex flex-col text-left">
+                <h3 className="font-roboto font-bold text-[#111827] text-[15px] mb-1">
+                  Expert Installation
+                </h3>
+                <p className="font-roboto font-normal text-[#4B5563] text-[13px] leading-relaxed">
+                  On-site setup and technical training by our team across India.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 3: Lifelong Support */}
+            <div className="w-full bg-[#F3F4F6]/50 rounded-[18px] p-5 flex items-start gap-4 border border-[#E5E7EB]">
+              {/* Icon box container */}
+              <div className="w-12 h-12 bg-[#E1EFEB] rounded-[10px] flex items-center justify-center shrink-0">
+                <svg className="w-6 h-6 text-[#006B21] fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="2.2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M18.435 19a2 2 0 01-1.807-1.143L16 16.5M15.565 19a2 2 0 001.807-1.143L18 16.5m-9.587-2.448l-1.09-1.924a1.996 1.996 0 010-1.856l1.09-1.924M14 6h.01M18 10a6 6 0 00-12 0v3a2 2 0 01-2 2h0a2 2 0 01-2-2v-3a10 10 0 0120 0v3a2 2 0 01-2 2h0a2 2 0 01-2-2v-3z" />
+                </svg>
+              </div>
+              <div className="flex flex-col text-left">
+                <h3 className="font-roboto font-bold text-[#111827] text-[15px] mb-1">
+                  Lifelong Support
+                </h3>
+                <p className="font-roboto font-normal text-[#4B5563] text-[13px] leading-relaxed">
+                  Access to 24/7 technical assistance for the life of your equipment.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+          {/* ── DESKTOP VIEW: Grid Layout (Unchanged) ── */}
+          <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-8">
             {advantages.map((adv) => (
               <div key={adv.id} className="bg-white rounded-2xl p-8 flex flex-col items-center text-center hover:shadow-md transition-shadow">
                 {/* Icon Container */}
@@ -191,6 +254,7 @@ export default function CategoriesPage() {
               </div>
             ))}
           </div>
+
         </div>
       </div>
 
