@@ -397,8 +397,8 @@ export default function OrderList() {
           </div>
         </div>
 
-        {/* 4. Statistics cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* 4. Statistics cards — hidden on mobile, shown on md+ */}
+        <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Total Orders Card */}
           <div className="bg-white border border-[#CDE5D2] rounded-[24px] p-6 text-left shadow-sm space-y-4">
             <span className="text-zinc-500 text-sm font-bold font-roboto">Total Orders</span>
@@ -444,145 +444,248 @@ export default function OrderList() {
               const isBookingPaid = Number(order.received_amount || 0) >= Number(order.payupreferedamount || 0);
 
               return (
-                <div
-                  key={order.order_id || idx}
-                  className="bg-white border border-[#CDE5D2] rounded-[32px] p-6 md:p-8 flex flex-col md:flex-row justify-between items-stretch gap-6 md:gap-0 shadow-sm"
-                >
-                  {/* Column 1: Order Meta */}
-                  <div className="flex-1 flex flex-col justify-between text-left space-y-4">
-                    <div>
-                      <span className="text-xs font-bold text-zinc-400 block mb-1">ORDER ID</span>
-                      <h4 className="text-xl font-bold text-[#0F291B] font-roboto">#{order.order_id}</h4>
-                    </div>
+                <div key={order.order_id || idx}>
 
-                    <div>
-                      <span className="text-xs font-bold text-zinc-400 block mb-1">ORDER DATE</span>
-                      <span className="text-sm font-semibold text-zinc-700">{order.date ? order.date.split(" ")[0] : ""}</span>
-                    </div>
+                  {/* ============================================================ */}
+                  {/* MOBILE CARD — Figma spec: 358w, br-24, p-16, gap-10, border  */}
+                  {/* ============================================================ */}
+                  <div className="block md:hidden bg-white border border-zinc-200 rounded-[24px] p-4 flex flex-col" style={{ gap: "10px" }}>
 
-                    <div className="flex flex-col gap-2">
-                      {isFullPayment ? (
-                        <div className="inline-flex items-center gap-1.5 bg-[#E8F5E9] text-[#2E7D32] px-3 py-1 rounded-full text-xs font-extrabold w-fit uppercase">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]" />
-                          <span>Full Payment</span>
-                        </div>
-                      ) : isBookingPaid ? (
-                        <div className="inline-flex items-center gap-1.5 bg-[#E8F5E9] text-[#2E7D32] px-3 py-1 rounded-full text-xs font-extrabold w-fit uppercase">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]" />
-                          <span>Booked (COD)</span>
-                        </div>
-                      ) : (
-                        <div className="inline-flex items-center gap-1.5 bg-[#FFF3E0] text-[#E65100] px-3 py-1 rounded-full text-xs font-extrabold w-fit uppercase">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#E65100]" />
-                          <span>Book Now (COD)</span>
-                        </div>
-                      )}
-
-                      <div className="text-zinc-500 text-xs font-medium">
-                        Preferred Payment Mode: <span className="font-bold text-zinc-700">{order.payupreferedmode || "Online"}</span>
+                    {/* Top row: Order ID + Status badge */}
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h4 className="text-[17px] font-bold text-[#0F291B] font-roboto tracking-tight">
+                          #{order.order_id}
+                        </h4>
+                        <span className="text-[13px] text-zinc-400 font-medium mt-0.5 block">
+                          {order.date ? new Date(order.date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : ""}
+                        </span>
                       </div>
-                      {Number(order.payupreferedamount || 0) > 0 && (
-                        <div className="text-zinc-500 text-xs font-medium mt-1">
-                          Preferred Payment Amount: <span className="font-bold text-[#0D9740]">₹{Number(order.payupreferedamount).toLocaleString('en-IN')}</span>
-                        </div>
+
+                      {/* Status badge */}
+                      {isFullPayment ? (
+                        <span className="flex items-center gap-1.5 bg-emerald-50 text-[#1a5c2a] text-[11px] font-bold px-3 py-1 rounded-full border border-emerald-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32] flex-shrink-0" />
+                          FULL PAYMENT
+                        </span>
+                      ) : isBookingPaid ? (
+                        <span className="flex items-center gap-1.5 bg-emerald-50 text-[#1a5c2a] text-[11px] font-bold px-3 py-1 rounded-full border border-emerald-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32] flex-shrink-0" />
+                          BOOKED
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1.5 bg-orange-50 text-[#b84c00] text-[11px] font-bold px-3 py-1 rounded-full border border-orange-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#E65100] flex-shrink-0" />
+                          BOOK NOW
+                        </span>
                       )}
                     </div>
-                  </div>
 
-                  {/* Column 2: Financial Details (with Dividers) */}
-                  <div className="flex-1 flex flex-col justify-center gap-4 md:border-l md:border-r md:border-zinc-150 md:px-8 py-2">
-                    {/* Total Amount Row */}
-                    <div className="flex justify-between items-center">
-                      <span className="text-zinc-400 text-xs font-bold font-roboto">TOTAL AMOUNT</span>
-                      <span className="text-lg font-bold text-[#0D9740]">₹{Number(order.total_amount).toLocaleString('en-IN')}</span>
+                    {/* Divider */}
+                    <div className="h-px bg-zinc-100" />
+
+                    {/* Amount rows */}
+                    <div className="flex flex-col" style={{ gap: "0px" }}>
+                      {/* Total Amount */}
+                      <div className="flex items-center justify-between py-3 border-b border-zinc-100">
+                        <span className="text-[11px] font-bold text-zinc-400 tracking-wide uppercase">Total Amount</span>
+                        <span className="text-[18px] font-bold text-[#0F291B]">₹{Number(order.total_amount).toLocaleString("en-IN")}</span>
+                      </div>
+
+                      {/* Received Amount */}
+                      <div className="flex items-center justify-between py-3 border-b border-zinc-100">
+                        <span className="text-[11px] font-bold text-zinc-400 tracking-wide uppercase">Received Amount</span>
+                        <span className="text-[18px] font-bold text-[#0D9740]">₹{Number(order.received_amount).toLocaleString("en-IN")}</span>
+                      </div>
+
+                      {/* Pending Amount */}
+                      <div className="flex items-center justify-between py-3">
+                        <span className={`text-[11px] font-bold tracking-wide uppercase ${pendingAmt > 0 ? "text-red-500" : "text-zinc-400"}`}>Pending Amount</span>
+                        <span className={`text-[18px] font-bold ${pendingAmt > 0 ? "text-red-500" : "text-[#0F291B]"}`}>
+                          ₹{pendingAmt.toLocaleString("en-IN")}
+                        </span>
+                      </div>
                     </div>
-                    <div className="h-[1px] bg-zinc-100" />
 
-                    {/* Received Amount Row */}
-                    <div className="flex justify-between items-center">
-                      <span className="text-zinc-400 text-xs font-bold font-roboto">RECEIVED AMOUNT</span>
-                      <span className="text-lg font-bold text-[#0D9740]">₹{Number(order.received_amount).toLocaleString('en-IN')}</span>
-                    </div>
-                    <div className="h-[1px] bg-zinc-100" />
-
-                    {/* Pending Amount Row */}
-                    <div className="flex justify-between items-center">
-                      <span className="text-zinc-400 text-xs font-bold font-roboto">PENDING AMOUNT</span>
-                      <span className="text-lg font-bold text-[#0D9740]">
-                        ₹{pendingAmt.toLocaleString('en-IN')}
-                      </span>
-                    </div>
-
-                    {/* Unsettled Amount Row */}
-                    <div className="h-[1px] bg-zinc-100" />
-                    <div className="flex justify-between items-center">
-                      <span className="text-zinc-400 text-xs font-bold font-roboto">UNSETTLED AMOUNT</span>
-                      <span className="text-lg font-bold text-[#0D9740]">₹{Number(order.unsettled_amount || 0).toLocaleString('en-IN')}</span>
-                    </div>
-                  </div>
-
-                  {/* Column 3: CTAs */}
-                  <div className="flex-1 flex flex-col justify-center items-stretch md:items-center gap-3 md:pl-8">
                     {/* Pay Now Button */}
-                    {!isFullPayment ? (
-                      // For COD/Booking orders, only allow paying the booking deposit (if not already paid)
-                      !isBookingPaid && Number(order.payupreferedamount || 0) > 0 && (
-                        <button
-                          disabled={payingOrderId === order.order_id}
-                          onClick={() => handlePayNow(order.order_id, Number(order.payupreferedamount))}
-                          className="w-full md:max-w-[200px] text-white bg-[#1E532E] hover:bg-[#153B21] font-bold py-2.5 rounded-xl transition-all duration-200 font-roboto text-xs flex items-center justify-center"
-                        >
-                          {payingOrderId === order.order_id ? "Processing..." : (
-                            <span className="flex items-center gap-1.5 justify-center">
-                              <CreditCard className="w-4 h-4 shrink-0" />
-                              Pay Booking Deposit (₹{Number(order.payupreferedamount).toLocaleString('en-IN')})
-                            </span>
-                          )}
-                        </button>
-                      )
-                    ) : (
-                      // For Full Payment orders, allow paying the pending amount if it's > 0
-                      pendingAmt > 0 && (
-                        <button
-                          disabled={payingOrderId === order.order_id}
-                          onClick={() => handlePayNow(order.order_id, pendingAmt)}
-                          className="w-full md:max-w-[200px] text-white bg-[#1E532E] hover:bg-[#153B21] font-bold py-3.5 rounded-2xl transition-all duration-200 font-roboto text-sm flex items-center justify-center"
-                        >
-                          {payingOrderId === order.order_id ? (
-                            <span className="flex items-center gap-1.5 justify-center">
-                              <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                              </svg>
-                              Processing...
-                            </span>
-                          ) : (
-                            <span className="flex items-center gap-1.5 justify-center">
-                              <CreditCard className="w-4 h-4 shrink-0" />
-                              Pay Pending (₹{pendingAmt.toLocaleString('en-IN')})
-                            </span>
-                          )}
-                        </button>
-                      )
-                    )}                    {/* View Details Outline Button */}
-                    <Link
-                      href={`/orders/${order.order_id}`}
-                      className="w-full md:max-w-[200px] border border-[#1E532E] hover:bg-[#1E532E]/5 text-[#1E532E] font-bold py-3.5 rounded-2xl transition-all duration-200 font-roboto text-sm flex items-center justify-center"
-                    >
-                      View Details
-                    </Link>
+                    <div className="flex flex-col gap-2 mt-1">
+                      {!isFullPayment ? (
+                        !isBookingPaid && Number(order.payupreferedamount || 0) > 0 ? (
+                          <button
+                            disabled={payingOrderId === order.order_id}
+                            onClick={() => handlePayNow(order.order_id, Number(order.payupreferedamount))}
+                            className="w-full h-[52px] bg-[#1B5E20] hover:bg-[#154a19] disabled:opacity-60 text-white font-bold text-[16px] rounded-2xl transition-all flex items-center justify-center"
+                          >
+                            {payingOrderId === order.order_id ? "Processing..." : "Pay Now"}
+                          </button>
+                        ) : (
+                          <button disabled className="w-full h-[52px] bg-zinc-100 text-zinc-400 font-bold text-[16px] rounded-2xl cursor-not-allowed">
+                            Booking Paid
+                          </button>
+                        )
+                      ) : (
+                        pendingAmt > 0 ? (
+                          <button
+                            disabled={payingOrderId === order.order_id}
+                            onClick={() => handlePayNow(order.order_id, pendingAmt)}
+                            className="w-full h-[52px] bg-[#1B5E20] hover:bg-[#154a19] disabled:opacity-60 text-white font-bold text-[16px] rounded-2xl transition-all flex items-center justify-center"
+                          >
+                            {payingOrderId === order.order_id ? "Processing..." : "Pay Now"}
+                          </button>
+                        ) : (
+                          <button disabled className="w-full h-[52px] bg-zinc-100 text-zinc-400 font-bold text-[16px] rounded-2xl cursor-not-allowed">
+                            Fully Paid ✓
+                          </button>
+                        )
+                      )}
 
-                    {/* Help Link */}
-                    <Link
-                      href="/help-centre"
-                      className="inline-flex items-center justify-center gap-1 text-[#1E532E] hover:text-[#153B21] transition-colors text-xs font-bold mt-1.5"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>Help</span>
-                    </Link>
+                      {/* View Details */}
+                      <Link
+                        href={`/orders/${order.order_id}`}
+                        className="w-full h-[52px] border-2 border-[#1B5E20] text-[#1B5E20] hover:bg-[#1B5E20]/5 font-bold text-[16px] rounded-2xl transition-all flex items-center justify-center"
+                      >
+                        View Details
+                      </Link>
+
+                      {/* Help */}
+                      <Link
+                        href="/help-centre"
+                        className="flex items-center justify-center gap-1.5 text-[#1B5E20] text-[13px] font-semibold py-1"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Help
+                      </Link>
+                    </div>
                   </div>
+
+                  {/* ============================================================ */}
+                  {/* DESKTOP CARD — original layout, unchanged                    */}
+                  {/* ============================================================ */}
+                  <div className="hidden md:flex bg-white border border-[#CDE5D2] rounded-[32px] p-6 md:p-8 flex-col md:flex-row justify-between items-stretch gap-6 md:gap-0 shadow-sm">
+                    {/* Column 1: Order Meta */}
+                    <div className="flex-1 flex flex-col justify-between text-left space-y-4">
+                      <div>
+                        <span className="text-xs font-bold text-zinc-400 block mb-1">ORDER ID</span>
+                        <h4 className="text-xl font-bold text-[#0F291B] font-roboto">#{order.order_id}</h4>
+                      </div>
+
+                      <div>
+                        <span className="text-xs font-bold text-zinc-400 block mb-1">ORDER DATE</span>
+                        <span className="text-sm font-semibold text-zinc-700">{order.date ? order.date.split(" ")[0] : ""}</span>
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        {isFullPayment ? (
+                          <div className="inline-flex items-center gap-1.5 bg-[#E8F5E9] text-[#2E7D32] px-3 py-1 rounded-full text-xs font-extrabold w-fit uppercase">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]" />
+                            <span>Full Payment</span>
+                          </div>
+                        ) : isBookingPaid ? (
+                          <div className="inline-flex items-center gap-1.5 bg-[#E8F5E9] text-[#2E7D32] px-3 py-1 rounded-full text-xs font-extrabold w-fit uppercase">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]" />
+                            <span>Booked (COD)</span>
+                          </div>
+                        ) : (
+                          <div className="inline-flex items-center gap-1.5 bg-[#FFF3E0] text-[#E65100] px-3 py-1 rounded-full text-xs font-extrabold w-fit uppercase">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#E65100]" />
+                            <span>Book Now (COD)</span>
+                          </div>
+                        )}
+                        <div className="text-zinc-500 text-xs font-medium">
+                          Preferred Payment Mode: <span className="font-bold text-zinc-700">{order.payupreferedmode || "Online"}</span>
+                        </div>
+                        {Number(order.payupreferedamount || 0) > 0 && (
+                          <div className="text-zinc-500 text-xs font-medium mt-1">
+                            Preferred Payment Amount: <span className="font-bold text-[#0D9740]">₹{Number(order.payupreferedamount).toLocaleString("en-IN")}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Column 2: Financial Details */}
+                    <div className="flex-1 flex flex-col justify-center gap-4 md:border-l md:border-r md:border-zinc-150 md:px-8 py-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-zinc-400 text-xs font-bold font-roboto">TOTAL AMOUNT</span>
+                        <span className="text-lg font-bold text-[#0D9740]">₹{Number(order.total_amount).toLocaleString("en-IN")}</span>
+                      </div>
+                      <div className="h-[1px] bg-zinc-100" />
+                      <div className="flex justify-between items-center">
+                        <span className="text-zinc-400 text-xs font-bold font-roboto">RECEIVED AMOUNT</span>
+                        <span className="text-lg font-bold text-[#0D9740]">₹{Number(order.received_amount).toLocaleString("en-IN")}</span>
+                      </div>
+                      <div className="h-[1px] bg-zinc-100" />
+                      <div className="flex justify-between items-center">
+                        <span className="text-zinc-400 text-xs font-bold font-roboto">PENDING AMOUNT</span>
+                        <span className="text-lg font-bold text-[#0D9740]">₹{pendingAmt.toLocaleString("en-IN")}</span>
+                      </div>
+                      <div className="h-[1px] bg-zinc-100" />
+                      <div className="flex justify-between items-center">
+                        <span className="text-zinc-400 text-xs font-bold font-roboto">UNSETTLED AMOUNT</span>
+                        <span className="text-lg font-bold text-[#0D9740]">₹{Number(order.unsettled_amount || 0).toLocaleString("en-IN")}</span>
+                      </div>
+                    </div>
+
+                    {/* Column 3: CTAs */}
+                    <div className="flex-1 flex flex-col justify-center items-stretch md:items-center gap-3 md:pl-8">
+                      {!isFullPayment ? (
+                        !isBookingPaid && Number(order.payupreferedamount || 0) > 0 && (
+                          <button
+                            disabled={payingOrderId === order.order_id}
+                            onClick={() => handlePayNow(order.order_id, Number(order.payupreferedamount))}
+                            className="w-full md:max-w-[200px] text-white bg-[#1E532E] hover:bg-[#153B21] font-bold py-2.5 rounded-xl transition-all duration-200 font-roboto text-xs flex items-center justify-center"
+                          >
+                            {payingOrderId === order.order_id ? "Processing..." : (
+                              <span className="flex items-center gap-1.5 justify-center">
+                                <CreditCard className="w-4 h-4 shrink-0" />
+                                Pay Booking Deposit (₹{Number(order.payupreferedamount).toLocaleString("en-IN")})
+                              </span>
+                            )}
+                          </button>
+                        )
+                      ) : (
+                        pendingAmt > 0 && (
+                          <button
+                            disabled={payingOrderId === order.order_id}
+                            onClick={() => handlePayNow(order.order_id, pendingAmt)}
+                            className="w-full md:max-w-[200px] text-white bg-[#1E532E] hover:bg-[#153B21] font-bold py-3.5 rounded-2xl transition-all duration-200 font-roboto text-sm flex items-center justify-center"
+                          >
+                            {payingOrderId === order.order_id ? (
+                              <span className="flex items-center gap-1.5 justify-center">
+                                <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                </svg>
+                                Processing...
+                              </span>
+                            ) : (
+                              <span className="flex items-center gap-1.5 justify-center">
+                                <CreditCard className="w-4 h-4 shrink-0" />
+                                Pay Pending (₹{pendingAmt.toLocaleString("en-IN")})
+                              </span>
+                            )}
+                          </button>
+                        )
+                      )}
+                      <Link
+                        href={`/orders/${order.order_id}`}
+                        className="w-full md:max-w-[200px] border border-[#1E532E] hover:bg-[#1E532E]/5 text-[#1E532E] font-bold py-3.5 rounded-2xl transition-all duration-200 font-roboto text-sm flex items-center justify-center"
+                      >
+                        View Details
+                      </Link>
+                      <Link
+                        href="/help-centre"
+                        className="inline-flex items-center justify-center gap-1 text-[#1E532E] hover:text-[#153B21] transition-colors text-xs font-bold mt-1.5"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Help</span>
+                      </Link>
+                    </div>
+                  </div>
+
                 </div>
               );
             })
