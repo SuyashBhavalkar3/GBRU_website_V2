@@ -561,144 +561,230 @@ export default function UserProfile() {
     <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col">
       <Navbar />
 
-      <main className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 py-8 flex-1 flex flex-col gap-8">
+      <main className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 py-4 lg:py-8 flex-1 flex flex-col gap-4 lg:gap-8">
 
-        {/* User Welcome Banner Card */}
-        <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+        {/* ========================================== */}
+        {/* MOBILE LAYOUT (mockup) — visible on mobile screens only */}
+        {/* ========================================== */}
+        <div className="block lg:hidden w-full" style={{ padding: "12px 20px 16px 20px" }}>
+          {/* Header row: Left profile pic, Right name/desc */}
           <div className="flex items-center gap-4">
-            <div className="relative w-16 h-16 flex-shrink-0">
-              <div className="w-16 h-16 rounded-full border border-emerald-200 bg-emerald-100 text-emerald-700 flex items-center justify-center overflow-hidden shadow-sm">
+            <div className="relative w-20 h-20 flex-shrink-0">
+              <div className="w-20 h-20 rounded-full border border-emerald-200 bg-emerald-100 text-emerald-700 flex items-center justify-center overflow-hidden shadow-sm">
                 {profileImage ? (
                   <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-2xl font-bold uppercase">
+                  <span className="text-3xl font-bold uppercase">
                     {userName && userName !== "Loading..." ? userName.charAt(0) : "U"}
                   </span>
                 )}
               </div>
-              <div className="absolute bottom-[2px] right-[2px] bg-[#0D8534] text-white w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-white z-10 shadow-sm translate-x-1 translate-y-1">
+              <div className="absolute bottom-[2px] right-[2px] bg-[#0D8534] text-white w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-white z-10 shadow-sm">
                 <BadgeCheck className="w-[14px] h-[14px] text-white stroke-[2.5]" />
               </div>
             </div>
-            <div className="flex flex-col">
-              <h1 className="text-xl font-extrabold text-[#0F291B] flex items-center gap-1.5 leading-snug">
-                Hello, {userName} 👋
+
+            <div className="flex flex-col text-left">
+              <h1 className="text-[22px] font-bold text-[#1F2937] leading-tight flex items-center gap-1.5">
+                Hello, {userName} <span className="inline-block animate-bounce">👋</span>
               </h1>
-              <span className="text-xs text-zinc-500">
+              <p className="text-[12px] text-zinc-500 font-medium leading-tight mt-0.5">
                 Manage your account and orders easily
-              </span>
-              <span className="text-[11px] text-[#0FA84D] font-semibold mt-1 flex items-center gap-1">
-                <Phone className="w-3 h-3" /> {userPhone}
-              </span>
+              </p>
             </div>
           </div>
 
-          <button
-            onClick={() => {
-              setShowEditProfileModal(true);
-            }}
-            className="h-10 px-6 border border-[#0D9740]/60 hover:bg-[#0D9740]/[0.02] text-[#0D9740] font-bold text-xs rounded-[10px] shadow-sm transition-all"
-          >
-            Edit Profile
-          </button>
-        </div>
+          {/* Subheader action row: Left phone, Right edit button */}
+          <div className="flex items-center justify-between mt-4">
+            <span className="text-[14px] text-[#374151] font-semibold flex items-center gap-1.5">
+              <Phone className="w-4 h-4 text-zinc-600" /> {userPhone}
+            </span>
+            <button
+              onClick={() => setShowEditProfileModal(true)}
+              className="h-9 px-5 border border-[#0D9740] hover:bg-[#0D9740]/[0.02] text-[#0D9740] font-bold text-xs rounded-lg transition-all"
+            >
+              Edit Profile
+            </button>
+          </div>
 
-        {/* Account Shortcuts */}
-        <div className="flex flex-col gap-4">
-          <h3 className="font-bold text-[#0F291B] text-sm tracking-wide uppercase">
-            Account Shortcuts
-          </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+          {/* Mobile Account Shortcuts — 5 icon cards inline */}
+          <div className="mt-4 flex gap-2 overflow-x-auto pb-2 scrollbar-none w-full justify-between">
             <Link
               href="/orders"
-              className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow"
+              className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]"
             >
-              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><Package className="w-5 h-5" /></div>
-              <span className="font-bold text-xs text-[#0F291B]">My Orders</span>
+              <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center">
+                <Package className="w-4 h-4" />
+              </div>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">My Orders</span>
             </Link>
             <div
               onClick={() => {
                 const el = document.getElementById("saved-addresses");
                 if (el) el.scrollIntoView({ behavior: "smooth" });
               }}
-              className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer"
+              className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px] cursor-pointer"
             >
-              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><MapPin className="w-5 h-5" /></div>
-              <span className="font-bold text-xs text-[#0F291B]">Addresses</span>
+              <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center">
+                <MapPin className="w-4 h-4" />
+              </div>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Addresses</span>
             </div>
-            <Link href="/payments" className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><Banknote className="w-5 h-5" /></div>
-              <span className="font-bold text-xs text-[#0F291B]">Payments</span>
+            <Link
+              href="/payments"
+              className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]"
+            >
+              <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center">
+                <Banknote className="w-4 h-4" />
+              </div>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Payments</span>
             </Link>
-            <Link href="/notifications" className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><Bell className="w-5 h-5" /></div>
-              <span className="font-bold text-xs text-[#0F291B]">Notifications</span>
+            <Link
+              href="/notifications"
+              className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]"
+            >
+              <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center">
+                <Bell className="w-4 h-4" />
+              </div>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Notifications</span>
             </Link>
-            <Link href="/help-centre" className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><Headphones className="w-5 h-5" /></div>
-              <span className="font-bold text-xs text-[#0F291B]">Support</span>
+            <Link
+              href="/help-centre"
+              className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]"
+            >
+              <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center">
+                <Headphones className="w-4 h-4" />
+              </div>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Support</span>
             </Link>
           </div>
         </div>
 
+        {/* ========================================== */}
+        {/* DESKTOP LAYOUT (Original) — untouched */}
+        {/* ========================================== */}
+        <div className="hidden lg:flex flex-col gap-8 w-full">
+          {/* User Welcome Banner Card */}
+          <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="relative w-16 h-16 flex-shrink-0">
+                <div className="w-16 h-16 rounded-full border border-emerald-200 bg-emerald-100 text-emerald-700 flex items-center justify-center overflow-hidden shadow-sm">
+                  {profileImage ? (
+                    <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-2xl font-bold uppercase">
+                      {userName && userName !== "Loading..." ? userName.charAt(0) : "U"}
+                    </span>
+                  )}
+                </div>
+                <div className="absolute bottom-[2px] right-[2px] bg-[#0D8534] text-white w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-white z-10 shadow-sm translate-x-1 translate-y-1">
+                  <BadgeCheck className="w-[14px] h-[14px] text-white stroke-[2.5]" />
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <h1 className="text-xl font-extrabold text-[#0F291B] flex items-center gap-1.5 leading-snug">
+                  Hello, {userName} 👋
+                </h1>
+                <span className="text-xs text-zinc-500">
+                  Manage your account and orders easily
+                </span>
+                <span className="text-[11px] text-[#0FA84D] font-semibold mt-1 flex items-center gap-1">
+                  <Phone className="w-3 h-3" /> {userPhone}
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setShowEditProfileModal(true);
+              }}
+              className="h-10 px-6 border border-[#0D9740]/60 hover:bg-[#0D9740]/[0.02] text-[#0D9740] font-bold text-xs rounded-[10px] shadow-sm transition-all"
+            >
+              Edit Profile
+            </button>
+          </div>
+
+          {/* Account Shortcuts */}
+          <div className="flex flex-col gap-4">
+            <h3 className="font-bold text-[#0F291B] text-sm tracking-wide uppercase">
+              Account Shortcuts
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+              <Link
+                href="/orders"
+                className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow"
+              >
+                <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><Package className="w-5 h-5" /></div>
+                <span className="font-bold text-xs text-[#0F291B]">My Orders</span>
+              </Link>
+              <div
+                onClick={() => {
+                  const el = document.getElementById("saved-addresses");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer"
+              >
+                <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><MapPin className="w-5 h-5" /></div>
+                <span className="font-bold text-xs text-[#0F291B]">Addresses</span>
+              </div>
+              <Link href="/payments" className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer">
+                <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><Banknote className="w-5 h-5" /></div>
+                <span className="font-bold text-xs text-[#0F291B]">Payments</span>
+              </Link>
+              <Link href="/notifications" className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer">
+                <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><Bell className="w-5 h-5" /></div>
+                <span className="font-bold text-xs text-[#0F291B]">Notifications</span>
+              </Link>
+              <Link href="/help-centre" className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer">
+                <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><Headphones className="w-5 h-5" /></div>
+                <span className="font-bold text-xs text-[#0F291B]">Support</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+
         {/* Two Column Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start">
 
           {/* Left Column (Orders & Addresses) */}
-          <div className="lg:col-span-8 flex flex-col gap-8">
+          <div className="lg:col-span-8 flex flex-col gap-4 lg:gap-8">
 
             {/* Order Summary */}
-            <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-6">
-              <div className="flex justify-between items-center">
-                <h3 className="font-bold text-[#0F291B] text-[18px]">Order Summary</h3>
+            <div className="bg-white border-0 sm:border border-zinc-200/80 rounded-none sm:rounded-[24px] p-0 sm:p-6 shadow-none sm:shadow-sm flex flex-col gap-3 sm:gap-6">
+              {/* Header Container */}
+              <div className="flex justify-between items-center px-5 sm:px-0 mt-1 sm:mt-0">
+                <h3 className="font-bold text-[#1F2937] text-[18px] sm:text-[#0F291B] tracking-tight">Order Summary</h3>
                 <Link
                   href="/orders"
-                  className="text-xs text-[#0D9740] font-bold hover:underline"
+                  className="text-xs sm:text-xs text-[#0D9740] font-bold hover:underline"
                 >
-                  VIEW ALL ORDERS
+                  View All Orders
                 </Link>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* Status Cards scroller on mobile, grid on desktop */}
+              <div className="flex sm:grid sm:grid-cols-3 gap-3 overflow-x-auto pb-4 sm:pb-0 px-5 sm:px-0 scrollbar-none w-full">
                 {/* Pending */}
-                <Link href="/orders" className="block">
-                  <div className="border border-zinc-100 rounded-[20px] p-4 flex items-center justify-between cursor-pointer hover:border-zinc-200 transition-colors h-full text-left">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-[#FCF9F3] text-[#DFB33F] flex items-center justify-center"><ClipboardList className="w-4 h-4" /></div>
-                      <div className="flex flex-col">
-                        <span className="text-[11px] text-zinc-500 font-semibold uppercase leading-none">Pending</span>
-                        <span className="font-extrabold text-[16px] text-[#0F291B] mt-1">{String(pendingCount).padStart(2, '0')}</span>
-                      </div>
-                    </div>
-                    <span className="text-zinc-400">›</span>
+                <Link href="/orders" className="block min-w-[130px] flex-1">
+                  <div className="bg-[#F3F4F6] border border-zinc-200 rounded-xl p-4 flex flex-col items-start gap-1 justify-between h-[100px] text-left">
+                    <span className="text-[11px] text-zinc-500 font-bold uppercase tracking-wider">PENDING</span>
+                    <span className="font-bold text-[28px] text-[#006B21]">{String(pendingCount).padStart(2, '0')}</span>
                   </div>
                 </Link>
 
                 {/* Delivered */}
-                <Link href="/orders" className="block">
-                  <div className="border border-zinc-100 rounded-[20px] p-4 flex items-center justify-between cursor-pointer hover:border-zinc-200 transition-colors h-full text-left">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><CheckCircle2 className="w-4 h-4" /></div>
-                      <div className="flex flex-col">
-                        <span className="text-[11px] text-zinc-500 font-semibold uppercase leading-none">Delivered</span>
-                        <span className="font-extrabold text-[16px] text-[#0F291B] mt-1">{String(deliveredCount).padStart(2, '0')}</span>
-                      </div>
-                    </div>
-                    <span className="text-zinc-400">›</span>
+                <Link href="/orders" className="block min-w-[130px] flex-1">
+                  <div className="bg-[#F3F4F6] border border-zinc-200 rounded-xl p-4 flex flex-col items-start gap-1 justify-between h-[100px] text-left">
+                    <span className="text-[11px] text-zinc-500 font-bold uppercase tracking-wider">DELIVERED</span>
+                    <span className="font-bold text-[28px] text-[#006B21]">{String(deliveredCount).padStart(2, '0')}</span>
                   </div>
                 </Link>
 
                 {/* Cancelled */}
-                <Link href="/orders" className="block">
-                  <div className="border border-zinc-100 rounded-[20px] p-4 flex items-center justify-between cursor-pointer hover:border-zinc-200 transition-colors h-full text-left">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-red-50 text-red-600 flex items-center justify-center"><XCircle className="w-4 h-4" /></div>
-                      <div className="flex flex-col">
-                        <span className="text-[11px] text-zinc-500 font-semibold uppercase leading-none">Cancelled</span>
-                        <span className="font-extrabold text-[16px] text-[#0F291B] mt-1">{String(cancelledCount).padStart(2, '0')}</span>
-                      </div>
-                    </div>
-                    <span className="text-zinc-400">›</span>
+                <Link href="/orders" className="block min-w-[130px] flex-1">
+                  <div className="bg-[#F3F4F6] border border-zinc-200 rounded-xl p-4 flex flex-col items-start gap-1 justify-between h-[100px] text-left">
+                    <span className="text-[11px] text-zinc-500 font-bold uppercase tracking-wider">CANCELLED</span>
+                    <span className="font-bold text-[28px] text-[#006B21]">{String(cancelledCount).padStart(2, '0')}</span>
                   </div>
                 </Link>
               </div>
