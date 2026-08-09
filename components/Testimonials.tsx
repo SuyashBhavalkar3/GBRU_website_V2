@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 
 const farmerReviews = [
@@ -45,9 +45,90 @@ const reviews = [
 
 export default function Testimonials() {
   const [visibleCount, setVisibleCount] = useState(3);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsLoggedIn(!!localStorage.getItem("gbru_user"));
+    }
+  }, []);
 
   return (
-    <section className="w-full bg-white flex flex-col items-center lg:py-10 pt-10 pb-2 px-4 sm:px-6 lg:px-0 overflow-hidden">
+    <section className="w-full bg-white flex flex-col items-center lg:py-10 pt-0 mt-[-40px] pb-2 px-2 sm:px-6 lg:px-0 overflow-hidden">
+      {/* ========================================================================= */}
+      {/* TESTIMONIAL IMAGES GRID FOR LOGGED IN MOBILE USER */}
+      {/* ========================================================================= */}
+      {isLoggedIn && (
+        <div className="lg:hidden w-full mb-10 text-left px-1">
+          {/* Main static container div */}
+          <div
+            className="relative rounded-[24px] border-none overflow-hidden mx-auto"
+            style={{
+              width: "278px",
+              height: "219px",
+              background: "linear-gradient(180deg, rgba(255, 255, 255, 0.51) 46.48%, rgba(73, 144, 2, 0.408) 100%)"
+            }}
+          >
+            {/* Header Text inside Main Div */}
+            <div className="absolute top-[20px] left-0 right-0 flex flex-col items-center gap-1.5 px-4 z-10">
+              <h2
+                className="font-roboto font-bold text-[#0F291B] text-[16px] text-center"
+                style={{
+                  lineHeight: "9.68px",
+                  fontStyle: 'normal',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                Testimonial
+              </h2>
+              <p
+                className="font-roboto font-medium text-[#374151] text-[12px] text-center"
+                style={{
+                  lineHeight: "9.68px",
+                  fontStyle: 'normal',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                Trusted by Farmers, Proven in the Field
+              </p>
+            </div>
+
+            {/* Horizontally scrollable container inside spanning the full card viewport */}
+            <div
+              className="absolute inset-0 overflow-x-auto pb-4 scrollbar-none flex gap-4 snap-x snap-mandatory px-4"
+              style={{
+                paddingTop: "77px",
+              }}
+            >
+              {farmerReviews.map((review, idx) => (
+                <div
+                  key={idx}
+                  className="relative overflow-hidden bg-white snap-center flex-shrink-0"
+                  style={{
+                    width: "111px",
+                    height: "111px",
+                    borderRadius: "5.14px",
+                    borderWidth: "0.5px",
+                    borderColor: "rgba(255, 255, 255, 0.6)",
+                  }}
+                >
+                  <Image
+                    src={review.src}
+                    alt={review.alt}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Top Testimonial Rounded Box (Desktop Only) ── */}
       <div
         className="hidden lg:flex relative w-full max-w-[1206px] rounded-[32px] lg:rounded-[47px] overflow-hidden border border-[#CDE5D2] flex-col items-center py-10 px-4 lg:px-6 bg-no-repeat transition-all duration-500"
