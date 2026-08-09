@@ -16,6 +16,16 @@ export default function UserProfile() {
   const [editingAddressName, setEditingAddressName] = useState<string | null>(null);
 
   const { showToast } = useToast();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // User States
   const [userName, setUserName] = useState("Loading...");
@@ -791,7 +801,7 @@ export default function UserProfile() {
             </div>
 
             {/* Saved Addresses */}
-            <div id="saved-addresses" className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-6">
+            <div id="saved-addresses" className="bg-white border-0 sm:border border-zinc-200/80 rounded-none sm:rounded-[24px] p-5 sm:p-6 shadow-none sm:shadow-sm flex flex-col gap-6">
               <div className="flex justify-between items-center">
                 <h3 className="font-bold text-[#0F291B] text-[18px]">Saved Addresses</h3>
                 <button
@@ -812,48 +822,55 @@ export default function UserProfile() {
                 {savedAddresses.length === 0 ? (
                   <span className="text-xs text-zinc-500">No saved addresses found.</span>
                 ) : (
-                  savedAddresses.map((addr) => (
-                    <div
-                      key={addr.name}
-                      className="border border-[#0D9740] bg-[#0D9740]/[0.01] rounded-[20px] p-5 flex flex-col gap-3 relative"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[16px] text-[#0D9740]"><Home className="w-4 h-4" /></span>
-                          <span className="font-bold text-xs text-[#0F291B]">{addr.address_title}</span>
+                  (() => {
+                    // Mobile view: only show primary address. If no primary, show first address.
+                    // Desktop view: show all.
+                    const primaryAddress = savedAddresses.find(a => a.is_primary === 1) || savedAddresses[0];
+                    const listToRender = isMobile ? [primaryAddress] : savedAddresses;
+
+                    return listToRender.map((addr) => (
+                      <div
+                        key={addr.name}
+                        className="border border-[#0D9740] bg-[#0D9740]/[0.01] rounded-[20px] p-5 flex flex-col gap-3 relative"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[16px] text-[#0D9740]"><Home className="w-4 h-4" /></span>
+                            <span className="font-bold text-xs text-[#0F291B]">{addr.address_title}</span>
+                          </div>
+                          {addr.is_primary === 1 && (
+                            <span className="bg-emerald-50 text-[#0D9740] text-[9px] font-bold py-0.5 px-2 rounded">
+                              PRIMARY
+                            </span>
+                          )}
+                          {!isMobile && addr.is_primary !== 1 && (
+                            <button
+                              onClick={() => handleMakePrimary(addr.name)}
+                              className="bg-zinc-100 text-zinc-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors text-[9px] font-bold py-0.5 px-2 rounded"
+                            >
+                              MAKE PRIMARY
+                            </button>
+                          )}
                         </div>
-                        {addr.is_primary === 1 && (
-                          <span className="bg-emerald-50 text-[#0D9740] text-[9px] font-bold py-0.5 px-2 rounded">
-                            PRIMARY
-                          </span>
-                        )}
-                        {addr.is_primary !== 1 && (
+
+                        <p className="text-xs text-[#374151] leading-relaxed">
+                          {addr.address_line1}{addr.address_line2 ? `, ${addr.address_line2}` : ''}<br />
+                          {addr.marketplace}, {addr.tahsil}, {addr.district}, {addr.state} - {addr.pincode} <br />
+                          <span className="text-zinc-500 font-medium block mt-1">Phone: {addr.phone}</span>
+                        </p>
+
+                        <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-wider mt-2 border-t border-zinc-100 pt-3">
+                          <button onClick={() => openEditAddressModal(addr)} className="text-zinc-500 hover:text-[#0D9740] flex items-center gap-1"><Edit3 className="w-3.5 h-3.5" /> EDIT</button>
                           <button
-                            onClick={() => handleMakePrimary(addr.name)}
-                            className="bg-zinc-100 text-zinc-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors text-[9px] font-bold py-0.5 px-2 rounded"
+                            onClick={() => handleDeleteAddress(addr.name)}
+                            className="text-red-500 hover:text-red-700 flex items-center gap-1"
                           >
-                            MAKE PRIMARY
+                            <Trash2 className="w-3.5 h-3.5" /> DELETE
                           </button>
-                        )}
+                        </div>
                       </div>
-
-                      <p className="text-xs text-[#374151] leading-relaxed">
-                        {addr.address_line1}{addr.address_line2 ? `, ${addr.address_line2}` : ''}<br />
-                        {addr.marketplace}, {addr.tahsil}, {addr.district}, {addr.state} - {addr.pincode} <br />
-                        <span className="text-zinc-500 font-medium block mt-1">Phone: {addr.phone}</span>
-                      </p>
-
-                      <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-wider mt-2 border-t border-zinc-100 pt-3">
-                        <button onClick={() => openEditAddressModal(addr)} className="text-zinc-500 hover:text-[#0D9740] flex items-center gap-1"><Edit3 className="w-3.5 h-3.5" /> EDIT</button>
-                        <button
-                          onClick={() => handleDeleteAddress(addr.name)}
-                          className="text-red-500 hover:text-red-700 flex items-center gap-1"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" /> DELETE
-                        </button>
-                      </div>
-                    </div>
-                  ))
+                    ));
+                  })()
                 )}
               </div>
             </div>
@@ -863,8 +880,8 @@ export default function UserProfile() {
           {/* Right Column (Payment Info & Support) */}
           <div className="lg:col-span-4 flex flex-col gap-6">
 
-            {/* Payment Info Card */}
-            <div className="bg-zinc-50 border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-5 text-left">
+            {/* Payment Info Card — Hidden on Mobile */}
+            <div className="hidden lg:flex bg-[#F8F9FA] border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-5 text-left">
               <h3 className="font-bold text-[#0F291B] text-lg">Payment Info</h3>
 
               <div className="flex flex-col gap-3.5 text-xs text-[#374151]">
@@ -885,8 +902,53 @@ export default function UserProfile() {
               </Link>
             </div>
 
-            {/* Help & Support */}
-            <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-4">
+            {/* Mobile Redesigned Help & Support section */}
+            <div className="block lg:hidden w-full bg-[#FDFDFD] pb-8" style={{ paddingTop: "12px", paddingRight: "20px", paddingLeft: "20px", gap: "16px" }}>
+              <h3 className="font-bold text-[#1F2937] text-[20px] text-left mb-4 tracking-tight">Help & Support</h3>
+              
+              <div className="bg-white border border-zinc-200/80 rounded-2xl overflow-hidden flex flex-col w-full" style={{ minHeight: "172px" }}>
+                {/* Visit FAQs */}
+                <Link
+                  href="/faq"
+                  className="flex items-center justify-between p-4 border-b border-zinc-150 hover:bg-zinc-50 transition-colors w-full text-left"
+                  style={{ height: "57px" }}
+                >
+                  <span className="flex items-center gap-3 text-[16px] text-[#1F2937] font-medium">
+                    <HelpCircle className="w-5 h-5 text-[#006B21] stroke-[2]" /> Visit FAQs
+                  </span>
+                  <span className="text-zinc-400 text-lg">›</span>
+                </Link>
+
+                {/* Contact Support */}
+                <Link 
+                  href="/help-centre" 
+                  className="flex items-center justify-between p-4 border-b border-zinc-150 hover:bg-zinc-50 transition-colors w-full text-left"
+                  style={{ height: "57px" }}
+                >
+                  <span className="flex items-center gap-3 text-[16px] text-[#1F2937] font-medium">
+                    <MessageSquare className="w-5 h-5 text-[#006B21] stroke-[2]" /> Contact Support
+                  </span>
+                  <span className="text-zinc-400 text-lg">›</span>
+                </Link>
+
+                {/* WhatsApp Support */}
+                <a
+                  href="https://wa.me/919876543210"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-4 hover:bg-zinc-50 transition-colors w-full text-left"
+                  style={{ height: "57px" }}
+                >
+                  <span className="flex items-center gap-3 text-[16px] text-[#1F2937] font-medium">
+                    <MessageSquare className="w-5 h-5 text-[#006B21] stroke-[2]" /> WhatsApp Support
+                  </span>
+                  <span className="text-zinc-400 text-lg">›</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Desktop Original Help & Support Section — untouched */}
+            <div className="hidden lg:flex bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-4">
               <h3 className="font-bold text-[#0F291B] text-lg">Help & Support</h3>
 
               <div className="flex flex-col gap-1 text-xs text-[#374151]">
