@@ -31,6 +31,16 @@ export default function Checkout() {
   const [proceedData, setProceedData] = useState<any>(null);
   const [defaultProceedData, setDefaultProceedData] = useState<any>(null);
   const [loadingCheckout, setLoadingCheckout] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Address Interactivity States
   const [isAddingAddress, setIsAddingAddress] = useState(false);
@@ -116,14 +126,22 @@ export default function Checkout() {
           if (appliedCoupon.code) {
             localStorage.setItem("gbru_applied_coupon", appliedCoupon.code);
           }
+          if (couponCodeToApply && isMobile) {
+            showToast("coupon applied successfully", "success");
+          }
         } else if (couponCodeToApply) {
           setCouponError(`${couponCodeToApply} invalid`);
           setCouponApplied(false);
           localStorage.removeItem("gbru_applied_coupon");
+          if (isMobile) {
+            showToast("coupon failed", "error");
+          }
         }
       }
     } catch (e) {
-      
+      if (couponCodeToApply && isMobile) {
+        showToast("coupon failed", "error");
+      }
     }
   };
 
@@ -765,16 +783,27 @@ export default function Checkout() {
       if (data?.message?.status) {
         setAmbassadorApplied(true);
         localStorage.setItem("gbru_applied_ambassador", JSON.stringify(data.message.data));
-        showToast(data.message.message || "Brand Ambassador Code Applied!", "success");
+        if (isMobile) {
+          showToast("brand ambassador is validated", "success");
+        } else {
+          showToast(data.message.message || "Brand Ambassador Code Applied!", "success");
+        }
       } else {
         const errorMsg = data?.message?.message || data?.error || "Invalid Ambassador Code";
         setAmbassadorError(errorMsg);
-        showToast(errorMsg, "error");
+        if (isMobile) {
+          showToast("brand ambassador is not valid", "error");
+        } else {
+          showToast(errorMsg, "error");
+        }
       }
     } catch (err: any) {
-      
       setAmbassadorError("Failed to validate ambassador code");
-      showToast("Failed to validate ambassador code", "error");
+      if (isMobile) {
+        showToast("brand ambassador is not valid", "error");
+      } else {
+        showToast("Failed to validate ambassador code", "error");
+      }
     }
   };
 
@@ -1507,7 +1536,12 @@ export default function Checkout() {
                   />
                   <button
                     onClick={applyCoupon}
-                    className="h-9 px-4 bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-xs rounded-[8px]"
+                    disabled={isMobile && couponApplied}
+                    className={`h-9 px-4 font-bold text-xs rounded-[8px] transition-colors ${
+                      isMobile && couponApplied
+                        ? "bg-zinc-300 text-zinc-500 cursor-not-allowed"
+                        : "bg-[#0F291B] hover:bg-[#08170f] text-white"
+                    }`}
                   >
                     Apply
                   </button>
@@ -1543,7 +1577,12 @@ export default function Checkout() {
                   />
                   <button
                     onClick={applyAmbassadorCode}
-                    className="h-9 px-4 bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-xs rounded-[8px]"
+                    disabled={isMobile && ambassadorApplied}
+                    className={`h-9 px-4 font-bold text-xs rounded-[8px] transition-colors ${
+                      isMobile && ambassadorApplied
+                        ? "bg-zinc-300 text-zinc-500 cursor-not-allowed"
+                        : "bg-[#0F291B] hover:bg-[#08170f] text-white"
+                    }`}
                   >
                     Apply
                   </button>
