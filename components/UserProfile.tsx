@@ -1028,6 +1028,7 @@ export default function UserProfile() {
           </form>
         </div>
       )}
+      <Footer />
     </div>
   );
 }
