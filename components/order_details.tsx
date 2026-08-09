@@ -462,7 +462,293 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
     <div className="min-h-screen bg-[#F9FBF9] font-roboto flex flex-col relative">
       <Navbar />
 
-      <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-8 flex flex-col gap-6">
+      {/* ====================================================== */}
+      {/* MOBILE LAYOUT — Figma spec, visible only on mobile      */}
+      {/* ====================================================== */}
+      <div className="block md:hidden flex-1 flex flex-col bg-[#F5F6FA]">
+
+        {/* HEADER — w:390 h:74, border-bottom 1px */}
+        <div className="w-full bg-white flex items-center justify-between px-4 border-b border-zinc-200" style={{ height: "74px" }}>
+          <div className="flex items-center gap-2">
+            <Link href="/orders" className="text-zinc-600 hover:text-[#1E532E] transition-colors">
+              <ArrowLeft className="w-6 h-6" />
+            </Link>
+            <div>
+              <h2 className="text-[18px] font-bold text-[#0F291B] leading-tight">Order Details</h2>
+              <p className="text-[11px] text-zinc-400 font-medium">Order ID: {summary.order_id}</p>
+            </div>
+          </div>
+          {/* Status badge */}
+          <span className={`text-[10px] font-bold px-3 py-1 rounded-full border flex items-center gap-1 ${getStatusColor(statusDisplay)}`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-current" />
+            {statusDisplay}
+          </span>
+        </div>
+
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto px-5 pb-10" style={{ paddingTop: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
+
+          {/* Warning Banner */}
+          {(summary.paynow_message || order.paynow_message) && (
+            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3 text-left">
+              <span className="text-xl">⚠️</span>
+              <div>
+                <h4 className="font-bold text-amber-900 text-sm">Important Update</h4>
+                <p className="text-xs text-amber-800 font-medium leading-relaxed">{summary.paynow_message || order.paynow_message}</p>
+              </div>
+            </div>
+          )}
+
+          {/* ── ORDER SUMMARY CARD — w:350 h:~270 br:16 p:20 gap:12 border:1 ── */}
+          <div className="bg-white rounded-[16px] border border-zinc-200" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
+            <h3 className="text-[16px] font-bold text-[#0F291B]">Order Summary</h3>
+
+            {/* Order Date */}
+            <div className="flex items-center justify-between py-2 border-b border-zinc-100">
+              <span className="text-[13px] text-zinc-500 font-medium">Order Date</span>
+              <span className="text-[13px] font-bold text-[#0F291B]">
+                {summary.order_date ? new Date(summary.order_date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "--"}
+              </span>
+            </div>
+
+            {/* Order ID + copy */}
+            <div className="flex items-center justify-between py-2 border-b border-zinc-100">
+              <span className="text-[13px] text-zinc-500 font-medium">Order ID</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[13px] font-bold text-[#0F291B]">{summary.order_id}</span>
+                <button onClick={handleCopy} className="text-emerald-700 hover:text-emerald-800 transition-colors" title="Copy Order ID">
+                  {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Discount */}
+            <div className="flex items-center justify-between py-2 border-b border-zinc-100">
+              <span className="text-[13px] text-zinc-500 font-medium">Discount</span>
+              <span className="text-[13px] font-bold text-red-500">- ₹{Number(summary.discount_received || 0).toLocaleString("en-IN")}</span>
+            </div>
+
+            {/* Total Amount */}
+            <div className="flex items-center justify-between py-2">
+              <span className="text-[14px] font-bold text-[#0F291B]">Total Amount</span>
+              <span className="text-[16px] font-extrabold text-[#0D9740]">₹{totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+            </div>
+
+            {/* Pay Now button (if applicable) */}
+            {payAmount > 0 && (
+              <button
+                onClick={handlePayNow}
+                className="w-full h-12 bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-[15px] rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 mt-1"
+              >
+                <CreditCard className="w-4 h-4" />
+                {isFullPayment ? "Pay Pending" : "Pay Booking Deposit"} (₹{payAmount.toLocaleString("en-IN")})
+              </button>
+            )}
+
+            {/* Cancel Order */}
+            {String(summary.allowed_action || "").toLowerCase() === "cancel" && (
+              <button
+                onClick={handleCancelOrder}
+                disabled={cancelling}
+                className="w-full h-10 bg-red-600 hover:bg-red-700 text-white font-bold text-[13px] rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {cancelling ? "Cancelling..." : "Cancel Order"}
+              </button>
+            )}
+
+            {actionMessage && (
+              <p className="text-rose-600 text-xs font-semibold bg-rose-50 border border-rose-100 rounded-xl px-3 py-2">⚠️ {actionMessage}</p>
+            )}
+          </div>
+
+          {/* ── SHIPMENT CARD — w:350 h:235 br:16 p:16 gap:16 border:1 ── */}
+          <div className="bg-white rounded-[16px] border border-zinc-200" style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "16px" }}>
+            {/* Header row */}
+            <div className="flex items-center justify-between">
+              <h3 className="text-[16px] font-bold text-[#0F291B]">Shipment 1 of 1</h3>
+              <span className={`text-[10px] font-bold px-3 py-1 rounded-full border flex items-center gap-1 ${getStatusColor(statusDisplay)}`}>
+                <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                {statusDisplay}
+              </span>
+            </div>
+
+            {/* Items */}
+            {items.length === 0 ? (
+              <p className="text-center text-zinc-500 text-sm font-medium py-4">No items in shipment.</p>
+            ) : (
+              <div className="bg-zinc-50 rounded-xl px-4 py-3 flex flex-col gap-1">
+                {items.map((item: any, idx: number) => (
+                  <div key={idx}>
+                    <p className="text-[14px] font-bold text-[#0F291B]">{item.item_name}</p>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-[12px] text-zinc-500 font-medium">Qty: {item.qty}</span>
+                      <span className="text-[13px] font-bold text-[#0F291B]">
+                        Rate: ₹{Number(items.length === 1 ? (Number(summary.order_amount) / item.qty) : item.rate).toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Track Order + Print LR buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={handleTrackOrder}
+                className="flex-1 h-11 bg-[#1B5E20] hover:bg-[#154a19] text-white font-bold text-[14px] rounded-xl transition-all flex items-center justify-center gap-2"
+              >
+                <Truck className="w-4 h-4" /> Track Order
+              </button>
+              <button
+                onClick={handlePrintLR}
+                className="flex-1 h-11 border-2 border-[#1B5E20] text-[#1B5E20] font-bold text-[14px] rounded-xl transition-all flex items-center justify-center gap-2 hover:bg-[#1B5E20]/5"
+              >
+                <Printer className="w-4 h-4" /> Print LR
+              </button>
+            </div>
+          </div>
+
+          {/* ── TRANSPORT DETAILS CARD — w:355 pt:24 pr:12 pb:24 pl:14 gap:16 br:16 border:1 ── */}
+          <div className="bg-white rounded-[16px] border border-zinc-200" style={{ paddingTop: "24px", paddingRight: "12px", paddingBottom: "24px", paddingLeft: "14px", display: "flex", flexDirection: "column", gap: "16px" }}>
+            <h3 className="text-[16px] font-bold text-[#0F291B]">Transport Details</h3>
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* Transport Name */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5 text-zinc-400 font-bold text-[10px] uppercase tracking-wide">
+                  <Truck className="w-4 h-4 text-[#0D9740]" />
+                  <span>Transport Name</span>
+                </div>
+                <p className="text-[13px] font-bold text-[#0F291B]">{shipment.transporter_name || "Not Assigned"}</p>
+              </div>
+
+              {/* Shipment Date */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5 text-zinc-400 font-bold text-[10px] uppercase tracking-wide">
+                  <Calendar className="w-4 h-4 text-[#0D9740]" />
+                  <span>Shipment Date</span>
+                </div>
+                <p className="text-[13px] font-bold text-[#0F291B]">{shipment.date || summary.order_date || "--"}</p>
+              </div>
+            </div>
+
+            {/* Status */}
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 text-zinc-400 font-bold text-[10px] uppercase tracking-wide">
+                <Info className="w-4 h-4 text-amber-500" />
+                <span>Status</span>
+              </div>
+              <p className="text-[13px] font-extrabold text-amber-600">{shipment.status || "Pending Payment"}</p>
+            </div>
+          </div>
+
+          {/* ── TRANSACTIONS CARD ── */}
+          <div className="bg-white rounded-[16px] border border-zinc-200 p-5">
+            {hasTransactions ? (
+              <div className="space-y-4">
+                <h4 className="font-bold text-[#0F291B] text-[14px] border-b border-zinc-100 pb-2">Transactions</h4>
+                {order.transactions.map((tx: any, idx: number) => (
+                  <div key={idx} className="bg-zinc-50 rounded-xl p-3 border border-zinc-100 space-y-1.5 text-xs">
+                    <div className="flex justify-between font-bold text-zinc-700">
+                      <span>TXN ID</span><span className="break-all">{tx.transaction_id}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-zinc-500">Method</span>
+                      <span className="font-semibold">{tx.mode_of_payment}</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-[#1E532E]">
+                      <span>Amount</span><span>₹{Number(tx.amount).toLocaleString("en-IN")}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8 gap-3 text-center">
+                <div className="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center">
+                  <CreditCard className="w-6 h-6 text-zinc-400" />
+                </div>
+                <p className="text-[14px] font-bold text-[#0F291B]">No Transactions</p>
+                <p className="text-[12px] text-zinc-400 font-medium leading-relaxed max-w-[220px]">Payment is required to generate transaction records.</p>
+              </div>
+            )}
+          </div>
+
+          {/* ── INVOICE CARD ── */}
+          <div className="bg-white rounded-[16px] border border-zinc-200 p-5">
+            {hasInvoices ? (
+              <div className="space-y-4">
+                <h4 className="font-bold text-[#0F291B] text-[14px] border-b border-zinc-100 pb-2">Invoices</h4>
+                {order.invoices.map((inv: any, idx: number) => {
+                  const isExpanded = expandedInvoiceIdx === idx;
+                  return (
+                    <div key={idx} className="border border-zinc-100 rounded-xl p-3 space-y-3">
+                      <div className="flex items-center justify-between cursor-pointer" onClick={() => setExpandedInvoiceIdx(isExpanded ? null : idx)}>
+                        <div>
+                          <p className="font-bold text-[#0F291B] text-sm">{inv.invoice_id}</p>
+                          <p className="text-xs text-zinc-500">₹{Number(inv.amount || 0).toLocaleString("en-IN")}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">{inv.dispatch_status || "Dispatched"}</span>
+                          {isExpanded ? <ChevronUp className="w-4 h-4 text-zinc-500" /> : <ChevronDown className="w-4 h-4 text-zinc-500" />}
+                        </div>
+                      </div>
+                      {isExpanded && inv.sales_invoice_print_url && (
+                        <a href={inv.sales_invoice_print_url} target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 text-xs font-bold text-sky-600">
+                          <Printer className="w-3.5 h-3.5" /> Print Invoice
+                        </a>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8 gap-3 text-center">
+                <div className="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-zinc-400" />
+                </div>
+                <p className="text-[13px] text-zinc-400 font-medium leading-relaxed max-w-[220px]">Invoice will be generated after payment confirmation.</p>
+              </div>
+            )}
+          </div>
+
+          {/* ── NEED HELP CARD — w:363 h:134 br:12 p:16 gap:16 ── */}
+          <div className="bg-[#EEF2FC] rounded-[12px]" style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#1E6091] border border-blue-100 flex-shrink-0">
+                <Headphones className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-[14px] font-bold text-[#0F291B]">Need Help with Order?</h4>
+                <p className="text-[11px] text-zinc-500 font-medium">Available 24/7 for trade assistance</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <a
+                href="https://wa.me/919226514174"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-11 bg-white border border-zinc-200 text-[#0F291B] font-bold text-[13px] rounded-xl flex items-center justify-center hover:bg-zinc-50 transition-colors"
+              >
+                Contact Support
+              </a>
+              <Link
+                href={`/support-help?order_id=${summary.order_id}`}
+                className="h-11 bg-white border border-zinc-200 text-[#0F291B] font-bold text-[13px] rounded-xl flex items-center justify-center text-center hover:bg-zinc-50 transition-colors"
+              >
+                Raise complain
+              </Link>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ====================================================== */}
+      {/* DESKTOP LAYOUT — original, completely untouched         */}
+      {/* ====================================================== */}
+      <main className="hidden md:flex flex-1 w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-8 flex-col gap-6">
 
         {/* Header Navigation Section */}
         <div className="flex items-center justify-between border-b border-zinc-100 pb-5">
