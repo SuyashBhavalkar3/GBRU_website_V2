@@ -1478,7 +1478,7 @@ export default function Checkout() {
                   </label>
 
                   {/* Save Address Button */}
-                  <div className="flex justify-end items-center gap-3 mt-2">
+                  <div className="flex items-center gap-3 mt-4 w-full justify-end sm:justify-end">
                     <button
                       onClick={() => {
                         setIsAddingAddress(false);
@@ -1488,14 +1488,14 @@ export default function Checkout() {
                           setIsAddressSaved(false);
                         }
                       }}
-                      className="h-12 px-6 border border-zinc-300 hover:bg-zinc-50 text-zinc-600 font-bold text-sm rounded-[10px] transition-all"
+                      className="h-12 px-4 sm:px-6 border border-zinc-300 hover:bg-zinc-50 text-zinc-600 font-bold text-xs sm:text-sm rounded-[10px] transition-all flex-1 sm:flex-none flex items-center justify-center whitespace-nowrap"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleSaveAddress}
                       disabled={isSavingAddress}
-                      className={`h-12 px-8 ${isSavingAddress ? 'bg-zinc-400' : 'bg-[#0D9740] hover:bg-[#0a7d34]'} text-white font-bold text-sm rounded-[10px] shadow transition-all flex items-center gap-2`}
+                      className={`h-12 px-5 sm:px-8 ${isSavingAddress ? 'bg-zinc-400' : 'bg-[#0D9740] hover:bg-[#0a7d34]'} text-white font-bold text-xs sm:text-sm rounded-[10px] shadow transition-all flex items-center justify-center gap-1.5 flex-[2] sm:flex-none whitespace-nowrap`}
                     >
                       {isSavingAddress ? "Saving..." : (
                         <>Save and Continue <span>→</span></>
