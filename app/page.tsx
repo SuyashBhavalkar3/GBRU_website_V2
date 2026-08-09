@@ -73,12 +73,14 @@ export default function Home() {
 
         <Testimonials />
 
-        {/* Mobile only layout order below Testimonials */}
-        <div className="block lg:hidden">
-          <HelpSupportBanner />
-          <Stats />
-          <AppDownloadBanner />
-        </div>
+        {/* Mobile only layout order below Testimonials - ONLY when logged in */}
+        {isLoggedIn && (
+          <div className="block lg:hidden">
+            <HelpSupportBanner />
+            <Stats />
+            <AppDownloadBanner />
+          </div>
+        )}
 
         {/* Desktop only layout order below Testimonials */}
         <div className="hidden lg:block">
