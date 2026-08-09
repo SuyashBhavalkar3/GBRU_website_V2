@@ -413,11 +413,61 @@ function ProductDetailContent() {
 
           </div>
 
+          {/* ── Mobile-Only: Pricing Card (block lg:hidden) ── */}
+          {/* Shown between image and booking section on mobile screens only */}
+          <div className="block lg:hidden w-full">
+            <div
+              className="flex items-center justify-between text-white overflow-hidden"
+              style={{
+                background: "linear-gradient(90deg, #1A4D2E 0%, #1E4F30 7.14%, #235233 14.29%, #275435 21.43%, #2A5738 28.57%, #2E593B 35.71%, #325B3D 42.86%, #365E40 50%, #396042 57.14%, #3D6345 64.29%, #416547 71.43%, #44684A 78.57%, #486A4D 85.71%, #4B6D4F 92.86%, #4F6F52 100%)",
+                borderRadius: "16px",
+                padding: "16px",
+                width: "100%",
+                minHeight: "88px",
+              }}
+            >
+              {/* Left: Label + Price + MRP — shrinks if needed */}
+              <div className="flex flex-col gap-0.5 min-w-0 flex-1 pr-3">
+                <span className="text-[10px] font-bold tracking-widest text-[#A7C7B6] uppercase">
+                  LIMITED TIME OFFER
+                </span>
+                <div className="flex items-baseline gap-2 mt-1 flex-wrap">
+                  <span className="text-[26px] font-extrabold leading-none whitespace-nowrap">
+                    ₹{formatPrice(product.price)}
+                  </span>
+                  {product.mrp > product.price && (
+                    <span className="text-[13px] line-through text-[#8CAF9C] whitespace-nowrap">
+                      ₹{formatPrice(product.mrp)}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Right: Discount badge — never shrinks */}
+              {product.discount > 0 && (
+                <div
+                  className="flex items-center justify-center text-white font-bold text-[12px] leading-tight text-center flex-shrink-0"
+                  style={{
+                    background: "#22C55E",
+                    borderRadius: "12px",
+                    padding: "6px 10px",
+                    minWidth: "88px",
+                    minHeight: "28px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Get {product.discount.toFixed(0)}% OFF
+                </div>
+              )}
+            </div>
+          </div>
+
+
           {/* ── Right Column (Booking & Checkout Options) ── */}
           <div className="lg:col-span-5 flex flex-col gap-6">
 
-            {/* Limited Time Offer Price Banner */}
-            <div className="bg-[#2D5A42] rounded-[16px] p-5 text-white flex items-center justify-between shadow-sm">
+            {/* Limited Time Offer Price Banner — desktop only */}
+            <div className="hidden lg:flex bg-[#2D5A42] rounded-[16px] p-5 text-white items-center justify-between shadow-sm">
               <div className="flex flex-col gap-0.5">
                 <span className="text-[11px] font-bold tracking-widest text-[#A7C7B6] uppercase">
                   LIMITED TIME OFFER
