@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Stats from "@/components/Stats";
@@ -17,13 +18,25 @@ import AppDownloadBanner from "@/components/AppDownloadBanner";
 import Footer from "@/components/Footer";
 
 export default function Home() {
+  const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setIsLoggedIn(!!localStorage.getItem("gbru_user"));
+      const loggedIn = !!localStorage.getItem("gbru_user");
+      if (loggedIn) {
+        // User is logged in — send them to the dashboard
+        router.replace("/dashboard");
+        return;
+      }
+      setIsLoggedIn(false);
+      setAuthChecked(true);
     }
-  }, []);
+  }, [router]);
+
+  // Don't render anything until auth check is complete (avoids flash of guest content)
+  if (!authChecked) return null;
 
   return (
     <div className="flex flex-col min-h-screen bg-white overflow-x-hidden">
