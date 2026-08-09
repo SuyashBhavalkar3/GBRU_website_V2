@@ -256,7 +256,7 @@ export default function PaymentOptionModal({
                     : "border-zinc-200 bg-white hover:border-zinc-300"
                 }`}
               >
-                <div className="flex items-center gap-2 mb-2 text-left">
+                <div className="flex items-center gap-2 mb-1 text-left">
                   <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${
                     selectedOption === "full" ? "border-[#0d9740]" : "border-zinc-300"
                   }`}>
@@ -264,25 +264,26 @@ export default function PaymentOptionModal({
                       <div className="w-2.5 h-2.5 rounded-full bg-[#0d9740]" />
                     )}
                   </div>
-                  <span className="font-bold text-[#0F291B] text-sm">Full Payment</span>
+                  <span className="font-bold text-[#0F291B] text-[15px]">Full Payment</span>
                 </div>
-                <p className="text-[11px] text-zinc-500 mb-4 pl-6 text-left">Pay complete amount today</p>
+                <p className="text-[11px] text-zinc-500 mb-4 pl-6 text-left">Pay complete amount now</p>
                 <div className="pl-6 pt-2 border-t border-zinc-100 mt-auto text-left flex flex-col gap-1.5">
                   <div className="flex justify-between items-center text-[11px] text-zinc-500">
-                    <span>Grand Total</span>
+                    <span>Order Total</span>
                     <span>₹{formatPrice((productDetails?.actual_rate || productDetails?.price || 0) * quantity)}</span>
                   </div>
-                  {(productDetails?.full_payment_discount || 0) > 0 && (
-                    <div className="flex justify-between items-center text-[11px] text-[#0d9740] font-medium">
-                      <span>Full Pay Discount</span>
-                      <span>-₹{formatPrice((productDetails?.full_payment_discount || 0) * quantity)}</span>
-                    </div>
-                  )}
+                  <div className="flex justify-between items-center text-[11px] text-zinc-500">
+                    <span>Instant Discount</span>
+                    <span className="text-[#0d9740] font-medium">-₹{formatPrice((productDetails?.full_payment_discount || 0) * quantity)}</span>
+                  </div>
                   <div className="flex justify-between items-center pt-2 border-t border-zinc-100 mt-1">
                     <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Pay Now</span>
                     <span className="text-base font-extrabold text-[#0f291b]">
                       ₹{formatPrice((productDetails?.full_payment_amount || productDetails?.price || 0) * quantity)}
                     </span>
+                  </div>
+                  <div className="text-[11px] text-[#0d9740] font-bold mt-2 text-center bg-[#E8F5E9] py-1.5 rounded-lg">
+                    🎁 You'll save ₹{formatPrice((productDetails?.full_payment_discount || 0) * quantity)} on this order!
                   </div>
                 </div>
               </div>
@@ -297,7 +298,7 @@ export default function PaymentOptionModal({
                       : "border-zinc-200 bg-white hover:border-zinc-300"
                   }`}
                 >
-                  <div className="flex items-center gap-2 mb-2 text-left">
+                  <div className="flex items-center gap-2 mb-1 text-left">
                     <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${
                       selectedOption === "booking" ? "border-[#0d9740]" : "border-zinc-300"
                     }`}>
@@ -305,27 +306,34 @@ export default function PaymentOptionModal({
                         <div className="w-2.5 h-2.5 rounded-full bg-[#0d9740]" />
                       )}
                     </div>
-                    <span className="font-bold text-[#0F291B] text-sm">Cash On Delivery</span>
+                    <span className="font-bold text-[#0F291B] text-[15px]">Book Now & Pay On Delivery</span>
                   </div>
-                  <p className="text-[11px] text-zinc-500 mb-4 pl-6 text-left">Pay deposit now & balance on delivery</p>
+                  <p className="text-[11px] text-zinc-500 mb-4 pl-6 text-left">Confirm your order instantly</p>
                   <div className="pl-6 pt-2 border-t border-zinc-100 mt-auto text-left flex flex-col gap-1.5">
                     <div className="flex justify-between items-center text-[11px] text-zinc-500">
-                      <span>Grand Total</span>
+                      <span>Order Total</span>
                       <span>₹{formatPrice((productDetails?.actual_rate || productDetails?.price || 0) * quantity)}</span>
                     </div>
                     <div className="flex justify-between items-center text-[11px] text-zinc-500">
-                      <span>Pay Now (Deposit)</span>
-                      <span>₹{formatPrice((productDetails?.COD_Display || productDetails?.cod_display || 0) * quantity)}</span>
+                      <span>Instant Discount</span>
+                      <span>-₹{formatPrice((productDetails?.COD_discount || 0) * quantity)}</span>
                     </div>
                     <div className="flex justify-between items-center text-[11px] text-zinc-500">
-                      <span>Pay on Delivery</span>
-                      <span>₹{formatPrice((productDetails?.COD_value || productDetails?.cod_value || 0) * quantity)}</span>
+                      <span>Effective Total</span>
+                      <span>₹{formatPrice(((productDetails?.actual_rate || productDetails?.price || 0) - (productDetails?.COD_discount || 0)) * quantity)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-[11px] text-zinc-500">
+                      <span>Pay Now (Booking)</span>
+                      <span>₹{formatPrice((productDetails?.COD_Display || productDetails?.cod_display || 0) * quantity)}</span>
                     </div>
                     <div className="flex justify-between items-center pt-2 border-t border-zinc-100 mt-1">
-                      <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Pay Deposit</span>
+                      <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Pay on Delivery</span>
                       <span className="text-base font-extrabold text-[#0f291b]">
-                        ₹{formatPrice((productDetails?.COD_Display || productDetails?.cod_display || 0) * quantity)}
+                        ₹{formatPrice((productDetails?.COD_value || productDetails?.cod_value || 0) * quantity)}
                       </span>
+                    </div>
+                    <div className="text-[11px] text-zinc-500 font-bold mt-2 text-center bg-zinc-100 py-1.5 rounded-lg">
+                      🎁 You'll save ₹{formatPrice((productDetails?.COD_discount || 0) * quantity)} on this order!
                     </div>
                   </div>
                 </div>

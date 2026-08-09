@@ -512,8 +512,8 @@ function ProductDetailContent() {
                   </div>
                   
                   <div className="text-left mb-3">
-                    <h4 className="font-bold text-[#6B7280] text-[13px]">FULL PAYMENT</h4>
-                    <p className="text-[11px] text-[#6B7280] mt-0.5">Pay complete amount today</p>
+                    <h4 className="font-bold text-[#6B7280] text-[13px]">Full Payment</h4>
+                    <p className="text-[11px] text-[#6B7280] mt-0.5">Pay complete amount now</p>
                   </div>
                   
                   <div className="h-[1px] bg-zinc-200 w-full mb-3"></div>
@@ -523,27 +523,18 @@ function ProductDetailContent() {
                       <span>Order Total</span>
                       <span>₹{formatPrice((product.actual_rate || product.price) * quantity)}</span>
                     </div>
-                    {((product.actual_rate || product.price) - (product.full_payment_amount || product.price)) > 0 && (
-                      <div className="flex justify-between items-center text-[14px] text-[#0D9740]">
-                        <span>Instant Discount</span>
-                        <span>- ₹{formatPrice(((product.actual_rate || product.price) - (product.full_payment_amount || product.price)) * quantity)}</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between items-center mt-1">
+                    <div className="flex justify-between items-center text-[14px] text-[#0D9740]">
+                      <span>Instant Discount</span>
+                      <span>- ₹{formatPrice(((product.actual_rate || product.price) - (product.full_payment_amount || product.price)) * quantity)}</span>
+                    </div>
+                    <div className="flex justify-between items-center mt-1 pt-1 border-t border-zinc-200">
                       <span className="text-[18px] font-bold text-black">Pay Now</span>
                       <span className="text-[18px] font-bold text-black">₹{formatPrice((product.full_payment_amount || product.price) * quantity)}</span>
                     </div>
                   </div>
 
-                  <div className="h-[1px] bg-zinc-200 w-full my-3"></div>
-
-                  <div className="flex flex-col gap-2">
-                    {["Priority Dispatch", "Fastest Delivery", "Full Warranty Benefits", "Dedicated Support"].map(feat => (
-                      <div key={feat} className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-[#22C55E] rounded-full flex items-center justify-center text-white text-[9px]">✓</div>
-                        <span className="text-[13px] text-black font-medium">{feat}</span>
-                      </div>
-                    ))}
+                  <div className="bg-[#EBF5EE] text-[#0D9740] text-[10px] font-bold py-1.5 px-2.5 rounded-[6px] mt-3 flex items-center justify-center gap-1 text-center">
+                    🎁 You'll save ₹{formatPrice(((product.actual_rate || product.price) - (product.full_payment_amount || product.price)) * quantity)} on this order!
                   </div>
                 </div>
 
@@ -571,16 +562,16 @@ function ProductDetailContent() {
                   )}
 
                   <div>
-                    <div className="text-center mt-1 mb-3">
-                      <h4 className="font-bold text-[#6B7280] text-[13px] uppercase tracking-wide">BOOK PRODUCT</h4>
+                    <div className="text-left mb-3">
+                      <h4 className="font-bold text-[#6B7280] text-[13px] uppercase tracking-wide">Book Now & Pay On Delivery</h4>
+                      <p className="text-[11px] text-[#6B7280] mt-0.5">Confirm your order instantly</p>
                     </div>
                     
                     <div className="bg-[#F5F9F7] rounded-xl p-3 flex flex-col gap-1.5">
                       <div className="flex justify-between items-center text-[13px] text-[#4A4A4A]">
-                        <span>Total Product Price</span>
+                        <span>Order Total</span>
                         <span className="font-bold text-[#1A1A1A]">₹{formatPrice((product.actual_rate || product.price) * quantity)}</span>
                       </div>
-                      <div className="h-[1px] bg-zinc-200 w-full my-0.5"></div>
                       <div className="flex justify-between items-center text-[12px] text-[#0D9740]">
                         <span>Instant Discount</span>
                         <span>- ₹{formatPrice(((product.actual_rate || product.price) - product.price) * quantity)}</span>
@@ -600,20 +591,13 @@ function ProductDetailContent() {
                       </div>
                     </div>
 
-                    <div className="h-[1px] bg-zinc-100 w-full my-3"></div>
-
-                    <div className="flex flex-col gap-2">
-                      {["Secure Your Product Today", "Balance Payable on Delivery", "Human Confirmation Support", "Easy Reservation Process"].map(feat => (
-                        <div key={feat} className="flex items-center gap-2">
-                          <div className="w-4 h-4 bg-[#EAEAEA] rounded-full flex items-center justify-center text-[#0d9740] text-[9px] font-bold">✓</div>
-                          <span className="text-[13px] text-black font-medium">{feat}</span>
-                        </div>
-                      ))}
+                    <div className="bg-zinc-100 text-zinc-600 text-[10px] font-bold py-1.5 px-2.5 rounded-[6px] mt-3 flex items-center justify-center gap-1 text-center font-roboto">
+                      🎁 You'll save ₹{formatPrice(((product.actual_rate || product.price) - product.price) * quantity)} on this order!
                     </div>
                   </div>
 
                   <div className="mt-4">
-                    <div className="h-[1px] bg-zinc-100 w-full mb-3"></div>
+                    <div className="h-[1px] bg-zinc-200 w-full mb-3"></div>
                     <p className="text-[11px] text-[#6B7280] leading-tight">
                       Only ₹{formatPrice(product.COD_Display)} required to reserve this product today. Remaining balance can be paid on delivery.
                     </p>
