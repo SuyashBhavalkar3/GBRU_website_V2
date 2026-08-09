@@ -117,16 +117,15 @@ export default function CategoriesPage() {
             </button>
           </div>
         ) : (
-          /* Categories Grid */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
             {categories.map((cat) => (
               <Link
                 key={cat.category_id}
                 href={`/products?category_id=${cat.category_id}&category_name=${encodeURIComponent(cat.category_name)}`}
-                className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow flex flex-col group cursor-pointer"
+                className="bg-white rounded-[18px] border border-[#E5E7EB] overflow-hidden hover:shadow-lg transition-shadow flex flex-col group cursor-pointer text-left pb-4"
               >
                 {/* Image Container */}
-                <div className="relative h-48 w-full bg-gray-50 overflow-hidden flex items-center justify-center p-4">
+                <div className="relative h-32 md:h-48 w-full bg-gray-50 overflow-hidden flex items-center justify-center p-3 border-b border-[#E5E7EB]">
                   {cat.custom_image_path ? (
                     <img
                       src={cat.custom_image_path}
@@ -141,17 +140,22 @@ export default function CategoriesPage() {
                 </div>
 
                 {/* Content */}
-                <div className="p-5 flex flex-col flex-1 bg-white">
-                  <h3 className="text-[#1A1A1A] font-bold text-lg mb-1 leading-snug">
-                    {cat.category_name}
-                  </h3>
-                  <span className="text-[11px] text-zinc-500 font-semibold mb-4">
-                    {cat.product_count} Products
-                  </span>
+                <div className="p-3 md:p-5 flex flex-col flex-1 bg-white justify-between">
+                  <div>
+                    <h3 className="text-[#1F2937] font-roboto font-bold text-[14px] md:text-lg mb-1 leading-snug">
+                      {cat.category_name}
+                    </h3>
+                    <span className="text-[10px] md:text-[11px] text-zinc-500 font-semibold mb-3 block">
+                      {cat.product_count} Products
+                    </span>
+                  </div>
                   
-                  <div className="mt-auto flex items-center text-[#006B21] font-semibold text-sm hover:underline">
-                    Browse Collection
-                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                  {/* BROWSE button matching Figma mockups */}
+                  <div 
+                    className="w-full text-white font-roboto font-bold text-[11px] md:text-xs py-2 px-4 rounded-[6px] text-center uppercase tracking-wider transition-colors mt-2"
+                    style={{ background: "#006B21" }}
+                  >
+                    BROWSE
                   </div>
                 </div>
               </Link>
