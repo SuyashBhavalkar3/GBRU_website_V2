@@ -176,10 +176,10 @@ export default function Products() {
       <Navbar />
 
       {/* Top Banner Section */}
-      <div className="w-full bg-[#F9F9F9] pt-10 pb-16">
+      <div className="w-full bg-[#F9F9F9] md:pt-10 md:pb-16 pt-5 pb-6">
         <div className="max-w-[1280px] mx-auto px-4 lg:px-8">
           {/* Breadcrumbs */}
-          <div className="flex items-center gap-2 text-xs font-bold tracking-widest text-[#4A4A4A] mb-8 uppercase">
+          <div className="flex items-center gap-2 text-xs font-bold tracking-widest text-[#4A4A4A] mb-4 md:mb-8 uppercase">
             <Link href="/" className="hover:text-[#006B21]">Home</Link>
             <span className="text-[#A5B4A8]">&gt;</span>
             <Link href="/categories" className="hover:text-[#006B21]">Categories</Link>
@@ -187,13 +187,13 @@ export default function Products() {
             <span className="text-[#006B21]">{categoryName}</span>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-bold text-[#1A1A1A] tracking-tight">
+          <h1 className="text-2xl md:text-5xl font-bold text-[#1A1A1A] tracking-tight">
             {categoryName}
           </h1>
         </div>
       </div>
 
-      <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 lg:px-8 py-12 flex flex-col min-h-[400px] justify-center">
+      <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 lg:px-8 md:py-12 py-4 flex flex-col min-h-[300px] justify-center">
 
         {loading ? (
           /* Loading indicator */
@@ -217,18 +217,87 @@ export default function Products() {
         ) : (
           <>
             {/* Header Controls (Title + Sort + Subcategory filter) */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 border-b border-gray-100 pb-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-4 md:mb-8 border-b border-gray-100 pb-4 md:pb-6">
               <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-[#1A1A1A] mb-1">
-                  Precision Management
+                <h2 className="text-lg md:text-3xl font-roboto font-bold text-[#1A1A1A] mb-1">
+                  <span className="block md:hidden">{categoryName}</span>
+                  <span className="hidden md:block">Precision Management</span>
                 </h2>
-                <p className="text-sm text-[#4A4A4A]">
+                <p className="text-xs md:text-sm text-[#4A4A4A]">
                   Showing {productsList.length} Professional Products Found
                 </p>
               </div>
 
-              <div className="mt-4 md:mt-0 flex flex-wrap items-center gap-4">
+              {/* ── MOBILE CONTROLS: Compact single-row layout ── */}
+              <div className="block md:hidden mt-4 w-full">
+                <div className="flex items-center gap-3 w-full">
+                  {/* Search Bar (Leftmost, flex-1) */}
+                  <form 
+                    onSubmit={(e) => { e.preventDefault(); setSearchQuery(searchInput); }} 
+                    className="flex flex-1 items-center"
+                  >
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      value={searchInput}
+                      onChange={(e) => setSearchInput(e.target.value)}
+                      className="appearance-none bg-white border border-gray-300 text-[#1A1A1A] text-xs rounded-l-[8px] pl-3 py-2 w-full outline-none focus:border-[#006B21] focus:ring-1 focus:ring-[#006B21]"
+                    />
+                    <button 
+                      type="submit" 
+                      className="bg-[#006B21] text-white px-3 py-2 rounded-r-[8px] text-xs font-semibold hover:bg-[#005a1b] transition-colors"
+                    >
+                      Search
+                    </button>
+                  </form>
 
+                  {/* Compact Sort Select Box (Rightside, shrink-0) */}
+                  <div className="relative shrink-0 flex items-center bg-white border border-gray-300 rounded-[8px] px-2 py-2 gap-1 cursor-pointer">
+                    {/* Sort Icon logo instead of full text */}
+                    <svg className="w-4 h-4 text-[#4B5563]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                    </svg>
+                    <select 
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="appearance-none bg-transparent text-[#1A1A1A] text-xs font-roboto font-medium outline-none pr-5 cursor-pointer"
+                    >
+                      <option value="newest">Sort</option>
+                      <option value="price_asc">₹ Low to High</option>
+                      <option value="price_desc">₹ High to Low</option>
+                      <option value="best_sellers">Best Seller</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-1 flex items-center text-gray-500">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mobile Subcategory filter (only shown if subcategories exist) */}
+                {subcategories.length > 0 && (
+                  <div className="mt-3 flex items-center bg-white border border-gray-300 rounded-[8px] px-3 py-2 relative w-full cursor-pointer">
+                    <span className="text-[11px] font-roboto font-bold text-zinc-500 mr-2 uppercase tracking-wide">Category:</span>
+                    <select
+                      value={selectedSubcategory}
+                      onChange={(e) => setSelectedSubcategory(e.target.value)}
+                      className="appearance-none bg-transparent text-[#1A1A1A] text-xs font-roboto font-semibold outline-none w-full pr-6 cursor-pointer"
+                    >
+                      <option value="all">All Subcategories</option>
+                      {subcategories.map((sub) => (
+                        <option key={sub.sub_cat_id} value={sub.sub_cat_id}>
+                          {sub.subcategory_name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* ── DESKTOP CONTROLS: Unchanged Layout ── */}
+              <div className="hidden md:flex flex-wrap items-center gap-4 mt-0">
                 {/* Search Bar */}
                 <form 
                   onSubmit={(e) => { e.preventDefault(); setSearchQuery(searchInput); }} 
@@ -292,7 +361,6 @@ export default function Products() {
                     </div>
                   </div>
                 </div>
-
               </div>
             </div>
 
