@@ -253,9 +253,9 @@ export default function Cart() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col pb-16">
+      <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col">
         <Navbar />
-        <main className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 pt-8 flex flex-col gap-6 animate-pulse">
+        <main className="flex-1 max-w-[1280px] w-full mx-auto px-4 lg:px-8 pt-8 pb-16 flex flex-col gap-6 animate-pulse">
           <div className="h-10 w-48 bg-zinc-200 rounded-[12px] mb-2"></div>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div className="lg:col-span-8 flex flex-col gap-4">
@@ -304,10 +304,10 @@ export default function Cart() {
   const total = totalPayNow;
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col pb-16">
+    <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col">
       <Navbar />
 
-      <main className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 pt-8 flex flex-col gap-6">
+      <main className="flex-1 max-w-[1280px] w-full mx-auto px-4 lg:px-8 pt-8 pb-16 flex flex-col gap-6">
 
         {/* Back Link */}
         <Link

@@ -18,7 +18,12 @@ import {
   Printer,
   ArrowLeft,
   Download,
-  X
+  X,
+  Wallet,
+  IndianRupee,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  RefreshCw
 } from "lucide-react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
@@ -533,7 +538,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 {/* Payment Type Badge */}
                 <div className="flex items-center justify-between py-1">
                   <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
-                    <span className="w-5 text-center text-zinc-400">ℹ️</span>
+                    <Info className="w-5 h-5 text-zinc-400 shrink-0" />
                     <span>Payment Type</span>
                   </div>
                   {isFullPayment ? (
@@ -555,7 +560,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 {/* Preferred Payment Mode */}
                 <div className="flex items-center justify-between py-1">
                   <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
-                    <span className="w-5 text-center text-zinc-400">💳</span>
+                    <CreditCard className="w-5 h-5 text-zinc-400 shrink-0" />
                     <span>Preferred Mode</span>
                   </div>
                   <span className="font-bold text-[#0F291B] text-sm">{preferredMode}</span>
@@ -565,7 +570,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 {/* Preferred Payment Amount */}
                 <div className="flex items-center justify-between py-1">
                   <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
-                    <span className="w-5 text-center text-zinc-400">💰</span>
+                    <IndianRupee className="w-5 h-5 text-zinc-400 shrink-0" />
                     <span>Preferred Amount</span>
                   </div>
                   <span className="font-bold text-[#0D9740] text-sm">₹{preferredAmount.toLocaleString('en-IN')}</span>
@@ -575,7 +580,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 {/* Received Amount */}
                 <div className="flex items-center justify-between py-1">
                   <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
-                    <span className="w-5 text-center text-zinc-400">📥</span>
+                    <ArrowDownToLine className="w-5 h-5 text-zinc-400 shrink-0" />
                     <span>Received Amount</span>
                   </div>
                   <span className="font-bold text-[#0D9740] text-sm">₹{receivedAmount.toLocaleString('en-IN')}</span>
@@ -585,7 +590,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 {/* Pending Amount */}
                 <div className="flex items-center justify-between py-1">
                   <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
-                    <span className="w-5 text-center text-zinc-400">📤</span>
+                    <ArrowUpFromLine className="w-5 h-5 text-zinc-400 shrink-0" />
                     <span>Pending Amount</span>
                   </div>
                   <span className="font-bold text-[#0D9740] text-sm">
@@ -597,7 +602,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 {/* Unsettled Amount */}
                 <div className="flex items-center justify-between py-1">
                   <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
-                    <span className="w-5 text-center text-zinc-400">🔄</span>
+                    <RefreshCw className="w-5 h-5 text-zinc-400 shrink-0" />
                     <span>Unsettled Amount</span>
                   </div>
                   <span className="font-bold text-[#0D9740] text-sm">₹{unsettledAmount.toLocaleString('en-IN')}</span>
@@ -632,7 +637,8 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                     onClick={handlePayNow}
                     className="w-full bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold py-3.5 rounded-xl text-xs font-roboto transition-all shadow-md flex items-center justify-center gap-1.5 duration-300 mt-2 active:scale-[0.98]"
                   >
-                    💳 {isFullPayment ? "Pay Pending" : "Pay Booking Deposit"} (₹{payAmount.toLocaleString('en-IN')})
+                    <CreditCard className="w-4 h-4 shrink-0" />
+                    <span>{isFullPayment ? "Pay Pending" : "Pay Booking Deposit"} (₹{payAmount.toLocaleString('en-IN')})</span>
                   </button>
                 )}
               </div>
@@ -722,7 +728,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 {/* Transporter Name */}
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 text-zinc-400 font-bold text-xs uppercase font-roboto">
-                    <Truck className="w-4 h-4 shrink-0" />
+                    <Truck className="w-4 h-4 shrink-0 text-[#0D9740]" />
                     <span>Transport Name</span>
                   </div>
                   <p className="font-bold text-[#0F291B] text-sm">
@@ -733,7 +739,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 {/* Shipment Date */}
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 text-zinc-400 font-bold text-xs uppercase font-roboto">
-                    <Calendar className="w-4 h-4 shrink-0" />
+                    <Calendar className="w-4 h-4 shrink-0 text-[#0D9740]" />
                     <span>Shipment Date</span>
                   </div>
                   <p className="font-bold text-[#0F291B] text-sm">
@@ -744,7 +750,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 {/* Transport Status */}
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 text-zinc-400 font-bold text-xs uppercase font-roboto">
-                    <Info className="w-4 h-4 shrink-0" />
+                    <Info className="w-4 h-4 shrink-0 text-amber-500" />
                     <span>Status</span>
                   </div>
                   <p className="font-extrabold text-amber-600 text-sm">

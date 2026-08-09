@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "./Navbar";
-import { Package, MapPin, Banknote, Bell, Headphones, Phone } from "lucide-react";
+import { Package, MapPin, Banknote, Bell, Headphones, Phone, CreditCard } from "lucide-react";
 import Footer from "./Footer";
 
 interface Order {
@@ -421,7 +421,7 @@ export default function OrderList() {
                   </div>
 
                   {/* Column 3: CTAs */}
-                  <div className="flex-1 flex flex-col justify-center items-stretch md:items-end gap-3 md:pl-8">
+                  <div className="flex-1 flex flex-col justify-center items-stretch md:items-center gap-3 md:pl-8">
                     {/* Pay Now Button */}
                     {!isFullPayment ? (
                       // For COD/Booking orders, only allow paying the booking deposit (if not already paid)
@@ -431,7 +431,12 @@ export default function OrderList() {
                           onClick={() => handlePayNow(order.order_id, Number(order.payupreferedamount))}
                           className="w-full md:max-w-[200px] text-white bg-[#1E532E] hover:bg-[#153B21] font-bold py-2.5 rounded-xl transition-all duration-200 font-roboto text-xs flex items-center justify-center"
                         >
-                          {payingOrderId === order.order_id ? "Processing..." : `Pay Booking Deposit (₹${Number(order.payupreferedamount).toLocaleString('en-IN')})`}
+                          {payingOrderId === order.order_id ? "Processing..." : (
+                            <span className="flex items-center gap-1.5 justify-center">
+                              <CreditCard className="w-4 h-4 shrink-0" />
+                              Pay Booking Deposit (₹{Number(order.payupreferedamount).toLocaleString('en-IN')})
+                            </span>
+                          )}
                         </button>
                       )
                     ) : (
@@ -451,7 +456,10 @@ export default function OrderList() {
                               Processing...
                             </span>
                           ) : (
-                            `Pay Pending (₹${pendingAmt.toLocaleString('en-IN')})`
+                            <span className="flex items-center gap-1.5 justify-center">
+                              <CreditCard className="w-4 h-4 shrink-0" />
+                              Pay Pending (₹{pendingAmt.toLocaleString('en-IN')})
+                            </span>
                           )}
                         </button>
                       )
@@ -466,7 +474,7 @@ export default function OrderList() {
                     {/* Help Link */}
                     <Link
                       href="/help-centre"
-                      className="inline-flex items-center gap-1 text-[#1E532E] hover:text-[#153B21] transition-colors text-xs font-bold mt-1.5 md:mr-1"
+                      className="inline-flex items-center justify-center gap-1 text-[#1E532E] hover:text-[#153B21] transition-colors text-xs font-bold mt-1.5"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
