@@ -162,10 +162,10 @@ export default function Navbar() {
       style={{ background: "linear-gradient(90deg, #204123 0%, #185A46 49.52%, #204123 100%)" }}
     >
       <div className="max-w-[1280px] w-full mx-auto pl-[21px] pr-4 sm:pr-6 lg:pr-[47px]">
-        <div className="flex items-center justify-between lg:justify-start h-[72px]">
+        <div className="flex items-center justify-between lg:justify-start h-[64px] lg:h-[72px]">
 
-          {/* Logo Section */}
-          <div className="flex-shrink-0 flex items-center lg:mr-[142px]">
+          {/* Desktop Logo Section */}
+          <div className="hidden lg:flex flex-shrink-0 items-center lg:mr-[142px]">
             <Link href="/" className="flex items-center">
               <Image
                 src="/assets/gbru_header_logo.png"
@@ -310,62 +310,66 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Right Controls (Hamburger & Cart) */}
-          <div className="flex lg:hidden items-center space-x-4">
-            {/* Search Toggle / Input on medium screen */}
-            <div className="hidden sm:flex md:hidden items-center relative max-w-[180px] h-[30px]">
-              <SearchBar className="w-full h-full" placeholder="Search..." />
-            </div>
-
-            {/* Mobile Cart */}
-            <Link href="/cart" className="flex items-end p-1 hover:scale-105 transition-transform duration-200 group">
-              <div className="relative flex justify-center w-[34px] h-[34px]">
-                <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M1 3h3.5l2 11h11l2.5-7.5" />
-                  <circle cx="9" cy="19" r="1.2" fill="white" stroke="white" />
-                  <circle cx="17" cy="19" r="1.2" fill="white" stroke="white" />
-                </svg>
-                <span className="absolute top-[2px] left-[3px] right-0 text-center text-[#FF9900] font-bold text-[14px] font-sans leading-none flex items-center justify-center">
-                  {cartCount}
-                </span>
-              </div>
-            </Link>
-
-            {/* Hamburger Button */}
+          <div className="flex lg:hidden items-center justify-between w-full h-[64px]">
+            
+            {/* Hamburger Button (Leftmost) */}
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-[#FFC700] hover:bg-white/10 focus:outline-none transition-colors duration-200 cursor-pointer"
               aria-label="Toggle menu"
             >
               {isOpen ? (
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               ) : (
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}
             </button>
+
+            {/* GBRU logo centered */}
+            <div className="flex items-center justify-center">
+              <Link href="/">
+                <Image
+                  src="/assets/gbru_header_logo.png"
+                  alt="GBRU Logo"
+                  width={80}
+                  height={44}
+                  className="h-[44px] w-[80px] object-contain"
+                  priority
+                />
+              </Link>
+            </div>
+
+            {/* Right side controls (Search & Cart) */}
+            <div className="flex items-center space-x-3.5">
+              {/* Mobile Search Icon Toggle */}
+              <button 
+                onClick={() => setIsOpen(!isOpen)}
+                className="text-white hover:text-[#FFC700] p-1 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+
+              {/* Mobile Cart */}
+              <Link href="/cart" className="flex items-end p-1 hover:scale-105 transition-transform duration-200 group">
+                <div className="relative flex justify-center w-[30px] h-[30px]">
+                  <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 3h3.5l2 11h11l2.5-7.5" />
+                    <circle cx="9" cy="19" r="1.2" fill="white" stroke="white" />
+                    <circle cx="17" cy="19" r="1.2" fill="white" stroke="white" />
+                  </svg>
+                  <span className="absolute top-[1px] left-[3px] right-0 text-center text-[#FF9900] font-bold text-[13px] font-sans leading-none flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                </div>
+              </Link>
+            </div>
+
           </div>
 
         </div>
