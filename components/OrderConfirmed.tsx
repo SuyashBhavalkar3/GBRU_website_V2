@@ -48,7 +48,7 @@ export default function OrderConfirmed() {
           setOrderDetails(data.message.data);
         }
       } catch (err) {
-        
+
       } finally {
         setLoading(false);
       }
@@ -82,21 +82,21 @@ export default function OrderConfirmed() {
 
   // Get first item details for display card, fallback to default tractor if no items or invalid order
   const displayItem = orderDetails?.items?.[0] || {
-    item_name: "GBRU Pro-Series 5000",
-    description: "Premium Multi-Purpose Agricultural Tractor",
-    image: "/assets/gbru_tractor_main.png"
+    item_name: "GBRU Product",
+    description: "Premium Agricultural Equipment",
+    image: "/assets/sprayer.png"
   };
 
-  const deliveryDateStr = orderDetails?.delivery_date 
-    ? new Date(orderDetails.delivery_date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
-    : "June 2-5, 2026";
+  const deliveryDateStr = orderDetails?.delivery_date
+    ? new Date(orderDetails.delivery_date).toLocaleDateString("en-IN", { month: "long", day: "numeric", year: "numeric" })
+    : "Your Order Will Be Delivered Soon!";
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] font-roboto flex flex-col pb-16">
       <Navbar />
 
       <main className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 pt-8 flex flex-col items-center gap-8">
-        
+
         {/* Success Icon, Heading, and Order ID */}
         <div className="flex flex-col items-center text-center gap-3">
           <div className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-md border-4 border-white">
@@ -116,17 +116,16 @@ export default function OrderConfirmed() {
         {/* Product Details Card */}
         <div className="max-w-[800px] w-full bg-white border border-zinc-200/85 rounded-[24px] p-6 shadow-sm flex flex-col md:flex-row items-stretch gap-6 relative mt-2">
           {/* Image */}
-          <div className="relative w-full md:w-[120px] h-[120px] rounded-[16px] overflow-hidden bg-zinc-50 border border-zinc-100 flex-shrink-0">
-            <Image
-              src={displayItem.image || "/assets/gbru_tractor_main.png"}
+          <div className="relative w-full md:w-[120px] h-[120px] rounded-[16px] overflow-hidden bg-zinc-50 border border-zinc-100 flex-shrink-0 flex items-center justify-center">
+            <img
+              src={displayItem.image || "/assets/sprayer.png"}
               alt={displayItem.item_name}
-              fill
-              className="object-cover"
+              className="max-h-full max-w-full object-contain"
             />
           </div>
 
           {/* Info */}
-          <div className="flex flex-col justify-between flex-1 py-1">
+          <div className="flex flex-col justify-between flex-1 py-1 text-left">
             <div className="flex flex-col gap-1.5">
               <h3 className="font-bold text-[#0F291B] text-[18px]">
                 {displayItem.item_name}
@@ -134,7 +133,7 @@ export default function OrderConfirmed() {
               <p className="text-xs text-zinc-500">
                 {displayItem.description || "Premium Multi-Purpose Agricultural Equipment"}
               </p>
-              
+
               <div className="flex items-center gap-3 mt-3">
                 <span className="bg-[#EBF5EE] text-[#0D9740] text-[10px] font-bold py-1 px-3 rounded-[6px]">
                   {orderDetails?.status || "Confirmed"}
@@ -148,7 +147,7 @@ export default function OrderConfirmed() {
             <div className="flex items-center justify-between border-t border-zinc-100 pt-4 mt-6">
               <span className="text-xs font-bold text-zinc-500 uppercase">Total Amount</span>
               <span className="font-extrabold text-[#0F291B] text-[20px]">
-                ₹{formatPrice(orderDetails?.grand_total || "1032500")}
+                ₹{formatPrice(orderDetails?.grand_total || orderDetails?.total_amount || "0.00")}
               </span>
             </div>
           </div>
@@ -173,7 +172,7 @@ export default function OrderConfirmed() {
             className="h-12 bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-sm rounded-[14px] flex items-center justify-center gap-2 shadow-sm transition-all"
           >
             <div className="flex items-center justify-center w-5 h-5 shrink-0 relative">
-              <div 
+              <div
                 className="w-[16px] h-[16px] border-[2px] border-white rounded-tl-full rounded-tr-full rounded-bl-full rotate-45 flex items-center justify-center bg-transparent relative top-[-1px]"
                 style={{ borderBottomRightRadius: '2px' }}
               >
@@ -246,7 +245,7 @@ export default function OrderConfirmed() {
         </div>
 
         {/* Manage with Shoption App Card */}
-        <div 
+        <div
           className="max-w-[800px] w-full text-white rounded-[24px] overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 p-8 shadow-sm relative mt-4"
           style={{ background: 'linear-gradient(343.13deg, #0B5D3B 3.06%, #043321 55.88%)' }}
         >
