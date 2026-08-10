@@ -657,16 +657,22 @@ export default function OrderList() {
                         <button
                           disabled={payingOrderId === order.order_id}
                           onClick={() => handlePayNow(order.order_id, payAmt)}
-                          className="w-full h-[52px] bg-[#1B5E20] hover:bg-[#154a19] disabled:opacity-60 text-white font-bold text-[16px] rounded-2xl transition-all flex items-center justify-center"
+                          className="w-full min-h-[52px] py-3 bg-[#1B5E20] hover:bg-[#154a19] disabled:opacity-60 text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-2.5 px-4 text-center"
                         >
-                          {payingOrderId === order.order_id ? "Processing..." : `${isFullPayment ? "Pay Pending" : "Pay Booking Deposit"} (₹${payAmt.toLocaleString("en-IN")})`}
+                          {payingOrderId === order.order_id ? (
+                            "Processing..."
+                          ) : (
+                            <span className="text-[14px] leading-snug">
+                              {isFullPayment ? "Pay Pending" : "Pay Booking Deposit"} (₹{payAmt.toLocaleString("en-IN")})
+                            </span>
+                          )}
                         </button>
                       )}
 
                       {/* View Details */}
                       <Link
                         href={`/orders/${order.order_id}`}
-                        className="w-full h-[52px] border-2 border-[#1B5E20] text-[#1B5E20] hover:bg-[#1B5E20]/5 font-bold text-[16px] rounded-2xl transition-all flex items-center justify-center"
+                        className="w-full min-h-[52px] py-3 border-2 border-[#1B5E20] text-[#1B5E20] hover:bg-[#1B5E20]/5 font-bold text-[16px] rounded-2xl transition-all flex items-center justify-center"
                       >
                         View Details
                       </Link>
@@ -772,10 +778,7 @@ export default function OrderList() {
                               Processing...
                             </span>
                           ) : (
-                            <span className="flex items-center gap-1.5 justify-center">
-                              <CreditCard className="w-4 h-4 shrink-0" />
-                              {isFullPayment ? "Pay Pending" : "Pay Booking Deposit"} (₹{payAmt.toLocaleString("en-IN")})
-                            </span>
+                           <span>{isFullPayment ? "Pay Pending" : "Pay Booking Deposit"} (₹{payAmt.toLocaleString("en-IN")})</span>
                           )}
                         </button>
                       )}

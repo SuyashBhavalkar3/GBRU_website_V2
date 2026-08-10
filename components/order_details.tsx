@@ -541,10 +541,11 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
             {showPayButton && (
               <button
                 onClick={handlePayNow}
-                className="w-full h-12 bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-[15px] rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 mt-1"
+                className="w-full min-h-[52px] py-3 bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold rounded-2xl transition-all shadow-sm flex items-center justify-center gap-2 mt-1"
               >
-                <CreditCard className="w-4 h-4" />
-                {isFullPayment ? "Pay Pending" : "Pay Booking Deposit"} (₹{payAmount.toLocaleString("en-IN")})
+                <span className="text-[14px] leading-snug">
+                  {isFullPayment ? "Pay Pending" : "Pay Booking Deposit"} (₹{payAmount.toLocaleString("en-IN")})
+                </span>
               </button>
             )}
 
@@ -1032,9 +1033,8 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 {showPayButton && (
                   <button
                     onClick={handlePayNow}
-                    className="w-full bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold py-3.5 rounded-xl text-xs font-roboto transition-all shadow-md flex items-center justify-center gap-1.5 duration-300 mt-2 active:scale-[0.98]"
+                    className="w-full bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold py-3.5 rounded-xl text-xs font-roboto transition-all shadow-md flex items-center justify-center duration-300 mt-2 active:scale-[0.98]"
                   >
-                    <CreditCard className="w-4 h-4 shrink-0" />
                     <span>{isFullPayment ? "Pay Pending" : "Pay Booking Deposit"} (₹{payAmount.toLocaleString('en-IN')})</span>
                   </button>
                 )}
