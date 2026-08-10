@@ -390,41 +390,33 @@ export default function Hero() {
         </div>
 
         {/* Full-Width Carousel — auto-sliding on mobile */}
-        <div className="relative w-full h-[220px] flex items-center justify-center overflow-hidden">
+        <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] h-[220px] overflow-hidden">
           {carouselImages.map((imgUrl, idx) => {
             const pos = getMobilePositionClass(idx);
             if (pos === "center") {
               return (
                 <div
                   key={idx}
-                  className="absolute z-20 w-[88%] h-[200px] transition-all duration-500 ease-in-out rounded-2xl overflow-hidden shadow-xl border border-white/20"
+                  className="absolute inset-0 z-20 w-full h-full transition-all duration-500 ease-in-out flex items-center justify-center"
                 >
                   <Image
                     src={imgUrl}
                     alt="Carousel Center"
                     fill
-                    className="object-cover"
+                    className="object-contain"
                     priority
-                    sizes="90vw"
+                    sizes="100vw"
                   />
                 </div>
               );
             }
-            const isLeft = pos === "left";
-            return (
-              <div
-                key={idx}
-                className={`absolute z-10 w-[55px] h-[140px] transition-all duration-500 ease-in-out rounded-xl overflow-hidden opacity-40 border border-white/10 ${isLeft ? "left-1" : "right-1"}`}
-              >
-                <Image src={imgUrl} alt="Carousel Side" fill className="object-cover" sizes="55px" />
-              </div>
-            );
+            return null; // Don't show side offset cards to guarantee no spacing on left/right
           })}
 
           {/* Left Arrow */}
           <button
             onClick={handleMobilePrev}
-            className="absolute left-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/50 text-white border border-white/20 shadow-md"
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/50 text-white border border-white/20 shadow-md"
             aria-label="Previous image"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -435,7 +427,7 @@ export default function Hero() {
           {/* Right Arrow */}
           <button
             onClick={handleMobileNext}
-            className="absolute right-3 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/50 text-white border border-white/20 shadow-md"
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/50 text-white border border-white/20 shadow-md"
             aria-label="Next image"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
