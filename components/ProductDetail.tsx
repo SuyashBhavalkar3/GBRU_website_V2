@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import LoginPrompt from "./LoginPrompt";
 import { addToCartUtil } from "@/utils/cartUtils";
+import ActionPopup from "./ActionPopup";
 
 function ProductDetailContent() {
   const router = useRouter();
@@ -125,6 +126,7 @@ function ProductDetailContent() {
 
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "error">("success");
+  const [errorPopup, setErrorPopup] = useState({ open: false, title: "", message: "" });
 
   const handleAddToCart = async () => {
     const user = localStorage.getItem("gbru_user");
@@ -208,15 +210,19 @@ function ProductDetailContent() {
         setIsInCart(true);
         setTimeout(() => setToastMessage(""), 3000);
       } else {
-        setToastType("error");
-        setToastMessage(resJson.message?.message || resJson.error || `Failed to ${isInCart ? "update" : "add"} product.`);
-        setTimeout(() => setToastMessage(""), 3000);
+        setErrorPopup({
+          open: true,
+          title: "Add to Cart Failed",
+          message: resJson.message?.message || resJson.error || `Failed to ${isInCart ? "update" : "add"} product.`,
+        });
       }
     } catch (err) {
       
-      setToastType("error");
-      setToastMessage(`Failed to ${isInCart ? "update" : "add"} product.`);
-      setTimeout(() => setToastMessage(""), 3000);
+      setErrorPopup({
+        open: true,
+        title: "Add to Cart Failed",
+        message: `Failed to ${isInCart ? "update" : "add"} product.`,
+      });
     } finally {
       setSubmitting(false);
     }
@@ -309,6 +315,14 @@ function ProductDetailContent() {
           <span className="font-medium font-inter">{toastMessage}</span>
         </div>
       )}
+
+      <ActionPopup
+        isOpen={errorPopup.open}
+        title={errorPopup.title}
+        message={errorPopup.message}
+        type="error"
+        onClose={() => setErrorPopup({ open: false, title: "", message: "" })}
+      />
 
       {/* Main Container */}
       <main className="max-w-[1280px] w-full mx-auto px-4 lg:px-8 pt-8 flex flex-col gap-6">

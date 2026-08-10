@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import LoginPrompt from "./LoginPrompt";
+import ActionPopup from "./ActionPopup";
 
 interface PaymentOptionModalProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ export default function PaymentOptionModal({
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "error">("success");
   const [isInCart, setIsInCart] = useState(false);
+  const [errorPopup, setErrorPopup] = useState({ open: false, title: "", message: "" });
 
   useEffect(() => {
     if (!isOpen || !itemCode) return;
@@ -203,15 +205,19 @@ export default function PaymentOptionModal({
           if (onConfirm) onConfirm();
         }, 1500);
       } else {
-        setToastType("error");
-        setToastMessage(resJson.message?.message || resJson.error || `Failed to ${isInCart ? "update" : "add"} product.`);
-        setTimeout(() => setToastMessage(""), 3000);
+        setErrorPopup({
+          open: true,
+          title: "Add to Cart Failed",
+          message: resJson.message?.message || resJson.error || `Failed to ${isInCart ? "update" : "add"} product.`,
+        });
       }
     } catch (err) {
       
-      setToastType("error");
-      setToastMessage(`Failed to ${isInCart ? "update" : "add"} product.`);
-      setTimeout(() => setToastMessage(""), 3000);
+      setErrorPopup({
+        open: true,
+        title: "Add to Cart Failed",
+        message: `Failed to ${isInCart ? "update" : "add"} product.`,
+      });
     } finally {
       setSubmitting(false);
     }
@@ -411,6 +417,14 @@ export default function PaymentOptionModal({
           <span className="text-sm font-bold">{toastMessage}</span>
         </div>
       )}
+
+      <ActionPopup
+        isOpen={errorPopup.open}
+        title={errorPopup.title}
+        message={errorPopup.message}
+        type="error"
+        onClose={() => setErrorPopup({ open: false, title: "", message: "" })}
+      />
 
       {/* Login Prompt Popup */}
       <LoginPrompt isOpen={showLoginPrompt} onClose={() => setShowLoginPrompt(false)} />
