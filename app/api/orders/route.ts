@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { mobile_no, from_date, to_date, page_size, page } = await request.json();
+    const { mobile_no, order_id, from_date, to_date, page_size, page } = await request.json();
 
     if (!mobile_no) {
       return NextResponse.json({ error: 'Mobile number is required' }, { status: 400 });
@@ -41,22 +41,29 @@ export async function POST(request: Request) {
 
     // Step 2: Fetch orders using the user's keys
     const params = new URLSearchParams({
+      order_id: order_id ?? "",
       from_date: from_date || "2026-04-01",
       to_date: to_date || "2028-05-31",
       page_size: String(page_size || 200),
-      page: String(page || 1)
+      page: String(page || 1),
     });
 
     const response = await fetch(`${baseUrl}/api/method/shoption_api.cart.cart.get_order_from_list?${params.toString()}`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `token ${userApiKey}:${userApiSecret}`,
       },
     });
 
     const data = await response.json();
-    
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: data?.error || data?.message || "Failed to fetch orders", details: data },
+        { status: response.status }
+      );
+    }
+
     return NextResponse.json(data);
   } catch (error: any) {
     

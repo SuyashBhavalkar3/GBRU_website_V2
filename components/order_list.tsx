@@ -30,6 +30,9 @@ export default function OrderList() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [filterMode, setFilterMode] = useState<"all_time" | "financial_year" | "custom">("all_time");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   // User profile details
   const [userName, setUserName] = useState("Prakash");
@@ -50,65 +53,98 @@ export default function OrderList() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const stored = localStorage.getItem("gbru_user");
-        if (!stored) {
-          setError("User not logged in");
-          setLoading(false);
-          return;
-        }
+  const getTodayDate = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
 
-        const parsed = JSON.parse(stored);
-        const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
-        if (mobile_no) {
-          setUserMobile(mobile_no.startsWith("+91") ? mobile_no : `+91 ${mobile_no}`);
-        }
+  const getFinancialYearRange = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const start = today.getMonth() >= 3 ? `${yyyy}-04-01` : `${yyyy - 1}-04-01`;
+    const end = today.getMonth() >= 3 ? `${yyyy + 1}-03-31` : `${yyyy}-03-31`;
+    return { start, end };
+  };
 
-        // Fetch User profile details
-        try {
-          const userRes = await fetch('/api/user-details', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ mobile_no })
-          });
-          const userData = await userRes.json();
-          if (userData?.message?.status && userData?.message?.data) {
-            const details: UserDetails = userData.message.data;
-            if (details.Customer_name) {
-              setUserName(details.Customer_name.split(" ")[0]);
-            }
-          }
-        } catch (e) {
-          
-        }
+  const fetchOrdersWithRange = async (rangeFrom: string, rangeTo: string) => {
+    try {
+      setLoading(true);
+      setError("");
 
-        // Fetch orders list
-        const res = await fetch('/api/orders', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ mobile_no })
-        });
-
-        const data = await res.json();
-
-        if (data?.message?.status && data?.message?.data?.data) {
-          setOrders(data.message.data.data);
-        } else {
-          setError("Failed to fetch orders");
-        }
-      } catch (err) {
-        
-        setError("Something went wrong");
-      } finally {
-        setLoading(false);
+      const stored = localStorage.getItem("gbru_user");
+      if (!stored) {
+        setError("User not logged in");
+        return;
       }
-    };
 
-    fetchData();
+      const parsed = JSON.parse(stored);
+      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mobile_no,
+          order_id: null,
+          from_date: rangeFrom,
+          to_date: rangeTo,
+          page_size: 200,
+          page: 1,
+        })
+      });
+
+      const data = await res.json();
+      const orderList = Array.isArray(data?.message?.data?.data)
+        ? data.message.data.data
+        : Array.isArray(data?.message?.data)
+          ? data.message.data
+          : Array.isArray(data?.data)
+            ? data.data
+            : null;
+
+      if (res.ok && orderList) {
+        setOrders(orderList);
+      } else {
+        setError(data?.error || data?.message?.message || data?.msg || "Failed to fetch orders");
+      }
+    } catch {
+      setError("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFilterModeChange = async (mode: "all_time" | "financial_year" | "custom") => {
+    setFilterMode(mode);
+
+    if (mode === "all_time") {
+      setFromDate("2020-01-01");
+      setToDate(getTodayDate());
+      await fetchOrdersWithRange("2020-01-01", getTodayDate());
+      return;
+    }
+
+    if (mode === "financial_year") {
+      const { start, end } = getFinancialYearRange();
+      setFromDate(start);
+      setToDate(end);
+      await fetchOrdersWithRange(start, end);
+      return;
+    }
+  };
+
+  const applyCustomRange = async () => {
+    if (!fromDate || !toDate) return;
+    setFilterMode("custom");
+    await fetchOrdersWithRange(fromDate, toDate);
+  };
+
+  useEffect(() => {
+    void fetchOrdersWithRange("2020-01-01", getTodayDate());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Filter orders by search query
@@ -394,6 +430,69 @@ export default function OrderList() {
             <svg className="w-5 h-5 text-zinc-400 absolute right-3.5 top-3.5 pointer-events-none" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
+          </div>
+        </div>
+
+        {/* Date range filters */}
+        <div className="bg-white border border-[#CDE5D2] rounded-[24px] p-4 lg:p-5 shadow-sm flex flex-col gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => void handleFilterModeChange("all_time")}
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-all border ${filterMode === "all_time" ? "bg-[#1E532E] text-white border-[#1E532E]" : "bg-white text-[#1E532E] border-[#CDE5D2]"}`}
+              >
+                All Time
+              </button>
+              <button
+                onClick={() => void handleFilterModeChange("financial_year")}
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-all border ${filterMode === "financial_year" ? "bg-[#1E532E] text-white border-[#1E532E]" : "bg-white text-[#1E532E] border-[#CDE5D2]"}`}
+              >
+                Current Financial Year
+              </button>
+              <button
+                onClick={() => setFilterMode("custom")}
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-all border ${filterMode === "custom" ? "bg-[#1E532E] text-white border-[#1E532E]" : "bg-white text-[#1E532E] border-[#CDE5D2]"}`}
+              >
+                Custom Range
+              </button>
+            </div>
+
+            <div className="text-xs text-zinc-500 font-medium">
+              Use a preset or pick your own dates
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+            <label className="flex flex-col gap-1.5">
+              <span className="text-[11px] font-bold uppercase tracking-wide text-zinc-500">From Date</span>
+              <input
+                type="date"
+                value={fromDate}
+                onChange={(e) => {
+                  setFromDate(e.target.value);
+                  setFilterMode("custom");
+                }}
+                className="h-11 rounded-xl border border-zinc-200 px-3 text-sm font-medium text-[#1F2937] outline-none focus:border-[#1E532E]"
+              />
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <span className="text-[11px] font-bold uppercase tracking-wide text-zinc-500">To Date</span>
+              <input
+                type="date"
+                value={toDate}
+                onChange={(e) => {
+                  setToDate(e.target.value);
+                  setFilterMode("custom");
+                }}
+                className="h-11 rounded-xl border border-zinc-200 px-3 text-sm font-medium text-[#1F2937] outline-none focus:border-[#1E532E]"
+              />
+            </label>
+            <button
+              onClick={() => void applyCustomRange()}
+              className="h-11 rounded-xl bg-[#1E532E] hover:bg-[#153B21] text-white font-bold text-sm transition-colors"
+            >
+              Apply Range
+            </button>
           </div>
         </div>
 
