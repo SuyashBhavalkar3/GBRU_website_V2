@@ -147,6 +147,46 @@ export default function OrderList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const stored = localStorage.getItem("gbru_user");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        let mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no || "";
+        if (mobile_no && mobile_no.includes("@")) {
+          mobile_no = mobile_no.split("@")[0];
+        }
+
+        fetch('/api/user-details', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mobile_no })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data?.message?.status && data?.message?.data) {
+            const ud = data.message.data;
+            const trueName = ud.Customer_name || ud.customer_name || parsed.customer_name || parsed.username || "User";
+            setUserName(trueName.split(" ")[0]);
+            const phone = ud.customer_id?.split('-')[1] || mobile_no;
+            setUserMobile(phone.startsWith("+91") ? phone : `+91 ${phone}`);
+          } else {
+            const fallbackName = parsed.customer_name || parsed.username || "User";
+            setUserName(fallbackName.split(" ")[0]);
+            setUserMobile(mobile_no.startsWith("+91") ? mobile_no : `+91 ${mobile_no}`);
+          }
+        })
+        .catch(() => {
+          const fallbackName = parsed.customer_name || parsed.username || "User";
+          setUserName(fallbackName.split(" ")[0]);
+          setUserMobile(mobile_no.startsWith("+91") ? mobile_no : `+91 ${mobile_no}`);
+        });
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, []);
+
   // Filter orders by search query
   const filteredOrders = orders.filter((order) => {
     if (!searchQuery.trim()) return true;
@@ -594,14 +634,16 @@ export default function OrderList() {
                       {/* Received Amount */}
                       <div className="flex items-center justify-between py-3 border-b border-zinc-100">
                         <span className="text-[11px] font-bold text-zinc-400 tracking-wide uppercase">Received Amount</span>
-                        <span className="text-[18px] font-bold text-[#0D9740]">₹{Number(order.received_amount).toLocaleString("en-IN")}</span>
+                        <span className="text-[18px] font-bold text-[#0D9740]">
+                          ₹{Number(Number(order.received_amount || 0) > Number(order.total_amount) ? order.total_amount : (order.received_amount || 0)).toLocaleString("en-IN")}
+                        </span>
                       </div>
 
                       {/* Pending Amount */}
                       <div className="flex items-center justify-between py-3">
                         <span className={`text-[11px] font-bold tracking-wide uppercase ${pendingAmt > 0 ? "text-red-500" : "text-zinc-400"}`}>Pending Amount</span>
                         <span className={`text-[18px] font-bold ${pendingAmt > 0 ? "text-red-500" : "text-[#0F291B]"}`}>
-                          ₹{pendingAmt.toLocaleString("en-IN")}
+                          ₹{Number(Number(order.total_amount || 0) - Number(Number(order.received_amount || 0) > Number(order.total_amount) ? order.total_amount : (order.received_amount || 0))).toLocaleString("en-IN")}
                         </span>
                       </div>
                     </div>
@@ -712,12 +754,16 @@ export default function OrderList() {
                       <div className="h-[1px] bg-zinc-100" />
                       <div className="flex justify-between items-center">
                         <span className="text-zinc-400 text-xs font-bold font-roboto">RECEIVED AMOUNT</span>
-                        <span className="text-lg font-bold text-[#0D9740]">₹{Number(order.received_amount).toLocaleString("en-IN")}</span>
+                        <span className="text-lg font-bold text-[#0D9740]">
+                          ₹{Number(Number(order.received_amount || 0) > Number(order.total_amount) ? order.total_amount : (order.received_amount || 0)).toLocaleString("en-IN")}
+                        </span>
                       </div>
                       <div className="h-[1px] bg-zinc-100" />
                       <div className="flex justify-between items-center">
                         <span className="text-zinc-400 text-xs font-bold font-roboto">PENDING AMOUNT</span>
-                        <span className="text-lg font-bold text-[#0D9740]">₹{pendingAmt.toLocaleString("en-IN")}</span>
+                        <span className="text-lg font-bold text-[#0D9740]">
+                          ₹{Number(Number(order.total_amount || 0) - Number(Number(order.received_amount || 0) > Number(order.total_amount) ? order.total_amount : (order.received_amount || 0))).toLocaleString("en-IN")}
+                        </span>
                       </div>
                       <div className="h-[1px] bg-zinc-100" />
                       <div className="flex justify-between items-center">
