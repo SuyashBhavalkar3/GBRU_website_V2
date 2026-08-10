@@ -576,13 +576,13 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
             {items.length === 0 ? (
               <p className="text-center text-zinc-500 text-sm font-medium py-4">No items in shipment.</p>
             ) : (
-              <div className="bg-zinc-50 rounded-xl px-4 py-3 flex flex-col gap-1">
+              <div className="bg-zinc-50 rounded-xl px-4 py-2 flex flex-col">
                 {items.map((item: any, idx: number) => (
-                  <div key={idx}>
-                    <p className="text-[14px] font-bold text-[#0F291B]">{item.item_name}</p>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-[12px] text-zinc-500 font-medium">Qty: {item.qty}</span>
-                      <span className="text-[13px] font-bold text-[#0F291B]">
+                  <div key={idx} className="border-b border-zinc-200/60 last:border-b-0 py-3 last:pb-2 first:pt-2 flex flex-col gap-1 text-left">
+                    <p className="text-[13px] font-bold text-[#0F291B] leading-snug">{item.item_name}</p>
+                    <div className="flex items-center justify-between mt-1 text-xs">
+                      <span className="text-zinc-500 font-medium">Qty: {item.qty}</span>
+                      <span className="font-bold text-[#0F291B]">
                         Rate: ₹{Number(items.length === 1 ? (Number(summary.order_amount) / item.qty) : item.rate).toLocaleString("en-IN")}
                       </span>
                     </div>
