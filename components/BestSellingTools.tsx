@@ -144,16 +144,16 @@ export default function BestSellingTools() {
             const itemImage = product.custom_image_1 || product.image || "/assets/sprayer.png";
 
             const name = (product.item_name || "").toLowerCase();
-            let tags = ["In Stock"];
+            let tags = ["Farmer's Choice"];
             let features = ["Durable Build", "High Performance"];
             if (name.includes("spray") || name.includes("तूफान")) {
               tags = ["Farmer's Choice", "1 Year Warranty"];
               features = ["20L Tank Capacity", "High-Pressure Nozzle"];
             } else if (name.includes("pump")) {
-              tags = ["In Stock"];
+              tags = ["Farmer's Choice"];
               features = ["Cast Iron Body", "Low Fuel Consumption"];
             } else if (name.includes("seed")) {
-              tags = ["In Stock"];
+              tags = ["Farmer's Choice"];
               features = ["Cast Iron Body", "efficient"];
             } else if (name.includes("weed")) {
               tags = ["Easy Maintenance"];
@@ -255,16 +255,16 @@ export default function BestSellingTools() {
             const itemImage = product.custom_image_1 || product.image || "/assets/sprayer.png";
 
             const name = (product.item_name || "").toLowerCase();
-            let tags = ["In Stock"];
+            let tags = ["Farmer's Choice"];
             let features = ["Durable Build", "High Performance"];
             if (name.includes("spray") || name.includes("तूफान")) {
               tags = ["Farmer's Choice", "1 Year Warranty"];
               features = ["20L Tank Capacity", "High-Pressure Nozzle"];
             } else if (name.includes("pump")) {
-              tags = ["In Stock"];
+              tags = ["Farmer's Choice"];
               features = ["Cast Iron Body", "Low Fuel Consumption"];
             } else if (name.includes("seed")) {
-              tags = ["In Stock"];
+              tags = ["Farmer's Choice"];
               features = ["Cast Iron Body", "efficient"];
             } else if (name.includes("weed")) {
               tags = ["Easy Maintenance"];
