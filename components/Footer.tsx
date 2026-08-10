@@ -89,7 +89,6 @@ const Footer = () => {
             <ul className="flex flex-col gap-4">
               <li><Link href="/about" className="footer-link">About Us</Link></li>
               <li><Link href="/products" className="footer-link">Products</Link></li>
-              <li><Link href="/categories" className="footer-link">For Farmers</Link></li>
               <li><Link href="/blog" className="footer-link">Blog</Link></li>
               <li><a href="https://shoption.in" target="_blank" rel="noopener noreferrer" className="footer-link">For Dealer</a></li>
             </ul>
@@ -205,7 +204,6 @@ const Footer = () => {
               <ul className="flex flex-col gap-3.5 pl-1.5">
                 <li><Link href="/about" className="text-zinc-300 hover:text-white text-xs font-roboto">About Us</Link></li>
                 <li><Link href="/products" className="text-zinc-300 hover:text-white text-xs font-roboto">Products</Link></li>
-                <li><Link href="/categories" className="text-zinc-300 hover:text-white text-xs font-roboto">For Farmers</Link></li>
                 <li><Link href="/blog" className="text-zinc-300 hover:text-white text-xs font-roboto">Blog</Link></li>
                 <li><a href="https://shoption.in" target="_blank" rel="noopener noreferrer" className="text-zinc-300 hover:text-white text-xs font-roboto">For Dealers</a></li>
               </ul>
