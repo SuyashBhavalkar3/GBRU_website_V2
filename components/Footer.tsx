@@ -91,7 +91,7 @@ const Footer = () => {
               <li><Link href="/products" className="footer-link">Products</Link></li>
               <li><Link href="/categories" className="footer-link">For Farmers</Link></li>
               <li><Link href="/blog" className="footer-link">Blog</Link></li>
-              <li><a href="https://shoption.in" target="_blank" rel="noopener noreferrer" className="footer-link">Dealer Login</a></li>
+              <li><a href="https://shoption.in" target="_blank" rel="noopener noreferrer" className="footer-link">For Dealer</a></li>
             </ul>
           </div>
 
@@ -128,11 +128,6 @@ const Footer = () => {
                 </div>
               </li>
             </ul>
-            <div className="mt-4">
-              <button className="hover:opacity-80 transition-opacity">
-                <Image src="/assets/msg-logo.png" alt="Chat" width={32} height={32} />
-              </button>
-            </div>
           </div>
         </div>
 
@@ -212,7 +207,7 @@ const Footer = () => {
                 <li><Link href="/products" className="text-zinc-300 hover:text-white text-xs font-roboto">Products</Link></li>
                 <li><Link href="/categories" className="text-zinc-300 hover:text-white text-xs font-roboto">For Farmers</Link></li>
                 <li><Link href="/blog" className="text-zinc-300 hover:text-white text-xs font-roboto">Blog</Link></li>
-                <li><a href="https://shoption.in" target="_blank" rel="noopener noreferrer" className="text-zinc-300 hover:text-white text-xs font-roboto">Dealer Login</a></li>
+                <li><a href="https://shoption.in" target="_blank" rel="noopener noreferrer" className="text-zinc-300 hover:text-white text-xs font-roboto">For Dealers</a></li>
               </ul>
             </div>
           </div>
