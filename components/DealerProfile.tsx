@@ -142,22 +142,6 @@ const DealerProfile = () => {
               Dealers can continue through the dedicated Dealer Portal to manage orders, track inventory, and access technical support documentation.
             </p>
             
-            <button 
-              onClick={() => window.location.href = 'https://play.google.com/store/apps/details?id=com.shoption.app'}
-              className="text-white rounded-lg shadow-[0_4px_12px_rgba(0,107,33,0.25)] transition-opacity hover:opacity-90 flex items-center justify-center w-full mb-6"
-              style={{
-                height: '48px',
-                background: '#006B21',
-                fontFamily: 'Roboto, sans-serif',
-                fontWeight: 600,
-                fontSize: '16px',
-                lineHeight: '22px'
-              }}
-            >
-              Go to Dashboard
-              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-            </button>
-            
             <div className="border-t border-[#D9D9D9] pt-6 w-full mt-2 flex flex-col items-center">
               <p className="text-[#666666] text-[10px] font-bold uppercase tracking-widest mb-4 text-center">
                 ACCESS DEALER PLATFORM

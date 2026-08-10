@@ -5,9 +5,19 @@ import Image from "next/image";
 
 const Footer = () => {
   const [openSection, setOpenSection] = useState<string | null>(null);
+  const [subscribed, setSubscribed] = useState(false);
+  const [email, setEmail] = useState("");
 
   const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
+  };
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email.trim() && email.includes("@")) {
+      setSubscribed(true);
+      setEmail("");
+    }
   };
 
   return (
@@ -52,16 +62,25 @@ const Footer = () => {
           <div className="flex flex-col gap-6">
             <h3 className="footer-heading">Stay Updated</h3>
             <p className="footer-text whitespace-nowrap">Get latest offers, new products and farming tips.</p>
-            <div className="flex w-full mt-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 bg-[#2C5230] text-white placeholder-[#87A38D] px-4 py-3 rounded-l-md border-none outline-none focus:ring-1 focus:ring-[#FFB703] text-sm font-roboto"
-              />
-              <button className="bg-[#FFB703] hover:bg-[#e6a500] text-black font-bold px-6 py-3 rounded-r-md transition-colors text-sm font-roboto whitespace-nowrap">
-                Subscribe
-              </button>
-            </div>
+            {subscribed ? (
+              <span className="text-[#FFB703] font-bold text-sm bg-[#2C5230] px-4 py-3 rounded-md border border-[#FFB703]/20 animate-fade-in block w-fit">
+                Thanks for subscribing
+              </span>
+            ) : (
+              <form onSubmit={handleSubscribe} className="flex w-full mt-2">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className="flex-1 bg-[#2C5230] text-white placeholder-[#87A38D] px-4 py-3 rounded-l-md border-none outline-none focus:ring-1 focus:ring-[#FFB703] text-sm font-roboto"
+                  required
+                />
+                <button type="submit" className="bg-[#FFB703] hover:bg-[#e6a500] text-black font-bold px-6 py-3 rounded-r-md transition-colors text-sm font-roboto whitespace-nowrap">
+                  Subscribe
+                </button>
+              </form>
+            )}
           </div>
 
           {/* Column 2: Quick Links */}
@@ -147,16 +166,25 @@ const Footer = () => {
         {/* Join Our Newsletter Form */}
         <div className="flex flex-col gap-3">
           <span className="text-[11px] font-bold tracking-[1.5px] text-zinc-300 font-sans uppercase">JOIN OUR NEWSLETTER</span>
-          <div className="flex items-center w-full bg-[#165034]/70 border border-[#2D7351] rounded-2xl p-1.5 min-h-[56px] shadow-inner">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="w-full min-w-0 flex-1 bg-transparent text-white placeholder-zinc-400/80 px-3 py-2 outline-none border-none text-sm font-roboto"
-            />
-            <button className="flex-shrink-0 ml-[-4px] sm:ml-0 bg-[#FFB703] hover:bg-[#e6a500] text-[#0F291B] font-bold text-xs px-4 sm:px-5 py-2.5 rounded-xl transition-all shadow-md whitespace-nowrap">
-              Subscribe
-            </button>
-          </div>
+          {subscribed ? (
+            <span className="text-[#FFB703] font-bold text-xs bg-[#165034]/70 border border-[#2D7351] rounded-2xl px-4 py-3.5 block shadow-sm animate-fade-in">
+              Thanks for subscribing
+            </span>
+          ) : (
+            <form onSubmit={handleSubscribe} className="flex items-center w-full bg-[#165034]/70 border border-[#2D7351] rounded-2xl p-1.5 min-h-[56px] shadow-inner">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="w-full min-w-0 flex-1 bg-transparent text-white placeholder-zinc-400/80 px-3 py-2 outline-none border-none text-sm font-roboto"
+                required
+              />
+              <button type="submit" className="flex-shrink-0 ml-[-4px] sm:ml-0 bg-[#FFB703] hover:bg-[#e6a500] text-[#0F291B] font-bold text-xs px-4 sm:px-5 py-2.5 rounded-xl transition-all shadow-md whitespace-nowrap">
+                Subscribe
+              </button>
+            </form>
+          )}
         </div>
 
         {/* Divider line before accordions */}
