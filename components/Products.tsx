@@ -234,9 +234,13 @@ export default function Products() {
                     />
                     <button 
                       type="submit" 
-                      className="bg-[#006B21] text-white px-3 py-2 rounded-r-[8px] text-xs font-semibold hover:bg-[#005a1b] transition-colors"
+                      aria-label="Search"
+                      className="bg-[#006B21] text-white px-3 py-2 rounded-r-[8px] text-xs font-semibold hover:bg-[#005a1b] transition-colors flex items-center justify-center"
                     >
-                      Search
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                      </svg>
                     </button>
                   </form>
 
