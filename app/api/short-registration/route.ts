@@ -1,7 +1,8 @@
+import { withEncryption } from "@/utils/withEncryption";
 import { NextResponse } from 'next/server';
 import { createB2CLead } from '@/lib/lead';
 
-export async function POST(request: Request) {
+async function _postHandler(request: Request) {
   try {
     const { mobile_no, name } = await request.json();
 
@@ -45,3 +46,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to complete short registration' }, { status: 500 });
   }
 }
+
+export const POST = withEncryption(_postHandler);

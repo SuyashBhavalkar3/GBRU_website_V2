@@ -1,6 +1,7 @@
+import { withEncryption } from "@/utils/withEncryption";
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
+async function _postHandler(request: Request) {
   try {
     let mobile_no = "";
     let page_size = 50;
@@ -66,3 +67,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'An error occurred while fetching complaints' }, { status: 500 });
   }
 }
+
+export const POST = withEncryption(_postHandler);

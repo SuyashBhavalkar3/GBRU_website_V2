@@ -1,6 +1,7 @@
+import { withEncryption } from "@/utils/withEncryption";
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
+async function _postHandler(request: Request) {
   try {
     const incomingFormData = await request.formData();
     const mobile_no = incomingFormData.get("mobile_no")?.toString();
@@ -74,3 +75,5 @@ export async function POST(request: Request) {
   }
 }
 export const dynamic = 'force-dynamic';
+
+export const POST = withEncryption(_postHandler);

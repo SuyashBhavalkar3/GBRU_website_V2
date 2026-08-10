@@ -1,9 +1,10 @@
+import { withEncryption } from "@/utils/withEncryption";
 import { NextResponse } from 'next/server';
 import { getDB } from '@/lib/firebaseAdmin';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+async function _getHandler() {
   try {
     const db = getDB();
     if (!db) {
@@ -25,3 +26,5 @@ export async function GET() {
     return NextResponse.json({ maintenance: false, error: error.message });
   }
 }
+
+export const GET = withEncryption(_getHandler);

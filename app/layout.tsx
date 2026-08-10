@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   },
 };
 
+import FetchInterceptor from "@/components/FetchInterceptor";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -74,6 +76,7 @@ export default function RootLayout({
         />
         <div id="google_translate_element" style={{ display: 'none' }} />
         <ToastProvider>
+          <FetchInterceptor />
           <MaintenanceGuard />
           {children}
           <PopularItemsModal />

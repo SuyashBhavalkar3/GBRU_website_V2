@@ -1,6 +1,7 @@
+import { withEncryption } from "@/utils/withEncryption";
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
+async function _postHandler(request: Request) {
   try {
     const { tracking_id } = await request.json();
     if (!tracking_id) {
@@ -53,3 +54,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Tracking lookup failed', message: err.message }, { status: 500 });
   }
 }
+
+export const POST = withEncryption(_postHandler);

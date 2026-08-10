@@ -1,6 +1,7 @@
+import { withEncryption } from "@/utils/withEncryption";
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
+async function _postHandler(request: Request) {
   try {
     const { category, subcategory, item_code } = await request.json();
     
@@ -44,3 +45,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to fetch similar items', msg: error.message }, { status: 500 });
   }
 }
+
+export const POST = withEncryption(_postHandler);

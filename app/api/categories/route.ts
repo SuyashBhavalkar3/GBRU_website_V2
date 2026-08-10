@@ -1,6 +1,7 @@
+import { withEncryption } from "@/utils/withEncryption";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+async function _getHandler() {
   const apiBaseUrl = process.env.API_BASE_URL;
   const apiKey = process.env.API_KEY;
   const apiSecret = process.env.API_SECRET;
@@ -40,3 +41,5 @@ export async function GET() {
     );
   }
 }
+
+export const GET = withEncryption(_getHandler);

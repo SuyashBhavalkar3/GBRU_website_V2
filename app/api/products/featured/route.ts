@@ -1,6 +1,7 @@
+import { withEncryption } from "@/utils/withEncryption";
 import { NextResponse } from 'next/server';
 
-export async function POST() {
+async function _postHandler() {
   try {
     const baseUrl = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
     const systemApiKey = process.env.API_KEY;
@@ -31,3 +32,5 @@ export async function POST() {
     return NextResponse.json({ error: 'Failed to fetch featured products', msg: error.message }, { status: 500 });
   }
 }
+
+export const POST = withEncryption(_postHandler);

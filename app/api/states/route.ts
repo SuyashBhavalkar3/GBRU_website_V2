@@ -1,6 +1,7 @@
+import { withEncryption } from "@/utils/withEncryption";
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
+async function _postHandler(request: Request) {
   try {
     const baseUrl = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
     const systemApiKey = process.env.API_KEY;
@@ -36,3 +37,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 });
   }
 }
+
+export const POST = withEncryption(_postHandler);

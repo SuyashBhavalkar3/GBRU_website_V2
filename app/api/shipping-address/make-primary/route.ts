@@ -1,6 +1,7 @@
+import { withEncryption } from "@/utils/withEncryption";
 import { NextResponse } from 'next/server';
 
-export async function PUT(request: Request) {
+async function _putHandler(request: Request) {
   try {
     const body = await request.json();
     const { mobile_no, api_key, api_secret, name } = body;
@@ -95,3 +96,5 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 });
   }
 }
+
+export const PUT = withEncryption(_putHandler);

@@ -1,6 +1,7 @@
+import { withEncryption } from "@/utils/withEncryption";
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
+async function _postHandler(request: Request) {
   try {
     const { mobile_no, order_id, from_date, to_date, page_size, page } = await request.json();
 
@@ -70,3 +71,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to fetch orders', msg: error.message }, { status: 500 });
   }
 }
+
+export const POST = withEncryption(_postHandler);

@@ -1,6 +1,7 @@
+import { withEncryption } from "@/utils/withEncryption";
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request) {
+async function _getHandler(request: Request) {
   const { searchParams } = new URL(request.url);
   const categoryId = searchParams.get("category_id") || "";
 
@@ -50,3 +51,5 @@ export async function GET(request: Request) {
     );
   }
 }
+
+export const GET = withEncryption(_getHandler);

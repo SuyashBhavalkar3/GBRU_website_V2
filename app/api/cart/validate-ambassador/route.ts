@@ -1,3 +1,4 @@
+import { withEncryption } from "@/utils/withEncryption";
 import { NextResponse } from 'next/server';
 import http from 'http';
 import https from 'https';
@@ -48,7 +49,7 @@ function getWithBody(urlStr: string, token: string, bodyObj: any): Promise<any> 
   });
 }
 
-export async function POST(request: Request) {
+async function _postHandler(request: Request) {
   try {
     const { mobile_no, brand_ambassador } = await request.json();
 
@@ -102,3 +103,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to validate brand ambassador', msg: error.message }, { status: 500 });
   }
 }
+
+export const POST = withEncryption(_postHandler);

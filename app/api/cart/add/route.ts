@@ -1,6 +1,7 @@
+import { withEncryption } from "@/utils/withEncryption";
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
+async function _postHandler(request: Request) {
   try {
     const { items, mobile_no, api_key, api_secret } = await request.json();
 
@@ -74,3 +75,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to add to cart', msg: error.message }, { status: 500 });
   }
 }
+
+export const POST = withEncryption(_postHandler);

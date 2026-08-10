@@ -1,6 +1,7 @@
+import { withEncryption } from "@/utils/withEncryption";
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
+async function _postHandler(request: Request) {
   try {
     const { mobile_no, order_id, amount, email } = await request.json();
 
@@ -78,3 +79,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to generate payment token', msg: error.message }, { status: 500 });
   }
 }
+
+export const POST = withEncryption(_postHandler);
