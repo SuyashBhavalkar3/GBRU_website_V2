@@ -9,9 +9,9 @@ export default function AppDownloadBanner() {
       {/* ================================================================= */}
       {/* DESKTOP LAYOUT — hidden on mobile */}
       {/* ================================================================= */}
-      <div className="hidden md:flex w-full max-w-[1280px] mx-auto lg:h-[266px] bg-[#E9F2EC] relative flex-col lg:flex-row overflow-hidden rounded-[24px]">
+      <div className="hidden md:flex w-full max-w-[1280px] mx-auto lg:h-[266px] relative flex-col lg:flex-row">
         {/* Left Side (Dark Green) */}
-        <div className="w-full lg:w-[10639px] lg:h-[266px] bg-[#0F2F20] lg:absolute lg:-left-[9999px] lg:pl-[10039px] lg:top-0 lg:z-20 rounded-r-none lg:rounded-tr-[28px] lg:rounded-br-[26px] py-8 px-6 lg:pr-6 flex flex-col justify-between">
+        <div className="w-full lg:w-[10639px] lg:h-[266px] bg-[#0F2F20] lg:absolute lg:-left-[9999px] lg:pl-[9999px] lg:top-0 lg:z-20 rounded-r-none lg:rounded-tr-[28px] lg:rounded-br-[26px] lg:rounded-l-none py-8 px-6 lg:pr-6 flex flex-col justify-between">
           <h2 className="text-white text-xl lg:text-[28px] font-bold leading-tight">
             Our Impact<br/>In Numbers
           </h2>
@@ -40,14 +40,14 @@ export default function AppDownloadBanner() {
         </div>
 
         {/* Right Side (Light Green) */}
-        <div className="w-full lg:w-[721px] lg:h-[266px] lg:absolute lg:left-[559px] lg:top-0 lg:z-10 py-6 px-6 lg:pl-[100px] lg:pr-10 flex flex-col justify-center text-left overflow-visible">
-          <h2 className="text-[#1A1A1A] text-lg lg:text-[22px] font-bold mb-2 leading-tight max-w-md relative z-10 font-roboto">
-            Track, Manage, Grow With Shoption App
+        <div className="w-full lg:w-[10721px] lg:h-[266px] bg-[#E9F2EC] lg:absolute lg:left-[559px] lg:top-0 lg:z-10 py-6 px-6 lg:pl-[100px] lg:pr-[10000px] flex flex-col justify-center text-left overflow-visible">
+          <h2 className="text-[#1A1A1A] text-lg lg:text-[22px] font-bold mb-2 leading-tight max-w-md relative z-10 font-roboto top-[-12px]">
+            Track, Manage, Grow With<br/>Shoption App
           </h2>
           <p className="text-[#4A4A4A] font-semibold text-xs lg:text-sm mb-4 relative z-10">
             Track Order, Warranty, Services& More.
           </p>
-          <div className="bg-white rounded-2xl py-3 px-5 flex flex-col sm:flex-row gap-4 w-full sm:w-fit shadow-md relative z-20 mb-6 lg:mb-0 border border-gray-100">
+          <div className="bg-white rounded-2xl py-3 px-5 flex flex-col sm:flex-row gap-4 w-full sm:w-fit shadow-md relative z-20 mb-6 lg:mb-0 border border-gray-100 top-[12px]">
             <a href="https://play.google.com/store/apps/details?id=com.shoption.app" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
               <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" className="h-[32px] w-auto" />
             </a>
@@ -55,7 +55,7 @@ export default function AppDownloadBanner() {
               <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="Download on the App Store" className="h-[32px] w-auto" />
             </a>
           </div>
-          <div className="relative lg:absolute bottom-auto lg:bottom-[-24px] right-auto lg:right-[-4px] w-[240px] sm:w-[280px] lg:w-[350px] z-30 select-none pointer-events-none overflow-visible mx-auto lg:mx-0 mt-4 lg:mt-0">
+          <div className="relative lg:absolute bottom-auto lg:bottom-[0px] right-auto lg:left-[360px] w-[240px] sm:w-[280px] lg:w-[380px] z-30 select-none pointer-events-none overflow-visible mx-auto lg:mx-0 mt-4 lg:mt-0">
             <Image
               src="/assets/holding_phone.png"
               alt="Shoption App in hand"

@@ -414,7 +414,7 @@ const OtpContent = () => {
 
             <form className="flex flex-col">
               {/* OTP Input Fields */}
-              <div className="flex gap-2.5 mb-8 w-full justify-center max-w-[340px] mx-auto">
+              <div className="flex mb-8 w-full justify-between gap-2">
                 {otp.map((digit, index) => (
                   <input
                     key={index}

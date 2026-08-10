@@ -112,6 +112,14 @@ export default function Products() {
     setSearchInput("");
   }, [categoryId]);
 
+  // Debounce search input to update search query automatically as user types
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchQuery(searchInput);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [searchInput]);
+
   const handleAddToCart = (product: any) => {
     setSelectedProduct(product);
     setShowPaymentModal(true);
@@ -197,29 +205,7 @@ export default function Products() {
       </div>
 
       <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 lg:px-8 md:py-12 py-4 flex flex-col min-h-[300px] justify-center">
-
-        {loading ? (
-          /* Loading indicator */
-          <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <div className="w-10 h-10 border-4 border-[#006B21] border-t-transparent rounded-full animate-spin"></div>
-            <span className="text-sm text-zinc-500 font-medium">Loading GBRU products...</span>
-          </div>
-        ) : error ? (
-          /* Error fallback */
-          <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
-            <span className="text-red-500 text-3xl">⚠️</span>
-            <h3 className="font-bold text-[#0F291B] text-lg font-roboto">Unable to load products</h3>
-            <p className="text-zinc-500 text-xs max-w-xs">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-2 bg-[#006B21] text-white font-bold text-xs py-2 px-4 rounded-full"
-            >
-              Retry
-            </button>
-          </div>
-        ) : (
-          <>
-            {/* Header Controls (Title + Sort + Subcategory filter) */}
+        {/* Header Controls (Title + Sort + Subcategory filter) */}
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-4 md:mb-8 border-b border-gray-100 pb-4 md:pb-6">
               <div>
                 <h2 className="text-lg md:text-3xl font-roboto font-bold text-[#1A1A1A] mb-1">
@@ -367,7 +353,26 @@ export default function Products() {
               </div>
             </div>
 
-            {productsList.length === 0 ? (
+            {loading ? (
+              /* Loading indicator */
+              <div className="flex flex-col items-center justify-center py-16 gap-3 flex-1">
+                <div className="w-10 h-10 border-4 border-[#006B21] border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-sm text-zinc-500 font-medium">Loading GBRU products...</span>
+              </div>
+            ) : error ? (
+              /* Error fallback */
+              <div className="flex flex-col items-center justify-center py-16 text-center gap-3 flex-1">
+                <span className="text-red-500 text-3xl">⚠️</span>
+                <h3 className="font-bold text-[#0F291B] text-lg font-roboto">Unable to load products</h3>
+                <p className="text-zinc-500 text-xs max-w-xs">{error}</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="mt-2 bg-[#006B21] text-white font-bold text-xs py-2 px-4 rounded-full"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : productsList.length === 0 ? (
               /* Empty state */
               <div className="flex flex-col items-center justify-center py-16 text-center gap-2 flex-1">
                 <span className="text-4xl">📦</span>
@@ -473,8 +478,6 @@ export default function Products() {
                 })}
               </div>
             )}
-          </>
-        )}
       </main>
       <Footer />
 
