@@ -54,26 +54,23 @@ export async function POST(request: Request) {
 
     const status = userData.message?.status;
     const dataObj = userData.message?.data;
-    
-    // A user is new if:
-    // 1. status is false (boolean or string)
-    // 2. data is an empty array or null
-    // 3. registration_completed is false
-    const isNewUser = 
-      status === false || 
-      status === 'false' || 
-      !status || 
-      !dataObj || 
-      (Array.isArray(dataObj) && dataObj.length === 0) ||
-      dataObj.registration_completed === false;
+
+    // A user is new only if the ERP response explicitly says no user exists.
+    // If status is true and data is an object, treat it as an existing user,
+    // even when registration_completed is false.
+    const isNewUser =
+      status === false ||
+      status === 'false' ||
+      dataObj === null ||
+      dataObj === undefined ||
+      (Array.isArray(dataObj) && dataObj.length === 0);
 
     if (isNewUser) {
-      // User not found in ERP (but OTP was verified) - redirect to short registration
-      return NextResponse.json({ 
-        success: true, 
+      return NextResponse.json({
+        success: true,
         isNewUser: true,
         mobile_no,
-        message: userData.message?.message || 'User not found' 
+        message: userData.message?.message || 'User not found'
       });
     }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
@@ -9,6 +9,99 @@ import {
   Home, Plus, Edit3, Trash2, Loader2, ChevronDown,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+function SearchableDropdown<T>({
+  label,
+  value,
+  options,
+  disabled = false,
+  placeholder,
+  getLabel,
+  getValue,
+  onSelect,
+}: {
+  label: string;
+  value: string;
+  options: T[];
+  disabled?: boolean;
+  placeholder: string;
+  getLabel: (item: T) => string;
+  getValue: (item: T) => string;
+  onSelect: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredOptions = options.filter((item) =>
+    getLabel(item).toLowerCase().includes(query.toLowerCase())
+  );
+
+  const selectedItem = options.find((item) =>
+    getValue(item) === value || getLabel(item) === value
+  );
+
+  return (
+    <div className="relative" ref={wrapperRef}>
+      <label className="text-xs font-semibold text-zinc-500 mb-1 block">{label}</label>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => setOpen((prev) => !prev)}
+        className={`w-full h-12 px-4 border border-zinc-200 rounded-lg text-left bg-white ${disabled ? "opacity-50 cursor-not-allowed" : "hover:border-[#0D9740]"} flex items-center justify-between gap-2 text-sm text-[#0F291B]`}
+      >
+        <span className={`${selectedItem ? "text-[#0F291B]" : "text-zinc-400"}`}>
+          {selectedItem ? getLabel(selectedItem) : placeholder}
+        </span>
+        <ChevronDown className="w-4 h-4 text-zinc-400" />
+      </button>
+      {open && !disabled && (
+        <div className="absolute z-50 mt-2 w-full rounded-2xl border border-zinc-200 bg-white shadow-xl overflow-hidden">
+          <div className="px-3 py-2 border-b border-zinc-200">
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={`Search ${label.toLowerCase()}`}
+              className="w-full h-11 px-3 border border-zinc-200 rounded-xl text-sm text-[#0F291B] outline-none focus:border-[#0D9740]"
+              autoFocus
+            />
+          </div>
+          <div className="max-h-52 overflow-y-auto">
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((item) => (
+                <button
+                  key={getValue(item)}
+                  type="button"
+                  className="w-full text-left px-4 py-3 hover:bg-[#f3faf3] text-sm text-[#0F291B]"
+                  onClick={() => {
+                    onSelect(getValue(item));
+                    setOpen(false);
+                    setQuery("");
+                  }}
+                >
+                  {getLabel(item)}
+                </button>
+              ))
+            ) : (
+              <div className="px-4 py-3 text-sm text-zinc-500">No results found</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function AddressList() {
   const router = useRouter();
@@ -28,7 +121,7 @@ export default function AddressList() {
   };
 
   const [formData, setFormData] = useState({
-    fullName: "", mobile: "", pin: "", village: "", city: "",
+    fullName: "", mobile: "", pin: "", marketplace: "", city: "",
     district: "", state: "", address1: "", address2: "",
   });
 
@@ -107,39 +200,63 @@ export default function AddressList() {
         setDistricts(unique as any[]);
       }
     }).catch(() => {});
-    setFormData((p) => ({ ...p, district: "", city: "", village: "" }));
+    setFormData((p) => ({ ...p, district: "", city: "", marketplace: "" }));
   }, [formData.state]);
+
+  useEffect(() => {
+    if (!formData.state || !districts.length || !formData.district || /^\d+$/.test(formData.district)) return;
+    const match = districts.find((item: any) => item.name === formData.district);
+    if (match) {
+      setFormData((p) => ({ ...p, district: String(match.id) }));
+    }
+  }, [districts, formData.state, formData.district]);
 
   useEffect(() => {
     if (!formData.district) { setTahsils([]); setMarketplaces([]); return; }
     fetch("/api/tahsils", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ district: formData.district }),
+      body: JSON.stringify({ district_id: formData.district }),
     }).then((r) => r.json()).then((json) => {
       if (json.message?.status && Array.isArray(json.message?.data)) {
         const unique = Array.from(new Map(json.message.data.map((i: any) => [i.name, i])).values());
         setTahsils(unique as any[]);
       }
     }).catch(() => {});
-    setFormData((p) => ({ ...p, city: "", village: "" }));
+    setFormData((p) => ({ ...p, city: "", marketplace: "" }));
   }, [formData.district]);
+
+  useEffect(() => {
+    if (!formData.district || !tahsils.length || !formData.city || /^\d+$/.test(formData.city)) return;
+    const match = tahsils.find((item: any) => item.name === formData.city);
+    if (match) {
+      setFormData((p) => ({ ...p, city: String(match.id) }));
+    }
+  }, [tahsils, formData.district, formData.city]);
 
   useEffect(() => {
     if (!formData.city) { setMarketplaces([]); return; }
     fetch("/api/marketplaces", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tahsil: formData.city }),
+      body: JSON.stringify({ tehsil_id: formData.city }),
     }).then((r) => r.json()).then((json) => {
       if (json.message?.status && Array.isArray(json.message?.data)) {
         setMarketplaces(json.message.data);
       }
     }).catch(() => {});
-    setFormData((p) => ({ ...p, village: "" }));
+    setFormData((p) => ({ ...p, marketplace: "" }));
   }, [formData.city]);
+
+  useEffect(() => {
+    if (!formData.city || !marketplaces.length || !formData.marketplace || /^\d+$/.test(formData.marketplace)) return;
+    const match = marketplaces.find((item: any) => item.name === formData.marketplace);
+    if (match) {
+      setFormData((p) => ({ ...p, marketplace: String(match.id) }));
+    }
+  }, [marketplaces, formData.city, formData.marketplace]);
 
   const openAddModal = () => {
     setEditingAddressName(null);
-    setFormData({ fullName: "", mobile: "", pin: "", village: "", city: "", district: "", state: "", address1: "", address2: "" });
+    setFormData({ fullName: "", mobile: "", pin: "", marketplace: "", city: "", district: "", state: "", address1: "", address2: "" });
     setShowAddModal(true);
   };
 
@@ -147,7 +264,7 @@ export default function AddressList() {
     setEditingAddressName(addr.name);
     setFormData({
       fullName: addr.address_title || "", mobile: addr.phone || "",
-      pin: addr.pincode || "", village: addr.marketplace || "",
+      pin: addr.pincode || "", marketplace: addr.marketplace || "",
       city: addr.tahsil || "", district: addr.district || "",
       state: addr.state || "", address1: addr.address_line1 || "",
       address2: addr.address_line2 || "",
@@ -170,11 +287,21 @@ export default function AddressList() {
       const api_secret = user.key_details?.api_secret || user.api_secret;
       const email_id = user.user_id?.includes("@") ? user.user_id : (user.email || "");
 
+      const selectedMarketplace = marketplaces.find((item) => String(item.id) === formData.marketplace);
+      const selectedTahsil = tahsils.find((item) => String(item.id) === formData.city);
+      const selectedDistrict = districts.find((item) => String(item.id) === formData.district);
       const address_data: any = {
-        address_title: formData.fullName, address_line1: formData.address1,
-        address_line2: formData.address2 || "", marketplace: formData.village,
-        tahsil: formData.city, district: formData.district, state: formData.state,
-        pincode: formData.pin, country: "India", email_id, phone: formData.mobile,
+        address_title: formData.fullName,
+        address_line1: formData.address1,
+        address_line2: formData.address2 || "",
+        marketplace: selectedMarketplace?.name || formData.marketplace,
+        tahsil: selectedTahsil?.name || formData.city,
+        district: selectedDistrict?.name || formData.district,
+        state: formData.state,
+        pincode: formData.pin,
+        country: "India",
+        email_id,
+        phone: formData.mobile,
       };
       if (editingAddressName) address_data.name = editingAddressName;
 
@@ -424,46 +551,53 @@ export default function AddressList() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-zinc-500 mb-1 block">State *</label>
-                  <div className="relative">
-                    <select className={selectCls} value={formData.state} onChange={(e) => setFormData((p) => ({ ...p, state: e.target.value }))}>
-                      <option value="">Select</option>
-                      {states.map((s: any) => <option key={s.name} value={s.name}>{s.name}</option>)}
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-                  </div>
+                  <SearchableDropdown
+                    label="State"
+                    value={formData.state}
+                    options={states}
+                    placeholder="Select state"
+                    getLabel={(item: any) => item.name}
+                    getValue={(item: any) => item.name}
+                    onSelect={(value) => setFormData((p) => ({ ...p, state: value, district: "", city: "", marketplace: "" }))}
+                  />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-zinc-500 mb-1 block">District *</label>
-                  <div className="relative">
-                    <select className={selectCls} value={formData.district} onChange={(e) => setFormData((p) => ({ ...p, district: e.target.value }))} disabled={!districts.length}>
-                      <option value="">Select</option>
-                      {districts.map((d: any) => <option key={d.name} value={d.name}>{d.name}</option>)}
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-                  </div>
+                  <SearchableDropdown
+                    label="District"
+                    value={formData.district}
+                    options={districts}
+                    disabled={!states.length || !formData.state}
+                    placeholder="Select district"
+                    getLabel={(item: any) => item.name}
+                    getValue={(item: any) => String(item.id)}
+                    onSelect={(value) => setFormData((p) => ({ ...p, district: value, city: "", marketplace: "" }))}
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-zinc-500 mb-1 block">Tahsil</label>
-                  <div className="relative">
-                    <select className={selectCls} value={formData.city} onChange={(e) => setFormData((p) => ({ ...p, city: e.target.value }))} disabled={!tahsils.length}>
-                      <option value="">Select</option>
-                      {tahsils.map((t: any) => <option key={t.name} value={t.name}>{t.name}</option>)}
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-                  </div>
+                  <SearchableDropdown
+                    label="Tahsil"
+                    value={formData.city}
+                    options={tahsils}
+                    disabled={!districts.length || !formData.district}
+                    placeholder="Select tahsil"
+                    getLabel={(item: any) => item.name}
+                    getValue={(item: any) => item.name}
+                    onSelect={(value) => setFormData((p) => ({ ...p, city: value, marketplace: "" }))}
+                  />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-zinc-500 mb-1 block">Village</label>
-                  <div className="relative">
-                    <select className={selectCls} value={formData.village} onChange={(e) => setFormData((p) => ({ ...p, village: e.target.value }))} disabled={!marketplaces.length}>
-                      <option value="">Select</option>
-                      {marketplaces.map((m: any) => <option key={m.name} value={m.name}>{m.name}</option>)}
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-                  </div>
+                  <SearchableDropdown
+                    label="Marketplace"
+                    value={formData.marketplace}
+                    options={marketplaces}
+                    disabled={!tahsils.length || !formData.city}
+                    placeholder="Select marketplace"
+                    getLabel={(item: any) => item.name}
+                    getValue={(item: any) => item.name}
+                    onSelect={(value) => setFormData((p) => ({ ...p, marketplace: value }))}
+                  />
                 </div>
               </div>
               <div>

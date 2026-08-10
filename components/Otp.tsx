@@ -167,63 +167,31 @@ const OtpContent = () => {
 
     setRegistering(true);
     try {
-      const response = await fetch('/api/short-registration', {
+      const response = await fetch('/api/lead-create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mobile_no: mobileNo, name: registrationName.trim() }),
       });
       const data = await response.json();
 
-      if (data?.message?.status) {
-        // Create basic user session from short registration data
-        const shortData = data.message.data;
+      if (data?.message?.status && data.message.lead) {
         const basicUser = {
           Customer_name: registrationName.trim(),
-          customer_id: shortData.customer_id,
-          user_id: shortData.user_id,
           mobile_no: mobileNo,
           role: "Farmer",
           status: "ACTIVE",
-          is_completed: false
+          is_completed: false,
+          lead_id: data.message.lead
         };
         localStorage.setItem('gbru_user', JSON.stringify(basicUser));
         setShowRegistrationPopup(false);
-
-        // Handle pending cart item adding
-        const pendingItemStr = localStorage.getItem("gbru_pending_cart_item");
-        if (pendingItemStr) {
-          try {
-            const pendingItem = JSON.parse(pendingItemStr);
-            const res = await fetch("/api/cart/add", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                mobile_no: mobileNo,
-                items: [pendingItem]
-              })
-            });
-            const resJson = await res.json();
-            if (resJson.message?.status) {
-              setToastType("success");
-              setToastMessage(`${pendingItem.item_name || "Product"} added to cart successfully!`);
-              setTimeout(() => setToastMessage(""), 3000);
-            }
-          } catch (err) {
-            
-          } finally {
-            localStorage.removeItem("gbru_pending_cart_item");
-            router.push('/cart');
-          }
-        } else {
-          router.push('/dashboard');
-        }
+        router.push('/dashboard');
       } else {
         setToastType("error");
-        setToastMessage(data?.message?.message || "Registration failed. Please try again.");
+        setToastMessage(data?.message?.message || data?.error || "Failed to create lead. Please try again.");
         setTimeout(() => setToastMessage(""), 3000);
       }
     } catch (err) {
-      
       setToastType("error");
       setToastMessage("An error occurred during registration. Please try again.");
       setTimeout(() => setToastMessage(""), 3000);

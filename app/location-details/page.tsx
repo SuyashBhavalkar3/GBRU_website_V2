@@ -114,7 +114,6 @@ export default function LocationDetailsPage() {
   const [tehsil, setTehsil] = useState("");
   const [pincode, setPincode] = useState("");
   const [marketplace, setMarketplace] = useState("");
-  const [village, setVillage] = useState("");
   const [addressLine1, setAddressLine1] = useState("");
   const [addressLine2, setAddressLine2] = useState("");
   const [fromDocument, setFromDocument] = useState("");
@@ -276,8 +275,7 @@ export default function LocationDetailsPage() {
       }
 
       return null;
-    } catch (err) {
-      console.error("[LocationDetails] lead-create error", err);
+    } catch (_err) {
       return null;
     }
   };
@@ -515,20 +513,6 @@ export default function LocationDetailsPage() {
               />
             </div>
 
-            {/* Pincode */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Pincode</label>
-              <input
-                type="text"
-                required
-                maxLength={6}
-                value={pincode}
-                onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
-                placeholder="6-digit PIN"
-                className="h-12 px-4 border border-zinc-200 rounded-[12px] text-sm text-[#0F291B] focus:outline-[#0D9740] bg-[#F5F7FA]/50"
-              />
-            </div>
-
             {/* Marketplace */}
             <div className="flex flex-col gap-1.5">
               <SearchableDropdown
@@ -543,14 +527,16 @@ export default function LocationDetailsPage() {
               />
             </div>
 
-            {/* Village */}
+            {/* Pincode */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Village</label>
+              <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Pincode</label>
               <input
                 type="text"
-                value={village}
-                onChange={(e) => setVillage(e.target.value)}
-                placeholder="Search for your village or panchayat"
+                required
+                maxLength={6}
+                value={pincode}
+                onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
+                placeholder="6-digit PIN"
                 className="h-12 px-4 border border-zinc-200 rounded-[12px] text-sm text-[#0F291B] focus:outline-[#0D9740] bg-[#F5F7FA]/50"
               />
             </div>

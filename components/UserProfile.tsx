@@ -1,12 +1,105 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Package, MapPin, Banknote, Bell, Headphones, ClipboardList, CheckCircle2, XCircle, Home, Plus, Edit3, Trash2, HelpCircle, MessageSquare, Phone, BadgeCheck } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useToast } from "./ToastContext";
+
+function SearchableDropdown<T>({
+  label,
+  value,
+  options,
+  disabled = false,
+  placeholder,
+  getLabel,
+  getValue,
+  onSelect,
+}: {
+  label: string;
+  value: string;
+  options: T[];
+  disabled?: boolean;
+  placeholder: string;
+  getLabel: (item: T) => string;
+  getValue: (item: T) => string;
+  onSelect: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredOptions = options.filter((item) =>
+    getLabel(item).toLowerCase().includes(query.toLowerCase())
+  );
+
+  const selectedItem = options.find((item) =>
+    getValue(item) === value || getLabel(item) === value
+  );
+
+  return (
+    <div className="relative">
+      <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wide">{label}</label>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => setOpen((prev) => !prev)}
+        className={`w-full h-11 px-3 border border-zinc-200 rounded-xl bg-white text-left ${disabled ? "opacity-50 cursor-not-allowed" : "hover:border-[#0D9740]"} flex items-center justify-between gap-2 text-sm text-[#0F291B]`}
+      >
+        <span className={`${selectedItem ? "text-[#0F291B]" : "text-zinc-400"}`}>
+          {selectedItem ? getLabel(selectedItem) : placeholder}
+        </span>
+        <span className="text-zinc-400">⌄</span>
+      </button>
+      {open && !disabled && (
+        <div className="absolute z-50 mt-2 w-full rounded-3xl border border-zinc-200 bg-white shadow-xl overflow-hidden">
+          <div className="px-3 py-2 border-b border-zinc-200">
+            <input
+              type="search"
+              autoFocus
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={`Search ${label.toLowerCase()}`}
+              className="w-full h-11 px-3 border border-zinc-200 rounded-xl text-sm text-[#0F291B] outline-none focus:border-[#0D9740]"
+            />
+          </div>
+          <div className="max-h-56 overflow-y-auto">
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((item) => (
+                <button
+                  key={getValue(item)}
+                  type="button"
+                  onClick={() => {
+                    onSelect(getValue(item));
+                    setOpen(false);
+                    setQuery("");
+                  }}
+                  className="w-full text-left px-4 py-3 hover:bg-[#F3F9F3] text-sm text-[#0F291B]"
+                >
+                  {getLabel(item)}
+                </button>
+              ))
+            ) : (
+              <div className="px-4 py-3 text-sm text-zinc-500">No results found</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function UserProfile() {
   // Modal states
@@ -53,7 +146,7 @@ export default function UserProfile() {
     fullName: "",
     mobile: "",
     pin: "",
-    village: "",
+    marketplace: "",
     city: "",
     district: "",
     state: "",
@@ -358,7 +451,7 @@ export default function UserProfile() {
 
   const handleSaveAddress = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.fullName || !formData.mobile || !formData.pin || !formData.village || !formData.city || !formData.district || !formData.state || !formData.address1) {
+    if (!formData.fullName || !formData.mobile || !formData.pin || !formData.marketplace || !formData.city || !formData.district || !formData.state || !formData.address1) {
       showToast("Please fill all required fields", "warning");
       return;
     }
@@ -380,13 +473,16 @@ export default function UserProfile() {
       const api_secret = user.key_details?.api_secret || user.api_secret;
       const email_id = user.user_id && user.user_id.includes("@") ? user.user_id : (user.email || "");
 
+      const selectedMarketplace = marketplaces.find((item: any) => String(item.id) === formData.marketplace);
+      const selectedTahsil = tahsils.find((item: any) => String(item.id) === formData.city);
+      const selectedDistrict = districts.find((item: any) => String(item.id) === formData.district);
       const address_data: any = {
         address_title: formData.fullName,
         address_line1: formData.address1,
         address_line2: formData.address2 || "",
-        marketplace: formData.village,
-        tahsil: formData.city,
-        district: formData.district,
+        marketplace: selectedMarketplace?.name || formData.marketplace,
+        tahsil: selectedTahsil?.name || formData.city,
+        district: selectedDistrict?.name || formData.district,
         state: formData.state,
         pincode: formData.pin,
         country: "India",
@@ -427,7 +523,7 @@ export default function UserProfile() {
         setShowAddAddressModal(false);
         setEditingAddressName(null);
         setFormData({
-          fullName: "", mobile: "", pin: "", village: "", city: "", district: "", state: "", address1: "", address2: "", saveAddress: false
+          fullName: "", mobile: "", pin: "", marketplace: "", city: "", district: "", state: "", address1: "", address2: "", saveAddress: false
         });
         showToast(editingAddressName ? "Address updated successfully" : "Address saved successfully", "success");
       } else {
@@ -556,7 +652,7 @@ export default function UserProfile() {
       fullName: addr.address_title || "",
       mobile: addr.phone || "",
       pin: addr.pincode || "",
-      village: addr.marketplace || "",
+      marketplace: addr.marketplace || "",
       city: addr.tahsil || "",
       district: addr.district || "",
       state: addr.state || "",
@@ -805,7 +901,7 @@ export default function UserProfile() {
                   onClick={() => {
                     setEditingAddressName(null);
                     setFormData({
-                      fullName: "", mobile: "", pin: "", village: "", city: "", district: "", state: "", address1: "", address2: "", saveAddress: false
+                      fullName: "", mobile: "", pin: "", marketplace: "", city: "", district: "", state: "", address1: "", address2: "", saveAddress: false
                     });
                     setShowAddAddressModal(true);
                   }}
@@ -1062,90 +1158,85 @@ export default function UserProfile() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wide">State</label>
-                <select
+                <SearchableDropdown
+                  label="State"
                   value={formData.state}
-                  onChange={(e) => setFormData({ ...formData, state: e.target.value, district: "", city: "", village: "" })}
-                  className="h-11 px-3 border border-zinc-200 rounded-xl text-sm text-[#0F291B] focus:border-[#0D9740] focus:ring-1 focus:ring-[#0D9740] outline-none"
-                  required
-                >
-                  <option value="">Select State</option>
-                  {states.map(s => <option key={s.id || s.name} value={s.name}>{s.name}</option>)}
-                </select>
+                  options={states}
+                  placeholder="Select state"
+                  getLabel={(item: any) => item.name}
+                  getValue={(item: any) => item.name}
+                  onSelect={(value) => setFormData({ ...formData, state: value, district: "", city: "", marketplace: "" })}
+                />
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wide">District</label>
-                <select
+                <SearchableDropdown
+                  label="District"
                   value={formData.district}
-                  onChange={(e) => setFormData({ ...formData, district: e.target.value, city: "", village: "" })}
-                  className="h-11 px-3 border border-zinc-200 rounded-xl text-sm text-[#0F291B] focus:border-[#0D9740] focus:ring-1 focus:ring-[#0D9740] outline-none disabled:bg-zinc-50"
-                  required
+                  options={districts}
                   disabled={!formData.state}
-                >
-                  <option value="">Select District</option>
-                  {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-                </select>
+                  placeholder="Select district"
+                  getLabel={(item: any) => item.name}
+                  getValue={(item: any) => String(item.id)}
+                  onSelect={(value) => setFormData({ ...formData, district: value, city: "", marketplace: "" })}
+                />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wide">Tahsil / City</label>
-                <select
+                <SearchableDropdown
+                  label="Tahsil / City"
                   value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value, village: "" })}
-                  className="h-11 px-3 border border-zinc-200 rounded-xl text-sm text-[#0F291B] focus:border-[#0D9740] focus:ring-1 focus:ring-[#0D9740] outline-none disabled:bg-zinc-50"
-                  required
+                  options={tahsils}
                   disabled={!formData.district}
-                >
-                  <option value="">Select Tahsil</option>
-                  {tahsils.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                </select>
+                  placeholder="Select tahsil"
+                  getLabel={(item: any) => item.name}
+                  getValue={(item: any) => String(item.id)}
+                  onSelect={(value) => setFormData({ ...formData, city: value, marketplace: "" })}
+                />
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wide">Marketplace / Village</label>
-                <select
-                  value={formData.village}
-                  onChange={(e) => setFormData({ ...formData, village: e.target.value })}
-                  className="h-11 px-3 border border-zinc-200 rounded-xl text-sm text-[#0F291B] focus:border-[#0D9740] focus:ring-1 focus:ring-[#0D9740] outline-none disabled:bg-zinc-50"
-                  required
+                <SearchableDropdown
+                  label="Marketplace"
+                  value={formData.marketplace}
+                  options={marketplaces}
                   disabled={!formData.city}
-                >
-                  <option value="">Select Marketplace</option>
-                  {marketplaces.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                </select>
-              </div>
-
-              <div className="flex flex-col gap-1.5 sm:col-span-2">
-                <label className="text-xs font-bold text-zinc-500">Address Line 1</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="House No., Building Name, Street"
-                  value={formData.address1}
-                  onChange={(e) => setFormData({ ...formData, address1: e.target.value })}
-                  className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
+                  placeholder="Select marketplace"
+                  getLabel={(item: any) => item.name}
+                  getValue={(item: any) => String(item.id)}
+                  onSelect={(value) => setFormData({ ...formData, marketplace: value })}
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-zinc-500">Address Line 2 (Optional)</label>
-                <input
-                  type="text"
-                  placeholder="Area, Colony, Landmark"
-                  value={formData.address2}
-                  onChange={(e) => setFormData({ ...formData, address2: e.target.value })}
-                  className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-zinc-500">PIN Code</label>
-                <input
-                  type="text"
-                  required
-                  maxLength={6}
-                  placeholder="6-digit PIN"
-                  value={formData.pin}
-                  onChange={(e) => setFormData({ ...formData, pin: e.target.value })}
-                  className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
+                  <label className="text-xs font-bold text-zinc-500">PIN Code</label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    placeholder="6-digit PIN"
+                    value={formData.pin}
+                    onChange={(e) => setFormData({ ...formData, pin: e.target.value })}
+                    className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5 sm:col-span-2">
+                  <label className="text-xs font-bold text-zinc-500">Address Line 1</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="House No., Building Name, Street"
+                    value={formData.address1}
+                    onChange={(e) => setFormData({ ...formData, address1: e.target.value })}
+                    className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-zinc-500">Address Line 2 (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="Area, Colony, Landmark"
+                    value={formData.address2}
+                    onChange={(e) => setFormData({ ...formData, address2: e.target.value })}
                 />
               </div>
             </div>
