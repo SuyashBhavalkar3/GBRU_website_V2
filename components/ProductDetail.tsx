@@ -27,6 +27,10 @@ function ProductDetailContent() {
   const [similarItems, setSimilarItems] = useState<any[]>([]);
   const [loadingSimilar, setLoadingSimilar] = useState(false);
   const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
+  // Similar-product cart popup state
+  const [similarCartItem, setSimilarCartItem] = useState<any | null>(null);
+  const [similarPaymentOption, setSimilarPaymentOption] = useState<"full" | "booking">("full");
+  const [similarSubmitting, setSimilarSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -225,6 +229,89 @@ function ProductDetailContent() {
       });
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  // ── Add-to-cart for similar product cards ─────────────────────────────────
+  const [loadingSimilarDetail, setLoadingSimilarDetail] = useState(false);
+  const [loadingItemCode, setLoadingItemCode] = useState<string | null>(null);
+
+  const openSimilarCartPopup = async (listingItem: any) => {
+    setLoadingItemCode(listingItem.item_code);
+    setLoadingSimilarDetail(true);
+    try {
+      const res = await fetch("/api/products/details", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ item_code: listingItem.item_code }),
+      });
+      const data = await res.json();
+      if (data?.message?.status && data.message.data) {
+        setSimilarPaymentOption("full");
+        setSimilarCartItem(data.message.data);
+      } else {
+        setSimilarPaymentOption("full");
+        setSimilarCartItem(listingItem);
+      }
+    } catch {
+      setSimilarPaymentOption("full");
+      setSimilarCartItem(listingItem);
+    } finally {
+      setLoadingSimilarDetail(false);
+      setLoadingItemCode(null);
+    }
+  };
+
+  const handleSimilarAddToCart = async () => {
+    if (!similarCartItem) return;
+    const item = similarCartItem;
+    const user = localStorage.getItem("gbru_user");
+    if (!user) {
+      setSimilarCartItem(null);
+      setShowLoginPrompt(true);
+      return;
+    }
+    const parsed = JSON.parse(user);
+    const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+    if (!mobile_no) { setSimilarCartItem(null); setShowLoginPrompt(true); return; }
+
+    setSimilarSubmitting(true);
+    try {
+      const payload = {
+        mobile_no,
+        items: [{
+          item: item.item_code,
+          quantity: item.moq || 1,
+          is_moq_applicable: 0,
+          payment_type: similarPaymentOption === "full" ? "Full Payment" : "Cash On Delivery",
+          full_payment_amount: item.full_payment_amount || item.price || 0,
+          full_payment_discount: item.full_payment_discount || 0,
+          cod_value: item.cod_value || item.COD_value || 0,
+          cod_display: item.cod_display || item.COD_Display || 0,
+          cod_discount: item.cod_discount || item.COD_discount || 0,
+        }]
+      };
+      const res = await fetch("/api/cart/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const resJson = await res.json();
+      if (resJson.message?.status || resJson.success) {
+        window.dispatchEvent(new Event("cartUpdate"));
+        setSimilarCartItem(null);
+        setToastType("success");
+        setToastMessage(`${item.item_name} added to cart!`);
+        setTimeout(() => setToastMessage(""), 3000);
+      } else {
+        setSimilarCartItem(null);
+        setErrorPopup({ open: true, title: "Add to Cart Failed", message: resJson.message?.message || resJson.error || "Failed to add product." });
+      }
+    } catch {
+      setSimilarCartItem(null);
+      setErrorPopup({ open: true, title: "Add to Cart Failed", message: "Failed to add product." });
+    } finally {
+      setSimilarSubmitting(false);
     }
   };
 
@@ -977,12 +1064,12 @@ function ProductDetailContent() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
               {similarItems.map((item: any) => (
-                <Link
+                <div
                   key={item.item_code}
-                  href={`/products/view_product?item_code=${item.item_code}`}
-                  className="bg-white border border-zinc-200/80 rounded-3xl p-4 flex flex-col justify-between hover:shadow-md hover:border-[#0D9740]/40 transition-all group cursor-pointer text-left"
+                  className="bg-white border border-zinc-200/80 rounded-3xl p-4 flex flex-col justify-between hover:shadow-md hover:border-[#0D9740]/40 transition-all group text-left"
                 >
-                  <div className="space-y-3">
+                  {/* Clickable product info area → navigate to view product */}
+                  <Link href={`/products/view_product?item_code=${item.item_code}`} className="flex flex-col gap-3">
                     {/* Image container */}
                     <div className="aspect-square bg-zinc-50 rounded-2xl overflow-hidden relative flex items-center justify-center border border-zinc-100/50">
                       {item.custom_image_1 ? (
@@ -1008,29 +1095,161 @@ function ProductDetailContent() {
                         {item.item_name}
                       </h4>
                     </div>
-                  </div>
 
-                  {/* Pricing info */}
-                  <div className="pt-3 mt-3 border-t border-zinc-100 flex items-baseline justify-between gap-1.5 flex-wrap">
-                    <div>
-                      <span className="text-[#0D9740] font-extrabold text-sm">
-                        ₹{Number(item.price).toLocaleString("en-IN")}
-                      </span>
-                      {item.mrp > item.price && (
-                        <span className="text-[10px] line-through text-zinc-400 ml-1.5 font-bold">
-                          ₹{Number(item.mrp).toLocaleString("en-IN")}
+                    {/* Pricing info */}
+                    <div className="pt-3 mt-1 border-t border-zinc-100 flex items-baseline justify-between gap-1.5 flex-wrap">
+                      <div>
+                        <span className="text-[#0D9740] font-extrabold text-sm">
+                          ₹{Number(item.price).toLocaleString("en-IN")}
                         </span>
-                      )}
+                        {item.mrp > item.price && (
+                          <span className="text-[10px] line-through text-zinc-400 ml-1.5 font-bold">
+                            ₹{Number(item.mrp).toLocaleString("en-IN")}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wide">
+                        Min: {item.moq || 1}
+                      </span>
                     </div>
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wide">
-                      Min Qty: {item.moq || 1}
-                    </span>
-                  </div>
-                </Link>
+                  </Link>
+
+                  {/* Add to Cart button */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); openSimilarCartPopup(item); }}
+                    disabled={loadingItemCode === item.item_code}
+                    className="mt-3 w-full h-9 rounded-xl bg-[#0F291B] hover:bg-[#1a4530] text-white font-bold text-[12px] flex items-center justify-center gap-1.5 transition-colors active:scale-[0.98] disabled:opacity-60"
+                  >
+                    {loadingItemCode === item.item_code ? (
+                      <svg className="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
+                    ) : (
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                    )}
+                    {loadingItemCode === item.item_code ? "Loading..." : "Add to Cart"}
+                  </button>
+                </div>
               ))}
             </div>
           </div>
         </section>
+      )}
+
+      {/* ── Similar-item Payment Option Popup ─────────────────────────────── */}
+      {similarCartItem && (
+        <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center bg-black/50" onClick={() => setSimilarCartItem(null)}>
+          <div
+            className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl flex flex-col gap-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[11px] text-zinc-400 font-semibold uppercase tracking-wide mb-0.5">Adding to cart</p>
+                <h4 className="font-bold text-[#0F291B] text-sm line-clamp-2 leading-snug">{similarCartItem.item_name}</h4>
+              </div>
+              <button onClick={() => setSimilarCartItem(null)} className="text-zinc-400 hover:text-zinc-700 mt-0.5 shrink-0">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+
+            {/* Payment option cards — same detail as main product */}
+            <div className="flex flex-col gap-3">
+
+              {/* Full Payment Card */}
+              <div
+                onClick={() => setSimilarPaymentOption("full")}
+                className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                  similarPaymentOption === "full" ? "border-[#0d9740] bg-[#F5F5F5]" : "border-zinc-200 bg-[#F5F5F5] hover:border-zinc-300"
+                }`}
+              >
+                {similarPaymentOption === "full" && (
+                  <div className="absolute top-[-8px] right-[-8px] bg-[#0d9740] text-white w-5 h-5 rounded-full flex items-center justify-center shadow-md text-xs">✓</div>
+                )}
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${similarPaymentOption === "full" ? "border-[#0D9740]" : "border-zinc-400"}`}>
+                    {similarPaymentOption === "full" && <div className="w-2 h-2 rounded-full bg-[#0D9740]" />}
+                  </div>
+                  <span className="text-[12px] font-bold text-[#6B7280] uppercase tracking-wide">Full Payment</span>
+                  <span className="ml-auto bg-[#DFB33F] text-white text-[9px] font-bold py-0.5 px-2 rounded-full">MOST PREFERRED</span>
+                </div>
+                <div className="h-px bg-zinc-200 mb-2" />
+                <div className="flex flex-col gap-1">
+                  <div className="flex justify-between text-[13px] text-[#4A4A4A]">
+                    <span>Order Total</span>
+                    <span>₹{Number(similarCartItem.actual_rate || similarCartItem.price || 0).toLocaleString("en-IN")}</span>
+                  </div>
+                  <div className="flex justify-between text-[13px] text-[#0D9740]">
+                    <span>Instant Discount</span>
+                    <span>- ₹{Number((similarCartItem.actual_rate || similarCartItem.price || 0) - (similarCartItem.full_payment_amount || similarCartItem.price || 0)).toLocaleString("en-IN")}</span>
+                  </div>
+                  <div className="flex justify-between mt-1 pt-1 border-t border-zinc-200">
+                    <span className="text-[15px] font-bold text-black">Pay Now</span>
+                    <span className="text-[15px] font-bold text-black">₹{Number(similarCartItem.full_payment_amount || similarCartItem.price || 0).toLocaleString("en-IN")}</span>
+                  </div>
+                </div>
+                <div className="bg-[#EBF5EE] text-[#0D9740] text-[10px] font-bold py-1.5 px-2 rounded-lg mt-2 text-center">
+                  🎁 You&apos;ll save ₹{Number((similarCartItem.actual_rate || similarCartItem.price || 0) - (similarCartItem.full_payment_amount || similarCartItem.price || 0)).toLocaleString("en-IN")} on this order!
+                </div>
+              </div>
+
+              {/* Book Now / COD Card */}
+              {Number(similarCartItem.cod_value || similarCartItem.COD_value || 0) > 0 && (
+                <div
+                  onClick={() => setSimilarPaymentOption("booking")}
+                  className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                    similarPaymentOption === "booking" ? "border-[#0d9740] bg-white" : "border-zinc-200 bg-white hover:border-zinc-300"
+                  }`}
+                >
+                  {similarPaymentOption === "booking" && (
+                    <div className="absolute top-[-8px] right-[-8px] bg-[#0d9740] text-white w-5 h-5 rounded-full flex items-center justify-center shadow-md text-xs">✓</div>
+                  )}
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${similarPaymentOption === "booking" ? "border-[#0D9740]" : "border-zinc-400"}`}>
+                      {similarPaymentOption === "booking" && <div className="w-2 h-2 rounded-full bg-[#0D9740]" />}
+                    </div>
+                    <span className="text-[12px] font-bold text-[#6B7280] uppercase tracking-wide">Book Now &amp; Pay On Delivery</span>
+                  </div>
+                  <div className="bg-[#F5F9F7] rounded-xl p-3 flex flex-col gap-1.5">
+                    <div className="flex justify-between text-[13px] text-[#4A4A4A]">
+                      <span>Order Total</span>
+                      <span className="font-bold text-[#1A1A1A]">₹{Number(similarCartItem.actual_rate || similarCartItem.price || 0).toLocaleString("en-IN")}</span>
+                    </div>
+                    <div className="flex justify-between text-[12px] text-[#0D9740]">
+                      <span>Instant Discount</span>
+                      <span>- ₹{Number((similarCartItem.actual_rate || similarCartItem.price || 0) - (similarCartItem.price || 0)).toLocaleString("en-IN")}</span>
+                    </div>
+                    <div className="flex justify-between text-[12px] bg-[#D4E8DC] px-2 py-1 rounded text-[#0F291B] mt-0.5">
+                      <span>Effective Total</span>
+                      <span>₹{Number(similarCartItem.price || 0).toLocaleString("en-IN")}</span>
+                    </div>
+                    <div className="flex justify-between mt-1">
+                      <span className="font-bold text-black text-[13px]">Pay Now (Booking)</span>
+                      <span className="font-bold text-[#0D9740] text-[14px]">₹{Number(similarCartItem.cod_display || similarCartItem.COD_Display || 0).toLocaleString("en-IN")}</span>
+                    </div>
+                    <div className="pt-2 border-t border-zinc-200 flex justify-between">
+                      <span className="font-bold text-[#6B7280] text-[13px]">Pay on Delivery</span>
+                      <span className="font-bold text-black text-[14px]">₹{Number(similarCartItem.cod_value || similarCartItem.COD_value || 0).toLocaleString("en-IN")}</span>
+                    </div>
+                  </div>
+                  <div className="bg-zinc-100 text-zinc-600 text-[10px] font-bold py-1.5 px-2 rounded-lg mt-2 text-center">
+                    🎁 You&apos;ll save ₹{Number((similarCartItem.actual_rate || similarCartItem.price || 0) - (similarCartItem.price || 0)).toLocaleString("en-IN")} on this order!
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Confirm button */}
+            <button
+              onClick={handleSimilarAddToCart}
+              disabled={similarSubmitting}
+              className="w-full h-12 rounded-2xl bg-[#0D9740] hover:bg-[#0b8234] text-white font-bold text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+            >
+              {similarSubmitting ? (
+                <><svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg> Adding...</>
+              ) : "Confirm & Add to Cart"}
+            </button>
+          </div>
+        </div>
       )}
 
       <LoginPrompt
