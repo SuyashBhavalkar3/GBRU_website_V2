@@ -13,13 +13,13 @@ export default function AppDownloadBanner() {
         {/* Left Side (Dark Green) */}
         <div className="w-full lg:w-[10639px] lg:h-[266px] bg-[#0F2F20] lg:absolute lg:-left-[9999px] lg:pl-[9999px] lg:top-0 lg:z-20 rounded-r-none lg:rounded-tr-[28px] lg:rounded-br-[26px] lg:rounded-l-none py-8 px-6 lg:pr-6 flex flex-col justify-between">
           <h2 className="text-white text-xl lg:text-[28px] font-bold leading-tight">
-            Our Impact<br/>In Numbers
+            Our Impact<br />In Numbers
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 items-start gap-4 mt-6 lg:mt-0">
             <div className="flex flex-col border-r border-dashed border-white/15 pr-2 last:border-r-0">
               <Image src="/assets/logo1.png" alt="Products" width={32} height={32} className="mb-2 object-contain h-8 w-auto object-left" />
               <h3 className="text-white font-extrabold text-base mb-0.5 leading-none">5 Cr+</h3>
-              <p className="text-[#A1B8AD] text-[10px] leading-tight mt-1">Products in<br/>Indian Fields</p>
+              <p className="text-[#A1B8AD] text-[10px] leading-tight mt-1">Products in<br />Indian Fields</p>
             </div>
             <div className="flex flex-col border-r border-dashed border-white/15 pr-2 last:border-r-0">
               <Image src="/assets/logo2.png" alt="PAN India" width={32} height={32} className="mb-2 object-contain h-8 w-auto object-left" />
@@ -34,7 +34,7 @@ export default function AppDownloadBanner() {
             <div className="flex flex-col last:border-r-0">
               <Image src="/assets/logo4.png" alt="Support" width={32} height={32} className="mb-2 object-contain h-8 w-auto object-left" />
               <h3 className="text-white font-extrabold text-base mb-0.5 leading-none">Fast</h3>
-              <p className="text-[#A1B8AD] text-[10px] leading-tight mt-1">Service & Spare<br/>Support</p>
+              <p className="text-[#A1B8AD] text-[10px] leading-tight mt-1">Service & Spare<br />Support</p>
             </div>
           </div>
         </div>
@@ -42,7 +42,7 @@ export default function AppDownloadBanner() {
         {/* Right Side (Light Green) */}
         <div className="w-full lg:w-[10721px] lg:h-[266px] bg-[#E9F2EC] lg:absolute lg:left-[559px] lg:top-0 lg:z-10 py-6 px-6 lg:pl-[100px] lg:pr-[10000px] flex flex-col justify-center text-left overflow-visible">
           <h2 className="text-[#1A1A1A] text-lg lg:text-[22px] font-bold mb-2 leading-tight max-w-md relative z-10 font-roboto top-[-12px]">
-            Track, Manage, Grow With<br/>Shoption App
+            Track, Manage, Grow With<br />Shoption App
           </h2>
           <p className="text-[#4A4A4A] font-semibold text-xs lg:text-sm mb-4 relative z-10">
             Track Order, Warranty, Services& More.
@@ -79,7 +79,7 @@ export default function AppDownloadBanner() {
         <div className="flex flex-col justify-between py-4 z-10 flex-1 pr-3 h-full">
           <div>
             <h2 className="font-roboto font-bold text-[#000000] text-[15px] leading-tight">
-              Track, Manage, Grow With<br/>Shoption App
+              Track, Manage, Grow With<br />Shoption App
             </h2>
             <p className="font-roboto font-medium text-[#4A4A4A] text-[11px] leading-normal mt-1.5">
               Track Order, Warranty, Services& More.

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import Image from "next/image";
 
 export default function FieldExperiences() {
@@ -88,9 +89,12 @@ export default function FieldExperiences() {
               Watch our equipment transform traditional farming.
             </p>
           </div>
-          <button className="text-black font-roboto font-bold text-sm cursor-pointer hover:underline transition-colors duration-200 self-start sm:self-auto">
+          <Link
+            href="/videos"
+            className="text-black font-roboto font-bold text-sm cursor-pointer hover:underline transition-colors duration-200 self-start sm:self-auto"
+          >
             View All Videos
-          </button>
+          </Link>
         </div>
 
         {/* Main Console Box (Translucent green container overlaying outer background) */}
@@ -108,9 +112,12 @@ export default function FieldExperiences() {
                 Watch our equipment transform traditional farming.
               </p>
             </div>
-            <button className="text-black font-roboto font-bold text-[12px] cursor-pointer hover:underline whitespace-nowrap mt-1">
+            <Link
+              href="/videos"
+              className="text-black font-roboto font-bold text-[12px] cursor-pointer hover:underline whitespace-nowrap mt-1"
+            >
               View All Videos
-            </button>
+            </Link>
           </div>
 
           {/* Inner Green Card — 358×346, border-radius 12px */}
@@ -220,9 +227,12 @@ export default function FieldExperiences() {
               Watch our equipment transform traditional farming.
             </p>
           </div>
-          <button className="text-black font-roboto font-bold text-sm cursor-pointer hover:underline transition-colors duration-200 self-start sm:self-auto">
+          <Link
+            href="/videos"
+            className="text-black font-roboto font-bold text-sm cursor-pointer hover:underline transition-colors duration-200 self-start sm:self-auto"
+          >
             View All Videos
-          </button>
+          </Link>
         </div>
 
         {/* Main Console Box */}

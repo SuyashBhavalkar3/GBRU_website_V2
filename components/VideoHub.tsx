@@ -360,8 +360,20 @@ const VideoHub = () => {
             Trusted by Farmers, Proven in the Field
           </p>
 
-          {/* Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 w-full relative z-10 max-w-5xl">
+          {/* Mobile Horizontal Scroll */}
+          <div className="flex md:hidden w-full overflow-x-auto gap-4 pb-4 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {allTestimonials.map((testimonial) => (
+              <div
+                key={testimonial.id}
+                className="flex-shrink-0 w-[78vw] max-w-[320px] aspect-square relative rounded-3xl overflow-hidden shadow-2xl bg-white border border-white/50 snap-center"
+              >
+                <Image src={testimonial.image} alt={`Farmer Review ${testimonial.id}`} fill className="object-cover" />
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Grid */}
+          <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 w-full relative z-10 max-w-5xl">
             {(showMoreTestimonials ? allTestimonials : initialTestimonials).map((testimonial) => (
               <div key={testimonial.id} className="w-full aspect-square relative rounded-3xl overflow-hidden shadow-2xl hover:scale-105 transition-transform duration-500 bg-white border border-white/50">
                 <Image src={testimonial.image} alt={`Farmer Review ${testimonial.id}`} fill className="object-cover" />
@@ -369,11 +381,11 @@ const VideoHub = () => {
             ))}
           </div>
 
-          {/* Button */}
+          {/* Desktop Button */}
           {!showMoreTestimonials && (
-            <button 
+            <button
               onClick={() => setShowMoreTestimonials(true)}
-              className="mt-20 bg-[#0FA84D] hover:bg-[#008A3D] text-white font-bold py-4 px-12 rounded-full shadow-lg relative z-10 transition-colors tracking-wide"
+              className="hidden md:inline-flex mt-20 bg-[#0FA84D] hover:bg-[#008A3D] text-white font-bold py-4 px-12 rounded-full shadow-lg relative z-10 transition-colors tracking-wide"
             >
               View More
             </button>

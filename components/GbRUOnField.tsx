@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import Image from "next/image";
 
 export default function GbRUOnField() {
@@ -261,9 +262,9 @@ export default function GbRUOnField() {
         </div>
 
         {/* View More Button */}
-        <button className="bg-[#0D9740] hover:bg-[#0a7d34] text-white font-roboto font-semibold text-[15px] shadow-md transition-all duration-300 hover:scale-105 active:scale-95 mt-8 sm:mt-10 w-full sm:w-[226px] h-14 sm:h-16 rounded-full px-8 sm:px-[67px]">
+        <Link href="/videos" className="bg-[#0D9740] hover:bg-[#0a7d34] text-white font-roboto font-semibold text-[15px] shadow-md transition-all duration-300 hover:scale-105 active:scale-95 mt-8 sm:mt-10 w-full sm:w-[226px] h-14 sm:h-16 rounded-full px-8 sm:px-[67px] flex items-center justify-center">
           View More
-        </button>
+        </Link>
 
         {/* Stats Bar */}
         <div className="w-full max-w-[1152px] grid grid-cols-3 gap-5 mt-10">
