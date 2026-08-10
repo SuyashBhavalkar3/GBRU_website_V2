@@ -17,25 +17,25 @@ export default function ToolsInAction() {
     {
       id: 1,
       title: "spray pump in action",
-      thumbnail: "/assets/thumb_spray_pumps.png",
+      thumbnail: "/assets/see_tools_in_action1.png",
       videoUrl: "https://www.youtube.com/embed/3rhBieQevLA?autoplay=1",
     },
     {
       id: 2,
       title: "solar camera in action",
-      thumbnail: "/assets/thumb_solar_camera.png",
+      thumbnail: "/assets/see_tools_in_action2.png",
       videoUrl: "https://www.youtube.com/embed/7gGJHSmBGOM?autoplay=1",
     },
     {
       id: 3,
       title: "mobile auto in action",
-      thumbnail: "/assets/thumb_mobile_auto.png",
+      thumbnail: "/assets/see_tools_in_action3.png",
       videoUrl: "https://www.youtube.com/embed/DX5_nQpXYjA?autoplay=1",
     },
     {
       id: 4,
       title: "seeder in action",
-      thumbnail: "/assets/seeder_in_action_thumb.png",
+      thumbnail: "/assets/see_tools_in_action4.png",
       videoUrl: "https://www.youtube.com/embed/fGxiAGA4uf0?autoplay=1",
     },
   ];
