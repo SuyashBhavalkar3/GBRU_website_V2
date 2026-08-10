@@ -692,11 +692,190 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                           {isExpanded ? <ChevronUp className="w-4 h-4 text-zinc-500" /> : <ChevronDown className="w-4 h-4 text-zinc-500" />}
                         </div>
                       </div>
-                      {isExpanded && inv.sales_invoice_print_url && (
-                        <a href={inv.sales_invoice_print_url} target="_blank" rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 text-xs font-bold text-sky-600">
-                          <Printer className="w-3.5 h-3.5" /> Print Invoice
-                        </a>
+                      {isExpanded && (
+                        <div className="pt-3 border-t border-zinc-100 space-y-4 text-left">
+                          {/* Invoice Date & Amount */}
+                          <div className="grid grid-cols-2 gap-4 text-xs font-semibold text-zinc-500 pb-2">
+                            <div>
+                              <p className="mb-1">Invoice Date</p>
+                              <p className="text-[#0F291B] font-bold text-sm">{inv.invoice_date}</p>
+                            </div>
+                            <div>
+                              <p className="mb-1">Amount</p>
+                              <p className="text-[#0F291B] font-bold text-sm">₹{Number(inv.amount || 0).toLocaleString('en-IN')}</p>
+                            </div>
+                          </div>
+
+                          {/* Print Invoice Button */}
+                          {inv.sales_invoice_print_url && (
+                            <a
+                              href={inv.sales_invoice_print_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-600 hover:text-sky-700 transition-colors"
+                            >
+                              <Printer className="w-3.5 h-3.5" /> Print Invoice
+                            </a>
+                          )}
+
+                          {/* Large Green Track Order Button */}
+                          {inv.transporter_details?.[0] && String(inv.transporter_details[0].transporter_name).toLowerCase() === "indian post" && (
+                            <button
+                              onClick={() => {
+                                const trackingId = inv.transporter_details[0].tracking_id;
+                                if (expandedTrackingId === trackingId) {
+                                  setExpandedTrackingId(null);
+                                } else {
+                                  setExpandedTrackingId(trackingId);
+                                  handleTrackStickerInline(trackingId);
+                                }
+                              }}
+                              className="w-full bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold py-3.5 rounded-2xl text-xs font-roboto transition-all shadow-sm flex items-center justify-center gap-2 duration-300"
+                            >
+                              Track Order ({inv.transporter_details[0].transporter_name || "Transporter"})
+                            </button>
+                          )}
+
+                          {/* Tracking cards list */}
+                          {inv.transporter_details && inv.transporter_details.length > 0 && String(inv.transporter_details[0].transporter_name).toLowerCase() === "indian post" && (
+                            <div className="space-y-4 mt-4">
+                              {inv.transporter_details.map((pkg: any, pIdx: number) => {
+                                const tInfo = individualTrackingData[pkg.tracking_id] || { loading: false };
+                                const trackingExpanded = expandedTrackingId === pkg.tracking_id;
+
+                                return (
+                                  <div key={pIdx} className="border border-zinc-100 rounded-2xl bg-zinc-50/40 overflow-hidden">
+                                    {/* Tracking Header */}
+                                    <div className="bg-[#EBF3EF]/60 px-4 py-3 flex items-center justify-between border-b border-zinc-100">
+                                      <div className="text-left">
+                                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Tracking ID</p>
+                                        <p className="font-extrabold text-sm text-[#0F291B]">{pkg.tracking_id}</p>
+                                      </div>
+                                      <span className="inline-flex items-center bg-orange-50 text-orange-700 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase border border-orange-100">
+                                        {tInfo.data?.del_status?.del_status || "NOT DELIVERED"}
+                                      </span>
+                                    </div>
+
+                                    {/* Tracking Rows */}
+                                    <div className="p-4 space-y-2 text-xs font-semibold text-zinc-500">
+                                      <div className="flex justify-between">
+                                        <span>Booked On</span>
+                                        <span className="text-[#0F291B] font-bold">
+                                          {tInfo.data?.booking_details?.booked_on
+                                            ? new Date(tInfo.data.booking_details.booked_on).toLocaleDateString()
+                                            : "N/A"}
+                                        </span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span>Article Type</span>
+                                        <span className="text-[#0F291B] font-bold">N/A</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span>Origin</span>
+                                        <span className="text-[#0F291B] font-bold">()</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span>Destination</span>
+                                        <span className="text-[#0F291B] font-bold">()</span>
+                                      </div>
+                                    </div>
+
+                                    {/* Nested Tracking History steps */}
+                                    <div className="border-t border-zinc-100 bg-white">
+                                      <button
+                                        onClick={() => {
+                                          if (trackingExpanded) {
+                                            setExpandedTrackingId(null);
+                                          } else {
+                                            setExpandedTrackingId(pkg.tracking_id);
+                                            handleTrackStickerInline(pkg.tracking_id);
+                                          }
+                                        }}
+                                        className="w-full px-4 py-2.5 flex items-center justify-between text-xs font-bold text-[#0D9740] hover:bg-zinc-50 transition-colors"
+                                      >
+                                        <span>View Tracking History</span>
+                                        {trackingExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                      </button>
+
+                                      {trackingExpanded && (
+                                        <div className="px-4 pb-4 pt-2 border-t border-zinc-100 text-[11px] space-y-3">
+                                          {tInfo.loading && (
+                                            <p className="text-zinc-500 py-2">Loading steps...</p>
+                                          )}
+                                          {tInfo.error && (
+                                            <p className="text-rose-500 py-2">{tInfo.error}</p>
+                                          )}
+                                          {tInfo.data?.tracking_details && tInfo.data.tracking_details.map((step: any, sIdx: number) => (
+                                            <div key={sIdx} className="flex gap-3 border-l-2 border-emerald-500 pl-3 py-1 text-left">
+                                              <div className="flex-1">
+                                                <p className="font-bold text-[#0F291B]">{step.office || step.event}</p>
+                                                <p className="text-zinc-500 text-[10px]">{step.date} {step.time}</p>
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {/* LR / Stickers cards list */}
+                          {inv.lr_and_stickers && inv.lr_and_stickers.length > 0 && (
+                            <div className="space-y-4 pt-4 border-t border-zinc-100">
+                              {inv.lr_and_stickers.map((lr: any, lrIdx: number) => (
+                                <div key={lrIdx} className="border border-zinc-100 rounded-2xl p-4 bg-zinc-50/30 space-y-3 text-xs font-semibold text-zinc-500 shadow-sm text-left">
+                                  <div className="flex items-center gap-2 text-zinc-700 font-bold border-b border-zinc-100 pb-2 mb-1">
+                                    <span>🚚</span>
+                                    <span>LR / Stickers</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>Transporter</span>
+                                    <span className="text-[#0F291B] font-bold">{lr.transporter_name}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>Tracking ID</span>
+                                    <span className="text-[#0F291B] font-bold">{lr.tracking_id}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>Payment Status</span>
+                                    <span className="text-[#2E7D32] font-bold">{lr.payment_status}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>Charges</span>
+                                    <span className="text-[#0F291B] font-bold">₹{Number(lr.charges || lr.amount || 0).toLocaleString('en-IN')}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>No of Boxes</span>
+                                    <span className="text-[#0F291B] font-bold">{lr.no_of_boxes}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>Created At</span>
+                                    <span className="text-[#0F291B] font-bold">{lr.created_at}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>Estimated Arrival Time</span>
+                                    <span className="text-[#0F291B] font-bold">{lr.estimated_arrival_time}</span>
+                                  </div>
+
+                                  {/* Print LR Button */}
+                                  {(lr.print_url || lr.document_url) && (
+                                    <a
+                                      href={lr.print_url || lr.document_url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="w-full mt-2 border border-zinc-200 hover:bg-zinc-50 text-[#0F291B] font-bold py-2.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5"
+                                    >
+                                      <Printer className="w-3.5 h-3.5" /> Print LR
+                                    </a>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   );
