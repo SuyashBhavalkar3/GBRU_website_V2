@@ -163,10 +163,10 @@ export default function Navbar() {
       style={{ background: "linear-gradient(90deg, #204123 0%, #185A46 49.52%, #204123 100%)" }}
     >
       <div className="max-w-[1280px] w-full mx-auto pl-[21px] pr-4 sm:pr-6 lg:pr-[47px]">
-        <div className="flex items-center justify-between lg:justify-start h-[64px] lg:h-[72px]">
+        <div className="flex items-center justify-between xl:justify-start h-[64px] xl:h-[72px]">
 
           {/* Desktop Logo Section */}
-          <div className="hidden lg:flex flex-shrink-0 items-center lg:mr-[142px]">
+          <div className="hidden xl:flex flex-shrink-0 items-center xl:mr-[142px]">
             <Link href="/" className="flex items-center">
               <Image
                 src="/assets/gbru_header_logo.png"
@@ -180,7 +180,7 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden lg:flex items-center justify-between w-[448px] h-[34px] lg:mr-[44px]">
+          <div className="hidden xl:flex items-center justify-between w-[448px] h-[34px] xl:mr-[44px]">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
@@ -197,12 +197,12 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Search Bar */}
-          <div className="hidden md:flex items-center relative w-[260px] h-[35px] lg:mr-[26px]">
+          <div className="hidden xl:flex items-center relative w-[260px] h-[35px] xl:mr-[26px]">
             <SearchBar className="w-full h-full" placeholder="Search tools, products...." />
           </div>
 
           {/* Desktop Action Buttons */}
-          <div className="hidden lg:flex items-center">
+          <div className="hidden xl:flex items-center">
             {/* Language Selector Dropdown */}
             <div className="relative mr-[31px]">
               <button
@@ -312,7 +312,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Right Controls (Hamburger & Cart) */}
-          <div className="flex lg:hidden items-center justify-between w-full h-[64px]">
+          <div className="flex xl:hidden items-center justify-between w-full h-[64px]">
             
             {/* Hamburger Button (Leftmost) */}
             <button
@@ -379,7 +379,7 @@ export default function Navbar() {
 
       {/* Mobile Drawer/Menu */}
       {isOpen && (
-        <div className="lg:hidden bg-[#0A331E] border-t border-white/10 px-4 pt-2 pb-6 space-y-4 animate-fadeIn">
+        <div className="xl:hidden bg-[#0A331E] border-t border-white/10 px-4 pt-2 pb-6 space-y-4 animate-fadeIn">
           {/* Mobile Search (Visible on small mobile viewports) */}
           <div className="relative sm:hidden h-[40px]">
             <SearchBar className="w-full h-full" placeholder="Search tools, products...." />

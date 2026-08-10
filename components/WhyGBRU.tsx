@@ -63,14 +63,14 @@ const features = [
 export default function WhyGBRU() {
   return (
     <section
-      className="relative w-full bg-white flex items-center justify-center py-0 lg:py-[44px]"
+      className="relative w-full bg-white flex items-center justify-center py-0 xl:py-[44px]"
       style={{
         minHeight: "auto",
       }}
     >
       {/* Inner Div */}
       <div
-        className="flex flex-col items-center w-full max-w-[1280px] h-auto lg:h-[560px] px-4 lg:px-[64px] gap-8 lg:gap-[64px]"
+        className="flex flex-col items-center w-full max-w-[1280px] h-auto xl:h-[560px] px-4 xl:px-[64px] gap-8 xl:gap-[64px]"
       >
         {/* Header */}
         <div className="flex flex-col items-center gap-3">
@@ -106,7 +106,7 @@ export default function WhyGBRU() {
         </div>
 
         {/* MOBILE: 2x3 grid card layout (Figma Exact) */}
-        <div className="grid grid-cols-2 lg:hidden w-full px-3 justify-center animate-fade-in" style={{ gap: "11.46px" }}>
+        <div className="grid grid-cols-2 xl:hidden w-full px-3 justify-center animate-fade-in" style={{ gap: "11.46px" }}>
           {features.map((feature, idx) => (
             <div
               key={idx}
@@ -162,7 +162,7 @@ export default function WhyGBRU() {
 
         {/* DESKTOP: Original Grid (3x2 layout - Unchanged) */}
         <div
-          className="hidden lg:grid"
+          className="hidden xl:grid"
           style={{
             width: "1152px",
             height: "376px",
@@ -205,3 +205,4 @@ export default function WhyGBRU() {
     </section>
   );
 }
+

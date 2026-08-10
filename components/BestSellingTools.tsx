@@ -96,13 +96,13 @@ export default function BestSellingTools() {
   }
 
   return (
-    <section className="relative w-full bg-white pt-10 lg:pb-12 pb-2 px-4 lg:px-[64px] flex flex-col items-center justify-start overflow-hidden">
+    <section className="relative w-full bg-white pt-10 xl:pb-12 pb-2 px-4 xl:px-[64px] flex flex-col items-center justify-start overflow-hidden">
       {/* Header Container */}
-      <div className="relative z-10 w-full lg:w-[1152px] flex items-center justify-between">
+      <div className="relative z-10 w-full xl:w-[1152px] flex items-center justify-between">
 
         {/* MOBILE heading — smaller font, mobile only */}
         <h2
-          className="block lg:hidden text-[#0F291B]"
+          className="block xl:hidden text-[#0F291B]"
           style={{
             fontFamily: "Roboto, sans-serif",
             fontWeight: 700,
@@ -116,7 +116,7 @@ export default function BestSellingTools() {
 
         {/* DESKTOP heading — original size, untouched */}
         <h2
-          className="hidden lg:block text-[#0F291B]"
+          className="hidden xl:block text-[#0F291B]"
           style={{
             fontFamily: "Roboto, sans-serif",
             fontWeight: 700,
@@ -137,7 +137,7 @@ export default function BestSellingTools() {
       </div>
 
       {/* Mobile horizontal scroller — Figma Exact */}
-      <div className="relative z-10 w-full mt-8 lg:hidden -mx-4 px-4 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory">
+      <div className="relative z-10 w-full mt-8 xl:hidden -mx-4 px-4 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory">
         <div className="flex flex-nowrap gap-4 min-w-max">
           {products.map((product) => {
             const discountVal = product.discount || 0;
@@ -249,7 +249,7 @@ export default function BestSellingTools() {
       </div>
 
       {/* Desktop Grid Container */}
-      <div className="hidden lg:grid relative z-10 w-full lg:w-[1152px] mt-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[20.85px] items-stretch">
+      <div className="hidden xl:grid relative z-10 w-full xl:w-[1152px] mt-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-[20.85px] items-stretch">
           {products.map((product) => {
             const discountVal = product.discount || 0;
             const itemImage = product.custom_image_1 || product.image || "/assets/sprayer.png";
@@ -365,3 +365,4 @@ export default function BestSellingTools() {
     </section>
   );
 }
+

@@ -38,7 +38,7 @@ export default function GbRUOnField() {
       {/* MOBILE LAYOUT — Figma Exact                   */}
       {/* ══════════════════════════════════════════════ */}
       <div
-        className="block lg:hidden relative z-10 w-full"
+        className="block xl:hidden relative z-10 w-full"
         style={{
           maxWidth: "391px",
           margin: "0 auto",
@@ -191,7 +191,7 @@ export default function GbRUOnField() {
       </div>
 
       {/* ── DESKTOP LAYOUT ── */}
-      <div className="hidden lg:flex relative z-10 w-full flex-col items-center pt-10 sm:pt-12 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-0">
+      <div className="hidden xl:flex relative z-10 w-full flex-col items-center pt-10 sm:pt-12 pb-12 sm:pb-16 px-4 sm:px-6 xl:px-0">
         {/* Header */}
         <h2 className="font-roboto font-bold text-[#0F291B] text-[30px] sm:text-[40px] leading-tight text-center mb-3 max-w-3xl">
           GBRU on the Field
@@ -313,3 +313,4 @@ export default function GbRUOnField() {
     </section>
   );
 }
+

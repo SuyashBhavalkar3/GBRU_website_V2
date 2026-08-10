@@ -9,7 +9,7 @@ export default function AppDownloadBanner() {
       {/* ================================================================= */}
       {/* DESKTOP LAYOUT — hidden on mobile */}
       {/* ================================================================= */}
-      <div className="hidden md:flex w-full max-w-[1280px] mx-auto lg:h-[266px] relative flex-col lg:flex-row">
+      <div className="hidden xl:flex w-full max-w-[1280px] mx-auto lg:h-[266px] relative flex-col lg:flex-row">
         {/* Left Side (Dark Green) */}
         <div className="w-full lg:w-[10639px] lg:h-[266px] bg-[#0F2F20] lg:absolute lg:-left-[9999px] lg:pl-[9999px] lg:top-0 lg:z-20 rounded-r-none lg:rounded-tr-[28px] lg:rounded-br-[26px] lg:rounded-l-none py-8 px-6 lg:pr-6 flex flex-col justify-between">
           <h2 className="text-white text-xl lg:text-[28px] font-bold leading-tight">
@@ -72,7 +72,7 @@ export default function AppDownloadBanner() {
       {/* MOBILE LAYOUT — hidden on md+ */}
       {/* ================================================================= */}
       <div
-        className="flex md:hidden w-full overflow-hidden relative items-center justify-between text-left px-5"
+        className="flex xl:hidden w-full overflow-hidden relative items-center justify-between text-left px-5"
         style={{ background: "#E9F2EC", height: "167px" }}
       >
         {/* Left Side Texts & Download Badges */}

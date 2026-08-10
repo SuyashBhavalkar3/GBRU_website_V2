@@ -46,7 +46,7 @@ const Footer = () => {
       {/* ========================================================================= */}
       {/* DESKTOP FOOTER LAYOUT (Unchanged for Web/Desktop viewports) */}
       {/* ========================================================================= */}
-      <div className="hidden lg:block">
+      <div className="hidden xl:block">
         <div className="max-w-[1280px] mx-auto grid grid-cols-4 gap-8 mb-16">
           {/* Column 1: Stay Updated */}
           <div className="flex flex-col gap-6">
@@ -127,7 +127,7 @@ const Footer = () => {
       {/* ========================================================================= */}
       {/* MOBILE FOOTER LAYOUT (Short & Sweet, matching Figma design) */}
       {/* ========================================================================= */}
-      <div className="block lg:hidden max-w-[480px] mx-auto flex flex-col gap-8 text-left">
+      <div className="block xl:hidden max-w-[480px] mx-auto flex flex-col gap-8 text-left">
         {/* Brand Header */}
         <div className="flex flex-col gap-3">
           <div className="relative w-[160px] h-[68px] flex-shrink-0">
