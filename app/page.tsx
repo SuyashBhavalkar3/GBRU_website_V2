@@ -45,12 +45,12 @@ export default function Home() {
         <Hero />
 
         {/* ── DESKTOP ONLY: Stats at top ── */}
-        <div className="hidden lg:block">
+        <div className="hidden xl:block">
           <Stats />
         </div>
 
         {/* ── DESKTOP ONLY: Categories ── */}
-        <div className="hidden lg:block">
+        <div className="hidden xl:block">
           <Categories />
         </div>
 
@@ -58,7 +58,7 @@ export default function Home() {
         {!isLoggedIn && <FieldExperiences />}
 
         {/* ── MOBILE ONLY: Categories (after FieldExperiences on mobile) ── */}
-        <div className="block lg:hidden">
+        <div className="block xl:hidden">
           <Categories />
         </div>
 
@@ -66,19 +66,19 @@ export default function Home() {
         <BestSellingTools />
 
         {/* ── DESKTOP ONLY: ToolsInAction ── */}
-        <div className="hidden lg:block">
+        <div className="hidden xl:block">
           <ToolsInAction />
         </div>
 
         {/* ── MOBILE ONLY: ToolsInAction (only when logged in) ── */}
         {isLoggedIn && (
-          <div className="block lg:hidden">
+          <div className="block xl:hidden">
             <ToolsInAction />
           </div>
         )}
 
         {/* ── DESKTOP ONLY: AppDownload, GbRUOnField, WhyGBRU (guest only) ── */}
-        <div className="hidden lg:block">
+        <div className="hidden xl:block">
           {!isLoggedIn && <AppDownload />}
           {!isLoggedIn && <GbRUOnField />}
           {!isLoggedIn && <WhyGBRU />}
@@ -86,7 +86,7 @@ export default function Home() {
 
         {/* ── MOBILE ONLY: WhyGBRU + GbRUOnField (guest only) ── */}
         {!isLoggedIn && (
-          <div className="block lg:hidden">
+          <div className="block xl:hidden">
             <WhyGBRU />
             <GbRUOnField />
           </div>
@@ -97,7 +97,7 @@ export default function Home() {
 
         {/* ── MOBILE ONLY: HelpSupportBanner + Stats + AppDownloadBanner (logged in only) ── */}
         {isLoggedIn && (
-          <div className="block lg:hidden">
+          <div className="block xl:hidden">
             <HelpSupportBanner />
             <Stats />
             <AppDownloadBanner />
@@ -105,7 +105,7 @@ export default function Home() {
         )}
 
         {/* ── DESKTOP ONLY: HelpSupportBanner + AppDownloadBanner ── */}
-        <div className="hidden lg:block">
+        <div className="hidden xl:block">
           <HelpSupportBanner />
           <AppDownloadBanner />
         </div>

@@ -88,7 +88,7 @@ export default function Hero() {
   ];
 
   return (
-    <section className="relative w-full overflow-hidden bg-cover bg-center lg:min-h-[553px] lg:py-0 flex items-center text-white"
+    <section className="relative w-full overflow-hidden bg-cover bg-center xl:min-h-[553px] xl:py-0 flex items-center text-white"
       style={{ backgroundImage: "url('/assets/home_hero_bg.png')" }}
     >
       {/* Backdrop blur overlay for the background image */}
@@ -98,14 +98,14 @@ export default function Hero() {
       />
       {/* Soft white overlay descending from left to right — desktop only */}
       <div
-        className="hidden lg:block absolute inset-0 z-0 pointer-events-none"
+        className="hidden xl:block absolute inset-0 z-0 pointer-events-none"
         style={{
           background: "linear-gradient(90deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.05) 100%)"
         }}
       />
       {/* Subtle white overlay — mobile only (reduced opacity) */}
       <div
-        className="block lg:hidden absolute inset-0 z-0 pointer-events-none"
+        className="block xl:hidden absolute inset-0 z-0 pointer-events-none"
         style={{
           background: "rgba(255, 255, 255, 0.50)"
         }}
@@ -113,7 +113,7 @@ export default function Hero() {
 
       {/* Left side glow filter (dissolved radial gradient) */}
       <div
-        className="absolute z-0 pointer-events-none hidden lg:block"
+        className="absolute z-0 pointer-events-none hidden xl:block"
         style={{
           width: "550px",
           height: "650px",
@@ -128,7 +128,7 @@ export default function Hero() {
       {/* ========================================================================= */}
       {/* DESKTOP LAYOUT (Unchanged for Web/Desktop viewports) */}
       {/* ========================================================================= */}
-      <div className="hidden lg:block relative z-10 max-w-[1280px] w-full mx-auto px-4 sm:px-6 lg:px-[64px]">
+      <div className="hidden xl:block relative z-10 max-w-[1280px] w-full mx-auto px-4 sm:px-6 xl:px-[64px]">
         <div className="grid grid-cols-12 gap-8 items-center h-full">
 
           {/* Left Column (Hero Content) */}
@@ -136,7 +136,7 @@ export default function Hero() {
             {/* Top Text Content */}
             <div className="space-y-2.5 font-roboto">
               <h3
-                className="w-full lg:w-[564px] lg:max-w-[576px] flex items-center flex-wrap gap-1.5"
+                className="w-full xl:w-[564px] xl:max-w-[576px] flex items-center flex-wrap gap-1.5"
                 style={{
                   fontFamily: 'Roboto, sans-serif',
                   fontWeight: 700,
@@ -148,7 +148,7 @@ export default function Hero() {
               >
                 <span className="text-[#2D722F]">गब्रू हो साथ</span> <span className="text-[#2D722F]">,</span> <span className="text-white">तो टेंशन की क्या बात !</span>
               </h3>
-              <h1 className="text-3xl sm:text-4xl lg:text-[43.36px] font-semibold leading-tight tracking-normal text-[#0F291B] font-roboto">
+              <h1 className="text-3xl sm:text-4xl xl:text-[43.36px] font-semibold leading-tight tracking-normal text-[#0F291B] font-roboto">
                 Right tool.<br />
                 <span
                   className="bg-clip-text text-transparent bg-cover font-semibold inline-block mt-1"
@@ -157,13 +157,13 @@ export default function Hero() {
                   Better Farming.
                 </span>
               </h1>
-              <p className="text-[#0F291B]/80 max-w-lg font-roboto font-normal text-[15px] lg:text-[18px] leading-[22px] lg:leading-[28px] tracking-normal">
+              <p className="text-[#0F291B]/80 max-w-lg font-roboto font-normal text-[15px] xl:text-[18px] leading-[22px] xl:leading-[28px] tracking-normal">
                 High-performance machinery designed for the modern<br />farmer. Durable, efficient, and backed by pan-India support.
               </p>
             </div>
 
             {/* Bottom Actions Content */}
-            <div className="space-y-5 mt-6 lg:mt-0">
+            <div className="space-y-5 mt-6 xl:mt-0">
               {/* Buttons */}
               <div className="flex flex-col sm:flex-row flex-wrap gap-4">
                 <Link href="/all_products" className="bg-[#0D9740] hover:bg-[#0b8036] text-white font-roboto font-bold text-[14px] leading-none w-full sm:w-[185px] h-[52px] sm:h-[58px] min-h-[48px] rounded-[32px] px-8 flex items-center justify-center transition-all duration-200 hover:scale-[1.02] cursor-pointer shadow-lg">
@@ -184,7 +184,7 @@ export default function Hero() {
               </div>
 
               {/* Feature Pill Card (Capsule bottom left) */}
-              <div className="bg-[#EAE8E0] text-[#162A5A] rounded-[50px] shadow-lg w-full lg:w-[620px] lg:ml-[-20px] flex flex-col sm:flex-row gap-4 sm:gap-4 lg:gap-[18px] px-5 py-4 lg:px-6 lg:py-5 items-start sm:items-center justify-between z-20 relative">
+              <div className="bg-[#EAE8E0] text-[#162A5A] rounded-[50px] shadow-lg w-full xl:w-[620px] xl:ml-[-20px] flex flex-col sm:flex-row gap-4 sm:gap-4 xl:gap-[18px] px-5 py-4 xl:px-6 xl:py-5 items-start sm:items-center justify-between z-20 relative">
                 {features.map((item, i) => (
                   <div key={i} className="flex items-start space-x-3 min-w-0 w-full sm:w-auto">
                     <div className="flex-shrink-0 flex items-center justify-center mt-0.5">
@@ -228,7 +228,7 @@ export default function Hero() {
           </div>
 
           {/* Right Column (Carousel & YouTube Video Box) */}
-          <div className="col-span-6 flex flex-col items-center lg:items-end justify-center space-y-8">
+          <div className="col-span-6 flex flex-col items-center xl:items-end justify-center space-y-8">
 
             {/* Photo Carousel wrapper */}
             <div className="relative w-full max-w-[671px] h-[250px] sm:h-[320px] flex items-center justify-center overflow-visible">
@@ -362,8 +362,9 @@ export default function Hero() {
       {/* ========================================================================= */}
       {/* MOBILE LAYOUT (Figma Mockup — Guest/Not Logged In) */}
       {/* ========================================================================= */}
-      <div className="block lg:hidden relative z-10 w-full px-4 flex flex-col gap-6 text-center max-w-[480px] mx-auto">
-        {/* Title / Hero Header */}
+      <div className="block xl:hidden relative z-10 w-full flex flex-col gap-6 text-center">
+        <div className="max-w-[480px] mx-auto px-4 flex flex-col gap-6 w-full pt-2">
+          {/* Title / Hero Header */}
         <div className="flex flex-col items-center pt-2">
           <h3
             className="mb-2 text-center"
@@ -453,10 +454,10 @@ export default function Hero() {
         </div>
 
         {/* CTA Buttons — side by side */}
-        <div className="flex gap-3 px-5 mt-5">
+        <div className="flex gap-2 sm:gap-3 px-3 sm:px-5 mt-5">
           <Link
             href="/all_products"
-            className="flex-1 bg-[#0D9740] text-white font-roboto font-bold text-[14px] h-[50px] rounded-full flex items-center justify-center shadow-lg"
+            className="flex-1 bg-[#0D9740] text-white font-roboto font-bold text-[12px] min-[375px]:text-[13px] sm:text-[14px] h-[44px] sm:h-[50px] rounded-full flex items-center justify-center shadow-lg whitespace-nowrap px-1"
           >
             Explore Products
           </Link>
@@ -464,9 +465,9 @@ export default function Hero() {
             href="https://www.youtube.com/playlist?list=PLHXlLG4lLpM1RC3vTHQf8iDX5jAI707Jm"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 bg-white border-2 border-[#2B7832] text-[#2B7832] font-roboto font-bold text-[14px] h-[50px] rounded-full shadow-sm"
+            className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 bg-white border-2 border-[#2B7832] text-[#2B7832] font-roboto font-bold text-[12px] min-[375px]:text-[13px] sm:text-[14px] h-[44px] sm:h-[50px] rounded-full shadow-sm whitespace-nowrap px-1"
           >
-            <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="12" r="10" stroke="#2B7832" strokeWidth="2.5" />
               <path d="M10 8.5V15.5L15.5 12L10 8.5Z" fill="#2B7832" />
             </svg>
@@ -528,9 +529,11 @@ export default function Hero() {
           ))}
         </div>
 
+        </div> {/* Close max-w-[480px] wrapper */}
+
         {/* 2×2 Features Grid Card — edge-to-edge, no side margin on mobile */}
-        <div className="w-full mt-5 bg-white/90 backdrop-blur-md py-5 px-5 shadow-md -mx-4" style={{ width: "calc(100% + 2rem)" }}>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+        <div className="w-full bg-white/90 backdrop-blur-md py-5 px-5 shadow-md mt-2">
+          <div className="max-w-[480px] mx-auto grid grid-cols-2 gap-x-4 gap-y-5">
             {features.map((item, i) => (
               <div key={i} className="flex items-start gap-3">
                 <div className="flex-shrink-0 mt-0.5 p-2 bg-[#1E3A8A]/10 rounded-full" style={{ color: "#1E3A8A" }}>

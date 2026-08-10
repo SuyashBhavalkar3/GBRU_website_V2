@@ -9,7 +9,7 @@ export default function HelpSupportBanner() {
       {/* ================================================================= */}
       {/* DESKTOP LAYOUT — hidden on mobile (md and below) */}
       {/* ================================================================= */}
-      <div className="hidden md:block w-full bg-[#F9F9FA] py-10 px-4 md:px-8 mt-8">
+      <div className="hidden xl:block w-full bg-[#F9F9FA] py-10 px-4 md:px-8 mt-8">
         <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
           {/* Left text */}
           <div>
@@ -53,7 +53,7 @@ export default function HelpSupportBanner() {
       {/* ================================================================= */}
       {/* MOBILE LAYOUT — hidden on md+ */}
       {/* ================================================================= */}
-      <div className="flex md:hidden w-full bg-[#F9F9FA] px-4 py-4 justify-center">
+      <div className="flex xl:hidden w-full bg-[#F9F9FA] px-4 py-4 justify-center">
         <div
           className="flex w-full max-w-[358px] rounded-[24px] overflow-hidden p-3.5 items-stretch justify-between shadow-sm border border-[#E5E7EB]"
           style={{ background: "#F0FAF2", height: "124px" }}
