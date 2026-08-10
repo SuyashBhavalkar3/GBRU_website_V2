@@ -21,7 +21,8 @@ const OtpContent = () => {
   const router = useRouter();
   const mobileNo = searchParams.get('mobile_no');
   const txnId = searchParams.get('txn_id');
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const desktopRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const mobileRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     if (!mobileNo) {
@@ -36,23 +37,64 @@ const OtpContent = () => {
     }
   }, [timeLeft]);
 
-  const handleChange = (index: number, value: string) => {
-    if (value.length > 1) value = value.slice(-1);
+  const handleChange = (index: number, value: string, refs: React.MutableRefObject<(HTMLInputElement | null)[]>) => {
+    const cleaned = value.replace(/[^0-9]/g, '');
+    if (!cleaned) {
+      const newOtp = [...otp];
+      newOtp[index] = '';
+      setOtp(newOtp);
+      return;
+    }
+
+    if (cleaned.length > 1) {
+      if (cleaned.length >= 6) {
+        // Paste or autofill of the full OTP
+        const newOtp = [...otp];
+        const pasteVal = cleaned.slice(0, 6);
+        for (let i = 0; i < 6; i++) {
+          newOtp[i] = pasteVal[i];
+        }
+        setOtp(newOtp);
+        refs.current[5]?.focus();
+        return;
+      } else {
+        // Overwrite existing cell value
+        const newestChar = cleaned.slice(-1);
+        const newOtp = [...otp];
+        newOtp[index] = newestChar;
+        setOtp(newOtp);
+        if (index < 5) {
+          refs.current[index + 1]?.focus();
+        }
+        return;
+      }
+    }
 
     const newOtp = [...otp];
-    newOtp[index] = value;
+    newOtp[index] = cleaned;
     setOtp(newOtp);
 
-    // Move to next input if there's a value
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
+    if (index < 5) {
+      refs.current[index + 1]?.focus();
     }
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Move to previous input on backspace if current is empty
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>, refs: React.MutableRefObject<(HTMLInputElement | null)[]>) => {
+    if (e.key === 'Backspace') {
+      e.preventDefault();
+      const newOtp = [...otp];
+      
+      if (otp[index]) {
+        newOtp[index] = '';
+        setOtp(newOtp);
+        if (index > 0) {
+          refs.current[index - 1]?.focus();
+        }
+      } else if (index > 0) {
+        newOtp[index - 1] = '';
+        setOtp(newOtp);
+        refs.current[index - 1]?.focus();
+      }
     }
   };
 
@@ -386,14 +428,14 @@ const OtpContent = () => {
                 {otp.map((digit, index) => (
                   <input
                     key={index}
-                    ref={(el) => { inputRefs.current[index] = el; }}
+                    ref={(el) => { desktopRefs.current[index] = el; }}
                     type="tel"
                     inputMode="numeric"
                     pattern="[0-9]*"
                     maxLength={1}
                     value={digit}
-                    onChange={(e) => handleChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
+                    onChange={(e) => handleChange(index, e.target.value, desktopRefs)}
+                    onKeyDown={(e) => handleKeyDown(index, e, desktopRefs)}
                     className="flex-1 max-w-[44px] h-12 sm:max-w-[48px] sm:h-14 md:w-[54px] md:h-[60px] text-center text-xl font-semibold border rounded-lg outline-none transition-all focus:border-[#006B21] focus:ring-1 focus:ring-[#006B21] text-[#1A1A1A]"
                     style={{
                       borderColor: digit ? '#006B21' : '#E5E5E5',
@@ -556,14 +598,14 @@ const OtpContent = () => {
               {otp.map((digit, index) => (
                 <input
                   key={index}
-                  ref={(el) => { inputRefs.current[index] = el; }}
+                  ref={(el) => { mobileRefs.current[index] = el; }}
                   type="tel"
                   inputMode="numeric"
                   pattern="[0-9]*"
                   maxLength={1}
                   value={digit}
-                  onChange={(e) => handleChange(index, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  onChange={(e) => handleChange(index, e.target.value, mobileRefs)}
+                  onKeyDown={(e) => handleKeyDown(index, e, mobileRefs)}
                   className="w-[42px] h-[48px] text-center text-lg font-semibold border rounded-[10px] outline-none transition-all text-zinc-800"
                   style={{
                     borderColor: digit ? '#006B21' : '#E5E5E5',
