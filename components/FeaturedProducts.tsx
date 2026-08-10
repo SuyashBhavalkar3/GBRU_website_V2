@@ -55,7 +55,7 @@ export default function FeaturedProducts() {
           setCartItemCodes(items.map((i: any) => i.item));
         }
       } catch (e) {
-        
+
       }
     };
 
@@ -76,7 +76,7 @@ export default function FeaturedProducts() {
         try {
           json = JSON.parse(text);
         } catch (e) {
-          
+
           throw new Error("Invalid JSON from featured endpoint");
         }
         if (json?.message?.status && Array.isArray(json.message.data?.data)) {
@@ -84,7 +84,7 @@ export default function FeaturedProducts() {
           setProducts(json.message.data.data.slice(0, 10));
         }
       } catch (err) {
-        
+
       } finally {
         setLoading(false);
       }
@@ -142,130 +142,129 @@ export default function FeaturedProducts() {
           <span className="font-medium font-inter">{toastMessage}</span>
         </div>
       )}
-      
+
       <div className="max-w-[1280px] mx-auto px-4 lg:px-8 w-full">
-      
-      {/* Header controls */}
-      <div className="flex items-center justify-between mb-6 lg:mb-10">
-        <h2 className="text-2xl md:text-3xl font-extrabold text-[#0F291B] tracking-tight">
-          Featured Products
-        </h2>
-        <Link 
-          href="/products" 
-          className="text-sm font-bold text-[#006B21] hover:text-[#005a1b] transition-colors flex items-center gap-1.5 shrink-0"
-        >
-          View all products <span>→</span>
-        </Link>
-      </div>
 
-      {/* Mobile horizontal scroller */}
-      <div className="lg:hidden -mx-4 px-4 overflow-x-auto pb-3">
-        <div className="flex flex-nowrap gap-4 min-w-max">
-          {products.map((product) => {
-            const itemImage = product.custom_image_1 && product.custom_image_1.startsWith("http")
-              ? product.custom_image_1
-              : "/assets/sprayer.png";
+        {/* Header controls */}
+        <div className="flex items-center justify-between mb-6 lg:mb-10">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-[#0F291B] tracking-tight">
+            Featured Products
+          </h2>
+          <Link
+            href="/products"
+            className="text-sm font-bold text-[#006B21] hover:text-[#005a1b] transition-colors flex items-center gap-1.5 shrink-0"
+          >
+            View all products <span>→</span>
+          </Link>
+        </div>
 
-            const mockRating = (3.8 + (parseInt(product.item_code) % 15) / 10).toFixed(1);
-            const mockReviews = 40 + (parseInt(product.item_code) % 95);
+        {/* Mobile horizontal scroller */}
+        <div className="lg:hidden -mx-4 px-4 overflow-x-auto pb-3">
+          <div className="flex flex-nowrap gap-4 min-w-max">
+            {products.map((product) => {
+              const itemImage = product.custom_image_1 && product.custom_image_1.startsWith("http")
+                ? product.custom_image_1
+                : "/assets/sprayer.png";
 
-            return (
-              <div
-                key={product.item_code}
-                className="bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col transition-all duration-300 relative p-4 group shadow-sm w-[260px] shrink-0"
-              >
-                {/* Image box with embedded badge */}
-                <div className="relative w-full aspect-square bg-[#E8F3EB] rounded-xl overflow-hidden flex items-center justify-center p-3 mb-4">
-                  {product.discount && product.discount > 0 ? (
-                    <div className="absolute top-0 left-0 px-3 py-1.5 text-[13px] font-medium bg-[#FFD700] text-[#1F2937] z-10 rounded-br-xl">
-                      {product.discount.toFixed(0)}% OFF
+              const mockRating = (3.8 + (parseInt(product.item_code) % 15) / 10).toFixed(1);
+              const mockReviews = 40 + (parseInt(product.item_code) % 95);
+
+              return (
+                <div
+                  key={product.item_code}
+                  className="bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col transition-all duration-300 relative p-4 group shadow-sm w-[260px] shrink-0"
+                >
+                  {/* Clickable area → view product page */}
+                  <Link href={`/products/view_product?item_code=${encodeURIComponent(product.item_code)}`} className="block">
+                    {/* Image box with embedded badge */}
+                    <div className="relative w-full aspect-square bg-[#E8F3EB] rounded-xl overflow-hidden flex items-center justify-center p-3 mb-4">
+                      {product.discount && product.discount > 0 ? (
+                        <div className="absolute top-0 left-0 px-3 py-1.5 text-[13px] font-medium bg-[#FFD700] text-[#1F2937] z-10 rounded-br-xl">
+                          {product.discount.toFixed(0)}% OFF
+                        </div>
+                      ) : null}
+                      <img
+                        src={itemImage}
+                        alt={product.item_name}
+                        className="object-contain max-h-full max-w-full transition-transform duration-500 group-hover:scale-105"
+                      />
                     </div>
-                  ) : null}
-                  <img
-                    src={itemImage}
-                    alt={product.item_name}
-                    className="object-contain max-h-full max-w-full transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
 
-                <div className="flex flex-col flex-1">
-                  <h3 className="font-normal text-[18px] text-[#1A1A1A] line-clamp-2 leading-snug min-h-[48px] mb-2 transition-colors">
-                    {product.item_name}
-                  </h3>
+                    <h3 className="font-normal text-[18px] text-[#1A1A1A] line-clamp-2 leading-snug min-h-[48px] mb-2 transition-colors">
+                      {product.item_name}
+                    </h3>
 
-                  <div className="flex items-center gap-1.5 mb-3 text-[14px]">
-                    <span className="text-[#FBBF24] text-lg leading-none">★</span>
-                    <span className="text-[#FBBF24] font-medium">{mockRating}</span>
-                    <span className="text-gray-400">({mockReviews})</span>
-                  </div>
+                    <div className="flex items-center gap-1.5 mb-3 text-[14px]">
+                      <span className="text-[#FBBF24] text-lg leading-none">★</span>
+                      <span className="text-[#FBBF24] font-medium">{mockRating}</span>
+                      <span className="text-gray-400">({mockReviews})</span>
+                    </div>
 
-                  <div className="mt-auto">
                     <div className="flex items-center gap-2 mb-5">
                       <span className="text-[26px] font-medium text-[#1A1A1A]">₹{formatPrice(product.price)}</span>
                       {product.mrp > product.price && (
                         <span className="text-[15px] text-gray-400 line-through">₹{formatPrice(product.mrp)}</span>
                       )}
                     </div>
+                  </Link>
 
-                    <button
-                      onClick={() => handleAddToCart(product.item_code)}
-                      className="w-full h-12 bg-[#276342] hover:bg-[#1e4d33] text-white font-medium text-[16px] rounded-xl flex items-center justify-center gap-2 transition-colors active:scale-[0.99]"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                      {cartItemCodes.includes(product.item_code) ? "Update Cart" : "Add to Cart"}
-                    </button>
-                  </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleAddToCart(product.item_code); }}
+                    className="w-full h-12 bg-[#276342] hover:bg-[#1e4d33] text-white font-medium text-[16px] rounded-xl flex items-center justify-center gap-2 transition-colors active:scale-[0.99]"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    {cartItemCodes.includes(product.item_code) ? "Update Cart" : "Add to Cart"}
+                  </button>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      {/* Desktop Grid */}
-      <div className="hidden lg:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-        {products.map((product) => {
-          const itemImage = product.custom_image_1 && product.custom_image_1.startsWith("http")
-            ? product.custom_image_1
-            : "/assets/sprayer.png";
+        {/* Desktop Grid */}
+        <div className="hidden lg:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+          {products.map((product) => {
+            const itemImage = product.custom_image_1 && product.custom_image_1.startsWith("http")
+              ? product.custom_image_1
+              : "/assets/sprayer.png";
 
-          // Fixed star rating mock for premium feel
-          const mockRating = (3.8 + (parseInt(product.item_code) % 15) / 10).toFixed(1);
-          const mockReviews = 40 + (parseInt(product.item_code) % 95);
+            // Fixed star rating mock for premium feel
+            const mockRating = (3.8 + (parseInt(product.item_code) % 15) / 10).toFixed(1);
+            const mockReviews = 40 + (parseInt(product.item_code) % 95);
 
-          return (
-            <div 
-              key={product.item_code}
-              className="bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col transition-all duration-300 hover:shadow-lg relative p-4 group"
-            >
-              {/* Image box with embedded badge */}
-              <div className="relative w-full aspect-square bg-[#E8F3EB] rounded-xl overflow-hidden flex items-center justify-center p-3 mb-4">
-                {product.discount && product.discount > 0 ? (
-                  <div className="absolute top-0 left-0 px-3 py-1.5 text-[13px] font-medium bg-[#FFD700] text-[#1F2937] z-10 rounded-br-xl">
-                    {product.discount.toFixed(0)}% OFF
+            return (
+              <div
+                key={product.item_code}
+                className="bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col transition-all duration-300 hover:shadow-lg relative p-4 group"
+              >
+                {/* Clickable area → view product page */}
+                <Link href={`/products/view_product?item_code=${encodeURIComponent(product.item_code)}`} className="block">
+                  {/* Image box with embedded badge */}
+                  <div className="relative w-full aspect-square bg-[#E8F3EB] rounded-xl overflow-hidden flex items-center justify-center p-3 mb-4">
+                    {product.discount && product.discount > 0 ? (
+                      <div className="absolute top-0 left-0 px-3 py-1.5 text-[13px] font-medium bg-[#FFD700] text-[#1F2937] z-10 rounded-br-xl">
+                        {product.discount.toFixed(0)}% OFF
+                      </div>
+                    ) : null}
+                    <img
+                      src={itemImage}
+                      alt={product.item_name}
+                      className="object-contain max-h-full max-w-full transition-transform duration-500 group-hover:scale-105"
+                    />
                   </div>
-                ) : null}
-                <img 
-                  src={itemImage} 
-                  alt={product.item_name}
-                  className="object-contain max-h-full max-w-full transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
 
-              {/* Content */}
-              <div className="flex flex-col flex-1">
-                <h3 className="font-normal text-[18px] text-[#1A1A1A] line-clamp-2 leading-snug min-h-[48px] mb-2 transition-colors">
-                  {product.item_name}
-                </h3>
+                  {/* Content */}
+                  <h3 className="font-normal text-[18px] text-[#1A1A1A] line-clamp-2 leading-snug min-h-[48px] mb-2 transition-colors">
+                    {product.item_name}
+                  </h3>
 
-                {/* Rating */}
-                <div className="flex items-center gap-1.5 mb-3 text-[14px]">
-                  <span className="text-[#FBBF24] text-lg leading-none">★</span>
-                  <span className="text-[#FBBF24] font-medium">{mockRating}</span>
-                  <span className="text-gray-400">({mockReviews})</span>
-                </div>
+                  {/* Rating */}
+                  <div className="flex items-center gap-1.5 mb-3 text-[14px]">
+                    <span className="text-[#FBBF24] text-lg leading-none">★</span>
+                    <span className="text-[#FBBF24] font-medium">{mockRating}</span>
+                    <span className="text-gray-400">({mockReviews})</span>
+                  </div>
 
-                <div className="mt-auto">
                   {/* Prices */}
                   <div className="flex items-center gap-2 mb-5">
                     <span className="text-[26px] font-medium text-[#1A1A1A]">₹{formatPrice(product.price)}</span>
@@ -273,27 +272,26 @@ export default function FeaturedProducts() {
                       <span className="text-[15px] text-gray-400 line-through">₹{formatPrice(product.mrp)}</span>
                     )}
                   </div>
+                </Link>
 
-                  {/* Add to Cart button */}
-                  <button 
-                    onClick={() => handleAddToCart(product.item_code)}
-                    className="w-full h-12 bg-[#276342] hover:bg-[#1e4d33] text-white font-medium text-[16px] rounded-xl flex items-center justify-center gap-2 transition-colors active:scale-[0.99]"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    {cartItemCodes.includes(product.item_code) ? "Update Cart" : "Add to Cart"}
-                  </button>
-                </div>
+                {/* Add to Cart button */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleAddToCart(product.item_code); }}
+                  className="w-full h-12 bg-[#276342] hover:bg-[#1e4d33] text-white font-medium text-[16px] rounded-xl flex items-center justify-center gap-2 transition-colors active:scale-[0.99]"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                  {cartItemCodes.includes(product.item_code) ? "Update Cart" : "Add to Cart"}
+                </button>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
 
-      {/* Login Prompt Popup */}
-      <LoginPrompt 
-        isOpen={showLoginPrompt} 
-        onClose={() => setShowLoginPrompt(false)} 
-      />
+        {/* Login Prompt Popup */}
+        <LoginPrompt
+          isOpen={showLoginPrompt}
+          onClose={() => setShowLoginPrompt(false)}
+        />
       </div>
     </section>
   );
