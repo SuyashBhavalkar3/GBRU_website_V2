@@ -50,7 +50,7 @@ function ProductDetailContent() {
           setError(data?.message?.message || "Failed to load product details.");
         }
       } catch (err: any) {
-        
+
         setError("Error loading product details.");
       } finally {
         setLoading(false);
@@ -91,7 +91,7 @@ function ProductDetailContent() {
           }
         }
       } catch (e) {
-        
+
       }
     };
     if (itemCode) {
@@ -120,7 +120,7 @@ function ProductDetailContent() {
           setSimilarItems(filtered);
         }
       } catch (err) {
-        
+
       } finally {
         setLoadingSimilar(false);
       }
@@ -165,32 +165,32 @@ function ProductDetailContent() {
       const endpoint = isInCart ? "/api/cart/update" : "/api/cart/add";
       const payload = isInCart
         ? {
-            mobile_no,
-            item: product.item_code,
-            quantity: quantity,
-            payment_type: paymentOption === "full" ? "Full Payment" : "Cash On Delivery",
-            full_payment_amount: product.full_payment_amount || 0.0,
-            full_payment_discount: product.full_payment_discount || 0.0,
-            COD_value: product.cod_value || product.COD_value || 0.0,
-            COD_Display: product.cod_display || product.COD_Display || 0.0,
-            COD_discount: product.cod_discount || product.COD_discount || 0.0,
-          }
+          mobile_no,
+          item: product.item_code,
+          quantity: quantity,
+          payment_type: paymentOption === "full" ? "Full Payment" : "Cash On Delivery",
+          full_payment_amount: product.full_payment_amount || 0.0,
+          full_payment_discount: product.full_payment_discount || 0.0,
+          COD_value: product.cod_value || product.COD_value || 0.0,
+          COD_Display: product.cod_display || product.COD_Display || 0.0,
+          COD_discount: product.cod_discount || product.COD_discount || 0.0,
+        }
         : {
-            mobile_no,
-            items: [
-              {
-                item: product.item_code,
-                quantity: quantity,
-                is_moq_applicable: 0,
-                payment_type: paymentOption === "full" ? "Full Payment" : "Cash On Delivery",
-                full_payment_amount: product.full_payment_amount || 0.0,
-                full_payment_discount: product.full_payment_discount || 0.0,
-                cod_value: product.cod_value || product.COD_value || 0.0,
-                cod_display: product.cod_display || product.COD_Display || 0.0,
-                cod_discount: product.cod_discount || product.COD_discount || 0.0,
-              }
-            ]
-          };
+          mobile_no,
+          items: [
+            {
+              item: product.item_code,
+              quantity: quantity,
+              is_moq_applicable: 0,
+              payment_type: paymentOption === "full" ? "Full Payment" : "Cash On Delivery",
+              full_payment_amount: product.full_payment_amount || 0.0,
+              full_payment_discount: product.full_payment_discount || 0.0,
+              cod_value: product.cod_value || product.COD_value || 0.0,
+              cod_display: product.cod_display || product.COD_Display || 0.0,
+              cod_discount: product.cod_discount || product.COD_discount || 0.0,
+            }
+          ]
+        };
 
       const res = await fetch(endpoint, {
         method: "POST",
@@ -221,7 +221,7 @@ function ProductDetailContent() {
         });
       }
     } catch (err) {
-      
+
       setErrorPopup({
         open: true,
         title: "Add to Cart Failed",
@@ -596,7 +596,7 @@ function ProductDetailContent() {
                     ✓
                   </div>
                 )}
-                
+
                 <div>
                   <div className="flex justify-center mb-3">
                     <div className="bg-[#DFB33F] text-white text-[10px] font-bold py-1 px-3 rounded-full flex items-center gap-1.5">
@@ -604,12 +604,12 @@ function ProductDetailContent() {
                       MOST PREFERRED
                     </div>
                   </div>
-                  
+
                   <div className="text-left mb-3">
                     <h4 className="font-bold text-[#6B7280] text-[13px]">Full Payment</h4>
                     <p className="text-[11px] text-[#6B7280] mt-0.5">Pay complete amount now</p>
                   </div>
-                  
+
                   <div className="h-[1px] bg-zinc-200 w-full mb-3"></div>
 
                   <div className="flex flex-col gap-1.5">
@@ -660,7 +660,7 @@ function ProductDetailContent() {
                       <h4 className="font-bold text-[#6B7280] text-[13px] uppercase tracking-wide">Book Now & Pay On Delivery</h4>
                       <p className="text-[11px] text-[#6B7280] mt-0.5">Confirm your order instantly</p>
                     </div>
-                    
+
                     <div className="bg-[#F5F9F7] rounded-xl p-3 flex flex-col gap-1.5">
                       <div className="flex justify-between items-center text-[13px] text-[#4A4A4A]">
                         <span>Order Total</span>
@@ -735,7 +735,8 @@ function ProductDetailContent() {
               <button
                 onClick={handleAddToCart}
                 disabled={submitting}
-                className="w-full h-14 rounded-[14px] bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+                className="w-full h-14 rounded-[14px] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 hover:opacity-90"
+                style={{ backgroundColor: '#1A4D2E' }}
               >
                 {submitting ? (
                   <>
@@ -750,11 +751,16 @@ function ProductDetailContent() {
                 )}
               </button>
 
-              <a href="https://wa.me/919226514174" target="_blank" rel="noopener noreferrer" className="w-full h-14 rounded-[14px] bg-[#22C55E] hover:bg-[#1eb053] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm">
-                <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white">
-                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.003 5.324 5.328 0 11.859 0c3.161.001 6.132 1.233 8.37 3.472A11.758 11.758 0 0 1 23.7 11.886c-.004 6.533-5.33 11.858-11.86 11.858-2.003-.001-3.973-.509-5.727-1.478L0 24zm6.549-3.722c1.656.982 3.284 1.498 4.887 1.499 5.342 0 9.691-4.348 9.694-9.69C21.19 6.745 16.993 2.5 11.864 2.5a9.686 9.686 0 0 0-8.291 14.858l-.993 3.629 3.737-.98-.21-.129zm10.174-6.856c-.287-.144-1.695-.837-1.958-.933-.263-.096-.454-.144-.645.144-.191.288-.741.933-.909 1.124-.167.191-.335.215-.622.072-.287-.144-1.21-.446-2.305-1.424-.853-.761-1.429-1.701-1.597-1.989-.168-.287-.018-.443.126-.585.129-.127.287-.335.43-.502.144-.167.191-.287.287-.478.096-.191.048-.36-.024-.503-.072-.144-.645-1.554-.885-2.128-.233-.561-.469-.485-.645-.494-.168-.008-.36-.01-.55-.01s-.502.072-.765.36c-.263.288-1.004.981-1.004 2.392s1.028 2.775 1.171 2.967c.143.191 2.023 3.088 4.901 4.33.684.296 1.218.472 1.634.604.687.218 1.312.187 1.806.114.551-.082 1.695-.693 1.934-1.362.24-.669.24-1.243.167-1.362-.072-.119-.263-.191-.55-.335z" />
-                </svg>
-                WhatsApp Support
+              <a href="https://wa.me/919226514174" target="_blank" rel="noopener noreferrer" className="w-full h-14 rounded-[14px] bg-white hover:bg-zinc-50 border border-zinc-200 text-black font-bold text-[16px] transition-all flex items-center justify-center gap-3 shadow-sm">
+                <div className="relative w-11 h-11 rounded-full overflow-hidden flex-shrink-0 bg-white">
+                  <Image
+                    src="/assets/nova.jpeg"
+                    alt="Nova Logo"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                Chat with Nova
               </a>
             </div>
 
@@ -800,7 +806,7 @@ function ProductDetailContent() {
       </main>
 
       {/* ── Trust Banner Section ── */}
-      <section 
+      <section
         className="w-full py-12 border-t border-zinc-200 mt-8"
         style={{ background: 'linear-gradient(135deg, #1A4D2E 0%, #1E4F30 7.14%, #235233 14.29%, #275435 21.43%, #2A5738 28.57%, #2E593B 35.71%, #325B3D 42.86%, #365E40 50%, #396042 57.14%, #3D6345 64.29%, #416547 71.43%, #44684A 78.57%, #486A4D 85.71%, #4B6D4F 92.86%, #4F6F52 100%)' }}
       >
@@ -816,7 +822,7 @@ function ProductDetailContent() {
               <h4 className="font-bold text-[15px] mb-1">PAN India Support</h4>
               <p className="text-[12px] text-white/80">Service in 18,000+ locations</p>
             </div>
-            
+
             <div className="flex flex-col items-center">
               <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-4 shadow-sm border border-white/5">
                 <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -826,7 +832,7 @@ function ProductDetailContent() {
               <h4 className="font-bold text-[15px] mb-1">Spare Parts Available</h4>
               <p className="text-[12px] text-white/80">24/7 availability guarantee</p>
             </div>
-            
+
             <div className="flex flex-col items-center">
               <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-4 shadow-sm border border-white/5">
                 <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -837,7 +843,7 @@ function ProductDetailContent() {
               <h4 className="font-bold text-[15px] mb-1">Presence Every 12 KM</h4>
               <p className="text-[12px] text-white/80">Quick service access</p>
             </div>
-            
+
             <div className="flex flex-col items-center">
               <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-4 shadow-sm border border-white/5">
                 <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -847,7 +853,7 @@ function ProductDetailContent() {
               <h4 className="font-bold text-[15px] mb-1">Fast Service</h4>
               <p className="text-[12px] text-white/80">Same day response</p>
             </div>
-            
+
             <div className="flex flex-col items-center">
               <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-4 shadow-sm border border-white/5">
                 <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -953,7 +959,7 @@ function ProductDetailContent() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Video 1 */}
-            <div 
+            <div
               className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-zinc-100 group"
               onClick={() => setActiveVideoUrl("https://www.youtube.com/embed/3rhBieQevLA?autoplay=1")}
             >
@@ -975,7 +981,7 @@ function ProductDetailContent() {
             </div>
 
             {/* Video 2 */}
-            <div 
+            <div
               className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-zinc-100 group"
               onClick={() => setActiveVideoUrl("https://www.youtube.com/embed/7gGJHSmBGOM?autoplay=1")}
             >
@@ -997,7 +1003,7 @@ function ProductDetailContent() {
             </div>
 
             {/* Video 3 */}
-            <div 
+            <div
               className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-zinc-100 group"
               onClick={() => setActiveVideoUrl("https://www.youtube.com/embed/DX5_nQpXYjA?autoplay=1")}
             >
@@ -1019,7 +1025,7 @@ function ProductDetailContent() {
             </div>
 
             {/* Video 4 */}
-            <div 
+            <div
               className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-zinc-100 group"
               onClick={() => setActiveVideoUrl("https://www.youtube.com/embed/fGxiAGA4uf0?autoplay=1")}
             >
@@ -1151,9 +1157,8 @@ function ProductDetailContent() {
               {/* Full Payment Card */}
               <div
                 onClick={() => setSimilarPaymentOption("full")}
-                className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                  similarPaymentOption === "full" ? "border-[#0d9740] bg-[#F5F5F5]" : "border-zinc-200 bg-[#F5F5F5] hover:border-zinc-300"
-                }`}
+                className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all ${similarPaymentOption === "full" ? "border-[#0d9740] bg-[#F5F5F5]" : "border-zinc-200 bg-[#F5F5F5] hover:border-zinc-300"
+                  }`}
               >
                 {similarPaymentOption === "full" && (
                   <div className="absolute top-[-8px] right-[-8px] bg-[#0d9740] text-white w-5 h-5 rounded-full flex items-center justify-center shadow-md text-xs">✓</div>
@@ -1189,9 +1194,8 @@ function ProductDetailContent() {
               {Number(similarCartItem.cod_value || similarCartItem.COD_value || 0) > 0 && (
                 <div
                   onClick={() => setSimilarPaymentOption("booking")}
-                  className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                    similarPaymentOption === "booking" ? "border-[#0d9740] bg-white" : "border-zinc-200 bg-white hover:border-zinc-300"
-                  }`}
+                  className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all ${similarPaymentOption === "booking" ? "border-[#0d9740] bg-white" : "border-zinc-200 bg-white hover:border-zinc-300"
+                    }`}
                 >
                   {similarPaymentOption === "booking" && (
                     <div className="absolute top-[-8px] right-[-8px] bg-[#0d9740] text-white w-5 h-5 rounded-full flex items-center justify-center shadow-md text-xs">✓</div>
@@ -1253,19 +1257,19 @@ function ProductDetailContent() {
       {/* Video Modal */}
       {activeVideoUrl && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4">
-          <button 
+          <button
             className="absolute top-6 right-6 text-white hover:text-gray-300 z-50 p-2"
             onClick={() => setActiveVideoUrl(null)}
           >
             <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
           <div className="relative w-full max-w-5xl aspect-video rounded-2xl overflow-hidden shadow-2xl bg-black">
-            <iframe 
-              className="absolute inset-0 w-full h-full" 
-              src={activeVideoUrl} 
-              title="YouTube video player" 
-              frameBorder="0" 
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            <iframe
+              className="absolute inset-0 w-full h-full"
+              src={activeVideoUrl}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             ></iframe>
           </div>
