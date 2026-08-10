@@ -24,6 +24,12 @@ const OtpContent = () => {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
+    if (!mobileNo) {
+      router.replace('/signup');
+    }
+  }, [mobileNo, router]);
+
+  useEffect(() => {
     if (timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
