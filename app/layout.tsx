@@ -1,32 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Roboto, Manrope } from "next/font/google";
 import { ToastProvider } from "@/components/ToastContext";
 import PopularItemsModal from "@/components/PopularItemsModal";
 import MaintenanceGuard from "@/components/MaintenanceGuard";
 import Script from "next/script";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const roboto = Roboto({
-  weight: ["400", "500", "700"],
-  subsets: ["latin"],
-  variable: "--font-roboto",
-});
-
-const manrope = Manrope({
-  weight: ["400", "500", "600", "700", "800"],
-  subsets: ["latin"],
-  variable: "--font-manrope",
-});
 
 export const metadata: Metadata = {
   title: "GBRU Shoption",
@@ -44,7 +21,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${roboto.variable} ${manrope.variable} h-full antialiased overflow-x-hidden`}
+      className="h-full antialiased overflow-x-hidden"
     >
       <head>
         <script

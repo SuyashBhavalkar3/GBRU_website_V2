@@ -389,15 +389,16 @@ export default function Hero() {
           </h1>
         </div>
 
-        {/* Full-Width Carousel — auto-sliding on mobile */}
-        <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] h-[220px] overflow-hidden">
+        {/* Mobile Carousel with Side Previews — matching figma mockup 2 */}
+        <div className="relative w-full h-[220px] flex items-center justify-center overflow-hidden px-4">
           {carouselImages.map((imgUrl, idx) => {
             const pos = getMobilePositionClass(idx);
+
             if (pos === "center") {
               return (
                 <div
                   key={idx}
-                  className="absolute inset-0 z-20 w-full h-full transition-all duration-500 ease-in-out flex items-center justify-center"
+                  className="absolute z-20 w-[78%] h-[150px] transition-all duration-500 ease-in-out rounded-2xl overflow-hidden shadow-xl border border-white/20 bg-transparent flex items-center justify-center"
                 >
                   <Image
                     src={imgUrl}
@@ -405,18 +406,33 @@ export default function Hero() {
                     fill
                     className="object-contain"
                     priority
-                    sizes="100vw"
+                    sizes="75vw"
                   />
                 </div>
               );
             }
-            return null; // Don't show side offset cards to guarantee no spacing on left/right
+
+            const isLeft = pos === "left";
+            return (
+              <div
+                key={idx}
+                className={`absolute z-10 w-[12%] h-[155px] transition-all duration-500 ease-in-out rounded-xl overflow-hidden opacity-50 border border-white/10 bg-transparent flex items-center justify-center ${isLeft ? "left-4" : "right-4"}`}
+              >
+                <Image
+                  src={imgUrl}
+                  alt="Carousel Side"
+                  fill
+                  className="object-contain"
+                  sizes="15vw"
+                />
+              </div>
+            );
           })}
 
           {/* Left Arrow */}
           <button
             onClick={handleMobilePrev}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/50 text-white border border-white/20 shadow-md"
+            className="absolute left-1 z-30 flex items-center justify-center w-8 h-8 rounded-full bg-black/40 text-white shadow"
             aria-label="Previous image"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -427,7 +443,7 @@ export default function Hero() {
           {/* Right Arrow */}
           <button
             onClick={handleMobileNext}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-30 flex items-center justify-center w-9 h-9 rounded-full bg-black/50 text-white border border-white/20 shadow-md"
+            className="absolute right-1 z-30 flex items-center justify-center w-8 h-8 rounded-full bg-black/40 text-white shadow"
             aria-label="Next image"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
