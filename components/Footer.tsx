@@ -7,10 +7,14 @@ const Footer = () => {
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [subscribed, setSubscribed] = useState(false);
   const [email, setEmail] = useState("");
+  const [showDealerPopup, setShowDealerPopup] = useState(false);
 
   const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
   };
+
+  const openDealerPopup = () => setShowDealerPopup(true);
+  const closeDealerPopup = () => setShowDealerPopup(false);
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,7 +94,7 @@ const Footer = () => {
               <li><Link href="/about" className="footer-link">About Us</Link></li>
               <li><Link href="/products" className="footer-link">Products</Link></li>
               <li><Link href="/blog" className="footer-link">Blog</Link></li>
-              <li><a href="https://shoption.in" target="_blank" rel="noopener noreferrer" className="footer-link">For Dealer</a></li>
+              <li><button type="button" onClick={openDealerPopup} className="footer-link text-left p-0 bg-transparent border-0 cursor-pointer">For Dealer</button></li>
             </ul>
           </div>
 
@@ -205,7 +209,7 @@ const Footer = () => {
                 <li><Link href="/about" className="text-zinc-300 hover:text-white text-xs font-roboto">About Us</Link></li>
                 <li><Link href="/products" className="text-zinc-300 hover:text-white text-xs font-roboto">Products</Link></li>
                 <li><Link href="/blog" className="text-zinc-300 hover:text-white text-xs font-roboto">Blog</Link></li>
-                <li><a href="https://shoption.in" target="_blank" rel="noopener noreferrer" className="text-zinc-300 hover:text-white text-xs font-roboto">For Dealers</a></li>
+                <li><button type="button" onClick={openDealerPopup} className="text-zinc-300 hover:text-white text-xs font-roboto text-left p-0 bg-transparent border-0 cursor-pointer">For Dealers</button></li>
               </ul>
             </div>
           </div>
@@ -299,6 +303,67 @@ const Footer = () => {
         </div>
       </div>
 
+      {showDealerPopup && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-[24px] bg-white shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200">
+              <div>
+                <h3 className="text-lg font-bold text-[#0F291B]">Download Shoption App</h3>
+                <p className="text-sm text-zinc-500 mt-1">For dealers and irrigation shop partners.</p>
+              </div>
+              <button
+                type="button"
+                onClick={closeDealerPopup}
+                className="text-zinc-400 hover:text-zinc-600 transition-colors"
+                aria-label="Close popup"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="flex flex-col gap-4">
+                <a
+                  href="https://apps.apple.com/in/app/shoption-for-irrigation-shops/id1544284156"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-950 px-4 py-3 text-white hover:border-zinc-300 hover:bg-zinc-900 transition"
+                >
+                  <svg className="w-8 h-8 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.21.67-2.93 1.49-.62.69-1.16 1.84-1.01 2.96 1.12.09 2.27-.56 2.95-1.39z" />
+                  </svg>
+                  <div className="text-left">
+                    <div className="text-[10px] uppercase tracking-[1px] text-zinc-400">Available on the</div>
+                    <div className="font-semibold text-sm">App Store</div>
+                  </div>
+                </a>
+
+                <a
+                  href="https://play.google.com/store/apps/details?id=com.shoption.app&pcampaignid=web_share"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-950 px-4 py-3 text-white hover:border-zinc-300 hover:bg-zinc-900 transition"
+                >
+                  <div className="relative w-8 h-8 flex-shrink-0">
+                    <Image
+                      src="/assets/playstore-removebg-preview.png"
+                      alt="Google Play"
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-[10px] uppercase tracking-[1px] text-zinc-400">Get it on</div>
+                    <div className="font-semibold text-sm">Google Play</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </footer>
   );
 };
