@@ -28,7 +28,6 @@ export async function POST(request: Request) {
     try {
       data = JSON.parse(responseText);
     } catch (e) {
-      
       return NextResponse.json({ error: 'Invalid response from server' }, { status: 500 });
     }
 

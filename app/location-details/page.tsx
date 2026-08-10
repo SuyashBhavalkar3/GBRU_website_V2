@@ -1,10 +1,104 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+
+function SearchableDropdown<T>({
+  label,
+  value,
+  options,
+  disabled = false,
+  placeholder,
+  getLabel,
+  getValue,
+  onSelect,
+}: {
+  label: string;
+  value: string;
+  options: T[];
+  disabled?: boolean;
+  placeholder: string;
+  getLabel: (item: T) => string;
+  getValue: (item: T) => string;
+  onSelect: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredOptions = options.filter((item) =>
+    getLabel(item).toLowerCase().includes(query.toLowerCase())
+  );
+
+  const selectedItem = options.find((item) => getValue(item) === value);
+
+  return (
+    <div className="relative" ref={wrapperRef}>
+      <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">{label}</label>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => setOpen((prev) => !prev)}
+        className={`w-full text-left h-12 px-4 border border-zinc-200 rounded-[12px] bg-white ${disabled ? "opacity-50 cursor-not-allowed" : "hover:border-[#0D9740]"} flex items-center justify-between gap-3 text-sm text-[#0F291B]`}
+      >
+        <span className={`${selectedItem ? "text-[#0F291B]" : "text-zinc-400"}`}>
+          {selectedItem ? getLabel(selectedItem) : placeholder}
+        </span>
+        <svg className="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {open && !disabled && (
+        <div className="absolute z-50 mt-2 w-full rounded-[16px] border border-zinc-200 bg-white shadow-2xl overflow-hidden">
+          <div className="px-3 py-2 border-b border-zinc-200">
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              autoFocus
+              placeholder={`Search ${label.toLowerCase()}`}
+              className="w-full h-11 px-3 border border-zinc-200 rounded-[12px] text-sm text-[#0F291B] outline-none focus:border-[#0D9740]"
+            />
+          </div>
+          <div className="max-h-60 overflow-y-auto">
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((item) => (
+                <button
+                  key={getValue(item)}
+                  type="button"
+                  onClick={() => {
+                    onSelect(getValue(item));
+                    setOpen(false);
+                    setQuery("");
+                  }}
+                  className="w-full text-left px-4 py-3 hover:bg-[#F3F9F3] text-sm text-[#0F291B]"
+                >
+                  {getLabel(item)}
+                </button>
+              ))
+            ) : (
+              <div className="px-4 py-3 text-sm text-zinc-500">No results found</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function LocationDetailsPage() {
   const router = useRouter();
@@ -45,7 +139,7 @@ export default function LocationDetailsPage() {
       return;
     }
     const parsed = JSON.parse(stored);
-    if (parsed.status?.toUpperCase() === "ACTIVE") {
+    if (parsed.status?.toUpperCase() === "ACTIVE" && parsed.is_completed) {
       router.push("/proceed-to-checkout");
       return;
     }
@@ -76,43 +170,14 @@ export default function LocationDetailsPage() {
       }
     }
 
-    async function loadProceedDetails() {
-      try {
-        const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
-        if (!mobile_no) return;
+    const isLeadId = (value: any): value is string =>
+      typeof value === "string" && value.startsWith("CRM-LEAD");
 
-        // Fetch cart items first
-        const cartRes = await fetch("/api/cart", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mobile_no })
-        });
-        if (!cartRes.ok) return;
-        const cartJson = await cartRes.json();
-        const cartItems = cartJson.message?.data?.items || [];
-        const formattedItems = cartItems.map((i: any) => ({
-          item: i.item,
-          quantity: i.quantity
-        }));
-
-        const proceedRes = await fetch("/api/cart/proceed", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mobile_no, items: formattedItems })
-        });
-        if (proceedRes.ok) {
-          const proceedJson = await proceedRes.json();
-          if (proceedJson.message?.data?.form_id) {
-            setFromDocument(proceedJson.message.data.form_id);
-          }
-        }
-      } catch (err) {
-        
-      }
+    if (parsed.lead_id && isLeadId(parsed.lead_id)) {
+      setFromDocument(parsed.lead_id);
     }
 
     loadStates();
-    loadProceedDetails();
   }, [router]);
 
   // Load districts when state changes
@@ -196,6 +261,49 @@ export default function LocationDetailsPage() {
     loadMarketplaces();
   }, [tehsil]);
 
+  const createLead = async (mobile_no: string, name: string) => {
+    try {
+      const leadRes = await fetch("/api/lead-create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile_no, name })
+      });
+
+      const leadJson = await leadRes.json();
+      const leadValue = leadJson.message?.lead || leadJson.lead;
+      if (leadRes.ok && leadValue) {
+        return leadValue;
+      }
+
+      return null;
+    } catch (err) {
+      console.error("[LocationDetails] lead-create error", err);
+      return null;
+    }
+  };
+
+  const resolveFromDocument = async (mobile_no: string, name: string, fallback?: string): Promise<string | null> => {
+    let actualLeadId: string | null = fallback ?? null;
+    if (!actualLeadId) {
+      actualLeadId = await createLead(mobile_no, name);
+    }
+
+    if (actualLeadId) {
+      setFromDocument(actualLeadId);
+      const storedUser = window.localStorage.getItem("gbru_user");
+      if (storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          parsedUser.lead_id = actualLeadId;
+          window.localStorage.setItem("gbru_user", JSON.stringify(parsedUser));
+        } catch (_e) {
+        }
+      }
+    }
+
+    return actualLeadId;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !state || !district || !tehsil || !marketplace || !pincode || !addressLine1) {
@@ -214,28 +322,28 @@ export default function LocationDetailsPage() {
         return;
       }
 
-      // Step 1: Create or fetch Lead to obtain the from_document ID
-      let actualLeadId = fromDocument;
-      try {
-        const leadRes = await fetch("/api/lead-create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mobile_no, name })
-        });
-        if (leadRes.ok) {
-          const leadJson = await leadRes.json();
-          
-          if (leadJson.message?.status && leadJson.message.lead) {
-            actualLeadId = leadJson.message.lead;
-          }
-        }
-      } catch (err) {
-        
+      const isLeadId = (value: any): value is string =>
+        typeof value === "string" && value.startsWith("CRM-LEAD");
+
+      let actualLeadId: string | null = null;
+      if (isLeadId(user.lead_id)) {
+        actualLeadId = user.lead_id;
+      } else if (isLeadId(fromDocument)) {
+        actualLeadId = fromDocument;
       }
 
       if (!actualLeadId) {
-        
-        actualLeadId = fromDocument;
+        actualLeadId = await resolveFromDocument(mobile_no, name);
+      }
+
+      if (actualLeadId && !isLeadId(actualLeadId)) {
+        actualLeadId = await resolveFromDocument(mobile_no, name);
+      }
+
+      if (!actualLeadId) {
+        setErrorMsg("Unable to obtain lead document. Please try again.");
+        setSubmitting(false);
+        return;
       }
 
       // Step 2: Submit Farmer Registration with the lead ID as from_document
@@ -277,8 +385,7 @@ export default function LocationDetailsPage() {
       } else {
         setErrorMsg(json.message?.message || json.error || "Failed to save details. Please try again.");
       }
-    } catch (err) {
-      
+    } catch (_err) {
       setErrorMsg("An unexpected error occurred. Please try again.");
     } finally {
       setSubmitting(false);
@@ -351,52 +458,61 @@ export default function LocationDetailsPage() {
 
             {/* State */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">State</label>
-              <select
-                required
+              <SearchableDropdown
+                label="State"
                 value={state}
-                onChange={(e) => setState(e.target.value)}
-                className="h-12 px-4 border border-zinc-200 rounded-[12px] text-sm text-[#0F291B] focus:outline-[#0D9740] bg-white cursor-pointer"
-              >
-                <option value="">Select State</option>
-                {states.map((s) => (
-                  <option key={s.id} value={s.name}>{s.name}</option>
-                ))}
-              </select>
+                options={states}
+                placeholder="Select state"
+                getLabel={(item) => item.name}
+                getValue={(item) => item.name}
+                onSelect={(value) => {
+                  setState(value);
+                  setDistrict("");
+                  setTehsil("");
+                  setMarketplace("");
+                  setDistricts([]);
+                  setTahsils([]);
+                  setMarketplaces([]);
+                }}
+              />
             </div>
 
             {/* District */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">District</label>
-              <select
-                required
-                disabled={!state}
+              <SearchableDropdown
+                label="District"
                 value={district}
-                onChange={(e) => setDistrict(e.target.value)}
-                className="h-12 px-4 border border-zinc-200 rounded-[12px] text-sm text-[#0F291B] focus:outline-[#0D9740] bg-white cursor-pointer disabled:opacity-50"
-              >
-                <option value="">Select District</option>
-                {districts.map((d) => (
-                  <option key={d.id} value={d.id}>{d.name}</option>
-                ))}
-              </select>
+                options={districts}
+                disabled={!state}
+                placeholder="Select district"
+                getLabel={(item) => item.name}
+                getValue={(item) => String(item.id)}
+                onSelect={(value) => {
+                  setDistrict(value);
+                  setTehsil("");
+                  setMarketplace("");
+                  setTahsils([]);
+                  setMarketplaces([]);
+                }}
+              />
             </div>
 
             {/* Tehsil */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Tehsil</label>
-              <select
-                required
-                disabled={!district}
+              <SearchableDropdown
+                label="Tehsil"
                 value={tehsil}
-                onChange={(e) => setTehsil(e.target.value)}
-                className="h-12 px-4 border border-zinc-200 rounded-[12px] text-sm text-[#0F291B] focus:outline-[#0D9740] bg-white cursor-pointer disabled:opacity-50"
-              >
-                <option value="">Select Tehsil</option>
-                {tahsils.map((t) => (
-                  <option key={t.id} value={t.id}>{t.name}</option>
-                ))}
-              </select>
+                options={tahsils}
+                disabled={!district}
+                placeholder="Select tehsil"
+                getLabel={(item) => item.name}
+                getValue={(item) => String(item.id)}
+                onSelect={(value) => {
+                  setTehsil(value);
+                  setMarketplace("");
+                  setMarketplaces([]);
+                }}
+              />
             </div>
 
             {/* Pincode */}
@@ -415,19 +531,16 @@ export default function LocationDetailsPage() {
 
             {/* Marketplace */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Marketplace</label>
-              <select
-                required
-                disabled={!tehsil}
+              <SearchableDropdown
+                label="Marketplace"
                 value={marketplace}
-                onChange={(e) => setMarketplace(e.target.value)}
-                className="h-12 px-4 border border-zinc-200 rounded-[12px] text-sm text-[#0F291B] focus:outline-[#0D9740] bg-white cursor-pointer disabled:opacity-50"
-              >
-                <option value="">Select Marketplace</option>
-                {marketplaces.map((mp) => (
-                  <option key={mp.id} value={mp.id}>{mp.name}</option>
-                ))}
-              </select>
+                options={marketplaces}
+                disabled={!tehsil}
+                placeholder="Select marketplace"
+                getLabel={(item) => item.name}
+                getValue={(item) => String(item.id)}
+                onSelect={(value) => setMarketplace(value)}
+              />
             </div>
 
             {/* Village */}
