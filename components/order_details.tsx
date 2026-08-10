@@ -256,7 +256,8 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
   const preferredAmount = Number(summary.payupreferedamount || order.payupreferedamount || 0);
   const preferredMode = summary.payupreferedmode || order.payupreferedmode || "Online";
 
-  const isFullPayment = preferredMode === "Full Payment" || summary.is_full_payment === 1 || String(summary.is_full_payment).toLowerCase() === "true" || String(summary.payment_type).toLowerCase() === "full payment" || order.is_full_payment === 1 || String(order.is_full_payment).toLowerCase() === "true" || String(order.payment_type).toLowerCase() === "full payment" || !String(preferredMode).toLowerCase().includes("cash");
+  const preferredModeStr = String(summary.payupreferedmode || order.payupreferedmode || summary.payment_type || order.payment_type || "Online").toLowerCase();
+  const isFullPayment = !preferredModeStr.includes("cash") && !preferredModeStr.includes("cod") && preferredModeStr !== "pay later";
   const isBookingPaid = receivedAmount >= preferredAmount;
 
   const payAmount = isFullPayment
@@ -267,6 +268,8 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
   const statusDisplay = shipment.status || summary.allowed_action || "Pending Payment";
   const hasTransactions = order.transactions && order.transactions.length > 0;
   const hasInvoices = order.invoices && order.invoices.length > 0;
+
+  const showPayButton = payAmount > 10;
 
   // Extract LR and stickers
   const deliverySlips = shipment.delivery_slips || [];
@@ -535,7 +538,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
             </div>
 
             {/* Pay Now button (if applicable) */}
-            {payAmount > 0 && (
+            {showPayButton && (
               <button
                 onClick={handlePayNow}
                 className="w-full h-12 bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-[15px] rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 mt-1"
@@ -978,7 +981,9 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                     <Calendar className="w-5 h-5 text-zinc-400 shrink-0" />
                     <span>Order Date</span>
                   </div>
-                  <span className="font-bold text-[#0F291B] text-sm">{summary.order_date || "--"}</span>
+                  <span className="font-bold text-[#0F291B] text-sm">
+                    {summary.order_date ? new Date(summary.order_date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "--"}
+                  </span>
                 </div>
                 <div className="h-[1px] bg-zinc-100" />
 
@@ -1000,79 +1005,6 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                   </div>
                 </div>
                 <div className="h-[1px] bg-zinc-100" />
-                {/* Payment Type Badge */}
-                <div className="flex items-center justify-between py-1">
-                  <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
-                    <Info className="w-5 h-5 text-zinc-400 shrink-0" />
-                    <span>Payment Type</span>
-                  </div>
-                  {isFullPayment ? (
-                    <div className="inline-flex items-center gap-1.5 bg-[#E8F5E9] text-[#2E7D32] px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase">
-                      Full Payment
-                    </div>
-                  ) : isBookingPaid ? (
-                    <div className="inline-flex items-center gap-1.5 bg-[#E8F5E9] text-[#2E7D32] px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase">
-                      Booked (COD)
-                    </div>
-                  ) : (
-                    <div className="inline-flex items-center gap-1.5 bg-[#FFF3E0] text-[#E65100] px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase">
-                      Book Now (COD)
-                    </div>
-                  )}
-                </div>
-                <div className="h-[1px] bg-zinc-100" />
-
-                {/* Preferred Payment Mode */}
-                <div className="flex items-center justify-between py-1">
-                  <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
-                    <CreditCard className="w-5 h-5 text-zinc-400 shrink-0" />
-                    <span>Preferred Mode</span>
-                  </div>
-                  <span className="font-bold text-[#0F291B] text-sm">{preferredMode}</span>
-                </div>
-                <div className="h-[1px] bg-zinc-100" />
-
-                {/* Preferred Payment Amount */}
-                <div className="flex items-center justify-between py-1">
-                  <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
-                    <IndianRupee className="w-5 h-5 text-zinc-400 shrink-0" />
-                    <span>Preferred Amount</span>
-                  </div>
-                  <span className="font-bold text-[#0D9740] text-sm">₹{preferredAmount.toLocaleString('en-IN')}</span>
-                </div>
-                <div className="h-[1px] bg-zinc-100" />
-
-                {/* Received Amount */}
-                <div className="flex items-center justify-between py-1">
-                  <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
-                    <ArrowDownToLine className="w-5 h-5 text-zinc-400 shrink-0" />
-                    <span>Received Amount</span>
-                  </div>
-                  <span className="font-bold text-[#0D9740] text-sm">₹{receivedAmount.toLocaleString('en-IN')}</span>
-                </div>
-                <div className="h-[1px] bg-zinc-100" />
-
-                {/* Pending Amount */}
-                <div className="flex items-center justify-between py-1">
-                  <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
-                    <ArrowUpFromLine className="w-5 h-5 text-zinc-400 shrink-0" />
-                    <span>Pending Amount</span>
-                  </div>
-                  <span className="font-bold text-[#0D9740] text-sm">
-                    ₹{pendingAmount.toLocaleString('en-IN')}
-                  </span>
-                </div>
-                <div className="h-[1px] bg-zinc-100" />
-
-                {/* Unsettled Amount */}
-                <div className="flex items-center justify-between py-1">
-                  <div className="flex items-center gap-3 text-zinc-500 font-semibold text-sm">
-                    <RefreshCw className="w-5 h-5 text-zinc-400 shrink-0" />
-                    <span>Unsettled Amount</span>
-                  </div>
-                  <span className="font-bold text-[#0D9740] text-sm">₹{unsettledAmount.toLocaleString('en-IN')}</span>
-                </div>
-                <div className="h-[1px] bg-zinc-100" />
 
                 {/* Row 3: Discount */}
                 <div className="flex items-center justify-between py-1">
@@ -1080,7 +1012,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                     <Tag className="w-5 h-5 text-zinc-400 shrink-0" />
                     <span>Discount</span>
                   </div>
-                  <span className="font-bold text-[#0D9740] text-sm">
+                  <span className="font-bold text-red-500 text-sm">
                     - ₹{Number(summary.discount_received || 0).toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -1097,7 +1029,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                   </span>
                 </div>
 
-                {payAmount > 0 && (
+                {showPayButton && (
                   <button
                     onClick={handlePayNow}
                     className="w-full bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold py-3.5 rounded-xl text-xs font-roboto transition-all shadow-md flex items-center justify-center gap-1.5 duration-300 mt-2 active:scale-[0.98]"
