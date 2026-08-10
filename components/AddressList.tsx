@@ -296,11 +296,11 @@ export default function AddressList() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between mt-4">
+          <div className="mt-4 flex flex-col gap-3">
             <span className="text-[14px] text-[#374151] font-semibold flex items-center gap-1.5">
               <Phone className="w-4 h-4 text-zinc-600" /> {userPhone}
             </span>
-            <Link href="/user-profile" className="h-9 px-5 border border-[#0D9740] text-[#0D9740] font-bold text-xs rounded-lg transition-all">
+            <Link href="/user-profile" className="w-full h-10 flex items-center justify-center border border-[#0D9740] text-[#0D9740] font-bold text-xs rounded-lg transition-all">
               Edit Profile
             </Link>
           </div>

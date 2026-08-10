@@ -160,6 +160,11 @@ export default function PaymentsPage() {
             </h1>
           </div>
         </div>
+        <div className="md:hidden mb-6">
+          <Link href="/user-profile" className="w-full h-10 flex items-center justify-center border border-[#0D9740] text-[#0D9740] font-bold text-xs rounded-lg transition-all bg-white">
+            Edit Profile
+          </Link>
+        </div>
 
         {/* Content */}
         {loading ? (

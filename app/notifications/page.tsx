@@ -26,6 +26,11 @@ export default function NotificationsPage() {
             </h1>
           </div>
         </div>
+        <div className="md:hidden mb-6">
+          <Link href="/user-profile" className="w-full h-10 flex items-center justify-center border border-[#0D9740] text-[#0D9740] font-bold text-xs rounded-lg transition-all bg-white">
+            Edit Profile
+          </Link>
+        </div>
 
         {/* Empty State Card */}
         <div className="bg-white border border-zinc-200/80 rounded-[24px] p-12 md:p-24 shadow-sm flex flex-col items-center justify-center text-center">

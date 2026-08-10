@@ -208,13 +208,13 @@ export default function OrderList() {
           </div>
 
           {/* Subheader: phone + edit button */}
-          <div className="flex items-center justify-between mt-4">
+          <div className="mt-4 flex flex-col gap-3">
             <span className="text-[14px] text-[#374151] font-semibold flex items-center gap-1.5">
               <Phone className="w-4 h-4 text-zinc-600" /> {userMobile}
             </span>
             <Link
               href="/user-profile"
-              className="h-9 px-5 border border-[#0D9740] hover:bg-[#0D9740]/[0.02] text-[#0D9740] font-bold text-xs rounded-lg transition-all"
+              className="w-full h-10 flex items-center justify-center border border-[#0D9740] hover:bg-[#0D9740]/[0.02] text-[#0D9740] font-bold text-xs rounded-lg transition-all"
             >
               Edit Profile
             </Link>
