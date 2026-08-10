@@ -387,7 +387,9 @@ const OtpContent = () => {
                   <input
                     key={index}
                     ref={(el) => { inputRefs.current[index] = el; }}
-                    type="text"
+                    type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     maxLength={1}
                     value={digit}
                     onChange={(e) => handleChange(index, e.target.value)}
@@ -555,7 +557,9 @@ const OtpContent = () => {
                 <input
                   key={index}
                   ref={(el) => { inputRefs.current[index] = el; }}
-                  type="text"
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handleChange(index, e.target.value)}
