@@ -8,6 +8,7 @@ import SearchBar from "./SearchBar";
 import ProfilePop from "./profile_pop";
 
 export default function Navbar() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState<any>(null);
@@ -271,8 +272,9 @@ export default function Navbar() {
                 </svg>
               </button>
             ) : (
-              <Link
-                href="/signup"
+              <button
+                type="button"
+                onClick={() => router.push("/signup")}
                 className="flex items-center justify-center gap-1 w-[78px] h-[22px] bg-[#FFC700] hover:bg-[#e6b300] text-black font-roboto font-semibold text-[11px] leading-none rounded-[4px] transition-all duration-200 shadow-md hover:scale-[1.02] mr-[25px]"
               >
                 <svg
@@ -290,7 +292,7 @@ export default function Navbar() {
                   />
                 </svg>
                 <span>Sign up</span>
-              </Link>
+              </button>
             )}
 
             {/* Cart Icon */}
@@ -480,9 +482,12 @@ export default function Navbar() {
                 <span>{loggedInUser.Customer_name?.split(" ")[0] || "Profile"}</span>
               </button>
             ) : (
-              <Link
-                href="/signup"
-                onClick={() => setIsOpen(false)}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  router.push("/signup");
+                }}
                 className="flex items-center justify-center space-x-2 bg-[#FFC700] hover:bg-[#e6b300] text-black font-bold py-3 rounded-[6px] transition-colors duration-200 shadow-md"
               >
                 <svg
@@ -499,7 +504,7 @@ export default function Navbar() {
                   />
                 </svg>
                 <span>Sign up</span>
-              </Link>
+              </button>
             )}
           </div>
         </div>
