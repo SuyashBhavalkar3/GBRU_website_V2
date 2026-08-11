@@ -101,7 +101,9 @@ const OtpContent = () => {
   const handlePendingCart = async (userObj: any) => {
     const pendingItemStr = localStorage.getItem("gbru_pending_cart_item");
     if (!pendingItemStr) {
-      if (userObj?.role?.toLowerCase() === 'farmer') {
+      if (userObj?.brand_ambassador && userObj.brand_ambassador.trim() !== "") {
+        router.push('/ambassador_dashboard');
+      } else if (userObj?.role?.toLowerCase() === 'farmer') {
         router.push('/dashboard');
       } else if (userObj?.role?.toLowerCase() === 'dealer') {
         router.push('/dealer_profile');

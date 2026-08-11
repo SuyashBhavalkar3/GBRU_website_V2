@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
+import AmbassadorHero from "@/components/AmbassadorHero";
 import Categories from "@/components/Categories";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import ToolsInAction from "@/components/ToolsInAction";
@@ -13,7 +13,7 @@ import Stats from "@/components/Stats";
 import AppDownloadBanner from "@/components/AppDownloadBanner";
 import Footer from "@/components/Footer";
 
-export default function DashboardPage() {
+export default function AmbassadorPage() {
   const router = useRouter();
   const [authChecked, setAuthChecked] = useState(false);
 
@@ -25,39 +25,36 @@ export default function DashboardPage() {
         router.replace("/");
         return;
       }
-      
       try {
         const userObj = JSON.parse(userStr);
-        if (userObj?.brand_ambassador && userObj.brand_ambassador.trim() !== "") {
-          router.replace("/ambassador_dashboard");
+        if (!userObj?.brand_ambassador || userObj.brand_ambassador.trim() === "") {
+          router.replace("/dashboard");
           return;
         }
-      } catch (e) {}
-
+      } catch (e) {
+        router.replace("/");
+        return;
+      }
       setAuthChecked(true);
     }
   }, [router]);
 
-  // Don't render anything until auth check is complete (avoids flash of dashboard before redirect)
+  // Don't render anything until auth check is complete
   if (!authChecked) return null;
 
   return (
     <div className="flex flex-col min-h-screen bg-white overflow-x-hidden">
       <Navbar />
       <main className="flex-1">
-        <Hero />
+        <AmbassadorHero />
         <Categories />
         <FeaturedProducts />
         <ToolsInAction />
         <Testimonials />
         <HelpSupportBanner />
-
-        {/* ── MOBILE ONLY: Stats (Our Impact In Numbers) — logged-in users only ── */}
-        {/* Stats already self-guards desktop with hidden lg:flex, wrapping in block lg:hidden ensures only mobile renders */}
-        <div className="block lg:hidden">
+        <div className="block xl:hidden">
           <Stats />
         </div>
-
         <AppDownloadBanner />
       </main>
       <Footer />

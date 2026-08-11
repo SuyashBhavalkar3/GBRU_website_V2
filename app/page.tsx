@@ -24,9 +24,19 @@ export default function Home() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const loggedIn = !!localStorage.getItem("gbru_user");
-      if (loggedIn) {
-        // User is logged in — send them to the dashboard
+      const userStr = localStorage.getItem("gbru_user");
+      if (userStr) {
+        try {
+          const userObj = JSON.parse(userStr);
+          if (userObj?.brand_ambassador && userObj.brand_ambassador.trim() !== "") {
+            router.replace("/ambassador_dashboard");
+            return;
+          } else if (userObj?.role?.toLowerCase() === 'dealer') {
+            router.replace("/dealer_profile");
+            return;
+          }
+        } catch (e) {}
+        // Default logged in user redirect
         router.replace("/dashboard");
         return;
       }
