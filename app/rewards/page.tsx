@@ -12,6 +12,7 @@ export default function RewardsPage() {
   const [orderCount, setOrderCount] = useState(0);
   const [referralCode, setReferralCode] = useState("");
   const [copied, setCopied] = useState(false);
+  const [hasBACode, setHasBACode] = useState(false);
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -24,11 +25,33 @@ export default function RewardsPage() {
         }
 
         const user = JSON.parse(userStr);
-        const mobile_no = user.mobile_no || user.mobile;
+        const mobile_no = user.mobile_no || user.mobile || user.customer_id?.split('-')[1] || user.user_id;
 
-        // Generate a referral code based on their mobile
+        // Default fallback referral code
         if (mobile_no) {
           setReferralCode(`GBRU${mobile_no.slice(-4)}VIP`);
+        }
+
+        // Fetch dynamic user details to check for actual brand ambassador code
+        if (mobile_no) {
+          const userDetailsRes = await fetch("/api/user-details", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mobile_no })
+          });
+          if (userDetailsRes.ok) {
+            const userData = await userDetailsRes.json();
+            if (userData?.message?.status && userData?.message?.data) {
+              const code = userData.message.data.brand_ambassador || userData.message.data.brand_ambassador_name;
+              if (code && code.trim() !== "") {
+                setReferralCode(code);
+                setHasBACode(true);
+                // Sync to localStorage
+                const updatedUser = { ...user, brand_ambassador: code };
+                localStorage.setItem("gbru_user", JSON.stringify(updatedUser));
+              }
+            }
+          }
         }
 
         const res = await fetch("/api/orders", {
@@ -68,7 +91,7 @@ export default function RewardsPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isEligible = orderCount >= 2;
+  const isEligible = hasBACode;
 
   return (
     <div className="min-h-screen bg-[#F5F7F5] flex flex-col font-sans">
@@ -146,26 +169,38 @@ export default function RewardsPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex flex-col gap-4">
-                        <div className="flex items-center justify-between text-sm font-semibold">
-                          <span className="flex items-center gap-2 text-emerald-100"><Lock className="w-4 h-4" /> Locked</span>
-                          <span className="text-white">{orderCount} / 2 Products Purchased</span>
+                      <div className="flex flex-col gap-4 text-left">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-emerald-200 shrink-0">
+                            <Lock className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-white mb-0.5">You are not a Brand Ambassador yet</h3>
+                            <p className="text-emerald-100/90 text-sm">You should have at least 2 orders delivered to become a Brand Ambassador.</p>
+                          </div>
                         </div>
-                        <div className="w-full h-3 bg-black/30 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-gradient-to-r from-emerald-400 to-emerald-300 rounded-full transition-all duration-1000"
-                            style={{ width: `${Math.min((orderCount / 2) * 100, 100)}%` }}
-                          ></div>
+
+                        <div className="w-full mt-2">
+                          <div className="flex justify-between text-xs font-semibold text-emerald-200 mb-1.5">
+                            <span>Progress</span>
+                            <span>{orderCount} / 2 Orders Delivered</span>
+                          </div>
+                          <div className="w-full h-2.5 bg-black/35 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-gradient-to-r from-emerald-400 to-emerald-300 rounded-full transition-all duration-1000"
+                              style={{ width: `${Math.min((orderCount / 2) * 100, 100)}%` }}
+                            ></div>
+                          </div>
                         </div>
-                        <p className="text-xs text-emerald-200/70 mt-1">
-                          Buy {2 - orderCount} more product{2 - orderCount > 1 ? 's' : ''} to unlock your referral code.
-                        </p>
-                        <Link 
-                          href="/products"
-                          className="mt-4 w-full md:w-auto inline-flex items-center justify-center px-6 py-3 bg-white text-[#0F291B] font-bold rounded-xl shadow-lg hover:bg-emerald-50 transition-all text-sm"
-                        >
-                          Shop Now to Unlock
-                        </Link>
+
+                        <div className="pt-2">
+                          <Link 
+                            href="/all_products"
+                            className="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 bg-white text-[#0F291B] font-bold rounded-xl shadow-lg hover:bg-emerald-50 transition-all text-sm"
+                          >
+                            Shop Now to Unlock
+                          </Link>
+                        </div>
                       </div>
                     )}
                   </div>
