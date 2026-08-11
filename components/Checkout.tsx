@@ -135,6 +135,17 @@ export default function Checkout() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Auto-reset invalid coupon message after 2 seconds
+  useEffect(() => {
+    if (couponCode === "Invalid code") {
+      const timer = setTimeout(() => {
+        setCouponCode("");
+        setCouponError("");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [couponCode]);
+
   // Address Interactivity States
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [isAddressSaved, setIsAddressSaved] = useState(false);
@@ -224,6 +235,17 @@ export default function Checkout() {
           }
         } else if (couponCodeToApply) {
           setCouponError(`${couponCodeToApply} invalid`);
+          setCouponCode("Invalid code");
+          setCouponApplied(false);
+          localStorage.removeItem("gbru_applied_coupon");
+          if (isMobile) {
+            showToast("coupon failed", "error");
+          }
+        }
+      } else {
+        if (couponCodeToApply) {
+          setCouponError(`${couponCodeToApply} invalid`);
+          setCouponCode("Invalid code");
           setCouponApplied(false);
           localStorage.removeItem("gbru_applied_coupon");
           if (isMobile) {
@@ -1635,8 +1657,21 @@ export default function Checkout() {
                     type="text"
                     placeholder="Enter coupon code"
                     value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                    className="flex-1 h-9 px-3 border border-zinc-200 rounded-[8px] text-xs text-[#0F291B] focus:outline-[#0D9740]"
+                    onChange={(e) => {
+                      if (couponCode === "Invalid code") setCouponError("");
+                      setCouponCode(e.target.value);
+                    }}
+                    onFocus={() => {
+                      if (couponCode === "Invalid code") {
+                        setCouponCode("");
+                        setCouponError("");
+                      }
+                    }}
+                    className={`flex-1 h-9 px-3 border rounded-[8px] text-xs focus:outline-[#0D9740] ${
+                      couponCode === "Invalid code"
+                        ? "border-red-500 text-red-500"
+                        : "border-zinc-200 text-[#0F291B]"
+                    }`}
                   />
                   <button
                     onClick={applyCoupon}
@@ -1662,9 +1697,7 @@ export default function Checkout() {
                     </button>
                   </div>
                 )}
-                {couponError && (
-                  <span className="text-[11px] text-red-500 font-bold">{couponError}</span>
-                )}
+                {/* Error message removed as per request to show it inside the input bar */}
               </div>
 
               {/* Brand Ambassador Code Section */}
