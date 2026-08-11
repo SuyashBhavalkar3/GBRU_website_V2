@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "./Navbar";
-import { Package, MapPin, Banknote, Bell, Headphones, Phone, CreditCard } from "lucide-react";
+import { Package, MapPin, Banknote, Bell, Headphones, Phone, CreditCard, ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import Footer from "./Footer";
 
 interface Order {
@@ -31,8 +31,13 @@ export default function OrderList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filterMode, setFilterMode] = useState<"all_time" | "financial_year" | "custom">("all_time");
-  const [fromDate, setFromDate] = useState("");
+  const [fromDate, setFromDate] = useState("2025-01-01");
   const [toDate, setToDate] = useState("");
+  
+  // Custom calendar state variables
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState(new Date());
+  const [hoveredDate, setHoveredDate] = useState<string | null>(null);
 
   // User profile details
   const [userName, setUserName] = useState("Prakash");
@@ -121,9 +126,9 @@ export default function OrderList() {
     setFilterMode(mode);
 
     if (mode === "all_time") {
-      setFromDate("2020-01-01");
+      setFromDate("2025-01-01");
       setToDate(getTodayDate());
-      await fetchOrdersWithRange("2020-01-01", getTodayDate());
+      await fetchOrdersWithRange("2025-01-01", getTodayDate());
       return;
     }
 
@@ -136,14 +141,63 @@ export default function OrderList() {
     }
   };
 
-  const applyCustomRange = async () => {
-    if (!fromDate || !toDate) return;
+  const applyCustomRange = async (start: string, end: string) => {
     setFilterMode("custom");
-    await fetchOrdersWithRange(fromDate, toDate);
+    await fetchOrdersWithRange(start, end);
+  };
+
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    const days = [];
+    
+    for (let i = 0; i < firstDayIndex; i++) {
+      days.push(null);
+    }
+    
+    for (let day = 1; day <= totalDays; day++) {
+      const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      days.push({
+        day,
+        dateString,
+        dateObj: new Date(year, month, day)
+      });
+    }
+    return days;
+  };
+
+  const handleCalendarDayClick = (dateString: string) => {
+    if (!fromDate || (fromDate && toDate)) {
+      setFromDate(dateString);
+      setToDate("");
+    } else {
+      if (new Date(dateString) < new Date(fromDate)) {
+        setToDate(fromDate);
+        setFromDate(dateString);
+        void applyCustomRange(dateString, fromDate);
+      } else {
+        setToDate(dateString);
+        void applyCustomRange(fromDate, dateString);
+      }
+      setShowCalendar(false);
+    }
+  };
+
+  const changeCalendarMonth = (offset: number) => {
+    const nextMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + offset, 1);
+    setCalendarMonth(nextMonth);
+  };
+
+  const isDateInRange = (dateString: string) => {
+    if (!fromDate || !toDate) return false;
+    const d = new Date(dateString);
+    return d >= new Date(fromDate) && d <= new Date(toDate);
   };
 
   useEffect(() => {
-    void fetchOrdersWithRange("2020-01-01", getTodayDate());
+    void fetchOrdersWithRange("2025-01-01", getTodayDate());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -503,37 +557,106 @@ export default function OrderList() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
-            <label className="flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wide text-zinc-500">From Date</span>
-              <input
-                type="date"
-                value={fromDate}
-                onChange={(e) => {
-                  setFromDate(e.target.value);
-                  setFilterMode("custom");
-                }}
-                className="h-11 rounded-xl border border-zinc-200 px-3 text-sm font-medium text-[#1F2937] outline-none focus:border-[#1E532E]"
-              />
-            </label>
-            <label className="flex flex-col gap-1.5">
-              <span className="text-[11px] font-bold uppercase tracking-wide text-zinc-500">To Date</span>
-              <input
-                type="date"
-                value={toDate}
-                onChange={(e) => {
-                  setToDate(e.target.value);
-                  setFilterMode("custom");
-                }}
-                className="h-11 rounded-xl border border-zinc-200 px-3 text-sm font-medium text-[#1F2937] outline-none focus:border-[#1E532E]"
-              />
-            </label>
-            <button
-              onClick={() => void applyCustomRange()}
-              className="h-11 rounded-xl bg-[#1E532E] hover:bg-[#153B21] text-white font-bold text-sm transition-colors"
+          <div className="relative">
+            <button 
+              type="button"
+              onClick={() => setShowCalendar(!showCalendar)}
+              className="w-full flex items-center justify-between h-12 px-4 rounded-xl border border-zinc-200 bg-white text-sm font-semibold text-[#1F2937] hover:border-[#1E532E] transition-colors shadow-sm text-left"
             >
-              Apply Range
+              <div className="flex items-center gap-3">
+                <Calendar className="w-5 h-5 text-emerald-700" />
+                <span>
+                  {fromDate && toDate 
+                    ? `${new Date(fromDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} - ${new Date(toDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+                    : fromDate 
+                      ? `From: ${new Date(fromDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} (Select end date)`
+                      : "Select Custom Date Range"}
+                </span>
+              </div>
+              <svg className="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
             </button>
+
+            {showCalendar && (
+              <div className="absolute left-0 mt-2 z-50 bg-white border border-[#CDE5D2] rounded-3xl p-5 shadow-2xl w-full max-w-[340px]">
+                <div className="flex items-center justify-between mb-4">
+                  <button 
+                    type="button"
+                    onClick={() => changeCalendarMonth(-1)}
+                    className="p-1.5 hover:bg-emerald-50 rounded-full text-emerald-800 transition-colors"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <span className="text-sm font-extrabold text-[#0F291B] capitalize">
+                    {calendarMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                  </span>
+                  <button 
+                    type="button"
+                    onClick={() => changeCalendarMonth(1)}
+                    className="p-1.5 hover:bg-emerald-50 rounded-full text-emerald-800 transition-colors"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Days header */}
+                <div className="grid grid-cols-7 gap-1 text-center mb-2">
+                  {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((day) => (
+                    <span key={day} className="text-[11px] font-bold text-zinc-400 uppercase">{day}</span>
+                  ))}
+                </div>
+
+                {/* Days grid */}
+                <div className="grid grid-cols-7 gap-1">
+                  {getDaysInMonth(calendarMonth).map((d, index) => {
+                    if (!d) return <div key={`empty-${index}`} />;
+                    
+                    const isSelectedFrom = fromDate === d.dateString;
+                    const isSelectedTo = toDate === d.dateString;
+                    const inRange = isDateInRange(d.dateString);
+                    const isHovered = hoveredDate && d.dateString > fromDate && d.dateString <= hoveredDate && !toDate;
+
+                    return (
+                      <button
+                        type="button"
+                        key={d.dateString}
+                        onClick={() => handleCalendarDayClick(d.dateString)}
+                        onMouseEnter={() => !toDate && setHoveredDate(d.dateString)}
+                        onMouseLeave={() => setHoveredDate(null)}
+                        className={`h-9 w-9 text-xs font-semibold rounded-lg flex items-center justify-center transition-all
+                          ${isSelectedFrom || isSelectedTo 
+                            ? "bg-[#1E532E] text-white shadow-md font-bold scale-105" 
+                            : inRange || isHovered
+                              ? "bg-emerald-50 text-emerald-900 rounded-none" 
+                              : "hover:bg-zinc-100 text-[#1F2937]"}`}
+                      >
+                        {d.day}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-zinc-100">
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      setFromDate("");
+                      setToDate("");
+                      setShowCalendar(false);
+                    }}
+                    className="px-3 py-1.5 text-xs font-bold text-zinc-500 hover:text-zinc-700 transition-colors"
+                  >
+                    Clear
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setShowCalendar(false)}
+                    className="px-4 py-1.5 text-xs font-extrabold bg-[#1E532E] hover:bg-[#153B21] text-white rounded-lg transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
