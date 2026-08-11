@@ -548,17 +548,7 @@ function ProductDetailContent() {
 
               {/* Right: Discount badge — never shrinks */}
               {product.discount > 0 && (
-                <div
-                  className="flex items-center justify-center text-white font-bold text-[12px] leading-tight text-center flex-shrink-0"
-                  style={{
-                    background: "#22C55E",
-                    borderRadius: "12px",
-                    padding: "6px 10px",
-                    minWidth: "88px",
-                    minHeight: "28px",
-                    whiteSpace: "nowrap",
-                  }}
-                >
+                <div className="bg-[#22C55E] text-[12px] font-bold py-2 px-3 rounded-[10px] shadow-sm whitespace-nowrap shrink-0 flex items-center justify-center">
                   Get {product.discount.toFixed(0)}% OFF
                 </div>
               )}
@@ -570,12 +560,12 @@ function ProductDetailContent() {
           <div className="lg:col-span-5 flex flex-col gap-6">
 
             {/* Limited Time Offer Price Banner — desktop only */}
-            <div className="hidden lg:flex bg-[#2D5A42] rounded-[16px] p-5 text-white items-center justify-between shadow-sm">
-              <div className="flex flex-col gap-0.5">
-                <span className="text-[11px] font-bold tracking-widest text-[#A7C7B6] uppercase">
+            <div className="hidden lg:flex bg-[#2D5A42] rounded-[16px] p-5 text-white items-center justify-between shadow-sm gap-4">
+              <div className="flex flex-col gap-0.5 min-w-0">
+                <span className="text-[11px] font-bold tracking-widest text-[#A7C7B6] uppercase truncate">
                   LIMITED TIME OFFER
                 </span>
-                <div className="flex items-baseline gap-2">
+                <div className="flex items-baseline gap-2 flex-wrap">
                   <span className="text-[32px] font-extrabold leading-none">₹{formatPrice(product.price)}</span>
                   {product.mrp > product.price && (
                     <span className="text-[16px] line-through text-[#8CAF9C]">₹{formatPrice(product.mrp)}</span>
@@ -583,14 +573,14 @@ function ProductDetailContent() {
                 </div>
               </div>
               {product.discount > 0 && (
-                <div className="bg-[#22C55E] text-[12px] font-bold py-2 px-4 rounded-[10px] shadow-sm">
+                <div className="bg-[#22C55E] text-[12px] font-bold py-2 px-4 rounded-[10px] shadow-sm whitespace-nowrap shrink-0 text-center flex items-center justify-center">
                   Get {product.discount.toFixed(0)}% OFF
                 </div>
               )}
             </div>
 
             {/* Option Cards Row */}
-            <div className="flex flex-col sm:flex-row gap-3 items-stretch">
+            <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-3 items-stretch">
 
               {/* Card 1: Full Payment */}
               <div

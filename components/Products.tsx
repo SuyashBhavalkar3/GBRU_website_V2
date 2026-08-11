@@ -205,8 +205,7 @@ export default function Products() {
       </div>
 
       <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 lg:px-8 md:py-12 py-4 flex flex-col min-h-[300px] justify-center">
-        {/* Header Controls (Title + Sort + Subcategory filter) */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-4 md:mb-8 border-b border-gray-100 pb-4 md:pb-6">
+            <div className="flex flex-col 2xl:flex-row 2xl:items-center justify-between gap-4 mb-4 md:mb-8 border-b border-gray-100 pb-4 md:pb-6">
               <div>
                 <h2 className="text-lg md:text-3xl font-roboto font-bold text-[#1A1A1A] mb-1">
                   <span className="block md:hidden">{categoryName}</span>
@@ -218,7 +217,7 @@ export default function Products() {
               </div>
 
               {/* ── MOBILE CONTROLS: Compact single-row layout ── */}
-              <div className="block md:hidden mt-4 w-full">
+              <div className="block 2xl:hidden mt-4 w-full">
                 <div className="flex items-center gap-3 w-full">
                   {/* Search Bar (Leftmost, flex-1) */}
                   <form 
@@ -290,7 +289,7 @@ export default function Products() {
               </div>
 
               {/* ── DESKTOP CONTROLS: Unchanged Layout ── */}
-              <div className="hidden md:flex flex-wrap items-center gap-4 mt-0">
+              <div className="hidden 2xl:flex flex-nowrap items-center gap-4 mt-0 shrink-0">
                 {/* Search Bar */}
                 <form 
                   onSubmit={(e) => { e.preventDefault(); setSearchQuery(searchInput); }} 
