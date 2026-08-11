@@ -222,29 +222,25 @@ export default function Checkout() {
           setCouponApplied(true);
           setCouponCode(appliedCoupon.code || couponCodeToApply || "");
           setCouponError("");
-          if (couponCodeToApply && isMobile) {
+          if (couponCodeToApply) {
             showToast("coupon applied successfully", "success");
           }
         } else if (couponCodeToApply) {
           setCouponError(`${couponCodeToApply} invalid`);
           setCouponCode("Invalid code");
           setCouponApplied(false);
-          if (isMobile) {
-            showToast("coupon failed", "error");
-          }
+          showToast("coupon failed", "error");
         }
       } else {
         if (couponCodeToApply) {
           setCouponError(`${couponCodeToApply} invalid`);
           setCouponCode("Invalid code");
           setCouponApplied(false);
-          if (isMobile) {
-            showToast("coupon failed", "error");
-          }
+          showToast("coupon failed", "error");
         }
       }
     } catch (e) {
-      if (couponCodeToApply && isMobile) {
+      if (couponCodeToApply) {
         showToast("coupon failed", "error");
       }
     }
@@ -887,27 +883,15 @@ export default function Checkout() {
       
       if (data?.message?.status) {
         setAmbassadorApplied(true);
-        if (isMobile) {
-          showToast("brand ambassador is validated", "success");
-        } else {
-          showToast(data.message.message || "Brand Ambassador Code Applied!", "success");
-        }
+        showToast(data.message.message || "Brand Ambassador Code Applied!", "success");
       } else {
         const errorMsg = data?.message?.message || data?.error || "Invalid Ambassador Code";
         setAmbassadorError(errorMsg);
-        if (isMobile) {
-          showToast("brand ambassador is not valid", "error");
-        } else {
-          showToast(errorMsg, "error");
-        }
+        showToast(errorMsg, "error");
       }
     } catch (err: any) {
       setAmbassadorError("Failed to validate ambassador code");
-      if (isMobile) {
-        showToast("brand ambassador is not valid", "error");
-      } else {
-        showToast("Failed to validate ambassador code", "error");
-      }
+      showToast("Failed to validate ambassador code", "error");
     }
   };
 
@@ -1643,9 +1627,9 @@ export default function Checkout() {
                   />
                   <button
                     onClick={applyCoupon}
-                    disabled={isMobile && couponApplied}
+                    disabled={couponApplied}
                     className={`px-4 font-bold text-xs transition-colors shrink-0 ${
-                      isMobile && couponApplied
+                      couponApplied
                         ? "bg-zinc-300 text-zinc-500 cursor-not-allowed"
                         : "bg-[#0F291B] hover:bg-[#08170f] text-white"
                     }`}
@@ -1682,9 +1666,9 @@ export default function Checkout() {
                   />
                   <button
                     onClick={applyAmbassadorCode}
-                    disabled={isMobile && ambassadorApplied}
+                    disabled={ambassadorApplied}
                     className={`px-4 font-bold text-xs transition-colors shrink-0 ${
-                      isMobile && ambassadorApplied
+                      ambassadorApplied
                         ? "bg-zinc-300 text-zinc-500 cursor-not-allowed"
                         : "bg-[#0F291B] hover:bg-[#08170f] text-white"
                     }`}
