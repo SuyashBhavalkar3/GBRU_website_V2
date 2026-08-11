@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useShoptionSetting } from "@/hooks/useShoptionSetting";
 
 interface UserDetails {
   Customer_name: string;
@@ -18,6 +19,7 @@ interface ProfilePopProps {
 
 export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProps) {
   const [user, setUser] = useState<UserDetails | null>(null);
+  const { whatsappLink, whatsappEnabled } = useShoptionSetting();
   const [loading, setLoading] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -186,7 +188,8 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
             {/* Action Cards (WhatsApp, Call, Ambassador) */}
             <div className="flex flex-col gap-3 mt-8 mb-2">
               {/* WhatsApp Card */}
-              <a href="https://wa.me/919114151617" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between bg-white p-4 rounded-2xl hover:bg-gray-50 transition-colors group shadow-[0_2px_12px_rgb(0,0,0,0.06)] border border-gray-100">
+              {whatsappEnabled === 1 && (
+              <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between bg-white p-4 rounded-2xl hover:bg-gray-50 transition-colors group shadow-[0_2px_12px_rgb(0,0,0,0.06)] border border-gray-100">
                 <div className="flex items-center gap-4">
                   <div className="w-[60px] h-[60px] rounded-full overflow-hidden flex items-center justify-center bg-white shrink-0 border border-gray-200">
                     <img src="/assets/nova.jpeg" alt="Nova" className="object-cover w-full h-full" />
@@ -198,6 +201,7 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
                 </div>
                 <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
               </a>
+              )}
 
               {/* Call Card */}
               <a href="tel:+919226514174" className="flex items-center justify-between bg-white p-4 rounded-2xl hover:bg-gray-50 transition-colors group shadow-[0_2px_12px_rgb(0,0,0,0.06)] border border-gray-100">
