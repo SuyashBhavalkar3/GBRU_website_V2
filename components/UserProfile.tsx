@@ -172,10 +172,17 @@ export default function UserProfile() {
         }
 
         const parsed = JSON.parse(stored);
-        let mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+        let mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || parsed.customer_id?.split('-')[1];
         if (mobile_no && mobile_no.includes("@")) {
           mobile_no = mobile_no.split("@")[0];
         }
+
+        const fallbackName = parsed.customer_name || parsed.Customer_name || parsed.first_name || parsed.full_name || "User";
+        setUserFullName(fallbackName);
+        setUserName(fallbackName.split(" ")[0]);
+        setUserPhone(`+91 ${mobile_no}`);
+        setTempName(fallbackName);
+        setTempPhone(`+91 ${mobile_no}`);
 
         // 1. Fetch User Details
         const res = await fetch('/api/user-details', {
@@ -198,7 +205,7 @@ export default function UserProfile() {
           const ud = data.message.data;
           setUserFullName(ud.Customer_name || "");
           setUserName(ud.Customer_name ? ud.Customer_name.split(" ")[0] : "User");
-          const phone = ud.customer_id?.split('-')[1] || mobile_no;
+          const phone = mobile_no;
           setUserPhone(`+91 ${phone}`);
           setTempName(ud.Customer_name || "");
           setTempPhone(`+91 ${phone}`);
@@ -423,7 +430,7 @@ export default function UserProfile() {
       const stored = localStorage.getItem("gbru_user");
       if (!stored) return;
       const parsed = JSON.parse(stored);
-      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id;
+      const mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || parsed.customer_id?.split('-')[1];
 
       if (!mobile_no) return;
 

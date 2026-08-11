@@ -113,7 +113,7 @@ export default function Navbar() {
           // Fetch cart count
           const fetchCartCount = async () => {
             try {
-              const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+              const mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || parsed.customer_id?.split('-')[1];
               if (!mobile_no) return;
 
               const res = await fetch("/api/cart/count", {

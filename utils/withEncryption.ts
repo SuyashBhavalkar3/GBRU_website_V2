@@ -17,6 +17,11 @@ export function withEncryption(handler: RouteHandler): RouteHandler {
   ): Promise<Response> {
     const response = await handler(request, context);
 
+    // Bypass encryption if disabled via environment variable
+    if (process.env.NEXT_PUBLIC_DISABLE_ENCRYPTION === "true") {
+      return response;
+    }
+
     // Try to parse the response body as JSON
     let data: unknown;
     try {

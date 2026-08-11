@@ -25,8 +25,8 @@ export default function Cart() {
         }
 
         const parsed = JSON.parse(stored);
-        // Extract mobile number from session keys
-        const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+        // Extract mobile number from session keys, prioritizing actual mobile properties
+        const mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || parsed.customer_id?.split('-')[1];
 
         if (!mobile_no) {
           router.push("/otp");
@@ -88,7 +88,7 @@ export default function Cart() {
       const stored = localStorage.getItem("gbru_user");
       if (!stored) return;
       const parsed = JSON.parse(stored);
-      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      const mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || parsed.customer_id?.split('-')[1];
       if (!mobile_no) return;
 
       const payload = {
@@ -154,7 +154,7 @@ export default function Cart() {
       const stored = localStorage.getItem("gbru_user");
       if (!stored) return;
       const parsed = JSON.parse(stored);
-      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      const mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || parsed.customer_id?.split('-')[1];
       if (!mobile_no) return;
 
       const res = await fetch("/api/cart/delete", {
@@ -208,7 +208,7 @@ export default function Cart() {
     const stored = localStorage.getItem("gbru_user");
     if (stored) {
       const user = JSON.parse(stored);
-      let mobile_no = user.customer_id?.split('-')[1] || user.user_id || user.mobile_no;
+      let mobile_no = user.mobile_no || user.mobile || user.user_id || user.customer_id?.split('-')[1];
       if (mobile_no && mobile_no.includes("@")) {
         mobile_no = mobile_no.split("@")[0];
       }

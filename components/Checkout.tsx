@@ -172,7 +172,7 @@ export default function Checkout() {
       const userStr = localStorage.getItem("gbru_user");
       if (!userStr) return;
       const user = JSON.parse(userStr);
-      const mobile_no = user.customer_id?.split('-')[1] || user.user_id || user.mobile_no;
+      const mobile_no = user.mobile_no || user.mobile || user.user_id || user.customer_id?.split('-')[1];
       if (!mobile_no) return;
 
       const formattedItems = items.map(i => ({
@@ -267,7 +267,7 @@ export default function Checkout() {
           router.push("/location-details");
           return;
         }
-        let mobile_no = user.customer_id?.split('-')[1] || user.user_id || user.mobile_no;
+        let mobile_no = user.mobile_no || user.mobile || user.user_id || user.customer_id?.split('-')[1];
         if (mobile_no && mobile_no.includes("@")) {
           mobile_no = mobile_no.split("@")[0];
         }
@@ -330,7 +330,7 @@ export default function Checkout() {
         }
 
         // 2. Fetch Checkout Details
-        const checkoutMobile = user.customer_id?.split('-')[1] || user.user_id || user.mobile_no;
+        const checkoutMobile = user.mobile_no || user.mobile || user.user_id || user.customer_id?.split('-')[1];
         const checkoutRes = await fetch("/api/cart/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -878,7 +878,7 @@ export default function Checkout() {
         return;
       }
       const user = JSON.parse(userStr);
-      const mobile_no = user.customer_id?.split('-')[1] || user.user_id || user.mobile_no;
+      const mobile_no = user.mobile_no || user.mobile || user.user_id || user.customer_id?.split('-')[1];
       if (!mobile_no) {
         showToast("Customer profile not found", "error");
         return;
@@ -948,7 +948,7 @@ export default function Checkout() {
       const userStr = localStorage.getItem("gbru_user");
       if (!userStr) return;
       const user = JSON.parse(userStr);
-      const mobile_no = user.customer_id?.split('-')[1] || user.user_id || user.mobile_no;
+      const mobile_no = user.mobile_no || user.mobile || user.user_id || user.customer_id?.split('-')[1];
       if (!mobile_no) return;
 
       const formattedItems = checkoutDetails.items.map((i: any) => ({

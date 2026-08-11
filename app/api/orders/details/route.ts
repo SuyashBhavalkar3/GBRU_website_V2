@@ -9,12 +9,27 @@ async function _postHandler(request: Request) {
       return NextResponse.json({ error: 'Mobile number and Order ID are required' }, { status: 400 });
     }
 
+    let sanitizedMobile = mobile_no.toString().replace(/\D/g, '');
+    if (sanitizedMobile.length > 10) {
+      sanitizedMobile = sanitizedMobile.slice(-10);
+    }
+
+    // Return empty order details for guest or dummy user (mobile < 10 digits)
+    if (sanitizedMobile.length < 10) {
+      return NextResponse.json({
+        message: {
+          status: true,
+          message: "Empty details for guest user",
+          data: {}
+        }
+      });
+    }
+
     const baseUrl = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL;
     const systemApiKey = process.env.API_KEY;
     const systemApiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !systemApiKey || !systemApiSecret) {
-      
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -26,7 +41,7 @@ async function _postHandler(request: Request) {
         'X-API-KEY': systemApiKey,
         'X-API-SECRET': systemApiSecret,
       },
-      body: JSON.stringify({ mobile_no }),
+      body: JSON.stringify({ mobile_no: sanitizedMobile }),
     });
 
     const userDetailsData = await userDetailsRes.json();

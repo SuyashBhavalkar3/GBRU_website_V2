@@ -8,6 +8,7 @@ interface UserDetails {
   address: string;
   status: string;
   role: string;
+  brand_ambassador?: string;
 }
 
 interface ProfilePopProps {
@@ -20,39 +21,57 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
   const [user, setUser] = useState<UserDetails | null>(null);
   const [loading, setLoading] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [hasFetched, setHasFetched] = useState(false);
 
   useEffect(() => {
-    if (isOpen && !user) {
+    if (!isOpen) {
+      setHasFetched(false);
+      return;
+    }
+
+    if (isOpen && !hasFetched) {
       const stored = localStorage.getItem("gbru_user");
       let mobile_no = "";
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id;
+          mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no || parsed.mobile;
+          
+          // Set local fallback immediately so the UI is responsive and never blank/error
+          const fallbackName = parsed.customer_name || parsed.Customer_name || parsed.first_name || parsed.full_name || "Guest";
+          setUser({
+            Customer_name: fallbackName,
+            address: parsed.address || "Address not set",
+            role: parsed.role || "Farmer",
+            status: parsed.status || "ACTIVE",
+            brand_ambassador: parsed.brand_ambassador || parsed.brand_ambassador_name || ""
+          });
         } catch (e) {
 
         }
       }
 
-      setLoading(true);
-      fetch('/api/user-details', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mobile_no })
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data?.message?.status && data?.message?.data) {
-            setUser(data.message.data);
-          }
-          setLoading(false);
+      if (mobile_no) {
+        setLoading(true);
+        setHasFetched(true);
+        fetch('/api/user-details', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mobile_no })
         })
-        .catch(err => {
-
-          setLoading(false);
-        });
+          .then(res => res.json())
+          .then(data => {
+            if (data?.message?.status && data?.message?.data) {
+              setUser(data.message.data);
+            }
+            setLoading(false);
+          })
+          .catch(err => {
+            setLoading(false);
+          });
+      }
     }
-  }, [isOpen, user]);
+  }, [isOpen, hasFetched]);
 
   if (!isOpen) return null;
 

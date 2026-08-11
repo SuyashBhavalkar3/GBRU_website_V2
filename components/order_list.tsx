@@ -81,7 +81,7 @@ export default function OrderList() {
       }
 
       const parsed = JSON.parse(stored);
-      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      const mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || parsed.customer_id?.split('-')[1];
 
       const res = await fetch('/api/orders', {
         method: 'POST',
@@ -152,10 +152,15 @@ export default function OrderList() {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        let mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no || "";
+        let mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || parsed.customer_id?.split('-')[1] || "";
         if (mobile_no && mobile_no.includes("@")) {
           mobile_no = mobile_no.split("@")[0];
         }
+
+        // Initialize fallback states immediately
+        const fallbackName = parsed.customer_name || parsed.username || "User";
+        setUserName(fallbackName.split(" ")[0]);
+        setUserMobile(mobile_no.startsWith("+91") ? mobile_no : `+91 ${mobile_no}`);
 
         fetch('/api/user-details', {
           method: 'POST',
@@ -168,12 +173,8 @@ export default function OrderList() {
             const ud = data.message.data;
             const trueName = ud.Customer_name || ud.customer_name || parsed.customer_name || parsed.username || "User";
             setUserName(trueName.split(" ")[0]);
-            const phone = ud.customer_id?.split('-')[1] || mobile_no;
+            const phone = mobile_no;
             setUserMobile(phone.startsWith("+91") ? phone : `+91 ${phone}`);
-          } else {
-            const fallbackName = parsed.customer_name || parsed.username || "User";
-            setUserName(fallbackName.split(" ")[0]);
-            setUserMobile(mobile_no.startsWith("+91") ? mobile_no : `+91 ${mobile_no}`);
           }
         })
         .catch(() => {
@@ -204,7 +205,7 @@ export default function OrderList() {
         return;
       }
       const parsed = JSON.parse(stored);
-      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      const mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || parsed.customer_id?.split('-')[1];
       const email = parsed.user_id && parsed.user_id.includes("@") ? parsed.user_id : (parsed.email || "");
 
       const res = await fetch("/api/orders/pay-now", {
