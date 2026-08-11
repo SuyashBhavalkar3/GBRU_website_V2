@@ -140,6 +140,9 @@ export default function PaymentOptionModal({
           cod_value: productDetails?.COD_value || 0.0,
           cod_display: productDetails?.COD_Display || 0.0,
           cod_discount: productDetails?.COD_discount || 0.0,
+          COD_value: productDetails?.COD_value || 0.0,
+          COD_Display: productDetails?.COD_Display || 0.0,
+          COD_discount: productDetails?.COD_discount || 0.0,
         };
         localStorage.setItem("gbru_pending_cart_item", JSON.stringify(pendingItem));
         setShowLoginPrompt(true);
@@ -174,6 +177,9 @@ export default function PaymentOptionModal({
                 cod_value: productDetails?.COD_value || 0.0,
                 cod_display: productDetails?.COD_Display || 0.0,
                 cod_discount: productDetails?.COD_discount || 0.0,
+                COD_value: productDetails?.COD_value || 0.0,
+                COD_Display: productDetails?.COD_Display || 0.0,
+                COD_discount: productDetails?.COD_discount || 0.0,
               }
             ]
           };

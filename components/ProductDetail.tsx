@@ -146,6 +146,9 @@ function ProductDetailContent() {
         cod_value: product.cod_value || product.COD_value || 0.0,
         cod_display: product.cod_display || product.COD_Display || 0.0,
         cod_discount: product.cod_discount || product.COD_discount || 0.0,
+        COD_value: product.cod_value || product.COD_value || 0.0,
+        COD_Display: product.cod_display || product.COD_Display || 0.0,
+        COD_discount: product.cod_discount || product.COD_discount || 0.0,
       };
       localStorage.setItem("gbru_pending_cart_item", JSON.stringify(pendingItem));
       setShowLoginPrompt(true);
@@ -188,6 +191,9 @@ function ProductDetailContent() {
               cod_value: product.cod_value || product.COD_value || 0.0,
               cod_display: product.cod_display || product.COD_Display || 0.0,
               cod_discount: product.cod_discount || product.COD_discount || 0.0,
+              COD_value: product.cod_value || product.COD_value || 0.0,
+              COD_Display: product.cod_display || product.COD_Display || 0.0,
+              COD_discount: product.cod_discount || product.COD_discount || 0.0,
             }
           ]
         };
@@ -289,6 +295,9 @@ function ProductDetailContent() {
           cod_value: item.cod_value || item.COD_value || 0,
           cod_display: item.cod_display || item.COD_Display || 0,
           cod_discount: item.cod_discount || item.COD_discount || 0,
+          COD_value: item.cod_value || item.COD_value || 0,
+          COD_Display: item.cod_display || item.COD_Display || 0,
+          COD_discount: item.cod_discount || item.COD_discount || 0,
         }]
       };
       const res = await fetch("/api/cart/add", {
