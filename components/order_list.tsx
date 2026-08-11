@@ -30,10 +30,10 @@ export default function OrderList() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filterMode, setFilterMode] = useState<"all_time" | "financial_year" | "custom">("all_time");
-  const [fromDate, setFromDate] = useState("2025-01-01");
+  const [filterMode, setFilterMode] = useState<"all_time" | "financial_year" | "prev_financial_year" | "custom">("all_time");
+  const [fromDate, setFromDate] = useState("2025-04-01");
   const [toDate, setToDate] = useState("");
-  
+
   // Custom calendar state variables
   const [showCalendar, setShowCalendar] = useState(false);
   const [calendarMonth, setCalendarMonth] = useState(new Date());
@@ -71,6 +71,14 @@ export default function OrderList() {
     const yyyy = today.getFullYear();
     const start = today.getMonth() >= 3 ? `${yyyy}-04-01` : `${yyyy - 1}-04-01`;
     const end = today.getMonth() >= 3 ? `${yyyy + 1}-03-31` : `${yyyy}-03-31`;
+    return { start, end };
+  };
+
+  const getPrevFinancialYearRange = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const start = today.getMonth() >= 3 ? `${yyyy - 1}-04-01` : `${yyyy - 2}-04-01`;
+    const end = today.getMonth() >= 3 ? `${yyyy}-03-31` : `${yyyy - 1}-03-31`;
     return { start, end };
   };
 
@@ -122,7 +130,7 @@ export default function OrderList() {
     }
   };
 
-  const handleFilterModeChange = async (mode: "all_time" | "financial_year" | "custom") => {
+  const handleFilterModeChange = async (mode: "all_time" | "financial_year" | "prev_financial_year" | "custom") => {
     setFilterMode(mode);
 
     if (mode === "all_time") {
@@ -134,6 +142,14 @@ export default function OrderList() {
 
     if (mode === "financial_year") {
       const { start, end } = getFinancialYearRange();
+      setFromDate(start);
+      setToDate(end);
+      await fetchOrdersWithRange(start, end);
+      return;
+    }
+
+    if (mode === "prev_financial_year") {
+      const { start, end } = getPrevFinancialYearRange();
       setFromDate(start);
       setToDate(end);
       await fetchOrdersWithRange(start, end);
@@ -152,11 +168,11 @@ export default function OrderList() {
     const firstDayIndex = new Date(year, month, 1).getDay();
     const totalDays = new Date(year, month + 1, 0).getDate();
     const days = [];
-    
+
     for (let i = 0; i < firstDayIndex; i++) {
       days.push(null);
     }
-    
+
     for (let day = 1; day <= totalDays; day++) {
       const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       days.push({
@@ -221,21 +237,21 @@ export default function OrderList() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ mobile_no })
         })
-        .then(res => res.json())
-        .then(data => {
-          if (data?.message?.status && data?.message?.data) {
-            const ud = data.message.data;
-            const trueName = ud.Customer_name || ud.customer_name || parsed.customer_name || parsed.username || "User";
-            setUserName(trueName.split(" ")[0]);
-            const phone = mobile_no;
-            setUserMobile(phone.startsWith("+91") ? phone : `+91 ${phone}`);
-          }
-        })
-        .catch(() => {
-          const fallbackName = parsed.customer_name || parsed.username || "User";
-          setUserName(fallbackName.split(" ")[0]);
-          setUserMobile(mobile_no.startsWith("+91") ? mobile_no : `+91 ${mobile_no}`);
-        });
+          .then(res => res.json())
+          .then(data => {
+            if (data?.message?.status && data?.message?.data) {
+              const ud = data.message.data;
+              const trueName = ud.Customer_name || ud.customer_name || parsed.customer_name || parsed.username || "User";
+              setUserName(trueName.split(" ")[0]);
+              const phone = mobile_no;
+              setUserMobile(phone.startsWith("+91") ? phone : `+91 ${phone}`);
+            }
+          })
+          .catch(() => {
+            const fallbackName = parsed.customer_name || parsed.username || "User";
+            setUserName(fallbackName.split(" ")[0]);
+            setUserMobile(mobile_no.startsWith("+91") ? mobile_no : `+91 ${mobile_no}`);
+          });
       } catch (e) {
         // ignore
       }
@@ -292,7 +308,7 @@ export default function OrderList() {
         setTimeout(() => setToastMessage(""), 3000);
       }
     } catch (err) {
-      
+
       setToastType("error");
       setToastMessage("An error occurred while initiating payment.");
       setTimeout(() => setToastMessage(""), 3000);
@@ -545,6 +561,12 @@ export default function OrderList() {
                 Current Financial Year
               </button>
               <button
+                onClick={() => void handleFilterModeChange("prev_financial_year")}
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-all border ${filterMode === "prev_financial_year" ? "bg-[#1E532E] text-white border-[#1E532E]" : "bg-white text-[#1E532E] border-[#CDE5D2]"}`}
+              >
+                Previous Financial Year
+              </button>
+              <button
                 onClick={() => setFilterMode("custom")}
                 className={`px-4 py-2 rounded-full text-xs font-bold transition-all border ${filterMode === "custom" ? "bg-[#1E532E] text-white border-[#1E532E]" : "bg-white text-[#1E532E] border-[#CDE5D2]"}`}
               >
@@ -558,7 +580,7 @@ export default function OrderList() {
           </div>
 
           <div className="relative">
-            <button 
+            <button
               type="button"
               onClick={() => setShowCalendar(!showCalendar)}
               className="w-full flex items-center justify-between h-12 px-4 rounded-xl border border-zinc-200 bg-white text-sm font-semibold text-[#1F2937] hover:border-[#1E532E] transition-colors shadow-sm text-left"
@@ -566,9 +588,9 @@ export default function OrderList() {
               <div className="flex items-center gap-3">
                 <Calendar className="w-5 h-5 text-emerald-700" />
                 <span>
-                  {fromDate && toDate 
+                  {fromDate && toDate
                     ? `${new Date(fromDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} - ${new Date(toDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
-                    : fromDate 
+                    : fromDate
                       ? `From: ${new Date(fromDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} (Select end date)`
                       : "Select Custom Date Range"}
                 </span>
@@ -579,7 +601,7 @@ export default function OrderList() {
             {showCalendar && (
               <div className="absolute left-0 mt-2 z-50 bg-white border border-[#CDE5D2] rounded-3xl p-5 shadow-2xl w-full max-w-[340px]">
                 <div className="flex items-center justify-between mb-4">
-                  <button 
+                  <button
                     type="button"
                     onClick={() => changeCalendarMonth(-1)}
                     className="p-1.5 hover:bg-emerald-50 rounded-full text-emerald-800 transition-colors"
@@ -589,7 +611,7 @@ export default function OrderList() {
                   <span className="text-sm font-extrabold text-[#0F291B] capitalize">
                     {calendarMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                   </span>
-                  <button 
+                  <button
                     type="button"
                     onClick={() => changeCalendarMonth(1)}
                     className="p-1.5 hover:bg-emerald-50 rounded-full text-emerald-800 transition-colors"
@@ -609,7 +631,7 @@ export default function OrderList() {
                 <div className="grid grid-cols-7 gap-1">
                   {getDaysInMonth(calendarMonth).map((d, index) => {
                     if (!d) return <div key={`empty-${index}`} />;
-                    
+
                     const isSelectedFrom = fromDate === d.dateString;
                     const isSelectedTo = toDate === d.dateString;
                     const inRange = isDateInRange(d.dateString);
@@ -623,10 +645,10 @@ export default function OrderList() {
                         onMouseEnter={() => !toDate && setHoveredDate(d.dateString)}
                         onMouseLeave={() => setHoveredDate(null)}
                         className={`h-9 w-9 text-xs font-semibold rounded-lg flex items-center justify-center transition-all
-                          ${isSelectedFrom || isSelectedTo 
-                            ? "bg-[#1E532E] text-white shadow-md font-bold scale-105" 
+                          ${isSelectedFrom || isSelectedTo
+                            ? "bg-[#1E532E] text-white shadow-md font-bold scale-105"
                             : inRange || isHovered
-                              ? "bg-emerald-50 text-emerald-900 rounded-none" 
+                              ? "bg-emerald-50 text-emerald-900 rounded-none"
                               : "hover:bg-zinc-100 text-[#1F2937]"}`}
                       >
                         {d.day}
@@ -636,7 +658,7 @@ export default function OrderList() {
                 </div>
 
                 <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-zinc-100">
-                  <button 
+                  <button
                     type="button"
                     onClick={() => {
                       setFromDate("");
@@ -647,7 +669,7 @@ export default function OrderList() {
                   >
                     Clear
                   </button>
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setShowCalendar(false)}
                     className="px-4 py-1.5 text-xs font-extrabold bg-[#1E532E] hover:bg-[#153B21] text-white rounded-lg transition-colors"
@@ -902,7 +924,7 @@ export default function OrderList() {
                               Processing...
                             </span>
                           ) : (
-                           <span>{isFullPayment ? "Pay Pending" : "Pay Booking Deposit"} (₹{payAmt.toLocaleString("en-IN")})</span>
+                            <span>{isFullPayment ? "Pay Pending" : "Pay Booking Deposit"} (₹{payAmt.toLocaleString("en-IN")})</span>
                           )}
                         </button>
                       )}
