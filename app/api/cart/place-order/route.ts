@@ -19,6 +19,14 @@ async function _postHandler(request: Request) {
     }
 
     // Step 1: Fetch user details for auth keys & customer info
+    let sanitizedMobile = mobile_no;
+    if (typeof mobile_no === 'string') {
+      if (mobile_no.includes('@')) {
+        sanitizedMobile = mobile_no.split('@')[0];
+      }
+      sanitizedMobile = sanitizedMobile.replace(/\D/g, '');
+    }
+
     const userRes = await fetch(`${baseUrl}/api/method/shoption_api.erp_api.utility.get_user_details`, {
       method: 'POST',
       headers: {
@@ -26,7 +34,7 @@ async function _postHandler(request: Request) {
         'X-API-KEY': apiKey,
         'X-API-SECRET': apiSecret,
       },
-      body: JSON.stringify({ mobile_no }),
+      body: JSON.stringify({ mobile_no: sanitizedMobile }),
     });
 
     if (!userRes.ok) {

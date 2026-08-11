@@ -23,6 +23,14 @@ async function _postHandler(request: Request) {
 
     // Fetch user details server-side if keys are not provided directly
     if (!userApiKey || !userApiSecret) {
+      let sanitizedMobile = mobile_no;
+      if (typeof mobile_no === 'string') {
+        if (mobile_no.includes('@')) {
+          sanitizedMobile = mobile_no.split('@')[0];
+        }
+        sanitizedMobile = sanitizedMobile.replace(/\D/g, '');
+      }
+
       const userDetailsRes = await fetch(`${baseUrl}/api/method/shoption_api.erp_api.utility.get_user_details`, {
         method: 'POST',
         headers: {
@@ -30,7 +38,7 @@ async function _postHandler(request: Request) {
           'X-API-KEY': systemApiKey,
           'X-API-SECRET': systemApiSecret,
         },
-        body: JSON.stringify({ mobile_no }),
+        body: JSON.stringify({ mobile_no: sanitizedMobile }),
       });
 
       const userDetailsData = await userDetailsRes.json();
