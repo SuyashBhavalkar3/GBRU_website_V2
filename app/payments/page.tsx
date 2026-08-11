@@ -62,6 +62,9 @@ export default function PaymentsPage() {
             // 1. Full Payment orders with pending_amount > 0
             // 2. COD/Booking orders where the booking deposit has NOT been paid yet
             const pendingOrders = allOrders.filter(o => {
+              // Never show cancelled orders in Manage Payments
+              if (String(o.status || "").toLowerCase().includes("cancel")) return false;
+
               const isFullPayment = o.payupreferedmode === "Full Payment" || String(o.payment_type || "").toLowerCase() === "full payment";
               const isBookingPaid = Number(o.received_amount || 0) >= Number(o.payupreferedamount || 0);
               
