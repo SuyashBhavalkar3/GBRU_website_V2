@@ -31,9 +31,6 @@ export async function POST(request: Request) {
       } catch (_) { }
     }
 
-    // Log everything received from the gateway (visible in server/Vercel logs)
-    console.log('[PAYMENT_CALLBACK] Fields received from gateway:', JSON.stringify(fields));
-
     // --- Extract STATUS (try all known field name variations) ---
     const status =
       fields['status'] ||
@@ -58,7 +55,6 @@ export async function POST(request: Request) {
       fields['merchantTransactionId'] ||
       '';
 
-    console.log(`[PAYMENT_CALLBACK] Resolved — status: "${status}", orderId: "${orderId}"`);
 
     // Build redirect URL to the /place-order page with status + orderId as params
     // OrderConfirmed.tsx already reads: status, Status, orderId, Order_id
@@ -69,7 +65,6 @@ export async function POST(request: Request) {
     // 303 See Other forces the browser to GET the redirect (required after a POST)
     return NextResponse.redirect(redirectUrl.toString(), 303);
   } catch (error) {
-    console.error('[PAYMENT_CALLBACK] Error processing gateway callback:', error);
     // On any error, redirect to a generic failed state so user sees something
     const fallbackBase =
       process.env.NEXT_PUBLIC_WEBSITE_URL ||

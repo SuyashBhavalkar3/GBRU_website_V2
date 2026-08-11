@@ -33,7 +33,6 @@ export async function GET() {
     });
 
   } catch (error) {
-    console.error('Error fetching shoption setting:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
