@@ -7,6 +7,8 @@ import { Package, MapPin, Banknote, Bell, Headphones, ClipboardList, CheckCircle
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useToast } from "./ToastContext";
+import { useShoptionSetting } from "@/hooks/useShoptionSetting";
+import { getPlaceNames } from "@/utils/addressUtils";
 
 function SearchableDropdown<T>({
   label,
@@ -102,6 +104,7 @@ function SearchableDropdown<T>({
 }
 
 export default function UserProfile() {
+  const { whatsappLink, whatsappEnabled } = useShoptionSetting();
   // Modal states
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showAddAddressModal, setShowAddAddressModal] = useState(false);
@@ -953,9 +956,12 @@ export default function UserProfile() {
                           )}
                         </div>
 
-                        <p className="text-xs text-[#374151] leading-relaxed">
+                        <p className="text-zinc-700 text-xs mt-1 font-medium leading-relaxed">
                           {addr.address_line1}{addr.address_line2 ? `, ${addr.address_line2}` : ''}<br />
-                          {addr.marketplace}, {addr.tahsil}, {addr.district}, {addr.state} - {addr.pincode} <br />
+                          {(() => {
+                            const names = getPlaceNames(addr);
+                            return `${names.marketplace}, ${names.tahsil}, ${names.district}, ${addr.state} - ${addr.pincode}`;
+                          })()} <br />
                           <span className="text-zinc-500 font-medium block mt-1">Phone: {addr.phone}</span>
                         </p>
 
@@ -1011,7 +1017,7 @@ export default function UserProfile() {
               <div className="bg-white border border-zinc-200/80 rounded-2xl overflow-hidden flex flex-col w-full" style={{ minHeight: "172px" }}>
                 {/* Visit FAQs */}
                 <Link
-                  href="/faq"
+                  href="/help-centre"
                   className="flex items-center justify-between p-4 border-b border-zinc-150 hover:bg-zinc-50 transition-colors w-full text-left"
                   style={{ height: "57px" }}
                 >
@@ -1033,19 +1039,24 @@ export default function UserProfile() {
                   <span className="text-zinc-400 text-lg">›</span>
                 </Link>
 
-                {/* WhatsApp Support */}
-                <a
-                  href="https://wa.me/919876543210"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-4 hover:bg-zinc-50 transition-colors w-full text-left"
-                  style={{ height: "57px" }}
-                >
-                  <span className="flex items-center gap-3 text-[16px] text-[#1F2937] font-medium">
-                    <MessageSquare className="w-5 h-5 text-[#006B21] stroke-[2]" /> WhatsApp Support
-                  </span>
-                  <span className="text-zinc-400 text-lg">›</span>
-                </a>
+                {/* WhatsApp Support / Chat with Nova */}
+                {whatsappEnabled === 1 && (
+                  <a
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-4 hover:bg-zinc-50 transition-colors w-full text-left"
+                    style={{ height: "57px" }}
+                  >
+                    <span className="flex items-center gap-3 text-[16px] text-[#1F2937] font-medium">
+                      <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 border border-[#006B21]/20">
+                        <Image src="/assets/nova.jpeg" alt="Nova Logo" width={24} height={24} className="object-cover w-full h-full" />
+                      </div>
+                      Chat with Nova
+                    </span>
+                    <span className="text-zinc-400 text-lg">›</span>
+                  </a>
+                )}
               </div>
             </div>
 
@@ -1055,7 +1066,7 @@ export default function UserProfile() {
 
               <div className="flex flex-col gap-1 text-xs text-[#374151]">
                 <Link
-                  href="/faq"
+                  href="/help-centre"
                   className="flex items-center justify-between py-3 border-b border-zinc-100 hover:text-[#0D9740] transition-colors"
                 >
                   <span className="flex items-center gap-2"><HelpCircle className="w-4 h-4 text-zinc-500" /> Visit FAQs</span>
@@ -1065,10 +1076,22 @@ export default function UserProfile() {
                   <span className="flex items-center gap-2"><MessageSquare className="w-4 h-4 text-zinc-500" /> Contact Support</span>
                   <span className="text-zinc-400">›</span>
                 </Link>
-                <button className="flex items-center justify-between py-3 bg-emerald-50/50 mt-1 px-3 rounded-lg text-left text-emerald-600 hover:text-[#0D9740] hover:bg-emerald-50 transition-colors font-bold">
-                  <span className="flex items-center gap-2"><MessageSquare className="w-4 h-4" /> WhatsApp Support</span>
-                  <span className="text-[14px]">↗</span>
-                </button>
+                {whatsappEnabled === 1 && (
+                  <a
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between py-3 bg-[#F0FAF2] mt-1 px-3 rounded-lg text-left text-[#0F291B] hover:bg-[#e4f5e8] border border-[#006B21]/20 transition-colors font-bold group"
+                  >
+                    <span className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 border border-[#006B21]/20">
+                        <Image src="/assets/nova.jpeg" alt="Nova Logo" width={24} height={24} className="object-cover w-full h-full" />
+                      </div>
+                      Chat with Nova
+                    </span>
+                    <span className="text-[14px] text-zinc-400 group-hover:text-[#0D9740]">↗</span>
+                  </a>
+                )}
               </div>
             </div>
 

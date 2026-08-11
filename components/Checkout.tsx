@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastContext";
 import Navbar from "@/components/Navbar";
+import { getPlaceNames } from "@/utils/addressUtils";
 
 function SearchableDropdown<T>({
   label,
@@ -1318,7 +1319,10 @@ export default function Checkout() {
                           </div>
                         </div>
                         <span className="text-xs text-[#374151] pr-6">
-                          {addr.address_line1}, {addr.address_line2}, {addr.city || addr.tahsil}, {addr.district}, {addr.state} - {addr.pincode}
+                          {addr.address_line1}{addr.address_line2 ? `, ${addr.address_line2}` : ''}, {(() => {
+                            const names = getPlaceNames(addr);
+                            return `${names.marketplace ? `${names.marketplace}, ` : ""}${names.tahsil}, ${names.district}, ${addr.state} - ${addr.pincode}`;
+                          })()}
                         </span>
                         <span className="text-xs text-zinc-500 font-medium">
                           Phone: {addr.phone}
@@ -1369,7 +1373,10 @@ export default function Checkout() {
                             )}
                           </div>
                           <span className="text-xs text-[#374151] pr-6">
-                            {addr.address_line1}, {addr.address_line2}, {addr.city || addr.tahsil}, {addr.district}, {addr.state} - {addr.pincode}
+                            {addr.address_line1}{addr.address_line2 ? `, ${addr.address_line2}` : ''}, {(() => {
+                              const names = getPlaceNames(addr);
+                              return `${names.marketplace ? `${names.marketplace}, ` : ""}${names.tahsil}, ${names.district}, ${addr.state} - ${addr.pincode}`;
+                            })()}
                           </span>
                           <span className="text-xs text-zinc-500 font-medium">
                             Phone: {addr.phone}

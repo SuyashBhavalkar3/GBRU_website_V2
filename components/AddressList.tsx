@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
+import { useToast } from "./ToastContext";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { getPlaceNames } from "@/utils/addressUtils";
 import {
   Package, MapPin, Banknote, Bell, Headphones, Phone,
   Home, Plus, Edit3, Trash2, Loader2, ChevronDown,
@@ -508,7 +509,10 @@ export default function AddressList() {
                   </div>
                   <p className="text-xs text-[#374151] leading-relaxed pl-9">
                     {addr.address_line1}{addr.address_line2 ? `, ${addr.address_line2}` : ""}<br />
-                    {addr.marketplace && `${addr.marketplace}, `}{addr.tahsil}, {addr.district}, {addr.state} — {addr.pincode}
+                    {(() => {
+                      const names = getPlaceNames(addr);
+                      return `${names.marketplace ? `${names.marketplace}, ` : ""}${names.tahsil}, ${names.district}, ${addr.state} — ${addr.pincode}`;
+                    })()}
                     <br />
                     <span className="text-zinc-500 font-medium mt-0.5 block">📞 {addr.phone}</span>
                   </p>
