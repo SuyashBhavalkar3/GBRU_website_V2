@@ -30,7 +30,7 @@ export default function OrderList() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filterMode, setFilterMode] = useState<"all_time" | "financial_year" | "custom">("all_time");
+  const [filterMode, setFilterMode] = useState<"all_time" | "financial_year" | "prev_financial_year" | "custom">("all_time");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
@@ -66,6 +66,14 @@ export default function OrderList() {
     const yyyy = today.getFullYear();
     const start = today.getMonth() >= 3 ? `${yyyy}-04-01` : `${yyyy - 1}-04-01`;
     const end = today.getMonth() >= 3 ? `${yyyy + 1}-03-31` : `${yyyy}-03-31`;
+    return { start, end };
+  };
+
+  const getPrevFinancialYearRange = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const start = today.getMonth() >= 3 ? `${yyyy - 1}-04-01` : `${yyyy - 2}-04-01`;
+    const end = today.getMonth() >= 3 ? `${yyyy}-03-31` : `${yyyy - 1}-03-31`;
     return { start, end };
   };
 
@@ -117,7 +125,7 @@ export default function OrderList() {
     }
   };
 
-  const handleFilterModeChange = async (mode: "all_time" | "financial_year" | "custom") => {
+  const handleFilterModeChange = async (mode: "all_time" | "financial_year" | "prev_financial_year" | "custom") => {
     setFilterMode(mode);
 
     if (mode === "all_time") {
@@ -129,6 +137,14 @@ export default function OrderList() {
 
     if (mode === "financial_year") {
       const { start, end } = getFinancialYearRange();
+      setFromDate(start);
+      setToDate(end);
+      await fetchOrdersWithRange(start, end);
+      return;
+    }
+
+    if (mode === "prev_financial_year") {
+      const { start, end } = getPrevFinancialYearRange();
       setFromDate(start);
       setToDate(end);
       await fetchOrdersWithRange(start, end);
@@ -488,6 +504,12 @@ export default function OrderList() {
                 className={`px-4 py-2 rounded-full text-xs font-bold transition-all border ${filterMode === "financial_year" ? "bg-[#1E532E] text-white border-[#1E532E]" : "bg-white text-[#1E532E] border-[#CDE5D2]"}`}
               >
                 Current Financial Year
+              </button>
+              <button
+                onClick={() => void handleFilterModeChange("prev_financial_year")}
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-all border ${filterMode === "prev_financial_year" ? "bg-[#1E532E] text-white border-[#1E532E]" : "bg-white text-[#1E532E] border-[#CDE5D2]"}`}
+              >
+                Previous Financial Year
               </button>
               <button
                 onClick={() => setFilterMode("custom")}
