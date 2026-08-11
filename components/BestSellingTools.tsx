@@ -163,7 +163,8 @@ export default function BestSellingTools() {
             return (
               <div
                 key={product.item_code}
-                className="bg-white overflow-hidden flex flex-col relative text-left shrink-0 snap-start"
+                onClick={() => handleAddToCart(product)}
+                className="bg-white overflow-hidden flex flex-col relative text-left shrink-0 snap-start cursor-pointer hover:shadow-md transition-shadow"
                 style={{
                   width: "202px",
                   height: "402px",
@@ -234,7 +235,7 @@ export default function BestSellingTools() {
 
                     <div className="mt-auto pt-1">
                       <button
-                        onClick={() => handleAddToCart(product)}
+                        onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
                         className="w-full h-[40px] bg-[#006B21] hover:bg-[#005a1b] text-white font-bold text-[13px] rounded-full shadow-sm transition-all duration-300 flex items-center justify-center active:scale-[0.99]"
                       >
                         Add to Cart
@@ -274,22 +275,21 @@ export default function BestSellingTools() {
             return (
               <div
                 key={product.item_code}
-                className="bg-white rounded-[24px] border border-gray-100 overflow-hidden flex flex-col transition-shadow hover:shadow-lg relative text-left p-3"
+                onClick={() => handleAddToCart(product)}
+                className="bg-white rounded-[24px] border border-gray-100 overflow-hidden flex flex-col transition-shadow hover:shadow-lg relative text-left p-3 cursor-pointer"
               >
-                <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer flex-shrink-0">
-                  <div className="relative h-[220px] w-full bg-[#EAF0E7] rounded-[16px] overflow-hidden flex items-center justify-center p-4 hover:opacity-90 transition-opacity">
-                    {discountVal > 0 ? (
-                      <div className="absolute top-3 left-3 px-2 py-0.5 text-[10px] font-bold rounded-md z-10 bg-[#FEF5D1] text-[#78350F] border border-[#FDF4CE]">
-                        {discountVal.toFixed(0)}% OFF
-                      </div>
-                    ) : null}
-                    <img
-                      src={itemImage}
-                      alt={product.item_name}
-                      className="object-contain max-h-full max-w-full mix-blend-multiply"
-                    />
-                  </div>
-                </Link>
+                <div className="relative h-[220px] w-full bg-[#EAF0E7] rounded-[16px] overflow-hidden flex items-center justify-center p-4 hover:opacity-90 transition-opacity">
+                  {discountVal > 0 ? (
+                    <div className="absolute top-3 left-3 px-2 py-0.5 text-[10px] font-bold rounded-md z-10 bg-[#FEF5D1] text-[#78350F] border border-[#FDF4CE]">
+                      {discountVal.toFixed(0)}% OFF
+                    </div>
+                  ) : null}
+                  <img
+                    src={itemImage}
+                    alt={product.item_name}
+                    className="object-contain max-h-full max-w-full mix-blend-multiply"
+                  />
+                </div>
 
                 <div className="pt-4 flex flex-col flex-1 px-1">
                   <div className="flex flex-wrap gap-1.5 mb-2.5">
@@ -300,7 +300,7 @@ export default function BestSellingTools() {
                     ))}
                   </div>
 
-                  <Link href={`/products/view_product?item_code=${product.item_code}`} className="cursor-pointer hover:text-[#006B21] transition-colors">
+                  <div className="hover:text-[#006B21] transition-colors">
                     <h3
                       style={{
                         fontFamily: 'Roboto, sans-serif',
@@ -314,7 +314,7 @@ export default function BestSellingTools() {
                     >
                       {product.item_name}
                     </h3>
-                  </Link>
+                  </div>
 
                   <ul className="flex flex-col gap-1.5 mb-6 text-[#4B5563]">
                     {features.map((feat, i) => (
@@ -340,7 +340,7 @@ export default function BestSellingTools() {
 
                   <div className="mt-auto pt-1">
                     <button
-                      onClick={() => handleAddToCart(product)}
+                      onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
                       className="w-full h-[42px] bg-[#2E6B4A] hover:bg-[#235339] text-white font-bold text-[14px] rounded-full shadow-sm transition-all duration-300 flex items-center justify-center active:scale-[0.99]"
                     >
                       Add to Cart

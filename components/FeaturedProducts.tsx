@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import LoginPrompt from "./LoginPrompt";
 import { addToCartUtil } from "@/utils/cartUtils";
+import PaymentOptionModal from "./PaymentOptionModal";
 
 interface ERPProduct {
   item_code: string;
@@ -35,6 +36,10 @@ export default function FeaturedProducts() {
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "error">("success");
   const [cartItemCodes, setCartItemCodes] = useState<string[]>([]);
+  
+  // Payment Option Modal state variables
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ERPProduct | null>(null);
 
   useEffect(() => {
     const fetchCartStatus = async () => {
@@ -92,22 +97,13 @@ export default function FeaturedProducts() {
     loadFeatured();
   }, []);
 
-  const handleAddToCart = async (itemCode: string) => {
+  const handleAddToCart = (product: ERPProduct) => {
     const user = localStorage.getItem("gbru_user");
     if (!user) {
       setShowLoginPrompt(true);
     } else {
-      const success = await addToCartUtil(itemCode);
-      if (success) {
-        window.dispatchEvent(new Event("cartUpdate"));
-        setToastType("success");
-        setToastMessage("Product added to cart successfully!");
-        setTimeout(() => setToastMessage(""), 3000);
-      } else {
-        setToastType("error");
-        setToastMessage("Failed to add to cart. Please try again.");
-        setTimeout(() => setToastMessage(""), 3000);
-      }
+      setSelectedProduct(product);
+      setShowPaymentModal(true);
     }
   };
 
@@ -172,10 +168,10 @@ export default function FeaturedProducts() {
               return (
                 <div
                   key={product.item_code}
-                  className="bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col transition-all duration-300 relative p-4 group shadow-sm w-[260px] shrink-0"
+                  onClick={() => handleAddToCart(product)}
+                  className="bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col transition-all duration-300 relative p-4 group shadow-sm w-[260px] shrink-0 cursor-pointer hover:shadow-md"
                 >
-                  {/* Clickable area → view product page */}
-                  <Link href={`/products/view_product?item_code=${encodeURIComponent(product.item_code)}`} className="block">
+                  <div>
                     {/* Image box with embedded badge */}
                     <div className="relative w-full aspect-square bg-[#E8F3EB] rounded-xl overflow-hidden flex items-center justify-center p-3 mb-4">
                       {product.discount && product.discount > 0 ? (
@@ -206,10 +202,10 @@ export default function FeaturedProducts() {
                         <span className="text-[15px] text-gray-400 line-through">₹{formatPrice(product.mrp)}</span>
                       )}
                     </div>
-                  </Link>
+                  </div>
 
                   <button
-                    onClick={(e) => { e.stopPropagation(); handleAddToCart(product.item_code); }}
+                    onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
                     className="w-full h-12 bg-[#276342] hover:bg-[#1e4d33] text-white font-medium text-[16px] rounded-xl flex items-center justify-center gap-2 transition-colors active:scale-[0.99]"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
@@ -235,10 +231,10 @@ export default function FeaturedProducts() {
             return (
               <div
                 key={product.item_code}
-                className="bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col transition-all duration-300 hover:shadow-lg relative p-4 group"
+                onClick={() => handleAddToCart(product)}
+                className="bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col transition-all duration-300 hover:shadow-lg relative p-4 group cursor-pointer"
               >
-                {/* Clickable area → view product page */}
-                <Link href={`/products/view_product?item_code=${encodeURIComponent(product.item_code)}`} className="block">
+                <div>
                   {/* Image box with embedded badge */}
                   <div className="relative w-full aspect-square bg-[#E8F3EB] rounded-xl overflow-hidden flex items-center justify-center p-3 mb-4">
                     {product.discount && product.discount > 0 ? (
@@ -272,11 +268,11 @@ export default function FeaturedProducts() {
                       <span className="text-[15px] text-gray-400 line-through">₹{formatPrice(product.mrp)}</span>
                     )}
                   </div>
-                </Link>
+                </div>
 
                 {/* Add to Cart button */}
                 <button
-                  onClick={(e) => { e.stopPropagation(); handleAddToCart(product.item_code); }}
+                  onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
                   className="w-full h-12 bg-[#276342] hover:bg-[#1e4d33] text-white font-medium text-[16px] rounded-xl flex items-center justify-center gap-2 transition-colors active:scale-[0.99]"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
@@ -291,6 +287,13 @@ export default function FeaturedProducts() {
         <LoginPrompt
           isOpen={showLoginPrompt}
           onClose={() => setShowLoginPrompt(false)}
+        />
+
+        {/* Payment Option Modal */}
+        <PaymentOptionModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          itemCode={selectedProduct?.item_code || ""}
         />
       </div>
     </section>
