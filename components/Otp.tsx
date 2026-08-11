@@ -98,6 +98,52 @@ const OtpContent = () => {
     }
   };
 
+  const handlePendingCart = async (userObj: any) => {
+    const pendingItemStr = localStorage.getItem("gbru_pending_cart_item");
+    if (!pendingItemStr) {
+      if (userObj?.role?.toLowerCase() === 'farmer') {
+        router.push('/dashboard');
+      } else if (userObj?.role?.toLowerCase() === 'dealer') {
+        router.push('/dealer_profile');
+      } else {
+        router.push('/profile');
+      }
+      return;
+    }
+
+    try {
+      const pendingItem = JSON.parse(pendingItemStr);
+      const mobile_no = userObj.customer_id?.split('-')[1] || userObj.user_id || userObj.mobile_no || mobileNo;
+      if (!mobile_no) {
+        localStorage.removeItem("gbru_pending_cart_item");
+        router.push('/cart');
+        return;
+      }
+
+      // Add to cart
+      const res = await fetch("/api/cart/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mobile_no,
+          items: [pendingItem]
+        })
+      });
+
+      const resJson = await res.json();
+      if (resJson.message?.status) {
+        setToastType("success");
+        setToastMessage(`${pendingItem.item_name || "Product"} added to cart successfully!`);
+        setTimeout(() => setToastMessage(""), 3000);
+      }
+    } catch (e) {
+      
+    } finally {
+      localStorage.removeItem("gbru_pending_cart_item");
+      router.push('/cart');
+    }
+  };
+
   const handleVerify = async () => {
     const otpValue = otp.join('');
     if (otpValue.length !== 6 || !mobileNo) {
@@ -106,52 +152,6 @@ const OtpContent = () => {
       setTimeout(() => setToastMessage(""), 3000);
       return;
     }
-
-    const handlePendingCart = async (userObj: any) => {
-      const pendingItemStr = localStorage.getItem("gbru_pending_cart_item");
-      if (!pendingItemStr) {
-        if (userObj?.role?.toLowerCase() === 'farmer') {
-          router.push('/dashboard');
-        } else if (userObj?.role?.toLowerCase() === 'dealer') {
-          router.push('/dealer_profile');
-        } else {
-          router.push('/profile');
-        }
-        return;
-      }
-
-      try {
-        const pendingItem = JSON.parse(pendingItemStr);
-        const mobile_no = userObj.customer_id?.split('-')[1] || userObj.user_id || userObj.mobile_no;
-        if (!mobile_no) {
-          localStorage.removeItem("gbru_pending_cart_item");
-          router.push('/cart');
-          return;
-        }
-
-        // Add to cart
-        const res = await fetch("/api/cart/add", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            mobile_no,
-            items: [pendingItem]
-          })
-        });
-
-        const resJson = await res.json();
-        if (resJson.message?.status) {
-          setToastType("success");
-          setToastMessage(`${pendingItem.item_name || "Product"} added to cart successfully!`);
-          setTimeout(() => setToastMessage(""), 3000);
-        }
-      } catch (e) {
-        
-      } finally {
-        localStorage.removeItem("gbru_pending_cart_item");
-        router.push('/cart');
-      }
-    };
 
     setLoading(true);
     try {
@@ -176,12 +176,8 @@ const OtpContent = () => {
           const userToSave = { ...data.user, mobile_no: mobileNo };
           localStorage.setItem('gbru_user', JSON.stringify(userToSave));
 
-          // Redirect based on role
-          if (data.user?.role?.toLowerCase() === 'farmer') {
-            router.replace('/dashboard');
-          } else {
-            router.replace('/profile');
-          }
+          // Run pending cart action
+          await handlePendingCart(userToSave);
         }
       } else {
         setToastType("error");
@@ -227,7 +223,9 @@ const OtpContent = () => {
         };
         localStorage.setItem('gbru_user', JSON.stringify(basicUser));
         setShowRegistrationPopup(false);
-        router.push('/dashboard');
+        
+        // Run pending cart action
+        await handlePendingCart(basicUser);
       } else {
         setToastType("error");
         setToastMessage(data?.message?.message || data?.error || "Failed to create lead. Please try again.");

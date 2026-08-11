@@ -751,7 +751,7 @@ function ProductDetailContent() {
                 )}
               </button>
 
-              <a href="https://wa.me/919226514174" target="_blank" rel="noopener noreferrer" className="w-full h-14 rounded-[14px] bg-white hover:bg-zinc-50 border border-zinc-200 text-black font-bold text-[16px] transition-all flex items-center justify-center gap-3 shadow-sm">
+              <a href="https://wa.me/919114151617" target="_blank" rel="noopener noreferrer" className="w-full h-14 rounded-[14px] bg-white hover:bg-zinc-50 border border-zinc-200 text-black font-bold text-[16px] transition-all flex items-center justify-center gap-3 shadow-sm">
                 <div className="relative w-11 h-11 rounded-full overflow-hidden flex-shrink-0 bg-white">
                   <Image
                     src="/assets/nova.jpeg"
