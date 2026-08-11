@@ -961,12 +961,14 @@ export default function UserProfile() {
 
                         <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-wider mt-2 border-t border-zinc-100 pt-3">
                           <button onClick={() => openEditAddressModal(addr)} className="text-zinc-500 hover:text-[#0D9740] flex items-center gap-1"><Edit3 className="w-3.5 h-3.5" /> EDIT</button>
-                          <button
-                            onClick={() => handleDeleteAddress(addr.name)}
-                            className="text-red-500 hover:text-red-700 flex items-center gap-1"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" /> DELETE
-                          </button>
+                          {addr.is_primary !== 1 && (
+                            <button
+                              onClick={() => handleDeleteAddress(addr.name)}
+                              className="text-red-500 hover:text-red-700 flex items-center gap-1"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" /> DELETE
+                            </button>
+                          )}
                         </div>
                       </div>
                     ));
@@ -1244,6 +1246,7 @@ export default function UserProfile() {
                     placeholder="Area, Colony, Landmark"
                     value={formData.address2}
                     onChange={(e) => setFormData({ ...formData, address2: e.target.value })}
+                    className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
                 />
               </div>
             </div>

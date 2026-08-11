@@ -17,6 +17,7 @@ interface Order {
   payupreferedamount?: number | string;
   unsettled_amount?: number | string;
   payment_type?: string;
+  status?: string;
 }
 
 interface UserDetails {
@@ -742,9 +743,16 @@ export default function OrderList() {
                     {/* Top row: Order ID + Status badge */}
                     <div className="flex items-start justify-between">
                       <div>
-                        <h4 className="text-[17px] font-bold text-[#0F291B] font-roboto tracking-tight">
-                          #{order.order_id}
-                        </h4>
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-[17px] font-bold text-[#0F291B] font-roboto tracking-tight">
+                            #{order.order_id}
+                          </h4>
+                          {order.status && (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-zinc-100 text-zinc-600 border border-zinc-200">
+                              {order.status}
+                            </span>
+                          )}
+                        </div>
                         <span className="text-[13px] text-zinc-400 font-medium mt-0.5 block">
                           {order.date ? new Date(order.date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : ""}
                         </span>
@@ -844,7 +852,14 @@ export default function OrderList() {
                     <div className="flex-1 flex flex-col justify-between text-left space-y-4">
                       <div>
                         <span className="text-xs font-bold text-zinc-400 block mb-1">ORDER ID</span>
-                        <h4 className="text-xl font-bold text-[#0F291B] font-roboto">#{order.order_id}</h4>
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-xl font-bold text-[#0F291B] font-roboto">#{order.order_id}</h4>
+                          {order.status && (
+                            <span className="px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-zinc-100 text-zinc-600 border border-zinc-200">
+                              {order.status}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <div>

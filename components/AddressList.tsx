@@ -516,9 +516,11 @@ export default function AddressList() {
                     <button onClick={() => openEditModal(addr)} className="text-zinc-500 hover:text-[#0D9740] flex items-center gap-1 transition-colors">
                       <Edit3 className="w-3.5 h-3.5" /> Edit
                     </button>
-                    <button onClick={() => handleDelete(addr.name)} className="text-red-400 hover:text-red-600 flex items-center gap-1 transition-colors">
-                      <Trash2 className="w-3.5 h-3.5" /> Delete
-                    </button>
+                    {addr.is_primary !== 1 && (
+                      <button onClick={() => handleDelete(addr.name)} className="text-red-400 hover:text-red-600 flex items-center gap-1 transition-colors">
+                        <Trash2 className="w-3.5 h-3.5" /> Delete
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
