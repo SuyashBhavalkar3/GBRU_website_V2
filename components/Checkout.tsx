@@ -216,20 +216,12 @@ export default function Checkout() {
         setProceedData(data.message.data);
         if (!couponCodeToApply) {
           setDefaultProceedData(data.message.data);
-          const savedCoupon = localStorage.getItem("gbru_applied_coupon") || "";
-          if (!savedCoupon) {
-            setCouponApplied(false);
-            setCouponCode("");
-          }
         }
         const appliedCoupon = data.message.data.coupon;
         if (appliedCoupon && !appliedCoupon.error) {
           setCouponApplied(true);
           setCouponCode(appliedCoupon.code || couponCodeToApply || "");
           setCouponError("");
-          if (appliedCoupon.code) {
-            localStorage.setItem("gbru_applied_coupon", appliedCoupon.code);
-          }
           if (couponCodeToApply && isMobile) {
             showToast("coupon applied successfully", "success");
           }
@@ -237,7 +229,6 @@ export default function Checkout() {
           setCouponError(`${couponCodeToApply} invalid`);
           setCouponCode("Invalid code");
           setCouponApplied(false);
-          localStorage.removeItem("gbru_applied_coupon");
           if (isMobile) {
             showToast("coupon failed", "error");
           }
@@ -247,7 +238,6 @@ export default function Checkout() {
           setCouponError(`${couponCodeToApply} invalid`);
           setCouponCode("Invalid code");
           setCouponApplied(false);
-          localStorage.removeItem("gbru_applied_coupon");
           if (isMobile) {
             showToast("coupon failed", "error");
           }
@@ -264,18 +254,6 @@ export default function Checkout() {
     async function fetchAddressesAndCheckout() {
       try {
         setLoadingCheckout(true);
-        const savedBA = localStorage.getItem("gbru_applied_ambassador");
-        if (savedBA) {
-          try {
-            const parsed = JSON.parse(savedBA);
-            if (parsed) {
-              setAmbassadorCode(parsed.name || parsed.brand_ambassador_name || "");
-              setAmbassadorApplied(true);
-            }
-          } catch (e) {
-            
-          }
-        }
         const userStr = localStorage.getItem("gbru_user");
         if (!userStr) {
           setLoadingAddresses(false);
@@ -433,13 +411,7 @@ export default function Checkout() {
             }
 
             // Immediately load Proceed details
-            const savedCoupon = localStorage.getItem("gbru_applied_coupon") || "";
-            if (savedCoupon) {
-              setCouponCode(savedCoupon);
-              await fetchProceedData(checkoutJson.message.data.items, savedCoupon);
-            } else {
-              await fetchProceedData(checkoutJson.message.data.items);
-            }
+            await fetchProceedData(checkoutJson.message.data.items);
           }
         }
       } catch (e) {
@@ -882,7 +854,6 @@ export default function Checkout() {
     setCouponCode("");
     setCouponApplied(false);
     setCouponError("");
-    localStorage.removeItem("gbru_applied_coupon");
     if (checkoutDetails?.items) {
       fetchProceedData(checkoutDetails.items, "");
     }
@@ -916,7 +887,6 @@ export default function Checkout() {
       
       if (data?.message?.status) {
         setAmbassadorApplied(true);
-        localStorage.setItem("gbru_applied_ambassador", JSON.stringify(data.message.data));
         if (isMobile) {
           showToast("brand ambassador is validated", "success");
         } else {
@@ -945,7 +915,6 @@ export default function Checkout() {
     setAmbassadorCode("");
     setAmbassadorApplied(false);
     setAmbassadorError("");
-    localStorage.removeItem("gbru_applied_ambassador");
     showToast("Ambassador Code Removed", "info");
   };
 
@@ -1010,7 +979,6 @@ export default function Checkout() {
       if (data.status && data.token && data.actionUrl) {
         // Clear cart to avoid showing stale cart items upon return
         localStorage.removeItem("gbru_cart");
-        localStorage.removeItem("gbru_applied_coupon");
         window.dispatchEvent(new Event("cartUpdate"));
 
         const form = document.createElement("form");

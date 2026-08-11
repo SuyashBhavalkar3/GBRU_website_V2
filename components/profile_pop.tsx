@@ -258,9 +258,11 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
                     if (onLogout) {
                       onLogout();
                     } else {
-                      localStorage.removeItem("gbru_user");
-                      window.location.href = '/';
-                    }
+                       localStorage.removeItem("gbru_user");
+                       localStorage.removeItem("gbru_applied_coupon");
+                       localStorage.removeItem("gbru_applied_ambassador");
+                       window.location.href = '/';
+                     }
                     onClose();
                     setIsLoggingOut(false);
                   }, 2000);

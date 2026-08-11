@@ -174,9 +174,11 @@ const OtpContent = () => {
           // Do not save user session for dealers, redirect directly
           router.replace('/dealer_profile');
         } else {
-          // Save user details securely in localStorage for farmers/others
-          const userToSave = { ...data.user, mobile_no: mobileNo };
-          localStorage.setItem('gbru_user', JSON.stringify(userToSave));
+           // Save user details securely in localStorage for farmers/others
+           const userToSave = { ...data.user, mobile_no: mobileNo };
+           localStorage.setItem('gbru_user', JSON.stringify(userToSave));
+           localStorage.removeItem("gbru_applied_coupon");
+           localStorage.removeItem("gbru_applied_ambassador");
 
           // Run pending cart action
           await handlePendingCart(userToSave);
