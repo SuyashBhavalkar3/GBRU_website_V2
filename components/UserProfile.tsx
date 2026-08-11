@@ -160,11 +160,6 @@ export default function UserProfile() {
   useEffect(() => {
     const fetchUserAndAddresses = async () => {
       try {
-        const savedImage = localStorage.getItem("gbru_profile_image");
-        if (savedImage) {
-          setProfileImage(savedImage);
-        }
-
         const stored = localStorage.getItem("gbru_user");
         if (!stored) {
           setLoading(false);
@@ -209,6 +204,11 @@ export default function UserProfile() {
           setUserPhone(`+91 ${phone}`);
           setTempName(ud.Customer_name || "");
           setTempPhone(`+91 ${phone}`);
+
+          // Use profile_image from API response as the source of truth
+          if (ud.profile_image) {
+            setProfileImage(ud.profile_image);
+          }
         }
 
         // 2. Fetch Shipping Addresses
@@ -447,8 +447,8 @@ export default function UserProfile() {
       if (resJson.message?.status) {
         const imageUrl = resJson.message.data || resJson.message.image_url;
         if (imageUrl) {
+          // Update state with the server-stored URL (source of truth is the API)
           setProfileImage(imageUrl);
-          localStorage.setItem("gbru_profile_image", imageUrl);
         }
       }
     } catch (err) {
