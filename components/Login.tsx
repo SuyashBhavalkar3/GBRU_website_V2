@@ -32,13 +32,8 @@ const Login = () => {
       const data = await response.json();
       
       if (data.message?.status) {
-        // Successfully sent OTP
-        setToastType("success");
-        setToastMessage(`OTP sent successfully check ${mobileNumber}`);
-        setTimeout(() => {
-          // Redirect to OTP page and pass data via query params
-          router.push(`/otp?mobile_no=${mobileNumber}&txn_id=${data.message.txn_id}`);
-        }, 2000);
+        // Redirect to OTP page immediately
+        router.push(`/otp?mobile_no=${mobileNumber}&txn_id=${data.message.txn_id}`);
       } else {
         setToastType("error");
         setToastMessage(data.message?.message || data.error || 'Failed to send OTP. Please try again.');
@@ -103,7 +98,7 @@ const Login = () => {
           </svg>
         </Link>
 
-        <div className="flex flex-col md:flex-row w-full max-w-[1100px] bg-white rounded-xl shadow-2xl overflow-hidden min-h-[650px]">
+        <div className="flex flex-col md:flex-row w-full max-w-[1100px] bg-white rounded-xl shadow-2xl overflow-hidden h-[650px]">
           {/* Left Side (Green Gradient) */}
           <div className="w-[45%] relative p-10 flex flex-col bg-gradient-to-b from-[#2E6F18] via-[#4F8D14] to-[#C99C15] overflow-hidden">
             {/* Logo */}
@@ -171,7 +166,7 @@ const Login = () => {
           </div>
 
           {/* Right Side (Form) */}
-          <div className="w-[55%] p-16 flex flex-col justify-center bg-white min-h-[500px]">
+          <div className="w-[55%] px-16 py-12 flex flex-col justify-center bg-white h-full">
             <h2 
               className="text-[#1A1A1A] mb-3"
               style={{

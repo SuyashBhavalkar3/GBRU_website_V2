@@ -317,7 +317,7 @@ const OtpContent = () => {
           </svg>
         </Link>
 
-        <div className="flex flex-col md:flex-row w-full max-w-[1100px] bg-white rounded-xl shadow-2xl overflow-hidden min-h-[650px]">
+        <div className="flex flex-col md:flex-row w-full max-w-[1100px] bg-white rounded-xl shadow-2xl overflow-hidden h-[650px]">
           {/* Left Side (Green Gradient) */}
           <div className="w-[45%] relative p-10 flex flex-col bg-gradient-to-b from-[#2E6F18] via-[#4F8D14] to-[#C99C15] overflow-hidden">
             {/* Logo */}
@@ -384,26 +384,26 @@ const OtpContent = () => {
             <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/20 to-transparent z-0"></div>
           </div>
 
-          {/* Right Side (OTP Form) */}
-          <div className="w-[55%] p-16 flex flex-col justify-center bg-white min-h-[500px]">
+          {/* Right Side (Form) */}
+          <div className="w-[55%] px-16 py-12 flex flex-col justify-center bg-white h-full">
             <h2
               className="text-[#1A1A1A] mb-3"
               style={{
                 fontFamily: 'Roboto, sans-serif',
                 fontWeight: 600,
-                fontSize: '28px',
-                lineHeight: '36px'
+                fontSize: '24px',
+                lineHeight: '33.6px'
               }}
             >
               Verify Your Number
             </h2>
 
             <p
-              className="text-[#4A4A4A] mb-1"
+              className="text-[#666666] mb-1"
               style={{
                 fontFamily: 'Roboto, sans-serif',
                 fontWeight: 400,
-                fontSize: '15px',
+                fontSize: '14px',
                 lineHeight: '21px'
               }}
             >
@@ -412,7 +412,7 @@ const OtpContent = () => {
 
             <button
               onClick={() => router.back()}
-              className="text-[#006B21] hover:underline mb-8 w-fit block font-semibold text-sm"
+              className="text-[#006B21] hover:underline mb-6 w-fit block font-semibold text-sm"
               style={{
                 fontFamily: 'Roboto, sans-serif'
               }}
@@ -422,7 +422,7 @@ const OtpContent = () => {
 
             <form className="flex flex-col">
               {/* OTP Input Fields */}
-              <div className="flex mb-8 w-full justify-between gap-2">
+              <div className="flex mb-6 w-full justify-between gap-2">
                 {otp.map((digit, index) => (
                   <input
                     key={index}
@@ -461,7 +461,7 @@ const OtpContent = () => {
                 {loading ? 'Verifying...' : 'Verify & Login'}
               </button>
 
-              <div className="text-center w-full mb-8">
+              <div className="text-center w-full mb-4">
                 <p
                   className="text-[#6B7280]"
                   style={{
@@ -502,7 +502,7 @@ const OtpContent = () => {
               </div>
             </form>
 
-            <div className="mt-12 pt-6 border-t border-[#D9D9D9] flex justify-center items-center w-full">
+            <div className="mt-8 pt-6 border-t border-[#D9D9D9] flex justify-center items-center w-full">
               <Link
                 href="/help-centre"
                 className="flex items-center gap-2 text-[#4A4A4A] hover:text-[#006B21] transition-colors"

@@ -19,7 +19,7 @@ export default async function OtpPage({
   }
 
   return (
-    <main>
+    <main style={{ zoom: "0.909" }}>
       <Otp />
     </main>
   );
