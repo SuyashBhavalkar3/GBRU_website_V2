@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import LoginPrompt from "./LoginPrompt";
 import { addToCartUtil } from "@/utils/cartUtils";
 import ActionPopup from "./ActionPopup";
+import { useShoptionSetting } from "@/hooks/useShoptionSetting";
 
 function ProductDetailContent() {
   const router = useRouter();
@@ -21,8 +22,11 @@ function ProductDetailContent() {
   const [paymentOption, setPaymentOption] = useState<"full" | "booking">("full");
   const [activeTab, setActiveTab] = useState<"specs" | "features" | "guide" | "warranty" | "faqs">("specs");
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [quantity, setQuantity] = useState(1);
+  const [selectedOffer, setSelectedOffer] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const { whatsappLink, whatsappEnabled } = useShoptionSetting();
+  const [quantity, setQuantity] = useState(1);
   const [isInCart, setIsInCart] = useState(false);
   const [similarItems, setSimilarItems] = useState<any[]>([]);
   const [loadingSimilar, setLoadingSimilar] = useState(false);
@@ -750,7 +754,8 @@ function ProductDetailContent() {
                 )}
               </button>
 
-              <a href="https://wa.me/919114151617" target="_blank" rel="noopener noreferrer" className="w-full h-14 rounded-[14px] bg-white hover:bg-zinc-50 border border-zinc-200 text-black font-bold text-[16px] transition-all flex items-center justify-center gap-3 shadow-sm">
+              {whatsappEnabled === 1 && (
+              <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="w-full h-14 rounded-[14px] bg-white hover:bg-zinc-50 border border-zinc-200 text-black font-bold text-[16px] transition-all flex items-center justify-center gap-3 shadow-sm">
                 <div className="relative w-11 h-11 rounded-full overflow-hidden flex-shrink-0 bg-white">
                   <Image
                     src="/assets/nova.jpeg"
@@ -761,6 +766,7 @@ function ProductDetailContent() {
                 </div>
                 Chat with Nova
               </a>
+              )}
             </div>
 
             {/* Trust Badges */}
