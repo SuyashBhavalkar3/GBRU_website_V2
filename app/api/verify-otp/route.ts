@@ -75,18 +75,23 @@ async function _postHandler(request: Request) {
       });
     }
 
-    // Call Lead Creation API for existing customers
-    try {
-      const leadName = dataObj.customer_name || dataObj.Customer_name || dataObj.full_name || dataObj.first_name || 'Customer';
-      const leadResult = await createB2CLead(leadName, mobile_no);
-      if (leadResult.success && leadResult.data) {
-        const leadId = leadResult.data.message?.name || leadResult.data.message?.lead || leadResult.data.name;
-        if (leadId) {
-          dataObj.lead_id = leadId;
+    // Set lead ID: use existing lead from verify_otp response if present, otherwise call Lead Creation API
+    const existingLead = verifyData.message?.lead;
+    if (existingLead && existingLead.trim() !== "") {
+      dataObj.lead_id = existingLead;
+    } else {
+      try {
+        const leadName = dataObj.customer_name || dataObj.Customer_name || dataObj.full_name || dataObj.first_name || 'Customer';
+        const leadResult = await createB2CLead(leadName, mobile_no);
+        if (leadResult.success && leadResult.data) {
+          const leadId = leadResult.data.message?.name || leadResult.data.message?.lead || leadResult.data.name;
+          if (leadId) {
+            dataObj.lead_id = leadId;
+          }
         }
+      } catch (leadErr) {
+        
       }
-    } catch (leadErr) {
-      
     }
 
     return NextResponse.json({

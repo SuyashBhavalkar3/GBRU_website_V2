@@ -42,7 +42,7 @@ export default function FetchInterceptor() {
             return newResponse;
           }
         } catch (err) {
-          console.error("Failed to decrypt API response:", err);
+          // ignore decryption failure
         }
       }
 

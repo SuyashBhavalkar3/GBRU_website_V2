@@ -36,7 +36,6 @@ async function _postHandler(request: Request) {
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
-    console.log("[API/ORDERS] Hitting ERPNext get_user_details with sanitized mobile:", sanitizedMobile);
     // Step 1: Fetch user details server-side to get user's API keys securely
     const userDetailsRes = await fetch(`${baseUrl}/api/method/shoption_api.erp_api.utility.get_user_details`, {
       method: 'POST',
@@ -49,10 +48,8 @@ async function _postHandler(request: Request) {
     });
 
     const userDetailsData = await userDetailsRes.json();
-    console.log("[API/ORDERS] ERPNext user-details response data:", JSON.stringify(userDetailsData));
     
     if (!userDetailsData?.message?.status || !userDetailsData?.message?.data?.key_details) {
-      console.warn("[API/ORDERS] User auth keys not found or status false in ERPNext response");
       return NextResponse.json({ error: 'Failed to retrieve user key details', details: userDetailsData }, { status: 400 });
     }
 
@@ -69,8 +66,6 @@ async function _postHandler(request: Request) {
     });
 
     const url = `${baseUrl}/api/method/shoption_api.cart.cart.get_order_from_list?${params.toString()}`;
-    console.log("[API/ORDERS] Hitting get_order_from_list API:", url);
-    console.log("[API/ORDERS] Headers: Authorization token", `${userApiKey}:${userApiSecret}`);
 
     const response = await fetch(url, {
       method: 'GET',
@@ -80,11 +75,8 @@ async function _postHandler(request: Request) {
     });
 
     const data = await response.json();
-    console.log("[API/ORDERS] get_order_from_list response status:", response.status);
-    console.log("[API/ORDERS] get_order_from_list response data:", JSON.stringify(data));
 
     if (!response.ok) {
-      console.error("[API/ORDERS] get_order_from_list API failed");
       return NextResponse.json(
         { error: data?.error || data?.message || "Failed to fetch orders", details: data },
         { status: response.status }
