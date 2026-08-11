@@ -730,7 +730,8 @@ export default function OrderList() {
               const isFullPayment = !preferredModeStr.includes("cash") && !preferredModeStr.includes("cod") && preferredModeStr !== "pay later";
               const isBookingPaid = Number(order.received_amount || 0) >= Number(order.payupreferedamount || 0);
               const payAmt = isFullPayment ? pendingAmt : (!isBookingPaid ? Number(order.payupreferedamount || 0) : 0);
-              const showListPayButton = payAmt > 10;
+              const isCancelled = String(order.status || "").toLowerCase().includes("cancel");
+              const showListPayButton = payAmt > 10 && !isCancelled;
 
               return (
                 <div key={order.order_id || idx}>

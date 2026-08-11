@@ -269,7 +269,8 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
   const hasTransactions = order.transactions && order.transactions.length > 0;
   const hasInvoices = order.invoices && order.invoices.length > 0;
 
-  const showPayButton = payAmount > 10;
+  const isCancelled = String(statusDisplay || summary.allowed_action || "").toLowerCase().includes("cancel");
+  const showPayButton = payAmount > 10 && !isCancelled;
 
   // Extract LR and stickers
   const deliverySlips = shipment.delivery_slips || [];
