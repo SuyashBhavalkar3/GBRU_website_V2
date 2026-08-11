@@ -1,29 +1,15 @@
 import { useState, useEffect } from 'react';
 
 export function useShoptionSetting() {
-  const [whatsappLink, setWhatsappLink] = useState("https://wa.me/919114151617");
-  const [whatsappEnabled, setWhatsappEnabled] = useState(1);
-  const [loading, setLoading] = useState(true);
+  // Use public env variables directly with safe fallbacks
+  const defaultLink = process.env.NEXT_PUBLIC_WHATSAPP_LINK || "https://wa.me/919114151617";
+  const defaultEnabled = process.env.NEXT_PUBLIC_WHATSAPP_ENABLED !== undefined 
+    ? Number(process.env.NEXT_PUBLIC_WHATSAPP_ENABLED) 
+    : 1;
 
-  useEffect(() => {
-    async function fetchSetting() {
-      try {
-        const res = await fetch('/api/shoption-setting');
-        const data = await res.json();
-        if (data.whatsapp_bot_link) {
-          setWhatsappLink(data.whatsapp_bot_link);
-        }
-        if (data.whatapp_bot_enabled !== undefined) {
-          setWhatsappEnabled(data.whatapp_bot_enabled);
-        }
-      } catch (error) {
-        console.error('Failed to fetch shoption setting:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchSetting();
-  }, []);
+  const [whatsappLink] = useState(defaultLink);
+  const [whatsappEnabled] = useState(defaultEnabled);
+  const [loading] = useState(false);
 
   return { whatsappLink, whatsappEnabled, loading };
 }
