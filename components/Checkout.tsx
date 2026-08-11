@@ -1640,7 +1640,7 @@ export default function Checkout() {
           <div className="lg:col-span-4 flex flex-col gap-6">
 
             {/* Summary Box */}
-            <div className="bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex flex-col gap-5">
+            <div className="bg-white border border-zinc-200/80 rounded-[24px] p-4 sm:p-6 shadow-sm flex flex-col gap-5 overflow-hidden w-full box-border">
               <h3 className="font-roboto font-bold text-[#0F291B] text-lg">
                 Order Summary
               </h3>
@@ -1652,7 +1652,9 @@ export default function Checkout() {
                   <span className="text-xs font-semibold text-[#0F291B] block">Offers & Coupons</span>
                 </div>
                 <span className="text-[10px] text-zinc-500 block -mt-1">Tap to apply coupon code. Use "GBRU10" to save ₹500.</span>
-                <div className="flex gap-2">
+                <div className={`flex w-full h-10 border rounded-[8px] overflow-hidden focus-within:ring-1 focus-within:border-[#0D9740] focus-within:ring-[#0D9740] ${
+                  couponCode === "Invalid code" ? "border-red-500" : "border-zinc-200"
+                }`}>
                   <input
                     type="text"
                     placeholder="Enter coupon code"
@@ -1667,16 +1669,14 @@ export default function Checkout() {
                         setCouponError("");
                       }
                     }}
-                    className={`flex-1 h-9 px-3 border rounded-[8px] text-xs focus:outline-[#0D9740] ${
-                      couponCode === "Invalid code"
-                        ? "border-red-500 text-red-500"
-                        : "border-zinc-200 text-[#0F291B]"
+                    className={`flex-1 min-w-0 px-3 outline-none text-xs bg-transparent ${
+                      couponCode === "Invalid code" ? "text-red-500" : "text-[#0F291B]"
                     }`}
                   />
                   <button
                     onClick={applyCoupon}
                     disabled={isMobile && couponApplied}
-                    className={`h-9 px-4 font-bold text-xs rounded-[8px] transition-colors ${
+                    className={`px-4 font-bold text-xs transition-colors shrink-0 ${
                       isMobile && couponApplied
                         ? "bg-zinc-300 text-zinc-500 cursor-not-allowed"
                         : "bg-[#0F291B] hover:bg-[#08170f] text-white"
@@ -1704,18 +1704,18 @@ export default function Checkout() {
               <div className="flex flex-col gap-3 mt-2">
                 <span className="text-xs font-semibold text-[#0F291B] block">🎓 Brand Ambassador Code</span>
                 <span className="text-[10px] text-zinc-500 block -mt-1">Enter your referral code if referred by a GBRU Ambassador.</span>
-                <div className="flex gap-2">
+                <div className="flex w-full h-10 border border-zinc-200 rounded-[8px] overflow-hidden focus-within:border-[#0D9740] focus-within:ring-1 focus-within:ring-[#0D9740]">
                   <input
                     type="text"
                     placeholder="Enter Ambassador Code"
                     value={ambassadorCode}
                     onChange={(e) => setAmbassadorCode(e.target.value)}
-                    className="flex-1 h-9 px-3 border border-zinc-200 rounded-[8px] text-xs text-[#0F291B] focus:outline-[#0D9740]"
+                    className="flex-1 min-w-0 px-3 outline-none text-xs text-[#0F291B] bg-transparent"
                   />
                   <button
                     onClick={applyAmbassadorCode}
                     disabled={isMobile && ambassadorApplied}
-                    className={`h-9 px-4 font-bold text-xs rounded-[8px] transition-colors ${
+                    className={`px-4 font-bold text-xs transition-colors shrink-0 ${
                       isMobile && ambassadorApplied
                         ? "bg-zinc-300 text-zinc-500 cursor-not-allowed"
                         : "bg-[#0F291B] hover:bg-[#08170f] text-white"

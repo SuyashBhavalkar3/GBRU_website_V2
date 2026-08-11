@@ -236,15 +236,15 @@ const VideoHub = () => {
 
       {/* Events & Exhibitions Section */}
       <div className="max-w-[1280px] mx-auto px-4 lg:px-16 w-full pt-16 pb-8">
-        <div className="flex flex-col lg:flex-row gap-16 items-start relative">
+        <div className="flex flex-col xl:flex-row gap-12 xl:gap-16 items-start relative">
           
           {/* Left Column */}
-          <div className="w-full lg:w-1/4 flex flex-col justify-between lg:min-h-[320px]">
+          <div className="w-full xl:w-1/4 flex flex-col justify-between xl:min-h-[320px]">
             <div>
               <p className="text-sm font-bold tracking-widest text-[#006B21] uppercase mb-4">
                 Events & Exhibitions
               </p>
-              <h2 className="text-3xl lg:text-[32px] font-bold text-[#1A1A1A] mb-6 whitespace-nowrap">
+              <h2 className="text-3xl lg:text-[32px] font-bold text-[#1A1A1A] mb-6">
                 Where We Show Up
               </h2>
               <p className="text-[#6B7280] leading-relaxed mb-8">
@@ -262,7 +262,7 @@ const VideoHub = () => {
           </div>
 
           {/* Right Carousel/Grid */}
-          <div className="w-full lg:w-3/4 relative">
+          <div className="w-full xl:w-3/4 relative">
              <div className="flex gap-6 overflow-x-auto pb-6 pt-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                {events.map((event) => (
                  <div key={event.id} className="w-[280px] bg-white rounded-2xl border border-gray-200 overflow-hidden flex-shrink-0 snap-start shadow-sm hover:shadow-md transition-shadow">
@@ -278,11 +278,11 @@ const VideoHub = () => {
                ))}
              </div>
              
-             {/* Carousel Arrows (Hidden on mobile) */}
-             <button className="absolute left-[-56px] top-[45%] -translate-y-1/2 w-12 h-12 bg-white rounded-full border border-gray-200 shadow-lg flex items-center justify-center text-gray-800 hover:text-[#006B21] transition-colors z-10 hidden lg:flex">
+             {/* Carousel Arrows (Hidden on mobile/tablet) */}
+             <button className="absolute left-[-20px] xl:left-[-56px] top-[45%] -translate-y-1/2 w-12 h-12 bg-white rounded-full border border-gray-200 shadow-lg flex items-center justify-center text-gray-800 hover:text-[#006B21] transition-colors z-10 hidden lg:flex">
                 <svg className="w-6 h-6 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
              </button>
-             <button className="absolute right-[-56px] top-[45%] -translate-y-1/2 w-12 h-12 bg-white rounded-full border border-gray-200 shadow-lg flex items-center justify-center text-gray-800 hover:text-[#006B21] transition-colors z-10 hidden lg:flex">
+             <button className="absolute right-[-20px] xl:right-[-56px] top-[45%] -translate-y-1/2 w-12 h-12 bg-white rounded-full border border-gray-200 shadow-lg flex items-center justify-center text-gray-800 hover:text-[#006B21] transition-colors z-10 hidden lg:flex">
                 <svg className="w-6 h-6 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
              </button>
           </div>
