@@ -492,16 +492,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto px-5 pb-10" style={{ paddingTop: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
 
-          {/* Warning Banner */}
-          {(summary.paynow_message || order.paynow_message) && (
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3 text-left">
-              <span className="text-xl">⚠️</span>
-              <div>
-                <h4 className="font-bold text-amber-900 text-sm">Important Update</h4>
-                <p className="text-xs text-amber-800 font-medium leading-relaxed">{summary.paynow_message || order.paynow_message}</p>
-              </div>
-            </div>
-          )}
+
 
           {/* ── ORDER SUMMARY CARD — w:350 h:~270 br:16 p:20 gap:12 border:1 ── */}
           <div className="bg-white rounded-[16px] border border-zinc-200" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -951,18 +942,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
           </div>
         </div>
 
-        {/* Warning Banner / Message from ERP */}
-        {(summary.paynow_message || order.paynow_message) && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3 text-left">
-            <span className="text-xl">⚠️</span>
-            <div className="space-y-1">
-              <h4 className="font-bold text-amber-900 text-sm">Important Update regarding your Order</h4>
-              <p className="text-xs text-amber-800 font-medium leading-relaxed">
-                {summary.paynow_message || order.paynow_message}
-              </p>
-            </div>
-          </div>
-        )}
+
 
         {/* Main Content 2-Column Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-10">

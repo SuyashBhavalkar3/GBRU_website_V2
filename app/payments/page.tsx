@@ -235,12 +235,6 @@ export default function PaymentsPage() {
                     </div>
                   </div>
 
-                  {order.paynow_message && (
-                    <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 mb-5 flex items-start gap-2">
-                      <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                      <p className="text-xs text-amber-800 leading-snug">{order.paynow_message}</p>
-                    </div>
-                  )}
 
                   <button 
                     disabled={payingOrderId === order.order_id}
