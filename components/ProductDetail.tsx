@@ -449,7 +449,7 @@ function ProductDetailContent() {
           <div className="flex flex-wrap items-center gap-6 mt-2 text-sm text-[#374151]">
             <div className="flex items-center gap-1">
               <span className="text-yellow-400 text-lg">★★★★★</span>
-              <span className="font-bold">4.8</span>
+              <span className="font-bold">5.0</span>
             </div>
             <div className="h-4 w-px bg-zinc-300"></div>
             <div className="flex items-center gap-1.5 text-[#374151]">
