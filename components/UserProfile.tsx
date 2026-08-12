@@ -1262,7 +1262,7 @@ export default function UserProfile() {
                   />
                 </div>
 
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-1.5 sm:col-span-2">
                   <label className="text-xs font-bold text-zinc-500">Address Line 2 (Optional)</label>
                   <input
                     type="text"

@@ -276,7 +276,8 @@ export default function OrderList() {
         return;
       }
       const parsed = JSON.parse(stored);
-      const mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || parsed.customer_id?.split('-')[1];
+      let mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || parsed.customer_id?.split('-')[1];
+      if (mobile_no?.includes("@")) mobile_no = mobile_no.split("@")[0];
       const email = parsed.user_id && parsed.user_id.includes("@") ? parsed.user_id : (parsed.email || "");
 
       const res = await fetch("/api/orders/pay-now", {
@@ -730,7 +731,8 @@ export default function OrderList() {
               const isFullPayment = !preferredModeStr.includes("cash") && !preferredModeStr.includes("cod") && preferredModeStr !== "pay later";
               const isBookingPaid = Number(order.received_amount || 0) >= Number(order.payupreferedamount || 0);
               const payAmt = isFullPayment ? pendingAmt : (!isBookingPaid ? Number(order.payupreferedamount || 0) : 0);
-              const showListPayButton = payAmt > 10;
+              const isCancelled = String(order.status || "").toLowerCase() === "cancelled";
+              const showListPayButton = payAmt > 10 && !isCancelled;
 
               return (
                 <div key={order.order_id || idx}>

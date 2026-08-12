@@ -123,7 +123,8 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         return;
       }
       const parsed = JSON.parse(stored);
-      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      let mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      if (mobile_no?.includes("@")) mobile_no = mobile_no.split("@")[0];
 
       const res = await fetch("/api/orders/cancel", {
         method: "POST",
@@ -170,7 +171,8 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         return;
       }
       const parsed = JSON.parse(stored);
-      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      let mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      if (mobile_no?.includes("@")) mobile_no = mobile_no.split("@")[0];
       const email = parsed.user_id && parsed.user_id.includes("@") ? parsed.user_id : (parsed.email || "");
 
       const res = await fetch("/api/orders/pay-now", {
@@ -269,7 +271,8 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
   const hasTransactions = order.transactions && order.transactions.length > 0;
   const hasInvoices = order.invoices && order.invoices.length > 0;
 
-  const showPayButton = payAmount > 10;
+  const isCancelled = String(summary.status || order.status || summary.allowed_action || "").toLowerCase() === "cancelled";
+  const showPayButton = payAmount > 10 && !isCancelled;
 
   // Extract LR and stickers
   const deliverySlips = shipment.delivery_slips || [];
@@ -663,6 +666,12 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                     <div className="flex justify-between font-bold text-[#1E532E]">
                       <span>Amount</span><span>₹{Number(tx.amount).toLocaleString("en-IN")}</span>
                     </div>
+                    {tx.status && (
+                      <div className="flex justify-between font-bold">
+                        <span className="text-zinc-500">Status</span>
+                        <span className={tx.status === "Success" ? "text-emerald-600" : "text-orange-600"}>{tx.status}</span>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -1181,6 +1190,12 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                         <span>Amount:</span>
                         <span>₹{Number(tx.amount).toLocaleString('en-IN')}</span>
                       </div>
+                      {tx.status && (
+                        <div className="flex justify-between font-bold">
+                          <span className="text-zinc-500">Status:</span>
+                          <span className={tx.status === "Success" ? "text-emerald-600" : "text-orange-600"}>{tx.status}</span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
