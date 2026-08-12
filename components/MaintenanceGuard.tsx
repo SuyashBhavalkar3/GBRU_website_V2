@@ -29,7 +29,7 @@ export default function MaintenanceGuard() {
               router.replace("/");
             }
           }
-        } catch (e) {}
+        } catch (e) { }
       };
 
       eventSource.onerror = () => {
@@ -54,4 +54,4 @@ export default function MaintenanceGuard() {
   }, [pathname, router]);
 
   return null;
-}
+} 
