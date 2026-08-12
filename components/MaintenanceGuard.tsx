@@ -23,8 +23,8 @@ export default function MaintenanceGuard() {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();
           // Check both keys
-          const isMaintenance = !!(data?.["ERP-GBRU"] || data?.recom_gbru_shoption);
-          
+          const isMaintenance = !!(data?.["recom_gbru_shoption"] || data?.recom_gbru_shoption);
+
           if (isMaintenance) {
             if (pathname !== "/maintenance") {
               router.replace("/maintenance");
