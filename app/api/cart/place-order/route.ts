@@ -100,7 +100,7 @@ async function _postHandler(request: Request) {
     const protocol = host.includes('localhost') ? 'http' : 'https';
     let websiteBaseUrl = `${protocol}://${host}`;
     if (!host || host.includes('localhost') || host.includes('127.0.0.1')) {
-      websiteBaseUrl = 'https://gbru.shoption.in';
+      websiteBaseUrl = 'https://recom.gbru.in';
     }
 
     // Step 5: Build base64-encoded payment token
@@ -125,10 +125,11 @@ async function _postHandler(request: Request) {
       token: token,
       paymentMode: payment_type === 'Full Payment' ? 'full' : 'booking',
       actionUrl: process.env.PAYMENT_GATEWAY_URL
-    } catch (error: any) {
+    });
+  } catch (error: any) {
 
-      return NextResponse.json({ error: 'Internal server error', msg: error.message }, { status: 500 });
-    }
+    return NextResponse.json({ error: 'Internal server error', msg: error.message }, { status: 500 });
   }
+}
 
 export const POST = withEncryption(_postHandler);

@@ -52,7 +52,7 @@ async function _postHandler(request: Request) {
     const protocol = host.includes('localhost') ? 'http' : 'https';
     let websiteBaseUrl = `${protocol}://${host}`;
     if (!host || host.includes('localhost') || host.includes('127.0.0.1')) {
-      websiteBaseUrl = 'https://gbru.shoption.in';
+      websiteBaseUrl = 'https://recom.gbru.in';
     }
 
     const callbackUrl = `${websiteBaseUrl}/place-order`;
@@ -72,11 +72,12 @@ async function _postHandler(request: Request) {
     return NextResponse.json({
       status: true,
       token: token,
-      actionUrl: process.env.PAYMENT_GATEWAY_URL;
-    } catch (error: any) {
+      actionUrl: process.env.PAYMENT_GATEWAY_URL
+    });
+  } catch (error: any) {
 
-      return NextResponse.json({ error: 'Failed to generate payment token', msg: error.message }, { status: 500 });
-    }
+    return NextResponse.json({ error: 'Failed to generate payment token', msg: error.message }, { status: 500 });
   }
+}
 
 export const POST = withEncryption(_postHandler);
