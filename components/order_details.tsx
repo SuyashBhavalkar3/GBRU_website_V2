@@ -274,6 +274,22 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
   const isCancelled = String(summary.status || order.status || summary.allowed_action || "").toLowerCase() === "cancelled";
   const showPayButton = payAmount > 10 && !isCancelled;
 
+  let invoiceTransporterName = "";
+  if (order.invoices && order.invoices.length > 0) {
+    for (const inv of order.invoices) {
+      if (inv.transporter_details && inv.transporter_details.length > 0 && inv.transporter_details[0].transporter_name) {
+        invoiceTransporterName = inv.transporter_details[0].transporter_name;
+        break;
+      }
+      if (inv.lr_and_stickers && inv.lr_and_stickers.length > 0 && inv.lr_and_stickers[0].transporter_name) {
+        invoiceTransporterName = inv.lr_and_stickers[0].transporter_name;
+        break;
+      }
+    }
+  }
+
+  const displayTransporterName = shipment.transporter_name || invoiceTransporterName || "Not Assigned";
+
   // Extract LR and stickers
   const deliverySlips = shipment.delivery_slips || [];
   const dispatchDetails = order.dispatch_details || [];
@@ -626,7 +642,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                   <Truck className="w-4 h-4 text-[#0D9740]" />
                   <span>Transport Name</span>
                 </div>
-                <p className="text-[13px] font-bold text-[#0F291B]">{shipment.transporter_name || "Not Assigned"}</p>
+                <p className="text-[13px] font-bold text-[#0F291B]">{displayTransporterName}</p>
               </div>
 
               {/* Shipment Date */}
@@ -1138,7 +1154,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                     <span>Transport Name</span>
                   </div>
                   <p className="font-bold text-[#0F291B] text-sm">
-                    {shipment.transporter_name || "Not Assigned"}
+                    {displayTransporterName}
                   </p>
                 </div>
 
