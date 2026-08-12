@@ -1710,13 +1710,13 @@ export default function Checkout() {
                 )}
                 {Number(activePricingData?.total_taxes_and_charges || 0) > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">Delivery Charges</span>
+                    <span className="text-zinc-500">Taxes & charges</span>
                     <span className="font-bold">₹{formatPrice(activePricingData?.total_taxes_and_charges)}</span>
                   </div>
                 )}
                 {Number(activePricingData?.total_taxes_and_charges || 0) === 0 && (
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">Delivery Charges</span>
+                    <span className="text-zinc-500">Taxes & charges</span>
                     <span className="font-bold text-[#0d9740]">FREE</span>
                   </div>
                 )}

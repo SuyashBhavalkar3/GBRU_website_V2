@@ -162,7 +162,7 @@ export default function FeaturedProducts() {
                 ? product.custom_image_1
                 : "/assets/sprayer.png";
 
-              const mockRating = (3.8 + (parseInt(product.item_code) % 15) / 10).toFixed(1);
+              const mockRating = "5.0";
               const mockReviews = 40 + (parseInt(product.item_code) % 95);
 
               return (
@@ -225,7 +225,7 @@ export default function FeaturedProducts() {
               : "/assets/sprayer.png";
 
             // Fixed star rating mock for premium feel
-            const mockRating = (3.8 + (parseInt(product.item_code) % 15) / 10).toFixed(1);
+            const mockRating = "5.0";
             const mockReviews = 40 + (parseInt(product.item_code) % 95);
 
             return (

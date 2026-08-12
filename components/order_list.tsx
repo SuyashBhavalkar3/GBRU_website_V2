@@ -205,6 +205,9 @@ export default function OrderList() {
 
   const changeCalendarMonth = (offset: number) => {
     const nextMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + offset, 1);
+    if (nextMonth < new Date(2025, 3, 1)) {
+      return;
+    }
     setCalendarMonth(nextMonth);
   };
 
@@ -233,7 +236,7 @@ export default function OrderList() {
         setUserMobile(mobile_no.startsWith("+91") ? mobile_no : `+91 ${mobile_no}`);
         setProfileImage(parsed.profile_image || null);
         return mobile_no;
-      } catch (e) {}
+      } catch (e) { }
     }
     return "";
   };
@@ -262,12 +265,12 @@ export default function OrderList() {
                   const parsed = JSON.parse(stored);
                   parsed.profile_image = ud.profile_image;
                   localStorage.setItem("gbru_user", JSON.stringify(parsed));
-                } catch (_) {}
+                } catch (_) { }
               }
             }
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     }
   }, []);
 
@@ -298,7 +301,8 @@ export default function OrderList() {
         return;
       }
       const parsed = JSON.parse(stored);
-      const mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || parsed.customer_id?.split('-')[1];
+      let mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || parsed.customer_id?.split('-')[1];
+      if (mobile_no?.includes("@")) mobile_no = mobile_no.split("@")[0];
       const email = parsed.user_id && parsed.user_id.includes("@") ? parsed.user_id : (parsed.email || "");
 
       const res = await fetch("/api/orders/pay-now", {
@@ -637,7 +641,8 @@ export default function OrderList() {
                   <button
                     type="button"
                     onClick={() => changeCalendarMonth(-1)}
-                    className="p-1.5 hover:bg-emerald-50 rounded-full text-emerald-800 transition-colors"
+                    disabled={calendarMonth.getFullYear() === 2025 && calendarMonth.getMonth() <= 3}
+                    className={`p-1.5 rounded-full transition-colors ${calendarMonth.getFullYear() === 2025 && calendarMonth.getMonth() <= 3 ? 'text-zinc-300 cursor-not-allowed' : 'hover:bg-emerald-50 text-emerald-800'}`}
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>

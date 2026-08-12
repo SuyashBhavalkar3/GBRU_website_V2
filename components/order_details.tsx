@@ -89,7 +89,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
             }
           }
         } catch (e) {
-          
+
         }
 
         if (data?.message?.status && data?.message?.data) {
@@ -98,7 +98,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
           setError("Failed to fetch order details");
         }
       } catch (err) {
-        
+
         setError("Something went wrong");
       } finally {
         setLoading(false);
@@ -123,7 +123,8 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         return;
       }
       const parsed = JSON.parse(stored);
-      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      let mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      if (mobile_no?.includes("@")) mobile_no = mobile_no.split("@")[0];
 
       const res = await fetch("/api/orders/cancel", {
         method: "POST",
@@ -149,7 +150,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         setTimeout(() => setShowCancelToast(false), 3000);
       }
     } catch (err) {
-      
+
       setToastType("error");
       setToastMessage("Something went wrong while cancelling the order.");
       setShowCancelToast(true);
@@ -170,7 +171,8 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         return;
       }
       const parsed = JSON.parse(stored);
-      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      let mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      if (mobile_no?.includes("@")) mobile_no = mobile_no.split("@")[0];
       const email = parsed.user_id && parsed.user_id.includes("@") ? parsed.user_id : (parsed.email || "");
 
       const res = await fetch("/api/orders/pay-now", {
@@ -204,7 +206,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         setTimeout(() => setShowCancelToast(false), 3000);
       }
     } catch (err) {
-      
+
       setToastType("error");
       setToastMessage("An error occurred while initiating payment.");
       setShowCancelToast(true);
@@ -271,6 +273,22 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
 
   const isCancelled = String(statusDisplay || summary.allowed_action || "").toLowerCase().includes("cancel");
   const showPayButton = payAmount > 10 && !isCancelled;
+
+  let invoiceTransporterName = "";
+  if (order.invoices && order.invoices.length > 0) {
+    for (const inv of order.invoices) {
+      if (inv.transporter_details && inv.transporter_details.length > 0 && inv.transporter_details[0].transporter_name) {
+        invoiceTransporterName = inv.transporter_details[0].transporter_name;
+        break;
+      }
+      if (inv.lr_and_stickers && inv.lr_and_stickers.length > 0 && inv.lr_and_stickers[0].transporter_name) {
+        invoiceTransporterName = inv.lr_and_stickers[0].transporter_name;
+        break;
+      }
+    }
+  }
+
+  const displayTransporterName = shipment.transporter_name || invoiceTransporterName || "Not Assigned";
 
   // Extract LR and stickers
   const deliverySlips = shipment.delivery_slips || [];
@@ -420,7 +438,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         setTrackingError(resData.message || "Failed to retrieve tracking data from Indian Post.");
       }
     } catch (err) {
-      
+
       setTrackingError("Failed to fetch tracking details. Please try again.");
     } finally {
       setTrackingLoading(false);
@@ -454,7 +472,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         }));
       }
     } catch (err) {
-      
+
       setIndividualTrackingData(prev => ({
         ...prev,
         [stickerCode]: { error: "Failed to fetch tracking details.", loading: false }
@@ -615,7 +633,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                   <Truck className="w-4 h-4 text-[#0D9740]" />
                   <span>Transport Name</span>
                 </div>
-                <p className="text-[13px] font-bold text-[#0F291B]">{shipment.transporter_name || "Not Assigned"}</p>
+                <p className="text-[13px] font-bold text-[#0F291B]">{displayTransporterName}</p>
               </div>
 
               {/* Shipment Date */}
@@ -655,6 +673,12 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                     <div className="flex justify-between font-bold text-[#1E532E]">
                       <span>Amount</span><span>₹{Number(tx.amount).toLocaleString("en-IN")}</span>
                     </div>
+                    {tx.status && (
+                      <div className="flex justify-between font-bold">
+                        <span className="text-zinc-500">Status</span>
+                        <span className={tx.status === "Success" ? "text-emerald-600" : "text-orange-600"}>{tx.status}</span>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -1110,7 +1134,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                     <span>Transport Name</span>
                   </div>
                   <p className="font-bold text-[#0F291B] text-sm">
-                    {shipment.transporter_name || "Not Assigned"}
+                    {displayTransporterName}
                   </p>
                 </div>
 
@@ -1162,6 +1186,12 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                         <span>Amount:</span>
                         <span>₹{Number(tx.amount).toLocaleString('en-IN')}</span>
                       </div>
+                      {tx.status && (
+                        <div className="flex justify-between font-bold">
+                          <span className="text-zinc-500">Status:</span>
+                          <span className={tx.status === "Success" ? "text-emerald-600" : "text-orange-600"}>{tx.status}</span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

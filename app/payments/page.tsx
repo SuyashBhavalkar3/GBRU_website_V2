@@ -68,6 +68,9 @@ export default function PaymentsPage() {
               const isFullPayment = o.payupreferedmode === "Full Payment" || String(o.payment_type || "").toLowerCase() === "full payment";
               const isBookingPaid = Number(o.received_amount || 0) >= Number(o.payupreferedamount || 0);
               
+              const isCancelled = String(o.status || "").toLowerCase() === "cancelled";
+              if (isCancelled) return false;
+
               if (isFullPayment) {
                 return Number(o.pending_amount || 0) > 0;
               } else {
@@ -99,7 +102,8 @@ export default function PaymentsPage() {
       }
 
       const parsed = JSON.parse(stored);
-      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      let mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      if (mobile_no?.includes("@")) mobile_no = mobile_no.split("@")[0];
       const email = parsed.user_id && parsed.user_id.includes("@") ? parsed.user_id : (parsed.email || "");
 
       const isFullPayment = order.payupreferedmode === "Full Payment" || String(order.payment_type || "").toLowerCase() === "full payment";

@@ -262,13 +262,13 @@ const Login = () => {
                 Help Center
               </Link>
               <div className="flex justify-center w-full">
-                <a 
-                  href="#" 
+                <Link 
+                  href="/privacy-policy" 
                   className="text-[#6B7280] hover:text-[#006B21] transition-colors border-b border-[#6B7280] hover:border-[#006B21]" 
                   style={{ fontSize: '14px', fontFamily: 'Roboto, sans-serif', fontWeight: 500, paddingBottom: '1px' }}
                 >
                   Privacy Policy & Terms
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -399,13 +399,13 @@ const Login = () => {
             >
               Help Center
             </Link>
-            <a 
-              href="#" 
+            <Link 
+              href="/privacy-policy" 
               className="text-white/85 hover:text-white transition-colors text-[11px] font-medium" 
               style={{ fontFamily: 'Roboto, sans-serif' }}
             >
               Privacy Policy & Terms
-            </a>
+            </Link>
           </div>
         </div>
       </div>
