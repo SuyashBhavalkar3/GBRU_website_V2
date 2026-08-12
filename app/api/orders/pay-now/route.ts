@@ -14,7 +14,7 @@ async function _postHandler(request: Request) {
     const systemApiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !systemApiKey || !systemApiSecret) {
-      
+
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -30,7 +30,7 @@ async function _postHandler(request: Request) {
     });
 
     const userDetailsData = await userDetailsRes.json();
-    
+
     if (!userDetailsData?.message?.status || !userDetailsData?.message?.data) {
       return NextResponse.json({ error: 'Failed to retrieve user details' }, { status: 400 });
     }
@@ -38,7 +38,7 @@ async function _postHandler(request: Request) {
     const userData = userDetailsData.message.data;
     const customerName = userData.Customer_name || userData.customer_name || 'Customer';
     const customerEmail = userData.user_id || userData.email_id || email || 'utkarsh.rathore@shoption.in';
-    
+
     let customerPhone = userData.mobile_no || mobile_no || '';
     if (customerPhone.startsWith("+91")) {
       customerPhone = customerPhone.replace("+91", "");
@@ -72,12 +72,11 @@ async function _postHandler(request: Request) {
     return NextResponse.json({
       status: true,
       token: token,
-      actionUrl: 'https://pg.shoption.in/Payment/StartPayment'
-    });
-  } catch (error: any) {
-    
-    return NextResponse.json({ error: 'Failed to generate payment token', msg: error.message }, { status: 500 });
+      actionUrl: process.env.PAYMENT_GATEWAY_URL;
+    } catch (error: any) {
+
+      return NextResponse.json({ error: 'Failed to generate payment token', msg: error.message }, { status: 500 });
+    }
   }
-}
 
 export const POST = withEncryption(_postHandler);

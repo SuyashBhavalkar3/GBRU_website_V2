@@ -14,7 +14,7 @@ async function _postHandler(request: Request) {
     const apiSecret = process.env.API_SECRET;
 
     if (!baseUrl || !apiKey || !apiSecret) {
-      
+
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -71,7 +71,7 @@ async function _postHandler(request: Request) {
 
     if (!placeOrderRes.ok) {
       const errText = await placeOrderRes.text();
-      
+
       return NextResponse.json({ error: 'Failed to place order in ERP', details: errText }, { status: placeOrderRes.status });
     }
 
@@ -86,7 +86,7 @@ async function _postHandler(request: Request) {
     // Step 3: Format customer details for payment token
     const customerName = userData.message.data.Customer_name || userData.message.data.customer_name || 'Customer';
     const customerEmail = userData.message.data.user_id || userData.message.data.email_id || email || 'utkarsh.rathore@shoption.in';
-    
+
     let customerPhone = userData.message.data.mobile_no || mobile_no || '';
     if (customerPhone.startsWith("+91")) {
       customerPhone = customerPhone.replace("+91", "");
@@ -124,12 +124,11 @@ async function _postHandler(request: Request) {
       sales_order: salesOrder,
       token: token,
       paymentMode: payment_type === 'Full Payment' ? 'full' : 'booking',
-      actionUrl: 'https://pg.shoption.in/Payment/StartPayment'
-    });
-  } catch (error: any) {
-    
-    return NextResponse.json({ error: 'Internal server error', msg: error.message }, { status: 500 });
+      actionUrl: process.env.PAYMENT_GATEWAY_URL
+    } catch (error: any) {
+
+      return NextResponse.json({ error: 'Internal server error', msg: error.message }, { status: 500 });
+    }
   }
-}
 
 export const POST = withEncryption(_postHandler);
