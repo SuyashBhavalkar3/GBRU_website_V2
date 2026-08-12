@@ -435,6 +435,13 @@ export default function UserProfile() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Restrict size to 1 MB (1 * 1024 * 1024 bytes)
+    const MAX_SIZE = 1 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      showToast("Photo size must be less than 1 MB.", "error");
+      return;
+    }
+
     // Show local preview immediately
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -1153,6 +1160,7 @@ export default function UserProfile() {
                   className="hidden"
                 />
               </label>
+              <p className="text-[10px] text-zinc-400 font-semibold mt-1">Allowed formats: JPG, PNG. Max limit: 1 MB.</p>
             </div>
 
             {/* Read-Only Account Details */}
