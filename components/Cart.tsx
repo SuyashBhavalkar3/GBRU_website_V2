@@ -504,41 +504,12 @@ export default function Cart() {
                 </h3>
 
                  <div className="flex flex-col gap-4 text-sm text-[#374151]">
-                  <div className="flex justify-between">
-                    <span className="text-zinc-500">M.R.P. Subtotal</span>
-                    <span className="font-bold">₹{formatPrice(totalMrp)}</span>
-                  </div>
-                  {isFullPayment && totalFullPaymentDiscount > 0 && (
-                    <div className="flex justify-between text-[#0d9740]">
-                      <span>Full Pay Discount</span>
-                      <span>-₹{formatPrice(totalFullPaymentDiscount)}</span>
-                    </div>
-                  )}
-                  {!isFullPayment && totalCodDiscount > 0 && (
-                    <div className="flex justify-between text-[#0d9740]">
-                      <span>COD Discount</span>
-                      <span>-₹{formatPrice(totalCodDiscount)}</span>
-                    </div>
-                  )}
-
-                  <div className="flex justify-between pb-4 border-b border-zinc-100">
-                    <span className="text-zinc-500">Taxes & Charges</span>
-                    <span className="font-bold text-[#0d9740] text-[11px] bg-[#EBF5EE] py-0.5 px-2 rounded">INCLUSIVE</span>
-                  </div>
                   <div className="flex justify-between items-baseline pt-2">
-                    <span className="font-bold text-[#0F291B] text-[16px]">Pay Now</span>
+                    <span className="font-bold text-[#0F291B] text-[16px]">Total Amount</span>
                     <span className="font-extrabold text-[#0D9740] text-[28px]">
-                      ₹{formatPrice(totalPayNow)}
+                      ₹{formatPrice(cartSummary?.total_amount || 0)}
                     </span>
                   </div>
-                  {totalPayOnDelivery > 0 && (
-                    <div className="flex justify-between items-baseline pt-1">
-                      <span className="font-bold text-zinc-500 text-[14px]">Pay on Delivery</span>
-                      <span className="font-bold text-zinc-700 text-[18px]">
-                        ₹{formatPrice(totalPayOnDelivery)}
-                      </span>
-                    </div>
-                  )}
                 </div>
 
                 {/* Checkout CTA */}
