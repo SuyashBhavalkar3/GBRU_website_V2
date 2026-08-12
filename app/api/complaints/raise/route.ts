@@ -4,7 +4,20 @@ import { NextResponse } from 'next/server';
 async function _postHandler(request: Request) {
   try {
     const incomingFormData = await request.formData();
-    const mobile_no = incomingFormData.get("mobile_no")?.toString();
+    let mobile_no = incomingFormData.get("mobile_no")?.toString() || "";
+
+    // Extract and clean mobile number from payload
+    const sanitizeMobileNumber = (mobile: string): string => {
+      if (!mobile) return "";
+      const part = mobile.includes("@") ? mobile.split("@")[0] : mobile;
+      const digits = part.replace(/\D/g, "");
+      if (digits.length === 12 && digits.startsWith("91")) {
+        return digits.slice(2);
+      }
+      return digits;
+    };
+
+    mobile_no = sanitizeMobileNumber(mobile_no);
 
     if (!mobile_no) {
       return NextResponse.json({ error: 'Mobile number is required' }, { status: 400 });

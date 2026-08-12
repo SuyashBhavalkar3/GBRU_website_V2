@@ -22,6 +22,7 @@ interface ERPTicket {
   date?: string;
   subject?: string;
   complaint_subject?: string;
+  raised_on?: string;
 }
 
 import { useShoptionSetting } from "@/hooks/useShoptionSetting";
@@ -501,8 +502,24 @@ export default function SupportHelpPage() {
                             <p className="text-zinc-600 text-xs font-medium mb-2 leading-relaxed whitespace-pre-wrap">{tkt.description}</p>
                             <div className="text-[10px] text-zinc-400 font-medium text-right">
                               Created on: {(() => {
-                                const standardDate = tkt.creation || tkt.created || tkt.created_on || tkt.created_at || tkt.creation_date || tkt.modified || tkt.date;
-                                if (standardDate) return standardDate.split(" ")[0];
+                                const standardDate = tkt.raised_on || tkt.creation || tkt.created || tkt.created_on || tkt.created_at || tkt.creation_date || tkt.modified || tkt.date;
+                                if (standardDate) {
+                                  try {
+                                    const datePart = standardDate.split(" ")[0];
+                                    if (datePart.includes("-")) {
+                                      const parts = datePart.split("-");
+                                      if (parts.length === 3) {
+                                        if (parts[0].length === 4) {
+                                          return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                                        }
+                                        return datePart;
+                                      }
+                                    }
+                                    return datePart;
+                                  } catch (e) {
+                                    return standardDate;
+                                  }
+                                }
                                 const matchYMD = tkt.name ? tkt.name.match(/C[M|O][P|M]-(\d{4})(\d{2})?-?/) : null;
                                 if (matchYMD) {
                                   const year = matchYMD[1];
