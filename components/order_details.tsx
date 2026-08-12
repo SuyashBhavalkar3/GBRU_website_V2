@@ -288,6 +288,59 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
     }
   }
 
+  const transportEntries: { transporter_name: string; shipment_date: string; status: string }[] = [];
+  const seenTransporters = new Set<string>();
+
+  if (order.invoices && order.invoices.length > 0) {
+    for (const inv of order.invoices) {
+      let invDate = inv.dispatch_date || inv.invoice_date || shipment.date || summary.order_date || "--";
+      if (invDate && invDate.includes(" ")) {
+        invDate = invDate.split(" ")[0]; // Get only the YYYY-MM-DD date part
+      }
+      const invStatus = inv.dispatch_status || shipment.status || "Dispatched";
+      
+      if (inv.selected_transport_entries && inv.selected_transport_entries.length > 0) {
+        for (const entry of inv.selected_transport_entries) {
+          const name = entry.transporter_name || entry.transporter || "Not Assigned";
+          const key = `${name.toLowerCase()}_${invDate}_${invStatus}`;
+          if (!seenTransporters.has(key)) {
+            seenTransporters.add(key);
+            transportEntries.push({
+              transporter_name: name,
+              shipment_date: invDate,
+              status: invStatus
+            });
+          }
+        }
+      } else if (inv.lr_and_stickers && inv.lr_and_stickers.length > 0) {
+        for (const entry of inv.lr_and_stickers) {
+          const name = entry.transporter_name || entry.transporter || "Not Assigned";
+          const key = `${name.toLowerCase()}_${invDate}_${invStatus}`;
+          if (!seenTransporters.has(key)) {
+            seenTransporters.add(key);
+            transportEntries.push({
+              transporter_name: name,
+              shipment_date: invDate,
+              status: invStatus
+            });
+          }
+        }
+      }
+    }
+  }
+
+  if (transportEntries.length === 0) {
+    let shipDate = shipment.date || summary.order_date || "--";
+    if (shipDate && shipDate.includes(" ")) {
+      shipDate = shipDate.split(" ")[0];
+    }
+    transportEntries.push({
+      transporter_name: shipment.transporter_name || "Not Assigned",
+      shipment_date: shipDate,
+      status: shipment.status || "Pending Payment"
+    });
+  }
+
   const displayTransporterName = shipment.transporter_name || invoiceTransporterName || "Not Assigned";
 
   // Extract LR and stickers
@@ -626,33 +679,39 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
           <div className="bg-white rounded-[16px] border border-zinc-200" style={{ paddingTop: "24px", paddingRight: "12px", paddingBottom: "24px", paddingLeft: "14px", display: "flex", flexDirection: "column", gap: "16px" }}>
             <h3 className="text-[16px] font-bold text-[#0F291B]">Transport Details</h3>
 
-            <div className="grid grid-cols-2 gap-4">
-              {/* Transport Name */}
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 text-zinc-400 font-bold text-[10px] uppercase tracking-wide">
-                  <Truck className="w-4 h-4 text-[#0D9740]" />
-                  <span>Transport Name</span>
-                </div>
-                <p className="text-[13px] font-bold text-[#0F291B]">{displayTransporterName}</p>
-              </div>
+            <div className="flex flex-col gap-6">
+              {transportEntries.map((entry, idx) => (
+                <div key={idx} className={`flex flex-col gap-4 ${idx > 0 ? "border-t border-zinc-100 pt-4" : ""}`}>
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Transport Name */}
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1.5 text-zinc-400 font-bold text-[10px] uppercase tracking-wide">
+                        <Truck className="w-4 h-4 text-[#0D9740]" />
+                        <span>Transport Name</span>
+                      </div>
+                      <p className="text-[13px] font-bold text-[#0F291B]">{entry.transporter_name}</p>
+                    </div>
 
-              {/* Shipment Date */}
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 text-zinc-400 font-bold text-[10px] uppercase tracking-wide">
-                  <Calendar className="w-4 h-4 text-[#0D9740]" />
-                  <span>Shipment Date</span>
-                </div>
-                <p className="text-[13px] font-bold text-[#0F291B]">{shipment.date || summary.order_date || "--"}</p>
-              </div>
-            </div>
+                    {/* Shipment Date */}
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1.5 text-zinc-400 font-bold text-[10px] uppercase tracking-wide">
+                        <Calendar className="w-4 h-4 text-[#0D9740]" />
+                        <span>Shipment Date</span>
+                      </div>
+                      <p className="text-[13px] font-bold text-[#0F291B]">{entry.shipment_date}</p>
+                    </div>
+                  </div>
 
-            {/* Status */}
-            <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-zinc-400 font-bold text-[10px] uppercase tracking-wide">
-                <Info className="w-4 h-4 text-amber-500" />
-                <span>Status</span>
-              </div>
-              <p className="text-[13px] font-extrabold text-amber-600">{shipment.status || "Pending Payment"}</p>
+                  {/* Status */}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5 text-zinc-400 font-bold text-[10px] uppercase tracking-wide">
+                      <Info className="w-4 h-4 text-amber-500" />
+                      <span>Status</span>
+                    </div>
+                    <p className="text-[13px] font-extrabold text-amber-600">{entry.status}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -1126,39 +1185,43 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
                 Transport Details
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-                {/* Transporter Name */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2 text-zinc-400 font-bold text-xs uppercase font-roboto">
-                    <Truck className="w-4 h-4 shrink-0 text-[#0D9740]" />
-                    <span>Transport Name</span>
-                  </div>
-                  <p className="font-bold text-[#0F291B] text-sm">
-                    {displayTransporterName}
-                  </p>
-                </div>
+              <div className="flex flex-col gap-6">
+                {transportEntries.map((entry, idx) => (
+                  <div key={idx} className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left ${idx > 0 ? "border-t border-zinc-100 pt-6" : ""}`}>
+                    {/* Transporter Name */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2 text-zinc-400 font-bold text-xs uppercase font-roboto">
+                        <Truck className="w-4 h-4 shrink-0 text-[#0D9740]" />
+                        <span>Transport Name</span>
+                      </div>
+                      <p className="font-bold text-[#0F291B] text-sm">
+                        {entry.transporter_name}
+                      </p>
+                    </div>
 
-                {/* Shipment Date */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2 text-zinc-400 font-bold text-xs uppercase font-roboto">
-                    <Calendar className="w-4 h-4 shrink-0 text-[#0D9740]" />
-                    <span>Shipment Date</span>
-                  </div>
-                  <p className="font-bold text-[#0F291B] text-sm">
-                    {shipment.date || summary.order_date || "--"}
-                  </p>
-                </div>
+                    {/* Shipment Date */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2 text-zinc-400 font-bold text-xs uppercase font-roboto">
+                        <Calendar className="w-4 h-4 shrink-0 text-[#0D9740]" />
+                        <span>Shipment Date</span>
+                      </div>
+                      <p className="font-bold text-[#0F291B] text-sm">
+                        {entry.shipment_date}
+                      </p>
+                    </div>
 
-                {/* Transport Status */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2 text-zinc-400 font-bold text-xs uppercase font-roboto">
-                    <Info className="w-4 h-4 shrink-0 text-amber-500" />
-                    <span>Status</span>
+                    {/* Transport Status */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2 text-zinc-400 font-bold text-xs uppercase font-roboto">
+                        <Info className="w-4 h-4 shrink-0 text-amber-500" />
+                        <span>Status</span>
+                      </div>
+                      <p className="font-extrabold text-amber-600 text-sm">
+                        {entry.status}
+                      </p>
+                    </div>
                   </div>
-                  <p className="font-extrabold text-amber-600 text-sm">
-                    {shipment.status || "Pending Payment"}
-                  </p>
-                </div>
+                ))}
               </div>
             </div>
 
