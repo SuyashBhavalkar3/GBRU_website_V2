@@ -1,5 +1,6 @@
 import { withEncryption } from "@/utils/withEncryption";
 import { NextResponse } from 'next/server';
+import { createB2CLead } from '@/lib/lead';
 
 async function _postHandler(request: Request) {
   try {
@@ -10,7 +11,6 @@ async function _postHandler(request: Request) {
     const apiSecret = process.env.API_SECRET;
 
     if (!apiKey || !apiSecret) {
-      
       return NextResponse.json({ error: 'Internal server error: Missing credentials' }, { status: 500 });
     }
 
@@ -35,13 +35,18 @@ async function _postHandler(request: Request) {
     try {
       data = JSON.parse(responseText);
     } catch (e) {
-      
       return NextResponse.json({ error: 'Invalid response from server' }, { status: 500 });
+    }
+
+    // Trigger B2C lead creation (which registers the campaign_name) if registration/lead succeeded
+    if (response.ok && data?.message?.status) {
+      try {
+        await createB2CLead(name, mobile_no);
+      } catch (leadErr: any) {}
     }
 
     return NextResponse.json(data, { status: response.status });
   } catch (error: any) {
-    
     return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 });
   }
 }

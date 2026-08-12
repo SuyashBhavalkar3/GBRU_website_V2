@@ -56,15 +56,16 @@ async function _postHandler(request: Request) {
     const status = userData.message?.status;
     const dataObj = userData.message?.data;
 
-    // A user is new only if the ERP response explicitly says no user exists.
-    // If status is true and data is an object, treat it as an existing user,
-    // even when registration_completed is false.
+    // A user is new if the ERP details says so, OR if the verify_otp response does not contain a lead
+    const existingLead = verifyData.message?.lead;
     const isNewUser =
       status === false ||
       status === 'false' ||
       dataObj === null ||
       dataObj === undefined ||
-      (Array.isArray(dataObj) && dataObj.length === 0);
+      (Array.isArray(dataObj) && dataObj.length === 0) ||
+      !existingLead ||
+      existingLead.trim() === "";
 
     if (isNewUser) {
       return NextResponse.json({
@@ -75,24 +76,14 @@ async function _postHandler(request: Request) {
       });
     }
 
-    // Set lead ID: use existing lead from verify_otp response if present, otherwise call Lead Creation API
-    const existingLead = verifyData.message?.lead;
-    if (existingLead && existingLead.trim() !== "") {
-      dataObj.lead_id = existingLead;
-    } else {
-      try {
-        const leadName = dataObj.customer_name || dataObj.Customer_name || dataObj.full_name || dataObj.first_name || 'Customer';
-        const leadResult = await createB2CLead(leadName, mobile_no);
-        if (leadResult.success && leadResult.data) {
-          const leadId = leadResult.data.message?.name || leadResult.data.message?.lead || leadResult.data.name;
-          if (leadId) {
-            dataObj.lead_id = leadId;
-          }
-        }
-      } catch (leadErr) {
-        
-      }
-    }
+    // Set lead ID for existing user
+    dataObj.lead_id = existingLead;
+
+    // Call B2C lead creation for existing user
+    try {
+      const leadName = dataObj.customer_name || dataObj.Customer_name || dataObj.full_name || dataObj.first_name || 'Customer';
+      await createB2CLead(leadName, mobile_no);
+    } catch (leadErr: any) {}
 
     return NextResponse.json({
       success: true,

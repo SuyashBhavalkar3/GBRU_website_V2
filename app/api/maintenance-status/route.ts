@@ -4,10 +4,8 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    console.log(`[Maintenance SSE] Env variables check -> PROJECT_ID: "${process.env.FIREBASE_PROJECT_ID}", EMAIL: "${process.env.FIREBASE_CLIENT_EMAIL}", KEY exists: ${!!process.env.FIREBASE_PRIVATE_KEY}`);
     const db = getDB();
     if (!db) {
-      console.error("[Maintenance SSE] Database initialization returned null");
       return new Response(JSON.stringify({ error: "Database not initialized" }), {
         status: 500,
         headers: { "Content-Type": "application/json" }
@@ -28,12 +26,10 @@ export async function GET() {
           maintenanceActive = !!data?.recom_gbru_shoption;
         }
         
-        console.log(`[Maintenance SSE] Pushing state change -> Active: ${maintenanceActive}`);
         const dataStr = `data: ${JSON.stringify({ maintenance: maintenanceActive })}\n\n`;
         writer.write(encoder.encode(dataStr)).catch(() => { });
       },
       (error) => {
-        console.error(`[Maintenance SSE] Firestore error: ${error.message}`);
         const dataStr = `data: ${JSON.stringify({ maintenance: false, error: error.message })}\n\n`;
         writer.write(encoder.encode(dataStr)).catch(() => { });
       }
@@ -69,7 +65,6 @@ export async function GET() {
       },
     });
   } catch (err: any) {
-    console.error(`[Maintenance SSE] GET Route Crash: ${err.message}`);
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" }

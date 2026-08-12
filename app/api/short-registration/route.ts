@@ -35,9 +35,7 @@ async function _postHandler(request: Request) {
     if (data?.message?.status) {
       try {
         await createB2CLead(name, mobile_no);
-      } catch (leadErr) {
-        
-      }
+      } catch (leadErr: any) {}
     }
 
     return NextResponse.json(data);
