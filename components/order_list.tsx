@@ -204,6 +204,9 @@ export default function OrderList() {
 
   const changeCalendarMonth = (offset: number) => {
     const nextMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + offset, 1);
+    if (nextMonth < new Date(2025, 3, 1)) {
+      return;
+    }
     setCalendarMonth(nextMonth);
   };
 
@@ -606,7 +609,8 @@ export default function OrderList() {
                   <button
                     type="button"
                     onClick={() => changeCalendarMonth(-1)}
-                    className="p-1.5 hover:bg-emerald-50 rounded-full text-emerald-800 transition-colors"
+                    disabled={calendarMonth.getFullYear() === 2025 && calendarMonth.getMonth() <= 3}
+                    className={`p-1.5 rounded-full transition-colors ${calendarMonth.getFullYear() === 2025 && calendarMonth.getMonth() <= 3 ? 'text-zinc-300 cursor-not-allowed' : 'hover:bg-emerald-50 text-emerald-800'}`}
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
