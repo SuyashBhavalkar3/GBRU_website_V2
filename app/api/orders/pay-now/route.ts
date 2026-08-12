@@ -52,7 +52,7 @@ async function _postHandler(request: Request) {
     const protocol = host.includes('localhost') ? 'http' : 'https';
     let websiteBaseUrl = `${protocol}://${host}`;
     if (!host || host.includes('localhost') || host.includes('127.0.0.1')) {
-      websiteBaseUrl = 'https://recom.gbru.in';
+      websiteBaseUrl = 'https://gbru.shoption.in';
     }
 
     const callbackUrl = `${websiteBaseUrl}/place-order`;

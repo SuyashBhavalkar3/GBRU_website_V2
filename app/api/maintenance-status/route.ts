@@ -23,10 +23,10 @@ export async function GET() {
         let maintenanceActive = false;
         if (docSnap.exists) {
           const data = docSnap.data();
-          // Check the ERP-GBRU or recom_gbru_shoption fields
-          maintenanceActive = !!(data?.['ERP-GBRU'] || data?.recom_gbru_shoption);
+          // Check the ERP-GBRU or prod_gbru_shoption fields
+          maintenanceActive = !!(data?.['prod_gbru_shoption'] || data?.prod_gbru_shoption);
         }
-        
+
         const dataStr = `data: ${JSON.stringify({ maintenance: maintenanceActive })}\n\n`;
         writer.write(encoder.encode(dataStr)).catch(() => { });
       },
