@@ -87,7 +87,36 @@ export default function PopularItemsModal() {
     return () => window.removeEventListener("productAddedToCart" as any, handleAddedToCart);
   }, []);
 
+  const [selectedItemForPayment, setSelectedItemForPayment] = useState<any | null>(null);
+  const [paymentOption, setPaymentOption] = useState<"full" | "booking">("full");
+  const [submittingPayment, setSubmittingPayment] = useState(false);
+
   const handleAddPopularToCart = async (item: any) => {
+    setAddingCartItemCode(item.item_code);
+    try {
+      const res = await fetch("/api/products/details", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ item_code: item.item_code }),
+      });
+      const data = await res.json();
+      if (data?.message?.status && data.message.data) {
+        setSelectedItemForPayment({ ...item, ...data.message.data });
+      } else {
+        setSelectedItemForPayment(item);
+      }
+      setPaymentOption("full");
+    } catch {
+      setSelectedItemForPayment(item);
+      setPaymentOption("full");
+    } finally {
+      setAddingCartItemCode(null);
+    }
+  };
+
+  const handleConfirmAddToCart = async () => {
+    if (!selectedItemForPayment) return;
+    const item = selectedItemForPayment;
     const userStr = localStorage.getItem("gbru_user");
     if (!userStr) {
       router.push("/login");
@@ -99,7 +128,7 @@ export default function PopularItemsModal() {
       const mobile_no = user.customer_id?.split("-")[1] || user.user_id || user.mobile_no || "";
       if (!mobile_no) return;
 
-      setAddingCartItemCode(item.item_code);
+      setSubmittingPayment(true);
 
       const res = await fetch("/api/cart/add", {
         method: "POST",
@@ -111,15 +140,15 @@ export default function PopularItemsModal() {
               item: item.item_code,
               quantity: item.moq || 1,
               is_moq_applicable: 0,
-              payment_type: "Full Payment",
-              full_payment_amount: item.price || 0.0,
-              full_payment_discount: item.discount_amount || 0.0,
-              cod_value: 0.0,
-              cod_display: 0.0,
-              cod_discount: 0.0,
-              COD_value: 0.0,
-              COD_Display: 0.0,
-              COD_discount: 0.0,
+              payment_type: paymentOption === "full" ? "Full Payment" : "Cash On Delivery",
+              full_payment_amount: item.full_payment_amount || item.price || 0.0,
+              full_payment_discount: item.full_payment_discount || 0.0,
+              cod_value: item.cod_value || item.COD_value || 0.0,
+              cod_display: item.cod_display || item.COD_Display || 0.0,
+              cod_discount: item.cod_discount || item.COD_discount || 0.0,
+              COD_value: item.cod_value || item.COD_value || 0.0,
+              COD_Display: item.cod_display || item.COD_Display || 0.0,
+              COD_discount: item.cod_discount || item.COD_discount || 0.0,
             },
           ],
         }),
@@ -129,11 +158,14 @@ export default function PopularItemsModal() {
       if (resJson.message?.status || resJson.success) {
         setAddedItemsState((prev) => ({ ...prev, [item.item_code]: true }));
         window.dispatchEvent(new Event("cartUpdate"));
+        setSelectedItemForPayment(null);
+      } else {
+        alert(resJson.message?.message || resJson.error || "Failed to add to cart");
       }
-    } catch (err) {
-      
+    } catch (err: any) {
+      alert(`Error adding to cart: ${err.message}`);
     } finally {
-      setAddingCartItemCode(null);
+      setSubmittingPayment(false);
     }
   };
 
@@ -260,6 +292,122 @@ export default function PopularItemsModal() {
           </button>
         </div>
       </div>
+
+      {/* ── Payment Option Selection Popup ── */}
+      {selectedItemForPayment && (
+        <div className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSelectedItemForPayment(null)}>
+          <div
+            className="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl flex flex-col gap-4 text-left border border-zinc-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[11px] text-zinc-400 font-semibold uppercase tracking-wide mb-0.5">Select Payment Option</p>
+                <h4 className="font-bold text-[#0F291B] text-sm line-clamp-2 leading-snug">{selectedItemForPayment.item_name}</h4>
+              </div>
+              <button onClick={() => setSelectedItemForPayment(null)} className="text-zinc-400 hover:text-zinc-700 mt-0.5 shrink-0">
+                ✕
+              </button>
+            </div>
+
+            {/* Payment Options */}
+            <div className="flex flex-col gap-3">
+              {/* Full Payment Card */}
+              <div
+                onClick={() => setPaymentOption("full")}
+                className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                  paymentOption === "full" ? "border-[#0d9740] bg-[#F5F5F5]" : "border-zinc-200 bg-[#F5F5F5] hover:border-zinc-300"
+                }`}
+              >
+                {paymentOption === "full" && (
+                  <div className="absolute top-[-8px] right-[-8px] bg-[#0d9740] text-white w-5 h-5 rounded-full flex items-center justify-center shadow-md text-xs">✓</div>
+                )}
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${paymentOption === "full" ? "border-[#0D9740]" : "border-zinc-400"}`}>
+                    {paymentOption === "full" && <div className="w-2 h-2 rounded-full bg-[#0D9740]" />}
+                  </div>
+                  <span className="text-[12px] font-bold text-[#6B7280] uppercase tracking-wide">Full Payment</span>
+                  <span className="ml-auto bg-[#DFB33F] text-white text-[9px] font-bold py-0.5 px-2 rounded-full">MOST PREFERRED</span>
+                </div>
+                <div className="h-px bg-zinc-200 mb-2" />
+                <div className="flex flex-col gap-1">
+                  <div className="flex justify-between text-[13px] text-[#4A4A4A]">
+                    <span>Order Total</span>
+                    <span>₹{Number(selectedItemForPayment.actual_rate || selectedItemForPayment.price || 0).toLocaleString("en-IN")}</span>
+                  </div>
+                  <div className="flex justify-between text-[13px] text-[#0D9740]">
+                    <span>Instant Discount</span>
+                    <span>- ₹{Number((selectedItemForPayment.actual_rate || selectedItemForPayment.price || 0) - (selectedItemForPayment.full_payment_amount || selectedItemForPayment.price || 0)).toLocaleString("en-IN")}</span>
+                  </div>
+                  <div className="flex justify-between mt-1 pt-1 border-t border-zinc-200">
+                    <span className="text-[15px] font-bold text-black">Pay Now</span>
+                    <span className="text-[15px] font-bold text-black">₹{Number(selectedItemForPayment.full_payment_amount || selectedItemForPayment.price || 0).toLocaleString("en-IN")}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Book Now / COD Card */}
+              {Number(selectedItemForPayment.cod_value || selectedItemForPayment.COD_value || 0) > 0 && (
+                <div
+                  onClick={() => setPaymentOption("booking")}
+                  className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                    paymentOption === "booking" ? "border-[#0d9740] bg-white" : "border-zinc-200 bg-white hover:border-zinc-300"
+                  }`}
+                >
+                  {paymentOption === "booking" && (
+                    <div className="absolute top-[-8px] right-[-8px] bg-[#0d9740] text-white w-5 h-5 rounded-full flex items-center justify-center shadow-md text-xs">✓</div>
+                  )}
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${paymentOption === "booking" ? "border-[#0D9740]" : "border-zinc-400"}`}>
+                      {paymentOption === "booking" && <div className="w-2 h-2 rounded-full bg-[#0D9740]" />}
+                    </div>
+                    <span className="text-[12px] font-bold text-[#6B7280] uppercase tracking-wide">Book Now &amp; Pay On Delivery</span>
+                  </div>
+                  <div className="bg-[#F5F9F7] rounded-xl p-3 flex flex-col gap-1.5">
+                    <div className="flex justify-between text-[13px] text-[#4A4A4A]">
+                      <span>Order Total</span>
+                      <span className="font-bold text-[#1A1A1A]">₹{Number(selectedItemForPayment.actual_rate || selectedItemForPayment.price || 0).toLocaleString("en-IN")}</span>
+                    </div>
+                    <div className="flex justify-between text-[12px] text-[#0D9740]">
+                      <span>Instant Discount</span>
+                      <span>- ₹{Number((selectedItemForPayment.actual_rate || selectedItemForPayment.price || 0) - (selectedItemForPayment.price || 0)).toLocaleString("en-IN")}</span>
+                    </div>
+                    <div className="flex justify-between text-[12px] bg-[#D4E8DC] px-2 py-1 rounded text-[#0F291B] mt-0.5">
+                      <span>Effective Total</span>
+                      <span>₹{Number(selectedItemForPayment.price || 0).toLocaleString("en-IN")}</span>
+                    </div>
+                    <div className="flex justify-between mt-1">
+                      <span className="font-bold text-black text-[13px]">Pay Now (Booking)</span>
+                      <span className="font-bold text-[#0D9740] text-[14px]">₹{Number(selectedItemForPayment.cod_display || selectedItemForPayment.COD_Display || 0).toLocaleString("en-IN")}</span>
+                    </div>
+                    <div className="pt-2 border-t border-zinc-200 flex justify-between">
+                      <span className="font-bold text-[#6B7280] text-[13px]">Pay on Delivery</span>
+                      <span className="font-bold text-black text-[14px]">₹{Number(selectedItemForPayment.cod_value || selectedItemForPayment.COD_value || 0).toLocaleString("en-IN")}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Actions */}
+            <button
+              onClick={handleConfirmAddToCart}
+              disabled={submittingPayment}
+              className="w-full h-12 rounded-2xl bg-[#0D9740] hover:bg-[#0b8234] text-white font-bold text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 mt-2"
+            >
+              {submittingPayment ? (
+                <>
+                  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
+                  Adding to Cart...
+                </>
+              ) : (
+                "Confirm & Add to Cart"
+              )}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
