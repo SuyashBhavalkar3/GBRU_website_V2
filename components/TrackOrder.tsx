@@ -6,7 +6,10 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
+import { useShoptionSetting } from "@/hooks/useShoptionSetting";
+
 export default function TrackOrder() {
+  const { whatsappLink, whatsappEnabled } = useShoptionSetting();
   const [orderId, setOrderId] = useState("");
   const [mobile, setMobile] = useState("");
   const [trackingResult, setTrackingResult] = useState<"idle" | "loading" | "success" | "notfound">("idle");
@@ -161,9 +164,21 @@ export default function TrackOrder() {
 
             {/* Support Buttons Row */}
             <div className="max-w-[480px] w-full grid grid-cols-2 gap-4">
-              <button className="h-12 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs rounded-[10px] flex items-center justify-center gap-2 shadow-sm transition-all">
-                💬 WhatsApp
-              </button>
+              {whatsappEnabled === 1 ? (
+                <a 
+                  href={whatsappLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="h-12 bg-white hover:bg-zinc-50 border border-zinc-200 text-[#0F291B] font-bold text-xs rounded-[10px] flex items-center justify-center gap-2 shadow-sm transition-all"
+                >
+                  <div className="w-[24px] h-[24px] rounded-full overflow-hidden flex items-center justify-center border border-zinc-200 shrink-0">
+                    <img src="/assets/nova.jpeg" alt="Nova" className="object-cover w-full h-full" />
+                  </div>
+                  Chat with Nova
+                </a>
+              ) : (
+                <div />
+              )}
               <button className="h-12 bg-[#0FA84D] hover:bg-[#0b8a3d] text-white font-bold text-xs rounded-[10px] flex items-center justify-center gap-2 shadow-sm transition-all">
                 📞 Talk to Expert
               </button>

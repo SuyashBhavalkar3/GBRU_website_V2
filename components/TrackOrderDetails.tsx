@@ -7,7 +7,10 @@ import { MapPin, Truck, Home, Phone, MessageCircle, Wrench, Users, Package, Zap,
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
+import { useShoptionSetting } from "@/hooks/useShoptionSetting";
+
 export default function TrackOrderDetails() {
+  const { whatsappLink, whatsappEnabled } = useShoptionSetting();
   const triggerPrintInvoice = () => {
     window.print();
   };
@@ -294,12 +297,19 @@ export default function TrackOrderDetails() {
               <h4 className="font-bold text-[#0F291B] text-sm">Quick Actions</h4>
 
               <div className="flex flex-col gap-3">
-                <button className="w-full h-14 border border-zinc-200 hover:bg-zinc-50 rounded-[14px] text-[13px] font-bold text-[#2C332F] flex items-center justify-start px-3 gap-3 shadow-sm transition-all">
-                  <div className="w-9 h-9 bg-[#EEF2EF] rounded-[10px] flex items-center justify-center shrink-0">
-                    <MessageCircle className="w-[18px] h-[18px] text-[#22C55E] stroke-[2]" />
-                  </div>
-                  WhatsApp Support
-                </button>
+                {whatsappEnabled === 1 && (
+                  <a 
+                    href={whatsappLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="w-full h-14 border border-zinc-200 hover:bg-zinc-50 rounded-[14px] text-[13px] font-bold text-[#2C332F] flex items-center justify-start px-3 gap-3 shadow-sm transition-all"
+                  >
+                    <div className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center border border-zinc-200 shrink-0">
+                      <Image src="/assets/nova.jpeg" alt="Nova" width={36} height={36} className="object-cover w-full h-full" />
+                    </div>
+                    Chat with Nova
+                  </a>
+                )}
                 <button className="w-full h-14 border border-zinc-200 hover:bg-zinc-50 rounded-[14px] text-[13px] font-bold text-[#2C332F] flex items-center justify-start px-3 gap-3 shadow-sm transition-all">
                   <div className="w-9 h-9 bg-[#EEF2EF] rounded-[10px] flex items-center justify-center shrink-0">
                     <Phone className="w-[18px] h-[18px] text-[#164227] stroke-[2]" />
@@ -339,16 +349,23 @@ export default function TrackOrderDetails() {
               </div>
             </div>
 
-            {/* WhatsApp Assistance */}
-            <div className="bg-[#EBF7EF] hover:bg-[#dcf3e4] rounded-[16px] p-4 flex items-center gap-4 cursor-pointer transition-colors border border-black/5">
-              <div className="w-[42px] h-[42px] bg-[#25D366] rounded-[12px] flex items-center justify-center shrink-0">
-                <MessageCircle className="w-5 h-5 text-white stroke-[2]" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-bold text-sm text-[#25D366]">WhatsApp Assistance</span>
-                <span className="text-xs text-[#6B7280]">Chat with us on WhatsApp</span>
-              </div>
-            </div>
+            {/* Chat with Nova Assistance */}
+            {whatsappEnabled === 1 && (
+              <a 
+                href={whatsappLink} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="bg-[#EBF7EF] hover:bg-[#dcf3e4] rounded-[16px] p-4 flex items-center gap-4 cursor-pointer transition-colors border border-black/5"
+              >
+                <div className="w-[42px] h-[42px] rounded-full overflow-hidden flex items-center justify-center border border-zinc-200 shrink-0">
+                  <Image src="/assets/nova.jpeg" alt="Nova" width={42} height={42} className="object-cover w-full h-full" />
+                </div>
+                <div className="flex flex-col text-left">
+                  <span className="font-bold text-sm text-[#0D9740]">Chat with Nova</span>
+                  <span className="text-xs text-[#6B7280]">Get AI support on WhatsApp</span>
+                </div>
+              </a>
+            )}
 
             {/* Raise Service Request */}
             <div className="bg-[#FDF8EB] hover:bg-[#faeed1] rounded-[16px] p-4 flex items-center gap-4 cursor-pointer transition-colors border border-black/5">
