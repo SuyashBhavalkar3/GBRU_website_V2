@@ -8,16 +8,18 @@ export default function MaintenanceGuard() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Avoid running on API routes
+    // Avoid running on API routes or maintenance page itself to avoid redirect loops
     if (pathname.startsWith("/api")) return;
 
-    const checkMaintenance = async () => {
-      try {
-        const res = await fetch(`/api/maintenance-status?t=${Date.now()}`, {
-          cache: "no-store"
-        });
-        if (res.ok) {
-          const data = await res.json();
+    let eventSource: EventSource | null = null;
+    let reconnectTimeout: NodeJS.Timeout | null = null;
+
+    const connectSSE = () => {
+      eventSource = new EventSource("/api/maintenance-status");
+
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
           if (data.maintenance) {
             if (pathname !== "/maintenance") {
               router.replace("/maintenance");
@@ -27,17 +29,28 @@ export default function MaintenanceGuard() {
               router.replace("/");
             }
           }
+        } catch (e) {}
+      };
+
+      eventSource.onerror = () => {
+        // Automatically attempt to reconnect after 3 seconds on drop
+        if (eventSource) {
+          eventSource.close();
         }
-      } catch (err) {
-        
-      }
+        reconnectTimeout = setTimeout(connectSSE, 3000);
+      };
     };
 
-    checkMaintenance();
-    
-    // Check every 10 seconds to respond dynamically to Firestore changes
-    const interval = setInterval(checkMaintenance, 10000);
-    return () => clearInterval(interval);
+    connectSSE();
+
+    return () => {
+      if (eventSource) {
+        eventSource.close();
+      }
+      if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout);
+      }
+    };
   }, [pathname, router]);
 
   return null;

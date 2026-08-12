@@ -1,30 +1,68 @@
-import { withEncryption } from "@/utils/withEncryption";
-import { NextResponse } from 'next/server';
 import { getDB } from '@/lib/firebaseAdmin';
 
 export const dynamic = 'force-dynamic';
 
-async function _getHandler() {
-  try {
-    const db = getDB();
-    if (!db) {
-      return NextResponse.json({ maintenance: false, warning: "Database not initialized" });
-    }
-    const docRef = db.collection('maintenance').doc('mode');
-    const docSnap = await docRef.get();
-
-    if (docSnap.exists) {
-      const data = docSnap.data();
-      const maintenanceActive = !!data?.recom_gbru_shoption;
-      return NextResponse.json({ maintenance: maintenanceActive });
-    }
-
-    return NextResponse.json({ maintenance: false });
-  } catch (error: any) {
-
-    // Safe fallback so website keeps working if Firestore is temporarily down or credentials fail
-    return NextResponse.json({ maintenance: false, error: error.message });
+export async function GET() {
+  const db = getDB();
+  if (!db) {
+    return new Response(JSON.stringify({ error: "Database not initialized" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" }
+    });
   }
-}
 
-export const GET = withEncryption(_getHandler);
+  const responseStream = new TransformStream();
+  const writer = responseStream.writable.getWriter();
+  const encoder = new TextEncoder();
+
+  // Setup Firestore real-time listener
+  const docRef = db.collection('maintenance').doc('mode');
+  const unsubscribe = docRef.onSnapshot(
+    (docSnap) => {
+      let maintenanceActive = false;
+      if (docSnap.exists) {
+        const data = docSnap.data();
+        maintenanceActive = !!data?.prod_gbru_shoption;
+      }
+
+      console.log(`[Maintenance SSE] Pushing state change -> Active: ${maintenanceActive}`);
+      const dataStr = `data: ${JSON.stringify({ maintenance: maintenanceActive })}\n\n`;
+      writer.write(encoder.encode(dataStr)).catch(() => { });
+    },
+    (error) => {
+      console.error(`[Maintenance SSE] Firestore error: ${error.message}`);
+      const dataStr = `data: ${JSON.stringify({ maintenance: false, error: error.message })}\n\n`;
+      writer.write(encoder.encode(dataStr)).catch(() => { });
+    }
+  );
+
+  // Send a heartbeat ping every 15 seconds to prevent client-side timeouts
+  const pingInterval = setInterval(() => {
+    writer.write(encoder.encode(": ping\n\n")).catch(() => { });
+  }, 15000);
+
+  // Clean up on connection close
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+
+  (async () => {
+    try {
+      while (!signal.aborted) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    } catch (_) {
+    } finally {
+      clearInterval(pingInterval);
+      unsubscribe();
+      writer.close().catch(() => { });
+    }
+  })();
+
+  return new Response(responseStream.readable, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache, no-transform',
+      'Connection': 'keep-alive',
+    },
+  });
+}
