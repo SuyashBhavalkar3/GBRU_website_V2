@@ -181,6 +181,9 @@ export default function UserProfile() {
         setUserPhone(`+91 ${mobile_no}`);
         setTempName(fallbackName);
         setTempPhone(`+91 ${mobile_no}`);
+        if (parsed.profile_image) {
+          setProfileImage(parsed.profile_image);
+        }
 
         // 1. Fetch User Details
         const res = await fetch('/api/user-details', {
