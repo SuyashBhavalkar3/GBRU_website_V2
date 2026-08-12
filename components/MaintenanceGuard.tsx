@@ -54,4 +54,4 @@ export default function MaintenanceGuard() {
   }, [pathname, router]);
 
   return null;
-} 
+}
