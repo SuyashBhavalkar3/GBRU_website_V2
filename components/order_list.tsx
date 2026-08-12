@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "./Navbar";
-import { Package, MapPin, Banknote, Bell, Headphones, Phone, CreditCard, ChevronLeft, ChevronRight, Calendar } from "lucide-react";
+import { Package, MapPin, Banknote, Bell, Headphones, Phone, CreditCard, ChevronLeft, ChevronRight, Calendar, BadgeCheck } from "lucide-react";
 import Footer from "./Footer";
 
 interface Order {
@@ -368,7 +368,7 @@ export default function OrderList() {
                 )}
               </div>
               <div className="absolute bottom-[2px] right-[2px] bg-[#0D8534] text-white w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-white z-10 shadow-sm">
-                <span className="text-[11px] font-bold">✓</span>
+                <BadgeCheck className="w-[14px] h-[14px] text-white stroke-[2.5]" />
               </div>
             </div>
             <div className="flex flex-col text-left">
@@ -450,14 +450,16 @@ export default function OrderList() {
         {/* 1. User Profile summary Header */}
         <div className="hidden lg:flex bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="relative w-16 h-16 rounded-full border border-emerald-200 bg-emerald-100 text-emerald-700 flex items-center justify-center overflow-hidden flex-shrink-0 text-2xl font-bold uppercase shadow-sm">
-              {profileImage ? (
-                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                userName && userName !== "Loading..." ? userName.charAt(0) : "U"
-              )}
-              <div className="absolute bottom-0 right-0 bg-[#0FA84D] text-white w-4 h-4 rounded-full flex items-center justify-center text-[10px] border border-white z-10">
-                ✓
+            <div className="relative w-16 h-16 flex-shrink-0">
+              <div className="w-16 h-16 rounded-full border border-emerald-200 bg-emerald-100 text-emerald-700 flex items-center justify-center overflow-hidden text-2xl font-bold uppercase shadow-sm">
+                {profileImage ? (
+                  <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  userName && userName !== "Loading..." ? userName.charAt(0) : "U"
+                )}
+              </div>
+              <div className="absolute bottom-[2px] right-[2px] bg-[#0FA84D] text-white w-[20px] h-[20px] rounded-full flex items-center justify-center border-2 border-white z-10 shadow-sm translate-x-[3px] translate-y-[3px]">
+                <BadgeCheck className="w-3.5 h-3.5 text-white stroke-[2.5]" />
               </div>
             </div>
             <div className="flex flex-col">

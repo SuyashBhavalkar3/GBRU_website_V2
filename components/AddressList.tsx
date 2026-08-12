@@ -8,7 +8,7 @@ import Footer from "@/components/Footer";
 import { getPlaceNames } from "@/utils/addressUtils";
 import {
   Package, MapPin, Banknote, Bell, Headphones, Phone,
-  Home, Plus, Edit3, Trash2, Loader2, ChevronDown,
+  Home, Plus, Edit3, Trash2, Loader2, ChevronDown, BadgeCheck,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -455,7 +455,7 @@ export default function AddressList() {
                 )}
               </div>
               <div className="absolute bottom-[2px] right-[2px] bg-[#0D8534] text-white w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-white z-10 shadow-sm">
-                <span className="text-[11px] font-bold">✓</span>
+                <BadgeCheck className="w-[14px] h-[14px] text-white stroke-[2.5]" />
               </div>
             </div>
             <div className="flex flex-col text-left">
