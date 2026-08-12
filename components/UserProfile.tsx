@@ -52,7 +52,7 @@ function SearchableDropdown<T>({
   );
 
   return (
-    <div className="relative">
+    <div className="relative notranslate">
       <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wide">{label}</label>
       <button
         type="button"
