@@ -43,6 +43,7 @@ export default function OrderList() {
   // User profile details
   const [userName, setUserName] = useState("Prakash");
   const [userMobile, setUserMobile] = useState("+91 98765 43210");
+  const [profileImage, setProfileImage] = useState<string | null>(null);
 
   // Search query
   const [searchQuery, setSearchQuery] = useState("");
@@ -218,7 +219,7 @@ export default function OrderList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
+  const loadProfile = () => {
     const stored = localStorage.getItem("gbru_user");
     if (stored) {
       try {
@@ -227,36 +228,57 @@ export default function OrderList() {
         if (mobile_no && mobile_no.includes("@")) {
           mobile_no = mobile_no.split("@")[0];
         }
-
-        // Initialize fallback states immediately
         const fallbackName = parsed.customer_name || parsed.username || "User";
         setUserName(fallbackName.split(" ")[0]);
         setUserMobile(mobile_no.startsWith("+91") ? mobile_no : `+91 ${mobile_no}`);
-
-        fetch('/api/user-details', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mobile_no })
-        })
-          .then(res => res.json())
-          .then(data => {
-            if (data?.message?.status && data?.message?.data) {
-              const ud = data.message.data;
-              const trueName = ud.Customer_name || ud.customer_name || parsed.customer_name || parsed.username || "User";
-              setUserName(trueName.split(" ")[0]);
-              const phone = mobile_no;
-              setUserMobile(phone.startsWith("+91") ? phone : `+91 ${phone}`);
-            }
-          })
-          .catch(() => {
-            const fallbackName = parsed.customer_name || parsed.username || "User";
-            setUserName(fallbackName.split(" ")[0]);
-            setUserMobile(mobile_no.startsWith("+91") ? mobile_no : `+91 ${mobile_no}`);
-          });
-      } catch (e) {
-        // ignore
-      }
+        setProfileImage(parsed.profile_image || null);
+        return mobile_no;
+      } catch (e) {}
     }
+    return "";
+  };
+
+  useEffect(() => {
+    const mobile_no = loadProfile();
+    if (mobile_no) {
+      fetch('/api/user-details', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobile_no })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data?.message?.status && data?.message?.data) {
+            const ud = data.message.data;
+            const trueName = ud.Customer_name || ud.customer_name || "User";
+            setUserName(trueName.split(" ")[0]);
+            setUserMobile(mobile_no.startsWith("+91") ? mobile_no : `+91 ${mobile_no}`);
+            if (ud.profile_image) {
+              setProfileImage(ud.profile_image);
+              // Cache to localStorage
+              const stored = localStorage.getItem("gbru_user");
+              if (stored) {
+                try {
+                  const parsed = JSON.parse(stored);
+                  parsed.profile_image = ud.profile_image;
+                  localStorage.setItem("gbru_user", JSON.stringify(parsed));
+                } catch (_) {}
+              }
+            }
+          }
+        })
+        .catch(() => {});
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      loadProfile();
+    };
+    window.addEventListener("profileUpdate", handleProfileUpdate);
+    return () => {
+      window.removeEventListener("profileUpdate", handleProfileUpdate);
+    };
   }, []);
 
   // Filter orders by search query
@@ -337,9 +359,13 @@ export default function OrderList() {
           <div className="flex items-center gap-4">
             <div className="relative w-20 h-20 flex-shrink-0">
               <div className="w-20 h-20 rounded-full border border-emerald-200 bg-emerald-100 text-emerald-700 flex items-center justify-center overflow-hidden shadow-sm">
-                <span className="text-3xl font-bold uppercase">
-                  {userName && userName !== "Loading..." ? userName.charAt(0) : "U"}
-                </span>
+                {profileImage ? (
+                  <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-3xl font-bold uppercase">
+                    {userName && userName !== "Loading..." ? userName.charAt(0) : "U"}
+                  </span>
+                )}
               </div>
               <div className="absolute bottom-[2px] right-[2px] bg-[#0D8534] text-white w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-white z-10 shadow-sm">
                 <span className="text-[11px] font-bold">✓</span>
@@ -424,8 +450,12 @@ export default function OrderList() {
         {/* 1. User Profile summary Header */}
         <div className="hidden lg:flex bg-white border border-zinc-200/80 rounded-[24px] p-6 shadow-sm flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="relative w-16 h-16 rounded-full border border-emerald-200 bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 text-2xl font-bold uppercase shadow-sm">
-              {userName && userName !== "Loading..." ? userName.charAt(0) : "U"}
+            <div className="relative w-16 h-16 rounded-full border border-emerald-200 bg-emerald-100 text-emerald-700 flex items-center justify-center overflow-hidden flex-shrink-0 text-2xl font-bold uppercase shadow-sm">
+              {profileImage ? (
+                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                userName && userName !== "Loading..." ? userName.charAt(0) : "U"
+              )}
               <div className="absolute bottom-0 right-0 bg-[#0FA84D] text-white w-4 h-4 rounded-full flex items-center justify-center text-[10px] border border-white z-10">
                 ✓
               </div>

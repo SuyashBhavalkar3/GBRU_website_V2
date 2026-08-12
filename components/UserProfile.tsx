@@ -211,6 +211,16 @@ export default function UserProfile() {
           // Use profile_image from API response as the source of truth
           if (ud.profile_image) {
             setProfileImage(ud.profile_image);
+            // Cache profile image back to localStorage
+            const stored = localStorage.getItem("gbru_user");
+            if (stored) {
+              try {
+                const parsedUserObj = JSON.parse(stored);
+                parsedUserObj.profile_image = ud.profile_image;
+                localStorage.setItem("gbru_user", JSON.stringify(parsedUserObj));
+                window.dispatchEvent(new Event("profileUpdate"));
+              } catch (_) {}
+            }
           }
         }
 
@@ -452,6 +462,13 @@ export default function UserProfile() {
         if (imageUrl) {
           // Update state with the server-stored URL (source of truth is the API)
           setProfileImage(imageUrl);
+          
+          // Cache profile image back to localStorage
+          parsed.profile_image = imageUrl;
+          localStorage.setItem("gbru_user", JSON.stringify(parsed));
+          
+          // Trigger hot-reload in other components (Navbar, ProfilePop, etc.)
+          window.dispatchEvent(new Event("profileUpdate"));
         }
       }
     } catch (err) {

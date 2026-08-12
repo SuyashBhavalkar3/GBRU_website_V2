@@ -104,13 +104,26 @@ export default function Navbar() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const loadUser = () => {
+        const stored = localStorage.getItem("gbru_user");
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            setLoggedInUser(parsed);
+          } catch (_) {}
+        }
+      };
+
+      loadUser();
+
+      // Listen to profile updates
+      window.addEventListener("profileUpdate", loadUser);
+
+      // Fetch cart count
       const stored = localStorage.getItem("gbru_user");
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          setLoggedInUser(parsed);
-
-          // Fetch cart count
           const fetchCartCount = async () => {
             try {
               const mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || parsed.customer_id?.split('-')[1];
@@ -125,24 +138,20 @@ export default function Navbar() {
               if (data?.message?.status && data.message.data) {
                 setCartCount(data.message.data.count || 0);
               }
-            } catch (err) {
-              
-            }
+            } catch (err) {}
           };
 
           fetchCartCount();
 
-          // Listen to custom cartUpdate event
           const handleCartUpdate = () => {
             fetchCartCount();
           };
           window.addEventListener("cartUpdate", handleCartUpdate);
           return () => {
             window.removeEventListener("cartUpdate", handleCartUpdate);
+            window.removeEventListener("profileUpdate", loadUser);
           };
-        } catch (e) {
-          
-        }
+        } catch (e) {}
       }
     }
   }, []);

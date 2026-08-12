@@ -110,6 +110,7 @@ export default function AddressList() {
 
   const [userName, setUserName] = useState("Loading...");
   const [userPhone, setUserPhone] = useState("");
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -139,19 +140,28 @@ export default function AddressList() {
     }
   }, [router]);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const loadProfile = () => {
+    const stored = localStorage.getItem("gbru_user");
+    if (stored) {
       try {
-        const stored = localStorage.getItem("gbru_user");
-        if (!stored) { setLoading(false); return; }
         const parsed = JSON.parse(stored);
         let mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || parsed.customer_id?.split("-")[1];
         if (mobile_no?.includes("@")) mobile_no = mobile_no.split("@")[0];
-
-        // Initialize fallback user details immediately
         const fallbackName = parsed.customer_name || parsed.Customer_name || parsed.first_name || parsed.full_name || "User";
         setUserName(fallbackName.split(" ")[0]);
         setUserPhone(`+91 ${mobile_no}`);
+        setProfileImage(parsed.profile_image || null);
+        return mobile_no;
+      } catch (_) {}
+    }
+    return "";
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const mobile_no = loadProfile();
+        if (!mobile_no) { setLoading(false); return; }
 
         try {
           const res = await fetch("/api/user-details", {
@@ -162,11 +172,25 @@ export default function AddressList() {
           if (data?.message?.status && data?.message?.data) {
             const ud = data.message.data;
             setUserName(ud.Customer_name ? ud.Customer_name.split(" ")[0] : "User");
-            const phone = mobile_no;
-            setUserPhone(`+91 ${phone}`);
+            setUserPhone(`+91 ${mobile_no}`);
+            if (ud.profile_image) {
+              setProfileImage(ud.profile_image);
+              // Cache back
+              const stored = localStorage.getItem("gbru_user");
+              if (stored) {
+                try {
+                  const parsed = JSON.parse(stored);
+                  parsed.profile_image = ud.profile_image;
+                  localStorage.setItem("gbru_user", JSON.stringify(parsed));
+                } catch (_) {}
+              }
+            }
           }
         } catch (_) {}
 
+        const userStr = localStorage.getItem("gbru_user");
+        if (!userStr) return;
+        const parsed = JSON.parse(userStr);
         const api_key = parsed.key_details?.api_key || parsed.api_key;
         const api_secret = parsed.key_details?.api_secret || parsed.api_secret;
         const addrRes = await fetch("/api/shipping-address", {
@@ -183,6 +207,16 @@ export default function AddressList() {
       finally { setLoading(false); }
     };
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      loadProfile();
+    };
+    window.addEventListener("profileUpdate", handleProfileUpdate);
+    return () => {
+      window.removeEventListener("profileUpdate", handleProfileUpdate);
+    };
   }, []);
 
   useEffect(() => {
@@ -412,9 +446,13 @@ export default function AddressList() {
           <div className="flex items-center gap-4">
             <div className="relative w-20 h-20 flex-shrink-0">
               <div className="w-20 h-20 rounded-full border border-emerald-200 bg-emerald-100 text-emerald-700 flex items-center justify-center overflow-hidden shadow-sm">
-                <span className="text-3xl font-bold uppercase">
-                  {userName && userName !== "Loading..." ? userName.charAt(0) : "U"}
-                </span>
+                {profileImage ? (
+                  <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-3xl font-bold uppercase">
+                    {userName && userName !== "Loading..." ? userName.charAt(0) : "U"}
+                  </span>
+                )}
               </div>
               <div className="absolute bottom-[2px] right-[2px] bg-[#0D8534] text-white w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-white z-10 shadow-sm">
                 <span className="text-[11px] font-bold">✓</span>

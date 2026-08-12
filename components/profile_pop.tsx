@@ -10,6 +10,7 @@ interface UserDetails {
   status: string;
   role: string;
   brand_ambassador?: string;
+  profile_image?: string;
 }
 
 interface ProfilePopProps {
@@ -25,6 +26,30 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
 
+  // Sync profile details from localStorage/API
+  const loadProfile = () => {
+    const stored = localStorage.getItem("gbru_user");
+    let mobile_no = "";
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no || parsed.mobile;
+        
+        // Set local fallback immediately so the UI is responsive and never blank/error
+        const fallbackName = parsed.customer_name || parsed.Customer_name || parsed.first_name || parsed.full_name || "Guest";
+        setUser({
+          Customer_name: fallbackName,
+          address: parsed.address || "Address not set",
+          role: parsed.role || "Farmer",
+          status: parsed.status || "ACTIVE",
+          brand_ambassador: parsed.brand_ambassador || parsed.brand_ambassador_name || "",
+          profile_image: parsed.profile_image || ""
+        });
+      } catch (e) {}
+    }
+    return mobile_no;
+  };
+
   useEffect(() => {
     if (!isOpen) {
       setHasFetched(false);
@@ -32,26 +57,7 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
     }
 
     if (isOpen && !hasFetched) {
-      const stored = localStorage.getItem("gbru_user");
-      let mobile_no = "";
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no || parsed.mobile;
-          
-          // Set local fallback immediately so the UI is responsive and never blank/error
-          const fallbackName = parsed.customer_name || parsed.Customer_name || parsed.first_name || parsed.full_name || "Guest";
-          setUser({
-            Customer_name: fallbackName,
-            address: parsed.address || "Address not set",
-            role: parsed.role || "Farmer",
-            status: parsed.status || "ACTIVE",
-            brand_ambassador: parsed.brand_ambassador || parsed.brand_ambassador_name || ""
-          });
-        } catch (e) {
-
-        }
-      }
+      const mobile_no = loadProfile();
 
       if (mobile_no) {
         setLoading(true);
@@ -65,6 +71,15 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
           .then(data => {
             if (data?.message?.status && data?.message?.data) {
               setUser(data.message.data);
+              // Cache profile image back to localStorage
+              const stored = localStorage.getItem("gbru_user");
+              if (stored) {
+                try {
+                  const parsed = JSON.parse(stored);
+                  parsed.profile_image = data.message.data.profile_image;
+                  localStorage.setItem("gbru_user", JSON.stringify(parsed));
+                } catch (_) {}
+              }
             }
             setLoading(false);
           })
@@ -74,6 +89,17 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
       }
     }
   }, [isOpen, hasFetched]);
+
+  // Listen to live profile updates
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      loadProfile();
+    };
+    window.addEventListener("profileUpdate", handleProfileUpdate);
+    return () => {
+      window.removeEventListener("profileUpdate", handleProfileUpdate);
+    };
+  }, []);
 
   if (!isOpen) return null;
 
@@ -119,10 +145,14 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
             </div>
           ) : user ? (
             <>
-              {/* Avatar with Initials */}
+              {/* Avatar with Initials or Image */}
               <div className="relative mb-4">
-                <div className="w-[88px] h-[88px] rounded-full bg-[#112d1b] border-4 border-white flex items-center justify-center text-white text-3xl font-bold uppercase shadow-sm">
-                  {initials}
+                <div className="w-[88px] h-[88px] rounded-full bg-[#112d1b] border-4 border-white flex items-center justify-center text-white text-3xl font-bold uppercase shadow-sm overflow-hidden">
+                  {user.profile_image ? (
+                    <img src={user.profile_image} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    initials
+                  )}
                 </div>
                 {/* Checkmark Badge */}
                 {isVerified && (
