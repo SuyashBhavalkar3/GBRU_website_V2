@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export default function MaintenanceGuard() {
   const router = useRouter();
@@ -11,16 +13,19 @@ export default function MaintenanceGuard() {
     // Avoid running on API routes or maintenance page itself to avoid redirect loops
     if (pathname.startsWith("/api")) return;
 
-    let eventSource: EventSource | null = null;
-    let reconnectTimeout: NodeJS.Timeout | null = null;
+    // Reference to the maintenance/mode document
+    const maintenanceDocRef = doc(db, "maintenance", "mode");
 
-    const connectSSE = () => {
-      eventSource = new EventSource("/api/maintenance-status");
-
-      eventSource.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          if (data.maintenance) {
+    // Subscribe to real-time updates directly on client-side (no server-side reads polling!)
+    const unsubscribe = onSnapshot(
+      maintenanceDocRef,
+      (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const data = docSnapshot.data();
+          // Check both keys
+          const isMaintenance = !!(data?.["ERP-GBRU"] || data?.recom_gbru_shoption);
+          
+          if (isMaintenance) {
             if (pathname !== "/maintenance") {
               router.replace("/maintenance");
             }
@@ -29,28 +34,23 @@ export default function MaintenanceGuard() {
               router.replace("/");
             }
           }
-        } catch (e) { }
-      };
-
-      eventSource.onerror = () => {
-        // Automatically attempt to reconnect after 3 seconds on drop
-        if (eventSource) {
-          eventSource.close();
+        } else {
+          // Document doesn't exist, assume not in maintenance mode
+          if (pathname === "/maintenance") {
+            router.replace("/");
+          }
         }
-        reconnectTimeout = setTimeout(connectSSE, 3000);
-      };
-    };
-
-    connectSSE();
-
-    return () => {
-      if (eventSource) {
-        eventSource.close();
+      },
+      (error) => {
+        // On error, assume not in maintenance mode
+        if (pathname === "/maintenance") {
+          router.replace("/");
+        }
       }
-      if (reconnectTimeout) {
-        clearTimeout(reconnectTimeout);
-      }
-    };
+    );
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, [pathname, router]);
 
   return null;
