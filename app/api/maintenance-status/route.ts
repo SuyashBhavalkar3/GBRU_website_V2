@@ -15,7 +15,7 @@ async function _getHandler() {
 
     if (docSnap.exists) {
       const data = docSnap.data();
-      const maintenanceActive = !!data?.prod_gbru_shoption;
+      const maintenanceActive = !!data?.recom_gbru_shoption;
       return NextResponse.json({ maintenance: maintenanceActive });
     }
 
