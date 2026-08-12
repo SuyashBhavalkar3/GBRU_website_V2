@@ -23,7 +23,8 @@ export async function GET() {
         let maintenanceActive = false;
         if (docSnap.exists) {
           const data = docSnap.data();
-          maintenanceActive = !!data?.recom_gbru_shoption;
+          // Check the ERP-GBRU or recom_gbru_shoption fields
+          maintenanceActive = !!(data?.['ERP-GBRU'] || data?.recom_gbru_shoption);
         }
         
         const dataStr = `data: ${JSON.stringify({ maintenance: maintenanceActive })}\n\n`;
@@ -62,10 +63,11 @@ export async function GET() {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache, no-transform',
         'Connection': 'keep-alive',
+        'X-Accel-Buffering': 'no',
       },
     });
-  } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" }
     });
