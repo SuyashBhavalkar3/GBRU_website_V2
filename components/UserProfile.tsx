@@ -458,17 +458,24 @@ export default function UserProfile() {
 
       const resJson = await res.json();
       if (resJson.message?.status) {
-        const imageUrl = resJson.message.data || resJson.message.image_url;
-        if (imageUrl) {
-          // Update state with the server-stored URL (source of truth is the API)
-          setProfileImage(imageUrl);
-          
-          // Cache profile image back to localStorage
-          parsed.profile_image = imageUrl;
-          localStorage.setItem("gbru_user", JSON.stringify(parsed));
-          
-          // Trigger hot-reload in other components (Navbar, ProfilePop, etc.)
-          window.dispatchEvent(new Event("profileUpdate"));
+        // Fetch fresh user details to get the absolute CDN image URL
+        const detailsRes = await fetch('/api/user-details', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mobile_no })
+        });
+        
+        if (detailsRes.ok) {
+          const detailsData = await detailsRes.json();
+          if (detailsData?.message?.status && detailsData?.message?.data) {
+            const ud = detailsData.message.data;
+            if (ud.profile_image) {
+              setProfileImage(ud.profile_image);
+              parsed.profile_image = ud.profile_image;
+              localStorage.setItem("gbru_user", JSON.stringify(parsed));
+              window.dispatchEvent(new Event("profileUpdate"));
+            }
+          }
         }
       }
     } catch (err) {
