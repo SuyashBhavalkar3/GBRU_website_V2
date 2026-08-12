@@ -9,6 +9,7 @@ import LoginPrompt from "./LoginPrompt";
 import { addToCartUtil } from "@/utils/cartUtils";
 import ActionPopup from "./ActionPopup";
 import { useShoptionSetting } from "@/hooks/useShoptionSetting";
+import { Share2 } from "lucide-react";
 
 function ProductDetailContent() {
   const router = useRouter();
@@ -328,6 +329,32 @@ function ProductDetailContent() {
     }
   };
 
+  const handleShare = async () => {
+    const cleanUrl = window.location.href.split(" ")[0]; // Strip out any accidental trailing spaces/strings
+    const shareData = {
+      url: cleanUrl,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(cleanUrl);
+        setToastType("success");
+        setToastMessage("Product link copied to clipboard!");
+        setTimeout(() => setToastMessage(""), 3000);
+      } catch (err) {
+        setToastType("error");
+        setToastMessage("Failed to copy link.");
+        setTimeout(() => setToastMessage(""), 3000);
+      }
+    }
+  };
+
   const formatPrice = (val: any) => {
     if (val === undefined || val === null) return "0.00";
     const num = parseFloat(val);
@@ -438,9 +465,18 @@ function ProductDetailContent() {
 
         {/* Product Meta Header (Title, Subtitle, Badges) */}
         <div className="flex flex-col gap-2">
-          <h1 className="text-[32px] md:text-[36px] font-bold text-[#0F291B] tracking-tight leading-tight">
-            {product.item_name}
-          </h1>
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="text-[32px] md:text-[36px] font-bold text-[#0F291B] tracking-tight leading-tight flex-1">
+              {product.item_name}
+            </h1>
+            <button
+              onClick={handleShare}
+              title="Share product"
+              className="mt-1 flex items-center justify-center w-11 h-11 rounded-full border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-500 hover:text-[#0D9740] shadow-sm hover:shadow transition-all shrink-0 active:scale-95"
+            >
+              <Share2 className="w-5 h-5" />
+            </button>
+          </div>
           <p className="text-[#6B7280] text-[16px] font-medium">
             Brand: <span className="text-[#0D9740] font-bold">{product.brand || "GBRU"}</span>
           </p>
