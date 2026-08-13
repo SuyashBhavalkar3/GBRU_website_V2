@@ -25,7 +25,7 @@ export default function HelpCentre() {
     };
 
     checkHash();
-    
+
     // Fallback checks for Next.js router transitions
     const timer1 = setTimeout(checkHash, 100);
     const timer2 = setTimeout(checkHash, 300);
@@ -80,7 +80,7 @@ export default function HelpCentre() {
               <div className="mt-8 pt-6 border-t border-zinc-150 flex flex-col items-center text-center gap-2">
                 <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Talk to Shoption NOVA</span>
                 <a
-                  href="https://wa.me/919226514174?text=Hi NOVA!"
+                  href={process.env.NEXT_PUBLIC_WHATSAPP_LINK}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center shadow-md transition-all active:scale-[0.95] mt-1 border border-zinc-200"

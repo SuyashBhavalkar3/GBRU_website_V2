@@ -298,7 +298,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
         invDate = invDate.split(" ")[0]; // Get only the YYYY-MM-DD date part
       }
       const invStatus = inv.dispatch_status || shipment.status || "Dispatched";
-      
+
       if (inv.selected_transport_entries && inv.selected_transport_entries.length > 0) {
         for (const entry of inv.selected_transport_entries) {
           const name = entry.transporter_name || entry.transporter || "Not Assigned";
@@ -984,7 +984,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
 
             <div className="grid grid-cols-2 gap-3">
               <a
-                href="https://wa.me/919226514174"
+                href={process.env.NEXT_PUBLIC_WHATSAPP_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="h-11 bg-white border border-zinc-200 text-[#0F291B] font-bold text-[13px] rounded-xl flex items-center justify-center hover:bg-zinc-50 transition-colors"
@@ -1525,7 +1525,7 @@ export default function OrderDetails({ orderId }: { orderId: string }) {
 
               <div className="grid grid-cols-2 gap-3 pt-1">
                 <a
-                  href="https://wa.me/919226514174"
+                  href={process.env.NEXT_PUBLIC_WHATSAPP_LINK}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-white border border-zinc-200 hover:bg-zinc-50 text-[#0F291B] font-bold py-2.5 rounded-xl text-xs font-roboto transition-all shadow-sm flex items-center justify-center"

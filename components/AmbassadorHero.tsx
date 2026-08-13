@@ -92,16 +92,16 @@ export default function AmbassadorHero() {
             {/* Buttons */}
             <div className="flex flex-wrap items-center gap-4 mt-6 xl:mt-8">
               <a
-              href={process.env.NEXT_PUBLIC_WHATSAPP_LINK || "https://wa.me/919114151617"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2.5 bg-white hover:bg-zinc-50 text-[#0F291B] font-bold py-2 px-6 rounded-full text-[14px] xl:text-[15px] shadow-lg border border-zinc-200"
-            >
-              <div className="w-[40px] h-[40px] rounded-full overflow-hidden flex items-center justify-center bg-white border border-emerald-400 shrink-0">
-                <img src="/assets/nova.jpeg" alt="Nova" className="object-cover w-full h-full" />
-              </div>
-              Chat With Nova
-            </a>
+                href={process.env.NEXT_PUBLIC_WHATSAPP_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2.5 bg-white hover:bg-zinc-50 text-[#0F291B] font-bold py-2 px-6 rounded-full text-[14px] xl:text-[15px] shadow-lg border border-zinc-200"
+              >
+                <div className="w-[40px] h-[40px] rounded-full overflow-hidden flex items-center justify-center bg-white border border-emerald-400 shrink-0">
+                  <img src="/assets/nova.jpeg" alt="Nova" className="object-cover w-full h-full" />
+                </div>
+                Chat With Nova
+              </a>
               <Link href="/rewards">
                 <button className="bg-[#FFD100] hover:bg-[#e6be00] transition-colors text-[#0F291B] font-bold py-3.5 px-8 rounded-full text-[14px] xl:text-[15px] shadow-lg">
                   Ambassador Benefit

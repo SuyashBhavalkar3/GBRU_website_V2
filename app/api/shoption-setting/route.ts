@@ -28,7 +28,7 @@ export async function GET() {
     }
 
     return NextResponse.json({
-      whatsapp_bot_link: data.message?.data?.whatsapp_bot_link || "https://wa.me/919114151617",
+      whatsapp_bot_link: data.message?.data?.whatsapp_bot_link,
       whatapp_bot_enabled: data.message?.data?.whatapp_bot_enabled ?? 1
     });
 

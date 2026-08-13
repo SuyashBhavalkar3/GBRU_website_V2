@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 
 export function useShoptionSetting() {
   // Use public env variables directly with safe fallbacks
-  const defaultLink = process.env.NEXT_PUBLIC_WHATSAPP_LINK || "https://wa.me/919114151617";
-  const defaultEnabled = process.env.NEXT_PUBLIC_WHATSAPP_ENABLED !== undefined 
-    ? Number(process.env.NEXT_PUBLIC_WHATSAPP_ENABLED) 
+  const defaultLink = process.env.NEXT_PUBLIC_WHATSAPP_LINK;
+  const defaultEnabled = process.env.NEXT_PUBLIC_WHATSAPP_ENABLED !== undefined
+    ? Number(process.env.NEXT_PUBLIC_WHATSAPP_ENABLED)
     : 1;
 
   const [whatsappLink] = useState(defaultLink);
