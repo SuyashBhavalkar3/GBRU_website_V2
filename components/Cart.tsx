@@ -27,7 +27,7 @@ export default function Cart() {
 
         const parsed = JSON.parse(stored);
         // Extract mobile number from session keys, prioritizing actual mobile properties
-        const mobile_no = getMobileNo(parsed);
+        const mobile_no = localStorage.getItem("mobile_no");
 
         if (!mobile_no) {
           router.push("/otp");
@@ -64,7 +64,7 @@ export default function Cart() {
           setError(data?.message?.message || "Failed to load cart.");
         }
       } catch (err: any) {
-        
+
         setError("Error loading cart details.");
       } finally {
         setLoading(false);
@@ -111,10 +111,10 @@ export default function Cart() {
       });
 
       const resJson = await res.json();
-      
+
       if (resJson?.message?.status) {
         window.dispatchEvent(new Event("cartUpdate"));
-        
+
         // Re-fetch cart details to sync final calculations from ERP
         const refreshRes = await fetch("/api/cart", {
           method: "POST",
@@ -140,10 +140,10 @@ export default function Cart() {
           }
         }
       } else {
-        
+
       }
     } catch (e) {
-      
+
     }
   };
 
@@ -197,10 +197,10 @@ export default function Cart() {
           }
         }
       } else {
-        
+
       }
     } catch (e) {
-      
+
     }
   };
 
@@ -210,7 +210,7 @@ export default function Cart() {
     if (stored) {
       const user = JSON.parse(stored);
       const mobile_no = getMobileNo(user);
-      
+
       const api_key = user.key_details?.api_key || user.api_key;
       const api_secret = user.key_details?.api_secret || user.api_secret;
 
@@ -220,7 +220,7 @@ export default function Cart() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ mobile_no, api_key, api_secret })
         });
-        
+
         if (addressRes.ok) {
           const json = await addressRes.json();
           if (json.message?.status && Array.isArray(json.message?.data)) {
@@ -237,7 +237,7 @@ export default function Cart() {
           return;
         }
       } catch (err) {
-        
+
       }
     }
     router.push("/proceed-to-checkout");
@@ -464,7 +464,7 @@ export default function Cart() {
                     <span className="text-[11px] text-[#6B7280]">100% Safe Payment</span>
                   </div>
                 </div>
-                
+
                 <div className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex items-center gap-3.5 shadow-sm text-left">
                   <div className="w-11 h-11 rounded-[12px] bg-[#FFF9EA] flex items-center justify-center shrink-0">
                     <svg className="w-5 h-5 text-[#D9A320]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -501,7 +501,7 @@ export default function Cart() {
                   Order Summary
                 </h3>
 
-                 <div className="flex flex-col gap-4 text-sm text-[#374151]">
+                <div className="flex flex-col gap-4 text-sm text-[#374151]">
                   <div className="flex justify-between items-baseline pt-2">
                     <span className="font-bold text-[#0F291B] text-[16px]">Total Amount</span>
                     <span className="font-extrabold text-[#0D9740] text-[28px]">
@@ -511,8 +511,8 @@ export default function Cart() {
                 </div>
 
                 {/* Checkout CTA */}
-                <button 
-                  onClick={handleProceedToCheckout} 
+                <button
+                  onClick={handleProceedToCheckout}
                   className="w-full h-14 rounded-[14px] bg-[#1A4D2E] hover:bg-[#133c23] text-white font-bold text-[16px] transition-all flex items-center justify-center gap-2 shadow-sm mt-2 cursor-pointer active:scale-[0.98]"
                 >
                   Proceed to Checkout
