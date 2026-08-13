@@ -529,6 +529,7 @@ export default function Navbar() {
         onClose={() => setIsProfileOpen(false)}
         onLogout={() => {
           localStorage.removeItem("gbru_user");
+          localStorage.removeItem("mobile_no");
           localStorage.removeItem("gbru_applied_coupon");
           localStorage.removeItem("gbru_applied_ambassador");
           setLoggedInUser(null);

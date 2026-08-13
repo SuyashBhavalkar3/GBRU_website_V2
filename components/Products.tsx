@@ -8,6 +8,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import LoginPrompt from "./LoginPrompt";
 import PaymentOptionModal from "./PaymentOptionModal";
+import { getMobileNo } from "@/utils/cartUtils";
 
 interface ERPProduct {
   item_code: string;
@@ -61,7 +62,7 @@ export default function Products() {
       if (!user) return;
       try {
         const parsed = JSON.parse(user);
-        const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+        const mobile_no = getMobileNo(parsed);
         if (!mobile_no) return;
         const res = await fetch("/api/cart", {
           method: "POST",

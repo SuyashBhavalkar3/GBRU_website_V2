@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import LoginPrompt from "./LoginPrompt";
-import { addToCartUtil } from "@/utils/cartUtils";
+import { addToCartUtil, getMobileNo } from "@/utils/cartUtils";
 import PaymentOptionModal from "./PaymentOptionModal";
 
 interface ERPProduct {
@@ -47,7 +47,7 @@ export default function FeaturedProducts() {
       if (!user) return;
       try {
         const parsed = JSON.parse(user);
-        const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+        const mobile_no = getMobileNo(parsed);
         if (!mobile_no) return;
         const res = await fetch("/api/cart", {
           method: "POST",

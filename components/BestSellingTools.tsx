@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import LoginPrompt from "./LoginPrompt";
 import PaymentOptionModal from "./PaymentOptionModal";
+import { getMobileNo } from "@/utils/cartUtils";
 
 export default function BestSellingTools() {
   const [products, setProducts] = useState<any[]>([]);
@@ -48,7 +49,7 @@ export default function BestSellingTools() {
       if (!user) return;
       try {
         const parsed = JSON.parse(user);
-        const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+        const mobile_no = getMobileNo(parsed);
         if (!mobile_no) return;
         const res = await fetch("/api/cart", {
           method: "POST",

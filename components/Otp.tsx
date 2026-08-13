@@ -177,6 +177,7 @@ const OtpContent = () => {
            // Save user details securely in localStorage for farmers/others
            const userToSave = { ...data.user, mobile_no: mobileNo };
            localStorage.setItem('gbru_user', JSON.stringify(userToSave));
+           localStorage.setItem('mobile_no', mobileNo);
            localStorage.removeItem("gbru_applied_coupon");
            localStorage.removeItem("gbru_applied_ambassador");
 

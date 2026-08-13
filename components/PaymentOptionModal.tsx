@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import LoginPrompt from "./LoginPrompt";
 import ActionPopup from "./ActionPopup";
+import { getMobileNo } from "@/utils/cartUtils";
 
 interface PaymentOptionModalProps {
   isOpen: boolean;
@@ -66,7 +67,7 @@ export default function PaymentOptionModal({
       if (!user) return;
       try {
         const parsed = JSON.parse(user);
-        const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+        const mobile_no = getMobileNo(parsed);
         if (!mobile_no) return;
         const res = await fetch("/api/cart", {
           method: "POST",
@@ -126,8 +127,7 @@ export default function PaymentOptionModal({
       }
 
       const parsed = JSON.parse(stored);
-      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
-
+      const mobile_no = getMobileNo(parsed);
       if (!mobile_no) {
         const pendingItem = {
           item: itemCode,

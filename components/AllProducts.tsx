@@ -7,6 +7,8 @@ import Navbar from "./Navbar";
 import LoginPrompt from "./LoginPrompt";
 import PaymentOptionModal from "./PaymentOptionModal";
 
+import { getMobileNo } from "@/utils/cartUtils";
+
 function AllProductsContent() {
   const [productsList, setProductsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +24,7 @@ function AllProductsContent() {
       if (!user) return;
       try {
         const parsed = JSON.parse(user);
-        const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+        const mobile_no = getMobileNo(parsed);
         if (!mobile_no) return;
         const res = await fetch("/api/cart", {
           method: "POST",

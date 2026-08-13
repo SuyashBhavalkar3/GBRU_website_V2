@@ -1,16 +1,9 @@
 export function getMobileNo(user: any): string {
-  if (!user) return "";
-  let mobile_no = user.mobile_no || user.mobile || user.user_id || "";
-  if (mobile_no.includes("@")) {
-    mobile_no = mobile_no.split("@")[0];
+  if (typeof window !== "undefined") {
+    const directMobile = localStorage.getItem("mobile_no");
+    if (directMobile) return directMobile;
   }
-  if (!mobile_no || mobile_no.length < 10) {
-    const fallback = user.customer_id?.split('-')[1] || "";
-    if (fallback && fallback.length >= 10) {
-      mobile_no = fallback;
-    }
-  }
-  return mobile_no;
+  return user?.mobile_no || "";
 }
 
 export async function addToCartUtil(itemCode: string, quantity: number = 1): Promise<boolean> {

@@ -293,6 +293,7 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
                       onLogout();
                     } else {
                        localStorage.removeItem("gbru_user");
+                       localStorage.removeItem("mobile_no");
                        localStorage.removeItem("gbru_applied_coupon");
                        localStorage.removeItem("gbru_applied_ambassador");
                        window.location.href = '/';
