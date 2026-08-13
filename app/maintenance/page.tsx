@@ -55,16 +55,23 @@ export default function MaintenancePage() {
           </div>
         </div>
 
-        {/* Support contacts */}
-        <div className="flex flex-col gap-1.5 text-xs text-zinc-400 mt-4">
+        {/* Chat with Nova */}
+        <div className="flex flex-col items-center gap-1.5 text-xs text-zinc-400 mt-4">
           <p className="font-semibold">Need urgent assistance?</p>
           <a
-            href="https://wa.me/919226514174"
+            href="https://wa.me/919114151617?text=Hi%20NOVA!"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#0D9740] hover:underline font-bold"
+            className="flex items-center gap-2 bg-[#0D9740]/10 hover:bg-[#0D9740]/20 px-4 py-2 rounded-full transition-colors mt-1"
           >
-            Contact WhatsApp Support
+            <div className="w-8 h-8 rounded-full overflow-hidden border border-[#0D9740]/30 flex-shrink-0">
+              <img
+                src="/assets/nova.jpeg"
+                alt="Nova"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <span className="font-bold text-[#0D9740]">Chat with Nova</span>
           </a>
         </div>
       </div>
