@@ -214,7 +214,7 @@ export default function FieldExperiences() {
         className="hidden lg:flex relative w-full bg-cover bg-no-repeat bg-white pt-4 pb-8 px-4 sm:px-6 lg:h-[818px] lg:pt-[18px] lg:pr-[50px] lg:pb-[18px] lg:pl-[50px] flex-col items-center gap-4 lg:gap-[27px] overflow-hidden"
         style={{
           backgroundImage: "url('/assets/field_experience_bg_drone.png')",
-          backgroundPosition: "center bottom",
+          backgroundPosition: "center calc(100% + 250px)",
         }}
       >
         {/* Header Row */}
