@@ -164,6 +164,7 @@ export default function Navbar() {
     { name: "Categories", href: "/categories", active: pathname.startsWith("/categories") },
     { name: "Video Hub", href: "/videos", active: pathname.startsWith("/videos") },
     { name: "Contact Us", href: "/help-centre#contact-us", active: pathname === "/help-centre" && currentHash === "#contact-us" },
+    { name: "Gallery", href: "/gallery", active: pathname.startsWith("/gallery") },
   ];
 
   return (
@@ -172,10 +173,10 @@ export default function Navbar() {
       style={{ background: "linear-gradient(90deg, #204123 0%, #185A46 49.52%, #204123 100%)" }}
     >
       <div className="max-w-[1280px] w-full mx-auto pl-[21px] pr-4 sm:pr-6 lg:pr-[47px]">
-        <div className="flex items-center justify-between xl:justify-start h-[64px] xl:h-[72px]">
+        <div className="flex items-center justify-between h-[64px] xl:h-[72px]">
 
           {/* Desktop Logo Section */}
-          <div className="hidden xl:flex flex-shrink-0 items-center xl:mr-[142px]">
+          <div className="hidden xl:flex flex-shrink-0 items-center">
             <Link href="/" className="flex items-center">
               <Image
                 src="/assets/gbru_header_logo.png"
@@ -189,12 +190,12 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden xl:flex items-center justify-between w-[448px] h-[34px] xl:mr-[44px]">
+          <div className="hidden xl:flex items-center justify-between gap-[28px] h-[34px]">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
-                className={`relative py-1 font-roboto font-semibold text-[12px] leading-none transition-colors duration-200 hover:text-[#FFC700] ${link.active ? "text-[#FFC700]" : "text-white/90"
+                className={`relative py-1 font-roboto font-semibold text-[12px] leading-none transition-colors duration-200 hover:text-[#FFC700] whitespace-nowrap ${link.active ? "text-[#FFC700]" : "text-white/90"
                   }`}
               >
                 {link.name}
@@ -206,7 +207,7 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Search Bar */}
-          <div className="hidden xl:flex items-center relative w-[260px] h-[35px] xl:mr-[26px]">
+          <div className="hidden xl:flex items-center relative w-[260px] h-[35px]">
             <SearchBar className="w-full h-full" placeholder="Search tools, products...." />
           </div>
 
