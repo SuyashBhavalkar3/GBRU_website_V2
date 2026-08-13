@@ -1,3 +1,18 @@
+export function getMobileNo(user: any): string {
+  if (!user) return "";
+  let mobile_no = user.mobile_no || user.mobile || user.user_id || "";
+  if (mobile_no.includes("@")) {
+    mobile_no = mobile_no.split("@")[0];
+  }
+  if (!mobile_no || mobile_no.length < 10) {
+    const fallback = user.customer_id?.split('-')[1] || "";
+    if (fallback && fallback.length >= 10) {
+      mobile_no = fallback;
+    }
+  }
+  return mobile_no;
+}
+
 export async function addToCartUtil(itemCode: string, quantity: number = 1): Promise<boolean> {
   try {
     const userStr = localStorage.getItem("gbru_user");
@@ -9,11 +24,7 @@ export async function addToCartUtil(itemCode: string, quantity: number = 1): Pro
     }
 
     const user = JSON.parse(userStr);
-    let mobile_no = user.mobile_no || user.user_id || user.customer_id; // user_id is the mobile_no in Frappe
-    // If mobile_no happens to be formatted as an email (e.g., 2324252612@shoption.in), extract the number part
-    if (mobile_no && mobile_no.includes("@")) {
-      mobile_no = mobile_no.split("@")[0];
-    }
+    let mobile_no = getMobileNo(user);
     const api_key = user.key_details?.api_key || user.api_key;
     const api_secret = user.key_details?.api_secret || user.api_secret;
 

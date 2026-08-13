@@ -72,7 +72,13 @@ function ProductDetailContent() {
       if (!user) return;
       try {
         const parsed = JSON.parse(user);
-        const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+        let mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || "";
+        if (mobile_no.includes("@")) {
+          mobile_no = mobile_no.split("@")[0];
+        }
+        if (!mobile_no) {
+          mobile_no = parsed.customer_id?.split('-')[1] || "";
+        }
         if (!mobile_no) return;
         const res = await fetch("/api/cart", {
           method: "POST",
@@ -162,7 +168,13 @@ function ProductDetailContent() {
 
     try {
       const parsed = JSON.parse(user);
-      const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+      let mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || "";
+      if (mobile_no.includes("@")) {
+        mobile_no = mobile_no.split("@")[0];
+      }
+      if (!mobile_no) {
+        mobile_no = parsed.customer_id?.split('-')[1] || "";
+      }
       if (!mobile_no) {
         setShowLoginPrompt(true);
         return;
@@ -283,7 +295,13 @@ function ProductDetailContent() {
       return;
     }
     const parsed = JSON.parse(user);
-    const mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+    let mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || "";
+    if (mobile_no.includes("@")) {
+      mobile_no = mobile_no.split("@")[0];
+    }
+    if (!mobile_no) {
+      mobile_no = parsed.customer_id?.split('-')[1] || "";
+    }
     if (!mobile_no) { setSimilarCartItem(null); setShowLoginPrompt(true); return; }
 
     setSimilarSubmitting(true);

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { getMobileNo } from "@/utils/cartUtils";
 
 export default function PopularItemsModal() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export default function PopularItemsModal() {
         let mobile_no = "";
         if (userStr) {
           const user = JSON.parse(userStr);
-          mobile_no = user.customer_id?.split("-")[1] || user.user_id || user.mobile_no || "";
+          mobile_no = getMobileNo(user);
         }
 
         // Fetch active cart status to sync button states
@@ -125,7 +126,7 @@ export default function PopularItemsModal() {
 
     try {
       const user = JSON.parse(userStr);
-      const mobile_no = user.customer_id?.split("-")[1] || user.user_id || user.mobile_no || "";
+      const mobile_no = getMobileNo(user);
       if (!mobile_no) return;
 
       setSubmittingPayment(true);

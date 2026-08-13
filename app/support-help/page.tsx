@@ -78,7 +78,13 @@ export default function SupportHelpPage() {
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          const mobile = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no;
+          let mobile = parsed.mobile_no || parsed.mobile || parsed.user_id || "";
+          if (mobile.includes("@")) {
+            mobile = mobile.split("@")[0];
+          }
+          if (!mobile) {
+            mobile = parsed.customer_id?.split('-')[1] || "";
+          }
           if (mobile) {
             setMobileNo(mobile);
             fetchMasters(mobile);
