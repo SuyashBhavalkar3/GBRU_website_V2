@@ -83,7 +83,7 @@ const OtpContent = () => {
     if (e.key === 'Backspace') {
       e.preventDefault();
       const newOtp = [...otp];
-      
+
       if (otp[index]) {
         newOtp[index] = '';
         setOtp(newOtp);
@@ -139,7 +139,7 @@ const OtpContent = () => {
         setTimeout(() => setToastMessage(""), 3000);
       }
     } catch (e) {
-      
+
     } finally {
       localStorage.removeItem("gbru_pending_cart_item");
       router.push('/cart');
@@ -174,12 +174,12 @@ const OtpContent = () => {
           // Do not save user session for dealers, redirect directly
           router.replace('/dealer_profile');
         } else {
-           // Save user details securely in localStorage for farmers/others
-           const userToSave = { ...data.user, mobile_no: mobileNo };
-           localStorage.setItem('gbru_user', JSON.stringify(userToSave));
-           localStorage.setItem('mobile_no', mobileNo);
-           localStorage.removeItem("gbru_applied_coupon");
-           localStorage.removeItem("gbru_applied_ambassador");
+          // Save user details securely in localStorage for farmers/others
+          const userToSave = { ...data.user, mobile_no: mobileNo };
+          localStorage.setItem('gbru_user', JSON.stringify(userToSave));
+          localStorage.setItem('mobile_no', mobileNo);
+          localStorage.removeItem("gbru_applied_coupon");
+          localStorage.removeItem("gbru_applied_ambassador");
 
           // Run pending cart action
           await handlePendingCart(userToSave);
@@ -190,7 +190,7 @@ const OtpContent = () => {
         setTimeout(() => setToastMessage(""), 3000);
       }
     } catch (error) {
-      
+
       setToastType("error");
       setToastMessage('An error occurred during verification. Please try again.');
       setTimeout(() => setToastMessage(""), 3000);
@@ -226,11 +226,29 @@ const OtpContent = () => {
           is_completed: false,
           lead_id: data.message.lead
         };
-        localStorage.setItem('gbru_user', JSON.stringify(basicUser));
+
+        // Fetch full user details (to obtain generated api_key / api_secret from ERP)
+        let finalUserObj: any = basicUser;
+        try {
+          const detailsRes = await fetch('/api/user-details', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mobile_no: mobileNo || '' })
+          });
+          if (detailsRes.ok) {
+            const detailsData = await detailsRes.json();
+            if (detailsData?.message?.status && detailsData?.message?.data) {
+              finalUserObj = { ...basicUser, ...detailsData.message.data };
+            }
+          }
+        } catch (_) { }
+
+        localStorage.setItem('gbru_user', JSON.stringify(finalUserObj));
+        localStorage.setItem('mobile_no', mobileNo || '');
         setShowRegistrationPopup(false);
-        
+
         // Run pending cart action
-        await handlePendingCart(basicUser);
+        await handlePendingCart(finalUserObj);
       } else {
         setToastType("error");
         setToastMessage(data?.message?.message || data?.error || "Failed to create lead. Please try again.");
@@ -265,7 +283,7 @@ const OtpContent = () => {
         setTimeout(() => setToastMessage(''), 3000);
       }
     } catch (error) {
-      
+
       setToastType("error");
       setToastMessage('An error occurred. Please try again.');
       setTimeout(() => setToastMessage(''), 3000);
@@ -312,8 +330,8 @@ const OtpContent = () => {
         style={{ backgroundImage: "url('/assets/caroussel-2.jpg')" }}
       >
         {/* Back Button */}
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="absolute top-6 left-6 md:top-10 md:left-10 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all z-50 text-gray-800 hover:text-[#006B21]"
           title="Back to Home"
         >
@@ -526,13 +544,13 @@ const OtpContent = () => {
       {/* ========================================================================= */}
       {/* MOBILE VIEW LAYOUT (Figma Redesign) */}
       {/* ========================================================================= */}
-      <div 
+      <div
         className="md:hidden min-h-screen flex flex-col items-center px-6 pt-3 pb-8 relative overflow-y-auto"
         style={{ background: 'linear-gradient(135deg, #006B21 0%, #EAB308 100%)' }}
       >
         {/* Back Button */}
-        <Link 
-          href="/login" 
+        <Link
+          href="/login"
           className="absolute top-6 left-6 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center backdrop-blur-md transition-all z-50 text-white"
           title="Back to Login"
         >
@@ -544,9 +562,9 @@ const OtpContent = () => {
         {/* Top Header Logo */}
         <div className="mt-2 mb-6 flex justify-center w-full">
           <div className="relative w-[160px] h-[68px]">
-            <Image 
-              src="/assets/gbru_header_logo.png" 
-              alt="GBRU Logo" 
+            <Image
+              src="/assets/gbru_header_logo.png"
+              alt="GBRU Logo"
               fill
               className="object-contain"
               priority
@@ -555,7 +573,7 @@ const OtpContent = () => {
         </div>
 
         {/* Farmer Image Card */}
-        <div 
+        <div
           className="relative rounded-[32px] overflow-hidden shadow-2xl border border-white/10 mt-0 mb-6 bg-black/10 flex-shrink-0"
           style={{
             width: "262px",
@@ -563,9 +581,9 @@ const OtpContent = () => {
             maxWidth: "320px",
           }}
         >
-          <Image 
-            src="/assets/farmer.png" 
-            alt="GBRU Farmer" 
+          <Image
+            src="/assets/farmer.png"
+            alt="GBRU Farmer"
             fill
             className="object-cover"
             priority
@@ -574,13 +592,13 @@ const OtpContent = () => {
 
         {/* Main Content Area */}
         <div className="w-full max-w-[340px] flex flex-col text-left">
-          <h2 
+          <h2
             className="text-white mb-2 font-bold text-[24px]"
             style={{ fontFamily: 'Roboto, sans-serif' }}
           >
             Verify Your Number
           </h2>
-          <p 
+          <p
             className="text-white/95 text-[12px] leading-relaxed mb-1 font-normal"
             style={{ fontFamily: 'Roboto, sans-serif' }}
           >
@@ -619,7 +637,7 @@ const OtpContent = () => {
               ))}
             </div>
 
-            <button 
+            <button
               type="button"
               onClick={handleVerify}
               disabled={loading}
@@ -635,7 +653,7 @@ const OtpContent = () => {
 
             <div className="flex items-center justify-between w-full pt-1 text-[11px] text-white/90">
               <span>OTP valid for 10 min</span>
-              
+
               {timeLeft > 0 ? (
                 <span>Resend in 00:{timeLeft.toString().padStart(2, '0')}</span>
               ) : (
@@ -652,9 +670,9 @@ const OtpContent = () => {
 
           {/* Bottom Divider */}
           <div className="w-full border-t border-white/20 mt-8 pt-6 flex flex-col items-center">
-            <Link 
-              href="/help-centre" 
-              className="text-white/90 hover:text-white transition-colors text-xs font-semibold" 
+            <Link
+              href="/help-centre"
+              className="text-white/90 hover:text-white transition-colors text-xs font-semibold"
               style={{ fontFamily: 'Roboto, sans-serif' }}
             >
               Help Center
