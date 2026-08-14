@@ -11,6 +11,7 @@ import BestSellingTools from "@/components/BestSellingTools";
 import AppDownload from "@/components/AppDownload";
 import GbRUOnField from "@/components/GbRUOnField";
 import WhyGBRU from "@/components/WhyGBRU";
+import BoostBusinessWithNova from "@/components/BoostBusinessWithNova";
 import Testimonials from "@/components/Testimonials";
 import ToolsInAction from "@/components/ToolsInAction";
 import HelpSupportBanner from "@/components/HelpSupportBanner";
@@ -87,16 +88,18 @@ export default function Home() {
           </div>
         )}
 
-        {/* ── DESKTOP ONLY: AppDownload, GbRUOnField, WhyGBRU (guest only) ── */}
+        {/* ── DESKTOP ONLY: AppDownload, GbRUOnField, BoostBusinessWithNova, WhyGBRU (guest only) ── */}
         <div className="hidden xl:block">
           {!isLoggedIn && <AppDownload />}
           {!isLoggedIn && <GbRUOnField />}
+          {!isLoggedIn && <BoostBusinessWithNova />}
           {!isLoggedIn && <WhyGBRU />}
         </div>
 
-        {/* ── MOBILE ONLY: WhyGBRU + GbRUOnField (guest only) ── */}
+        {/* ── MOBILE ONLY: BoostBusinessWithNova + WhyGBRU + GbRUOnField (guest only) ── */}
         {!isLoggedIn && (
           <div className="block xl:hidden">
+            <BoostBusinessWithNova />
             <WhyGBRU />
             <GbRUOnField />
           </div>
