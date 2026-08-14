@@ -69,7 +69,7 @@ export default function OrderConfirmed() {
             href="/orders"
             className="flex-1 h-12 bg-[#0F291B] hover:bg-[#08170f] text-white font-bold text-sm rounded-xl flex items-center justify-center transition-all active:scale-[0.98] shadow-sm"
           >
-            My Orders
+            My Purchased Orders
           </Link>
           <Link
             href="/categories"

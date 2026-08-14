@@ -481,7 +481,7 @@ export default function AddressList() {
           <div className="mt-4 flex gap-2 overflow-x-auto pb-2 scrollbar-none w-full justify-between">
             <Link href="/orders" className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]">
               <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center"><Package className="w-4 h-4" /></div>
-              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">My Orders</span>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">My Purchased Orders</span>
             </Link>
             {/* Active: Addresses */}
             <div className="bg-[#E8F3EB] border border-[#0D9740]/20 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]">
@@ -498,7 +498,7 @@ export default function AddressList() {
             </Link>
             <Link href="/help-centre" className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]">
               <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center"><Headphones className="w-4 h-4" /></div>
-              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Support</span>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Help</span>
             </Link>
           </div>
         </div>

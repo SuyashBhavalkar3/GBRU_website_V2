@@ -2,7 +2,7 @@ import React from 'react';
 import OrderList from '@/components/order_list';
 
 export const metadata = {
-  title: 'My Orders - GBRU',
+  title: 'My Purchased Orders - GBRU',
   description: 'View your GBRU orders',
 };
 
