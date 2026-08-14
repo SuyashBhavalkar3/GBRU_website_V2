@@ -425,7 +425,7 @@ export default function Cart() {
                           >
                             −
                           </button>
-                          <span className="font-bold text-sm text-[#0F291B] min-w-4 text-center">
+                          <span className="font-bold text-sm text-[#0F291B] min-w-4 text-center notranslate" translate="no">
                             {item.quantity}
                           </span>
                           <button
@@ -439,7 +439,7 @@ export default function Cart() {
                         {/* Price display */}
                         <div className="flex flex-col items-end">
                           <span className="text-[10px] text-zinc-500 font-bold uppercase">Total Price</span>
-                          <span className="font-extrabold text-[#0F291B] text-[20px]">
+                          <span className="font-extrabold text-[#0F291B] text-[20px] notranslate" translate="no">
                             ₹{formatPrice(item.amount)}
                           </span>
                         </div>
@@ -504,7 +504,7 @@ export default function Cart() {
                 <div className="flex flex-col gap-4 text-sm text-[#374151]">
                   <div className="flex justify-between items-baseline pt-2">
                     <span className="font-bold text-[#0F291B] text-[16px]">Total Amount</span>
-                    <span className="font-extrabold text-[#0D9740] text-[28px]">
+                    <span className="font-extrabold text-[#0D9740] text-[28px] notranslate" translate="no">
                       ₹{formatPrice(cartSummary?.total_amount || 0)}
                     </span>
                   </div>
