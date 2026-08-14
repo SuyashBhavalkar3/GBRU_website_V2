@@ -391,7 +391,7 @@ export default function PaymentOptionModal({
               <button
                 onClick={handleAddToCart}
                 disabled={submitting}
-                className="px-6 py-2.5 rounded-full bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-xs shadow-md transition-all disabled:opacity-50 flex items-center gap-1.5"
+                className="px-6 py-2.5 rounded-full bg-[#0D9740] hover:bg-[#0a7d34] text-white font-bold text-xs shadow-md transition-all disabled:opacity-50 flex items-center gap-1.5 notranslate"
               >
                 {submitting ? (
                   <>

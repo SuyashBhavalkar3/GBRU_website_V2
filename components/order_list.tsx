@@ -231,8 +231,7 @@ export default function OrderList() {
         if (mobile_no && mobile_no.includes("@")) {
           mobile_no = mobile_no.split("@")[0];
         }
-        const fallbackName = parsed.customer_name || parsed.username || "User";
-        setUserName(fallbackName.split(" ")[0]);
+        const fallbackName = parsed.Customer_name || parsed.customer_name;
         setUserMobile(mobile_no.startsWith("+91") ? mobile_no : `+91 ${mobile_no}`);
         setProfileImage(parsed.profile_image || null);
         return mobile_no;
