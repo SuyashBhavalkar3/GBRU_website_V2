@@ -2,7 +2,7 @@ import React from 'react';
 import AddressList from '@/components/AddressList';
 
 export const metadata = {
-  title: 'My Addresses - GBRU',
+  title: 'My Address - GBRU',
   description: 'Manage your saved delivery addresses',
 };
 

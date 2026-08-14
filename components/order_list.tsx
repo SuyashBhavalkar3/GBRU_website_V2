@@ -406,7 +406,7 @@ export default function OrderList() {
               <div className="w-8 h-8 rounded-full bg-white text-[#0D9740] flex items-center justify-center">
                 <Package className="w-4 h-4" />
               </div>
-              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">My Orders</span>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">My Purchased Orders</span>
             </Link>
             <Link
               href="/user-profile"
@@ -415,7 +415,7 @@ export default function OrderList() {
               <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center">
                 <MapPin className="w-4 h-4" />
               </div>
-              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Addresses</span>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">My Address</span>
             </Link>
             <Link
               href="/payments"
@@ -442,7 +442,7 @@ export default function OrderList() {
               <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center">
                 <Headphones className="w-4 h-4" />
               </div>
-              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Support</span>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Help</span>
             </Link>
           </div>
         </div>
@@ -501,7 +501,7 @@ export default function OrderList() {
               <div className="w-10 h-10 rounded-full bg-white text-emerald-700 flex items-center justify-center">
                 <Package className="w-5 h-5" />
               </div>
-              <span className="font-bold text-xs text-[#0F291B]">My Orders</span>
+              <span className="font-bold text-xs text-[#0F291B]">My Purchased Orders</span>
             </Link>
 
             {/* Shortcut: Addresses */}
@@ -512,7 +512,7 @@ export default function OrderList() {
               <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center">
                 <MapPin className="w-5 h-5" />
               </div>
-              <span className="font-bold text-xs text-[#0F291B]">Addresses</span>
+              <span className="font-bold text-xs text-[#0F291B]">My Address</span>
             </Link>
 
             {/* Shortcut: Payments */}
@@ -545,7 +545,7 @@ export default function OrderList() {
               <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center">
                 <Headphones className="w-5 h-5" />
               </div>
-              <span className="font-bold text-xs text-[#0F291B]">Support</span>
+              <span className="font-bold text-xs text-[#0F291B]">Help</span>
             </Link>
 
           </div>
@@ -560,7 +560,7 @@ export default function OrderList() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
               </Link>
-              <h2 className="text-2xl lg:text-3xl font-bold text-[#0F291B] font-roboto">My Orders</h2>
+              <h2 className="text-2xl lg:text-3xl font-bold text-[#0F291B] font-roboto">My Purchased Orders</h2>
             </div>
             <p className="text-zinc-500 text-sm font-medium">Track your purchases, payments and deliveries in one place.</p>
           </div>

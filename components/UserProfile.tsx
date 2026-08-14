@@ -766,7 +766,7 @@ export default function UserProfile() {
               <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center">
                 <Package className="w-4 h-4" />
               </div>
-              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">My Orders</span>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">My Purchased Orders</span>
             </Link>
             <Link
               href="/addresses"
@@ -775,7 +775,7 @@ export default function UserProfile() {
               <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center">
                 <MapPin className="w-4 h-4" />
               </div>
-              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Addresses</span>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">My Address</span>
             </Link>
             <Link
               href="/payments"
@@ -802,7 +802,7 @@ export default function UserProfile() {
               <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center">
                 <Headphones className="w-4 h-4" />
               </div>
-              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Support</span>
+              <span className="font-semibold text-[9px] text-[#4B5563] whitespace-nowrap">Help</span>
             </Link>
           </div>
         </div>
@@ -862,7 +862,7 @@ export default function UserProfile() {
                 className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow"
               >
                 <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><Package className="w-5 h-5" /></div>
-                <span className="font-bold text-xs text-[#0F291B]">My Orders</span>
+                <span className="font-bold text-xs text-[#0F291B]">My Purchased Orders</span>
               </Link>
               <div
                 onClick={() => {
