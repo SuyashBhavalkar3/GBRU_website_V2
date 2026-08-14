@@ -152,7 +152,7 @@ export default function AddressList() {
         setUserPhone(`+91 ${mobile_no}`);
         setProfileImage(parsed.profile_image || null);
         return mobile_no;
-      } catch (_) {}
+      } catch (_) { }
     }
     return "";
   };
@@ -182,11 +182,11 @@ export default function AddressList() {
                   const parsed = JSON.parse(stored);
                   parsed.profile_image = ud.profile_image;
                   localStorage.setItem("gbru_user", JSON.stringify(parsed));
-                } catch (_) {}
+                } catch (_) { }
               }
             }
           }
-        } catch (_) {}
+        } catch (_) { }
 
         const userStr = localStorage.getItem("gbru_user");
         if (!userStr) return;
@@ -203,7 +203,7 @@ export default function AddressList() {
             setSavedAddresses(json.message.data);
           }
         }
-      } catch (_) {}
+      } catch (_) { }
       finally { setLoading(false); }
     };
     fetchData();
@@ -227,7 +227,7 @@ export default function AddressList() {
           const unique = Array.from(new Map(json.message.data.map((i: any) => [i.name, i])).values());
           setStates(unique as any[]);
         }
-      }).catch(() => {});
+      }).catch(() => { });
   }, []);
 
   useEffect(() => {
@@ -240,7 +240,7 @@ export default function AddressList() {
         const unique = Array.from(new Map(json.message.data.map((i: any) => [i.name, i])).values());
         setDistricts(unique as any[]);
       }
-    }).catch(() => {});
+    }).catch(() => { });
     setFormData((p) => ({ ...p, district: "", city: "", marketplace: "" }));
   }, [formData.state]);
 
@@ -262,7 +262,7 @@ export default function AddressList() {
         const unique = Array.from(new Map(json.message.data.map((i: any) => [i.name, i])).values());
         setTahsils(unique as any[]);
       }
-    }).catch(() => {});
+    }).catch(() => { });
     setFormData((p) => ({ ...p, city: "", marketplace: "" }));
   }, [formData.district]);
 
@@ -283,7 +283,7 @@ export default function AddressList() {
       if (json.message?.status && Array.isArray(json.message?.data)) {
         setMarketplaces(json.message.data);
       }
-    }).catch(() => {});
+    }).catch(() => { });
     setFormData((p) => ({ ...p, marketplace: "" }));
   }, [formData.city]);
 
@@ -486,7 +486,7 @@ export default function AddressList() {
             {/* Active: Addresses */}
             <div className="bg-[#E8F3EB] border border-[#0D9740]/20 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]">
               <div className="w-8 h-8 rounded-full bg-white text-[#0D9740] flex items-center justify-center"><MapPin className="w-4 h-4" /></div>
-              <span className="font-semibold text-[9px] text-[#0D9740] whitespace-nowrap">Addresses</span>
+              <span className="font-semibold text-[9px] text-[#0D9740] whitespace-nowrap">My Address</span>
             </div>
             <Link href="/payments" className="bg-white border border-zinc-200/80 rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center flex-1 min-w-[62px]">
               <div className="w-8 h-8 rounded-full bg-[#E8F3EB] text-[#0D9740] flex items-center justify-center"><Banknote className="w-4 h-4" /></div>

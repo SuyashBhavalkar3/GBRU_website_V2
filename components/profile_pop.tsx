@@ -34,7 +34,7 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
       try {
         const parsed = JSON.parse(stored);
         mobile_no = parsed.customer_id?.split('-')[1] || parsed.user_id || parsed.mobile_no || parsed.mobile;
-        
+
         // Set local fallback immediately so the UI is responsive and never blank/error
         const fallbackName = parsed.customer_name || parsed.Customer_name || parsed.first_name || parsed.full_name || "Guest";
         setUser({
@@ -45,7 +45,7 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
           brand_ambassador: parsed.brand_ambassador || parsed.brand_ambassador_name || "",
           profile_image: parsed.profile_image || ""
         });
-      } catch (e) {}
+      } catch (e) { }
     }
     return mobile_no;
   };
@@ -78,7 +78,7 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
                   const parsed = JSON.parse(stored);
                   parsed.profile_image = data.message.data.profile_image;
                   localStorage.setItem("gbru_user", JSON.stringify(parsed));
-                } catch (_) {}
+                } catch (_) { }
               }
             }
             setLoading(false);
@@ -213,7 +213,7 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
 
             <MenuItem
               icon={<svg className="w-[22px] h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>}
-              label="Order"
+              label="Orders"
               href="/orders"
               showChevron
               onClick={onClose}
@@ -238,18 +238,18 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
             <div className="flex flex-col gap-3 mt-8 mb-2">
               {/* WhatsApp Card */}
               {whatsappEnabled === 1 && (
-              <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between bg-white p-4 rounded-2xl hover:bg-gray-50 transition-colors group shadow-[0_2px_12px_rgb(0,0,0,0.06)] border border-gray-100">
-                <div className="flex items-center gap-4">
-                  <div className="w-[60px] h-[60px] rounded-full overflow-hidden flex items-center justify-center bg-white shrink-0 border border-gray-200">
-                    <img src="/assets/nova.jpeg" alt="Nova" className="object-cover w-full h-full" />
+                <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between bg-white p-4 rounded-2xl hover:bg-gray-50 transition-colors group shadow-[0_2px_12px_rgb(0,0,0,0.06)] border border-gray-100">
+                  <div className="flex items-center gap-4">
+                    <div className="w-[60px] h-[60px] rounded-full overflow-hidden flex items-center justify-center bg-white shrink-0 border border-gray-200">
+                      <img src="/assets/nova.jpeg" alt="Nova" className="object-cover w-full h-full" />
+                    </div>
+                    <div className="flex flex-col text-left">
+                      <span className="text-[#194028] font-bold text-[18px] leading-tight">Chat with Nova</span>
+                      <span className="text-gray-400 font-medium text-[13px]">Support</span>
+                    </div>
                   </div>
-                  <div className="flex flex-col text-left">
-                    <span className="text-[#194028] font-bold text-[18px] leading-tight">Chat with Nova</span>
-                    <span className="text-gray-400 font-medium text-[13px]">Support</span>
-                  </div>
-                </div>
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
-              </a>
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+                </a>
               )}
 
               {/* Call Card */}
@@ -292,12 +292,12 @@ export default function ProfilePop({ isOpen, onClose, onLogout }: ProfilePopProp
                     if (onLogout) {
                       onLogout();
                     } else {
-                       localStorage.removeItem("gbru_user");
-                       localStorage.removeItem("mobile_no");
-                       localStorage.removeItem("gbru_applied_coupon");
-                       localStorage.removeItem("gbru_applied_ambassador");
-                       window.location.href = '/';
-                     }
+                      localStorage.removeItem("gbru_user");
+                      localStorage.removeItem("mobile_no");
+                      localStorage.removeItem("gbru_applied_coupon");
+                      localStorage.removeItem("gbru_applied_ambassador");
+                      window.location.href = '/';
+                    }
                     onClose();
                     setIsLoggingOut(false);
                   }, 2000);

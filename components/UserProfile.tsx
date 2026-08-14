@@ -222,7 +222,7 @@ export default function UserProfile() {
                 parsedUserObj.profile_image = ud.profile_image;
                 localStorage.setItem("gbru_user", JSON.stringify(parsedUserObj));
                 window.dispatchEvent(new Event("profileUpdate"));
-              } catch (_) {}
+              } catch (_) { }
             }
           }
         }
@@ -474,7 +474,7 @@ export default function UserProfile() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ mobile_no })
         });
-        
+
         if (detailsRes.ok) {
           const detailsData = await detailsRes.json();
           if (detailsData?.message?.status && detailsData?.message?.data) {
@@ -872,7 +872,7 @@ export default function UserProfile() {
                 className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer"
               >
                 <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><MapPin className="w-5 h-5" /></div>
-                <span className="font-bold text-xs text-[#0F291B]">Addresses</span>
+                <span className="font-bold text-xs text-[#0F291B]">My Address</span>
               </div>
               <Link href="/payments" className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer">
                 <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><Banknote className="w-5 h-5" /></div>
@@ -884,7 +884,7 @@ export default function UserProfile() {
               </Link>
               <Link href="/help-centre" className="bg-white border border-zinc-200/80 rounded-[16px] p-4 flex flex-col items-center gap-2.5 text-center shadow-sm hover:shadow transition-shadow cursor-pointer">
                 <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center"><Headphones className="w-5 h-5" /></div>
-                <span className="font-bold text-xs text-[#0F291B]">Support</span>
+                <span className="font-bold text-xs text-[#0F291B]">Help</span>
               </Link>
             </div>
           </div>
@@ -1274,37 +1274,37 @@ export default function UserProfile() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-zinc-500">PIN Code</label>
-                  <input
-                    type="text"
-                    required
-                    maxLength={6}
-                    placeholder="6-digit PIN"
-                    value={formData.pin}
-                    onChange={(e) => setFormData({ ...formData, pin: e.target.value })}
-                    className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5 sm:col-span-2">
-                  <label className="text-xs font-bold text-zinc-500">Address Line 1</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="House No., Building Name, Street"
-                    value={formData.address1}
-                    onChange={(e) => setFormData({ ...formData, address1: e.target.value })}
-                    className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
-                  />
-                </div>
+                <label className="text-xs font-bold text-zinc-500">PIN Code</label>
+                <input
+                  type="text"
+                  required
+                  maxLength={6}
+                  placeholder="6-digit PIN"
+                  value={formData.pin}
+                  onChange={(e) => setFormData({ ...formData, pin: e.target.value })}
+                  className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5 sm:col-span-2">
+                <label className="text-xs font-bold text-zinc-500">Address Line 1</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="House No., Building Name, Street"
+                  value={formData.address1}
+                  onChange={(e) => setFormData({ ...formData, address1: e.target.value })}
+                  className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
+                />
+              </div>
 
-                <div className="flex flex-col gap-1.5 sm:col-span-2">
-                  <label className="text-xs font-bold text-zinc-500">Address Line 2 (Optional)</label>
-                  <input
-                    type="text"
-                    placeholder="Area, Colony, Landmark"
-                    value={formData.address2}
-                    onChange={(e) => setFormData({ ...formData, address2: e.target.value })}
-                    className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
+              <div className="flex flex-col gap-1.5 sm:col-span-2">
+                <label className="text-xs font-bold text-zinc-500">Address Line 2 (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="Area, Colony, Landmark"
+                  value={formData.address2}
+                  onChange={(e) => setFormData({ ...formData, address2: e.target.value })}
+                  className="h-11 px-3 border border-zinc-200 rounded-[10px] text-sm text-[#0F291B] focus:outline-[#0D9740]"
                 />
               </div>
             </div>
