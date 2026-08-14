@@ -54,7 +54,7 @@ function SearchableDropdown<T>({
   );
 
   return (
-    <div className="relative" ref={wrapperRef}>
+    <div className="relative notranslate" ref={wrapperRef}>
       <label className="text-xs font-semibold text-zinc-500 mb-1 block">{label}</label>
       <button
         type="button"
@@ -147,7 +147,7 @@ export default function AddressList() {
         const parsed = JSON.parse(stored);
         let mobile_no = parsed.mobile_no || parsed.mobile || parsed.user_id || parsed.customer_id?.split("-")[1];
         if (mobile_no?.includes("@")) mobile_no = mobile_no.split("@")[0];
-        const fallbackName = parsed.customer_name || parsed.Customer_name || parsed.first_name || parsed.full_name || "User";
+        const fallbackName = parsed.Customer_name || parsed.customer_name || parsed.first_name || parsed.full_name || parsed.username || "User";
         setUserName(fallbackName.split(" ")[0]);
         setUserPhone(`+91 ${mobile_no}`);
         setProfileImage(parsed.profile_image || null);

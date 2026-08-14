@@ -214,7 +214,7 @@ export default function Navbar() {
           {/* Desktop Action Buttons */}
           <div className="hidden xl:flex items-center">
             {/* Language Selector Dropdown */}
-            {false && (
+            {true && (
               <div className="relative mr-[31px]">
                 <button
                   onClick={() => setShowLangDropdown(!showLangDropdown)}
@@ -315,7 +315,7 @@ export default function Navbar() {
                   <circle cx="9" cy="19" r="1.2" fill="white" stroke="white" />
                   <circle cx="17" cy="19" r="1.2" fill="white" stroke="white" />
                 </svg>
-                <span className="absolute top-[2px] left-[4px] right-0 text-center text-[#FF9900] font-bold text-[17px] font-sans leading-none flex items-center justify-center">
+                <span className="absolute top-[2px] left-[4px] right-0 text-center text-[#FF9900] font-bold text-[17px] font-sans leading-none flex items-center justify-center notranslate">
                   {cartCount}
                 </span>
               </div>
@@ -377,7 +377,7 @@ export default function Navbar() {
                     <circle cx="9" cy="19" r="1.2" fill="white" stroke="white" />
                     <circle cx="17" cy="19" r="1.2" fill="white" stroke="white" />
                   </svg>
-                  <span className="absolute top-[1px] left-[3px] right-0 text-center text-[#FF9900] font-bold text-[13px] font-sans leading-none flex items-center justify-center">
+                  <span className="absolute top-[1px] left-[3px] right-0 text-center text-[#FF9900] font-bold text-[13px] font-sans leading-none flex items-center justify-center notranslate">
                     {cartCount}
                   </span>
                 </div>
@@ -416,7 +416,7 @@ export default function Navbar() {
 
           <div className="border-t border-white/10 my-4 pt-4 flex flex-col gap-4">
             {/* Language Selection Mobile */}
-            {false && (
+            {true && (
               <div className="w-full">
                 <button
                   onClick={() => setShowMobileLang(!showMobileLang)}

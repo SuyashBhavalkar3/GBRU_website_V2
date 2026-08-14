@@ -175,7 +175,7 @@ export default function UserProfile() {
           mobile_no = mobile_no.split("@")[0];
         }
 
-        const fallbackName = parsed.customer_name || parsed.Customer_name || parsed.first_name || parsed.full_name || "User";
+        const fallbackName = parsed.Customer_name || parsed.customer_name || parsed.first_name || parsed.full_name || parsed.username || "User";
         setUserFullName(fallbackName);
         setUserName(fallbackName.split(" ")[0]);
         setUserPhone(`+91 ${mobile_no}`);
