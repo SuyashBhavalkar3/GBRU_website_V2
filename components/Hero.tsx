@@ -128,7 +128,7 @@ export default function Hero() {
       {/* ========================================================================= */}
       {/* DESKTOP LAYOUT (Unchanged for Web/Desktop viewports) */}
       {/* ========================================================================= */}
-      <div className="hidden xl:block relative z-10 max-w-[1280px] w-full mx-auto px-4 sm:px-6 xl:px-[64px]">
+      <div className="hidden xl:block relative z-10 max-w-[1280px] w-full mx-auto px-4 sm:px-6 xl:px-[64px] pb-[80px]">
         <div className="grid grid-cols-12 gap-8 items-center h-full">
 
           {/* Left Column (Hero Content) */}
@@ -184,44 +184,14 @@ export default function Hero() {
               </div>
 
               {/* Feature Pill Card (Capsule bottom left) */}
-              <div className="bg-[#EAE8E0] text-[#162A5A] rounded-[50px] shadow-lg w-full xl:w-[620px] xl:ml-[-20px] flex flex-col sm:flex-row gap-4 sm:gap-4 xl:gap-[18px] px-5 py-4 xl:px-6 xl:py-5 items-start sm:items-center justify-between z-20 relative">
-                {features.map((item, i) => (
-                  <div key={i} className="flex items-start space-x-3 min-w-0 w-full sm:w-auto">
-                    <div className="flex-shrink-0 flex items-center justify-center mt-0.5">
-                      {item.icon}
-                    </div>
-                    <div className="min-w-0 flex flex-col justify-center">
-                      <h4
-                        style={{
-                          fontFamily: 'Roboto, sans-serif',
-                          fontWeight: 400,
-                          fontSize: '12px',
-                          lineHeight: '16px',
-                          letterSpacing: '0px',
-                          verticalAlign: 'middle',
-                          color: '#011F4A'
-                        }}
-                        className="whitespace-nowrap"
-                      >
-                        {item.title}
-                      </h4>
-                      <p
-                        style={{
-                          fontFamily: 'Roboto, sans-serif',
-                          fontWeight: 400,
-                          fontSize: '10px',
-                          lineHeight: '15px',
-                          letterSpacing: '0px',
-                          verticalAlign: 'middle',
-                          color: '#00130B'
-                        }}
-                        className="max-w-[145px] mt-[2px]"
-                      >
-                        {item.desc}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+              <div className="w-full xl:w-[620px] xl:ml-[-20px] z-20 relative">
+                <Image
+                  src="/assets/Frame 20.png"
+                  alt="Features"
+                  width={620}
+                  height={80}
+                  className="w-full h-auto rounded-r-[50px] rounded-l-none"
+                />
               </div>
             </div>
 
@@ -302,22 +272,22 @@ export default function Hero() {
             <div className="flex justify-center gap-3 w-full max-w-[500px]">
               {[
                 {
-                  url: "https://www.youtube.com/watch?v=GTNiviig9Z0&list=PLHXlLG4lLpM1nsq-u5QYMel-p24VXjyUw&index=1",
-                  thumbnail: "https://img.youtube.com/vi/GTNiviig9Z0/maxresdefault.jpg",
+                  url: "https://www.youtube.com/shorts/5OV6SGKm8Rg",
+                  thumbnail: "/assets/18teeth_thumbnail.png",
                   subtitle: "watch our",
-                  title: "Diesel Power Weeder"
+                  title: "Gbru 18 teeth seeder"
                 },
                 {
-                  url: "https://www.youtube.com/shorts/l6gdhNhF0mc",
-                  thumbnail: "/assets/drone-sprayer-thumbnail.png",
+                  url: "https://www.youtube.com/watch?v=fpZYENlnAZI",
+                  thumbnail: "https://img.youtube.com/vi/fpZYENlnAZI/maxresdefault.jpg",
                   subtitle: "watch our",
-                  title: "Drone Sprayer"
+                  title: "Gbru solar camera"
                 },
                 {
-                  url: "https://www.youtube.com/watch?v=ismU9cWjqJE&list=PLHXlLG4lLpM3M2gek-b4RVCJV3hBecrf8&index=1",
-                  thumbnail: "https://img.youtube.com/vi/ismU9cWjqJE/maxresdefault.jpg",
+                  url: "https://www.youtube.com/watch?v=D7pufaAYXwg",
+                  thumbnail: "https://img.youtube.com/vi/D7pufaAYXwg/maxresdefault.jpg",
                   subtitle: "watch our",
-                  title: "Kisan Expo 2025"
+                  title: "Gbru mobile auto"
                 }
               ].map((video, i) => (
                 <a
@@ -479,22 +449,22 @@ export default function Hero() {
         <div className="grid grid-cols-3 gap-2 px-3 mt-5">
           {[
             {
-              url: "https://www.youtube.com/watch?v=GTNiviig9Z0&list=PLHXlLG4lLpM1nsq-u5QYMel-p24VXjyUw&index=1",
-              thumbnail: "https://img.youtube.com/vi/GTNiviig9Z0/maxresdefault.jpg",
+              url: "https://www.youtube.com/shorts/5OV6SGKm8Rg",
+              thumbnail: "/assets/18teeth_thumbnail.png",
               subtitle: "WATCH OUR",
-              title: "Kisan Expo 2025",
+              title: "Gbru 18 teeth seeder",
             },
             {
-              url: "https://www.youtube.com/shorts/l6gdhNhF0mc",
-              thumbnail: "/assets/drone-sprayer-thumbnail.png",
+              url: "https://www.youtube.com/watch?v=fpZYENlnAZI",
+              thumbnail: "https://img.youtube.com/vi/fpZYENlnAZI/maxresdefault.jpg",
               subtitle: "WATCH OUR",
-              title: "Drone Sprayer",
+              title: "Gbru solar camera",
             },
             {
-              url: "https://www.youtube.com/watch?v=ismU9cWjqJE&list=PLHXlLG4lLpM3M2gek-b4RVCJV3hBecrf8&index=1",
-              thumbnail: "https://img.youtube.com/vi/ismU9cWjqJE/maxresdefault.jpg",
+              url: "https://www.youtube.com/watch?v=D7pufaAYXwg",
+              thumbnail: "https://img.youtube.com/vi/D7pufaAYXwg/maxresdefault.jpg",
               subtitle: "WATCH OUR",
-              title: "Field Demo",
+              title: "Gbru mobile auto",
             },
           ].map((video, i) => (
             <a
@@ -531,20 +501,16 @@ export default function Hero() {
 
         </div> {/* Close max-w-[480px] wrapper */}
 
-        {/* 2×2 Features Grid Card — edge-to-edge, no side margin on mobile */}
-        <div className="w-full bg-white/90 backdrop-blur-md py-5 px-5 shadow-md mt-2">
-          <div className="max-w-[480px] mx-auto grid grid-cols-2 gap-x-4 gap-y-5">
-            {features.map((item, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <div className="flex-shrink-0 mt-0.5 p-2 bg-[#1E3A8A]/10 rounded-full" style={{ color: "#1E3A8A" }}>
-                  {item.icon}
-                </div>
-                <div className="flex flex-col min-w-0 text-left">
-                  <h4 className="text-[12px] font-bold text-[#0F291B] leading-tight">{item.title}</h4>
-                  <p className="text-[10px] text-[#4B5563] font-medium leading-snug mt-0.5">{item.desc}</p>
-                </div>
-              </div>
-            ))}
+        {/* Features Image — mobile */}
+        <div className="w-full px-4 py-4 mt-2">
+          <div className="max-w-[480px] mx-auto">
+            <Image
+              src="/assets/Frame 20.png"
+              alt="Features"
+              width={620}
+              height={80}
+              className="w-full h-auto rounded-r-[20px] rounded-l-none"
+            />
           </div>
         </div>
 

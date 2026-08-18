@@ -4,9 +4,9 @@ import Image from "next/image";
 export default function Stats() {
   const statItems = [
     { value: "50 Cr+", label: "Products in Field" },
-    { value: "PAN", label: "India Support Network" },
-    { value: "Our Presence", label: "Every 12 KM" },
-    { value: "Fast", label: "Service & Spare Support" },
+    { value: "Pan India", label: "Support Network" },
+    { value: "Every 12 Km", label: "Our Presence" },
+    { value: "Service & Spare", label: "Fast Support" },
   ];
 
   // Mobile-specific compact cards (Figma design)
@@ -105,22 +105,24 @@ export default function Stats() {
         </div>
       </section>
 
-      {/* ── DESKTOP: original layout (unchanged) ── */}
-      <section className="hidden lg:flex w-full bg-[#F5F8F6] lg:h-[177px] pt-[22px] pb-[21px] px-4 lg:px-[64px] items-center justify-center border-b border-[#0F291B]/5">
-        <div className="max-w-[1152px] w-full flex flex-col sm:flex-row flex-wrap lg:flex-nowrap items-center justify-between gap-4 lg:gap-0">
+      {/* ── DESKTOP: New White Card Layout (overlapping viewports) ── */}
+      <section className="hidden lg:flex w-full bg-[#EAF5EE] px-4 lg:px-[64px] pb-12 justify-center">
+        <div className="max-w-[1152px] w-full bg-white rounded-3xl shadow-[0_4px_30px_rgb(0,0,0,0.1)] flex items-center justify-between px-8 py-6 relative z-20 -mt-[54px]">
           {statItems.map((item, idx) => (
-            <div
-              key={idx}
-              className="w-[270px] h-[134px] rounded-[20px] py-[24px] px-[15px] flex flex-col items-center justify-center text-center text-white shadow-lg border border-[#00752B]/20 hover:scale-[1.02] transition-all duration-300"
-              style={{ background: "linear-gradient(180deg, #01BE6A 0%, #00752B 100%)" }}
-            >
-              <h2 className="font-roboto font-normal text-[36px] lg:text-[40px] leading-[44px] lg:leading-[60px] tracking-tight w-full">
-                {item.value}
-              </h2>
-              <p className="font-roboto font-bold text-[12px] lg:text-[13px] leading-[15px] lg:leading-[16px] tracking-[0.65px] uppercase text-white/95 mt-1.5 w-full">
-                {item.label}
-              </p>
-            </div>
+            <React.Fragment key={idx}>
+              <div className="flex flex-col items-center justify-center text-center px-4 flex-1">
+                <h2 className="font-roboto font-bold text-[24px] lg:text-[28px] text-[#00A859] leading-none tracking-tight">
+                  {item.value}
+                </h2>
+                <p className="font-roboto font-medium text-[12px] lg:text-[14px] text-zinc-500 mt-2">
+                  {item.label}
+                </p>
+              </div>
+              {/* Divider for all but the last item */}
+              {idx < statItems.length - 1 && (
+                <div className="w-[1px] h-10 bg-zinc-200" />
+              )}
+            </React.Fragment>
           ))}
         </div>
       </section>
