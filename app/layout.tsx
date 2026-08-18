@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ToastProvider } from "@/components/ToastContext";
 import PopularItemsModal from "@/components/PopularItemsModal";
 import MaintenanceGuard from "@/components/MaintenanceGuard";
+import FloatingNovaButton from "@/components/FloatingNovaButton";
 import Script from "next/script";
 import "./globals.css";
 
@@ -80,6 +81,7 @@ export default function RootLayout({
           <MaintenanceGuard />
           {children}
           <PopularItemsModal />
+          <FloatingNovaButton />
         </ToastProvider>
       </body>
     </html>
