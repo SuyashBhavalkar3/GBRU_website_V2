@@ -79,7 +79,7 @@ export default function BoostBusinessWithNova() {
           </h2>
 
           {/* Features White Card */}
-          <div className="bg-white rounded-[20px] p-3 md:p-4 flex flex-col sm:flex-row items-start sm:items-start justify-between gap-4 shadow-sm w-full font-roboto mt-2">
+          <div className="bg-white rounded-[20px] p-3 md:p-4 grid grid-cols-2 sm:flex sm:flex-row items-start justify-between gap-4 shadow-sm w-full font-roboto mt-2">
             {features.map((f, i) => (
               <div key={i} className="flex flex-col items-center text-center flex-1">
                 <div className="w-9 h-9 rounded-full border border-green-100 flex items-center justify-center mb-3 text-[#00A859]">

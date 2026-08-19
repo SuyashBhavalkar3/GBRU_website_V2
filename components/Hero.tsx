@@ -27,6 +27,7 @@ export default function Hero() {
   useEffect(() => {
     const timer = setInterval(() => {
       setMobileCarouselIndex((prev) => (prev === 2 ? 0 : prev + 1));
+      setCarouselIndex((prev) => (prev === 2 ? 0 : prev + 1));
     }, 3000);
     return () => clearInterval(timer);
   }, []);
