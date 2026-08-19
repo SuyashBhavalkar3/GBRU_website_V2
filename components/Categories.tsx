@@ -45,7 +45,7 @@ export default function Categories() {
   return (
     <>
       {/* ── MOBILE: Horizontal scrolling categories view (Figma exact) ── */}
-      <section className="block lg:hidden w-full bg-[#EAF5EE] py-6 px-4 text-center">
+      <section className="block lg:hidden w-full bg-white py-6 px-4 text-center">
         {/* Title */}
         <h2 className="font-roboto font-bold text-[24px] leading-tight text-[#0F291B] mb-5">
           Shop By Category
@@ -114,7 +114,7 @@ export default function Categories() {
       </section>
 
       {/* ── DESKTOP: original grid layout (unchanged) ── */}
-      <section className="hidden lg:flex w-full bg-[#EAF5EE] py-12 lg:py-16 px-4 sm:px-6 lg:px-[64px] flex-col items-center gap-8 lg:gap-12 text-center">
+      <section className="hidden lg:flex w-full bg-white py-12 lg:py-16 px-4 sm:px-6 lg:px-[64px] flex-col items-center gap-8 lg:gap-12 text-center">
         {/* Title */}
         <h2 className="font-roboto font-bold text-[32px] md:text-[40px] lg:text-[48px] leading-[40px] lg:leading-[56px] tracking-[-0.96px] text-[#0F291B]">
           Shop By Category

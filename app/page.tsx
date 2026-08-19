@@ -60,21 +60,21 @@ export default function Home() {
           <Stats />
         </div>
 
-        {/* ── DESKTOP ONLY: Categories ── */}
+        {/* ── DESKTOP ONLY: BestSellingTools ── */}
         <div className="hidden xl:block">
-          <Categories />
+          <BestSellingTools />
         </div>
 
         {/* ── FieldExperiences (guest only) — self-guards mobile/desktop internally ── */}
         {!isLoggedIn && <FieldExperiences />}
 
-        {/* ── MOBILE ONLY: Categories (after FieldExperiences on mobile) ── */}
+        {/* ── MOBILE ONLY: BestSellingTools (after FieldExperiences on mobile) ── */}
         <div className="block xl:hidden">
-          <Categories />
+          <BestSellingTools />
         </div>
 
-        {/* ── BestSellingTools — self-guards mobile/desktop internally ── */}
-        <BestSellingTools />
+        {/* ── Categories — self-guards mobile/desktop internally ── */}
+        <Categories />
 
         {/* ── DESKTOP ONLY: ToolsInAction ── */}
         <div className="hidden xl:block">
